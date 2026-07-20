@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triangles · Altitudes</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%23fb7185' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cline x1='16' y1='5' x2='16' y2='27' stroke='%23fb7185' stroke-width='2.5'/%3E%3Crect x='13' y='21' width='6' height='6' fill='none' stroke='%23fb7185' stroke-width='1.5'/%3E%3C/svg%3E"
+    />
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0f14; }
+      #cam {
+        position: fixed; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; transform: scaleX(-1);
+        filter: saturate(0.85) brightness(0.7);
+      }
+      #veil { position: fixed; inset: 0; background: rgba(6, 10, 16, 0.45); }
+      #stage {
+        position: fixed; inset: 0; width: 100%; height: 100%;
+        touch-action: none; cursor: grab;
+      }
+      #stage.grabbing { cursor: grabbing; }
+
+      /* --- Notes & solutions drawer --------------------------------------- */
+      #notes-toggle {
+        position: fixed; top: 16px; right: 18px; z-index: 10;
+        color: rgba(233, 240, 247, 0.85); cursor: pointer;
+        font: 600 15px ui-sans-serif, system-ui, sans-serif;
+        background: rgba(251, 113, 133, 0.16); border: 1px solid rgba(251, 113, 133, 0.4);
+        padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(4px);
+      }
+      #notes-toggle:hover { background: rgba(251, 113, 133, 0.28); color: #fff; }
+      #notes {
+        position: fixed; top: 0; right: 0; bottom: 0; z-index: 20;
+        width: min(480px, 94vw); overflow-y: auto;
+        background: rgba(10, 15, 22, 0.92); backdrop-filter: blur(10px);
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e9f0f7; font-family: ui-sans-serif, system-ui, sans-serif;
+        padding: 26px 28px 48px;
+        transform: translateX(105%); transition: transform 0.28s ease;
+      }
+      body.notes-open #notes { transform: translateX(0); }
+      #notes-close {
+        position: absolute; top: 14px; right: 16px;
+        background: none; border: none; cursor: pointer;
+        color: rgba(233, 240, 247, 0.55); font-size: 22px; line-height: 1;
+        padding: 4px 8px;
+      }
+      #notes-close:hover { color: #fff; }
+      #notes .eyebrow {
+        text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px;
+        font-weight: 600; color: #fb7185; margin-bottom: 6px;
+      }
+      #notes h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+      #notes h2 {
+        font-size: 16px; font-weight: 700; color: #fb7185;
+        margin: 26px 0 8px;
+      }
+      #notes h3 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; }
+      #notes p { font-size: 14.5px; line-height: 1.65; color: rgba(233, 240, 247, 0.88); margin: 8px 0; }
+      #notes ul { margin: 8px 0 8px 20px; }
+      #notes li { font-size: 14.5px; line-height: 1.65; color: rgba(233, 240, 247, 0.88); margin: 4px 0; }
+      #notes .proof {
+        border-left: 3px solid rgba(56, 217, 169, 0.55);
+        background: rgba(56, 217, 169, 0.06);
+        border-radius: 0 10px 10px 0;
+        padding: 10px 14px; margin: 10px 0 18px;
+      }
+      #notes .proof p { margin: 6px 0; }
+      #notes .qed { color: #38d9a9; font-weight: 700; }
+      #notes figure {
+        margin: 12px 0; padding: 10px; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07);
+        text-align: center;
+      }
+      #notes figure svg { max-width: 100%; height: auto; }
+      #notes figcaption { font-size: 12.5px; color: rgba(233, 240, 247, 0.5); margin-top: 6px; }
+      #notes em { font-style: italic; }
+      #notes .hint { color: rgba(233, 240, 247, 0.55); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <video id="cam" playsinline muted autoplay></video>
+    <div id="veil"></div>
+    <canvas id="stage"></canvas>
+    <button id="notes-toggle" type="button">Notes &amp; solutions</button>
+
+    <aside id="notes">
+      <button id="notes-close" type="button" aria-label="Close notes">✕</button>
+      <div class="eyebrow">Parts of a Triangle</div>
+      <h1>Altitudes</h1>
+
+      <h2>What an altitude is</h2>
+      <p>
+        An <strong>altitude</strong> is a triangle's height, measured from one vertex:
+        the perpendicular segment from that vertex to the <em>line containing</em> the
+        opposite side. Its length is exactly the distance from the vertex to that line
+        — and whenever we say the distance from a point to a line, we mean the length
+        of the perpendicular dropped from the point to the line, because the
+        perpendicular is the shortest of all segments joining them.
+      </p>
+      <p>
+        The phrase "line containing" is the part that trips people up, and it is the
+        whole reason the obtuse triangle in the demo feels different. The foot of the
+        perpendicular does not have to land on the side itself. In an obtuse triangle,
+        two of the three altitudes miss their sides entirely: you must extend the side
+        (the dashed line in the demo, like extending <em>BC</em> to <em>D</em> in the
+        classic figure) before the perpendicular has anywhere to land. The altitude is
+        still a perfectly good height — the side just isn't wide enough to catch it.
+      </p>
+
+      <h2>Notation, and why altitudes matter</h2>
+      <p>
+        The three altitudes are written <em>h<sub>a</sub></em>, <em>h<sub>b</sub></em>,
+        and <em>h<sub>c</sub></em>, where <em>h<sub>a</sub></em> is the altitude from
+        vertex <em>A</em> — which makes it perpendicular to side <em>a</em> (the side
+        opposite <em>A</em>). Altitudes are the "height" in the area formula: any side
+        can serve as the base, so one triangle has three base–height pairs, and
+        ½ <em>a h<sub>a</sub></em> = ½ <em>b h<sub>b</sub></em> = ½ <em>c h<sub>c</sub></em>
+        all give the same area.
+      </p>
+
+      <h2>The orthocenter</h2>
+      <p>
+        The three altitude <em>lines</em> always pass through a single point, the
+        <strong>orthocenter</strong> <em>H</em>. Where it lands depends on the triangle:
+      </p>
+      <ul>
+        <li><strong>Acute:</strong> all three feet land on their sides, and <em>H</em> is inside the triangle.</li>
+        <li><strong>Right:</strong> the two legs are perpendicular to each other, so each leg <em>is</em> the altitude
+          from the vertex it starts at. Both legs meet at the right-angle vertex, so the answer is:
+          <strong><em>H</em> is the right-angle vertex itself.</strong></li>
+        <li><strong>Obtuse:</strong> two feet fall on extensions, and <em>H</em> is outside the triangle —
+          the altitude <em>segments</em> never meet, only the lines through them do. And the flatter
+          the triangle, the farther away <em>H</em> flies (scroll down in the demo to see).</li>
+        <li><strong>Equilateral:</strong> every altitude is also a median, an angle bisector, and a
+          perpendicular bisector — so <em>H</em>, the centroid <em>G</em>, the incenter, and the
+          circumcenter <em>O</em> are all the same point.</li>
+        <li><strong>Isosceles:</strong> the altitude from the apex is the axis of symmetry, and
+          <em>H</em> always lies on it.</li>
+      </ul>
+      <p class="hint">
+        Compare with the circumcenter <em>O</em> from the perpendicular-bisector section: it is also
+        inside an acute triangle, outside an obtuse one, and lands somewhere special on a right one.
+        The exercises below pin down exactly where.
+      </p>
+
+      <h2>Example 11-1</h2>
+      <p><em>Show that the circumcenter of a right triangle is the midpoint of its hypotenuse.</em></p>
+      <figure>
+        <svg viewBox="0 0 260 150" role="img" aria-label="Right triangle ACB inscribed in its circumcircle, with the hypotenuse AB as a diameter through center O">
+          <circle cx="130" cy="85" r="60" fill="none" stroke="rgba(233,240,247,0.3)" stroke-width="1.5" />
+          <polygon points="70,85 190,85 104.6,30.4" fill="rgba(251,113,133,0.08)"
+            stroke="#fb7185" stroke-width="2" stroke-linejoin="round" />
+          <polyline points="100.3,37.2 107,41.5 111.3,34.7" fill="none"
+            stroke="#38d9a9" stroke-width="1.6" />
+          <line x1="130" y1="85" x2="104.6" y2="30.4"
+            stroke="rgba(56,217,169,0.8)" stroke-width="1.5" stroke-dasharray="4 4" />
+          <circle cx="130" cy="85" r="3" fill="#e9f0f7" />
+          <text x="60" y="90" fill="#e9f0f7" font-size="13" font-style="italic" text-anchor="end" font-family="ui-sans-serif, system-ui">A</text>
+          <text x="198" y="90" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">B</text>
+          <text x="100" y="22" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">C</text>
+          <text x="133" y="101" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">O</text>
+          <text x="106" y="60" fill="#38d9a9" font-size="12" font-style="italic" text-anchor="end" font-family="ui-sans-serif, system-ui">R</text>
+        </svg>
+        <figcaption>∠C = 90° inscribes a semicircle, so AB is a diameter and O is its midpoint.</figcaption>
+      </figure>
+      <div class="proof">
+        <p>
+          <strong>Proof.</strong> Draw the circumcircle of right triangle <em>ABC</em>,
+          with the right angle at <em>C</em>. Since ∠<em>C</em> is an inscribed angle,
+          the arc it cuts off satisfies arc <em>AB</em> = 2∠<em>C</em> = 180°.
+          An arc of 180° is a semicircle, so the chord <em>AB</em> is a diameter of the circle.
+          The center <em>O</em> is the midpoint of any diameter, so <em>O</em> is the midpoint
+          of the hypotenuse <em>AB</em>. <span class="qed">∎</span>
+        </p>
+      </div>
+
+      <h2>Exercise 11-1</h2>
+      <p><em>Show that the circumradius of a right triangle is equal to half the hypotenuse.</em></p>
+      <div class="proof">
+        <p>
+          <strong>Proof.</strong> By Example 11-1, the hypotenuse <em>AB</em> is a diameter
+          of the circumcircle. A radius is half a diameter, so
+          <em>R</em> = <em>AB</em>/2. <span class="qed">∎</span>
+        </p>
+      </div>
+
+      <h2>Exercise 11-2</h2>
+      <p><em>Show that the median to the hypotenuse of a right triangle is equal to half the hypotenuse.</em></p>
+      <div class="proof">
+        <p>
+          <strong>Proof.</strong> The median to the hypotenuse runs from <em>C</em> to the
+          midpoint <em>M</em> of <em>AB</em>. By Example 11-1, <em>M</em> is the circumcenter,
+          and a circumcenter is at distance <em>R</em> from <em>every</em> vertex — including
+          <em>C</em>. So the median has length
+          <em>MC</em> = <em>R</em> = <em>AB</em>/2 by Exercise 11-1. <span class="qed">∎</span>
+        </p>
+      </div>
+
+      <h2>Exercise 11-3</h2>
+      <p><em>Show that if a median of a triangle is one-half the side to which it is drawn, then the triangle must be right.</em></p>
+      <figure>
+        <svg viewBox="0 0 260 150" role="img" aria-label="Triangle ABC with median CM splitting it into two isosceles triangles, base angles marked x and y">
+          <polygon points="30,125 230,125 150,35" fill="rgba(251,113,133,0.08)"
+            stroke="#fb7185" stroke-width="2" stroke-linejoin="round" />
+          <line x1="150" y1="35" x2="130" y2="125" stroke="rgba(233,240,247,0.85)" stroke-width="1.8" />
+          <line x1="80" y1="120" x2="80" y2="130" stroke="#38d9a9" stroke-width="1.6" />
+          <line x1="180" y1="120" x2="180" y2="130" stroke="#38d9a9" stroke-width="1.6" />
+          <line x1="135" y1="79" x2="145" y2="81" stroke="#38d9a9" stroke-width="1.6" />
+          <path d="M 50 125 A 20 20 0 0 0 46 113" fill="none" stroke="#fbbf24" stroke-width="1.6" />
+          <text x="59" y="119" fill="#fbbf24" font-size="12" font-style="italic" font-family="ui-sans-serif, system-ui">x</text>
+          <path d="M 132.4 48.2 A 22 22 0 0 0 145.2 56.5" fill="none" stroke="#fbbf24" stroke-width="1.6" />
+          <text x="129" y="68" fill="#fbbf24" font-size="12" font-style="italic" text-anchor="end" font-family="ui-sans-serif, system-ui">x</text>
+          <path d="M 210 125 A 20 20 0 0 1 216.7 110.1" fill="none" stroke="#22d3ee" stroke-width="1.6" />
+          <text x="203" y="116" fill="#22d3ee" font-size="12" font-style="italic" text-anchor="end" font-family="ui-sans-serif, system-ui">y</text>
+          <path d="M 145.2 56.5 A 22 22 0 0 0 164.6 51.4" fill="none" stroke="#22d3ee" stroke-width="1.6" />
+          <text x="160" y="71" fill="#22d3ee" font-size="12" font-style="italic" font-family="ui-sans-serif, system-ui">y</text>
+          <text x="22" y="140" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">A</text>
+          <text x="232" y="140" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">B</text>
+          <text x="147" y="26" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">C</text>
+          <text x="126" y="141" fill="#e9f0f7" font-size="13" font-style="italic" font-family="ui-sans-serif, system-ui">M</text>
+        </svg>
+        <figcaption>MA = MB = MC (green ticks) splits ABC into two isosceles triangles.</figcaption>
+      </figure>
+      <div class="proof">
+        <p>
+          <strong>Proof.</strong> Let the median run from <em>C</em> to the midpoint
+          <em>M</em> of <em>AB</em>, with <em>CM</em> = <em>AB</em>/2. Since <em>M</em>
+          is the midpoint, <em>MA</em> = <em>MB</em> = <em>AB</em>/2 = <em>MC</em>.
+        </p>
+        <p>
+          Triangle <em>AMC</em> is isosceles (<em>MA</em> = <em>MC</em>), so
+          ∠<em>MAC</em> = ∠<em>MCA</em> = <em>x</em>. Triangle <em>BMC</em> is isosceles
+          (<em>MB</em> = <em>MC</em>), so ∠<em>MBC</em> = ∠<em>MCB</em> = <em>y</em>.
+          Adding the angles of triangle <em>ABC</em>:
+        </p>
+        <p style="text-align: center">
+          <em>x</em> + <em>y</em> + (<em>x</em> + <em>y</em>) = 180° &nbsp;⟹&nbsp;
+          <em>x</em> + <em>y</em> = 90°.
+        </p>
+        <p>
+          But ∠<em>ACB</em> = <em>x</em> + <em>y</em>, so ∠<em>C</em> = 90° and the triangle
+          is right. <span class="qed">∎</span>
+        </p>
+        <p class="hint">
+          Another view: <em>MA</em> = <em>MB</em> = <em>MC</em> means the circle centered at
+          <em>M</em> with radius <em>AB</em>/2 passes through all three vertices, with
+          <em>AB</em> as a diameter — so ∠<em>C</em> is inscribed in a semicircle. This is the
+          same circle the Angles lesson used: the apex snapped to 90° exactly when it crossed
+          the circle whose diameter was the base.
+        </p>
+      </div>
+    </aside>
+
+    <script type="module" src="/src/altitudes.ts"></script>
+    <script type="module" src="/src/nav.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triangles · Lessons</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%2338d9a9' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { min-height: 100%; }
+      body {
+        background:
+          radial-gradient(1200px 600px at 50% -10%, #12202a 0%, #0b0f14 60%);
+        color: #e9f0f7;
+        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        padding: 48px 24px;
+      }
+      .wrap { width: 100%; max-width: 760px; }
+      .eyebrow {
+        text-transform: uppercase; letter-spacing: 0.18em; font-size: 13px;
+        font-weight: 600; color: #38d9a9; margin-bottom: 10px;
+      }
+      h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02em; }
+      .sub { color: rgba(233, 240, 247, 0.6); margin-top: 10px; font-size: 17px; }
+      .grid {
+        margin-top: 36px; display: grid; gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .card {
+        display: flex; gap: 16px; align-items: center;
+        padding: 20px 22px; border-radius: 16px; text-decoration: none;
+        color: inherit; background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.055);
+        border-color: var(--accent);
+      }
+      .icon {
+        flex: none; width: 52px; height: 52px; border-radius: 12px;
+        display: grid; place-items: center;
+        background: color-mix(in srgb, var(--accent) 16%, transparent);
+      }
+      .icon svg { width: 30px; height: 30px; color: var(--accent); }
+      .meta { display: flex; flex-direction: column; gap: 2px; }
+      .meta .part {
+        font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--accent);
+      }
+      .meta .name { font-size: 19px; font-weight: 700; margin-top: 2px; }
+      .meta .desc { font-size: 14px; color: rgba(233, 240, 247, 0.55); margin-top: 3px; }
+      .foot { margin-top: 30px; font-size: 13px; color: rgba(233, 240, 247, 0.35); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="eyebrow">Triangle Lab</div>
+      <h1>Triangles</h1>
+      <p class="sub">Grab a vertex and feel the geometry change under your hand.</p>
+
+      <div class="grid" id="grid"></div>
+
+      <p class="foot">More sides &amp; steps coming soon.</p>
+    </div>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

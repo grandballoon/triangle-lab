@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Editor and OS cruft
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Local tooling scratch
+.lavish/
+
+# ---------------------------------------------------------------------------
+# Source material — NEVER COMMIT
+#
+# This project is an independent set of interactive geometry demos. The
+# textbook that prompted it is copyrighted, third-party material: transcribed
+# chapter text, scans, and PDFs of it stay on local disk only.
+#
+# The original design notes live in specs/ and are committed; they are our own
+# writing and carry no verbatim source text.
+# ---------------------------------------------------------------------------
+
+# Transcribed chapter text and the directory tree named after the source's
+# own volume/chapter titles.
+Vol 1 - The Basics/
+Text.md
+**/Text.md
+
+# Scans, PDFs, and photographed pages of any source text.
+*.pdf
+*.epub
+*.djvu
+scans/

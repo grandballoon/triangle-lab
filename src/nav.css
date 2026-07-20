@@ -1,0 +1,63 @@
+/* Chrome for the lesson pager. Every lesson page loads nav.ts, which pulls this
+   in — the pages no longer carry their own copy of these rules.
+
+   The pager lives in the top strip because that is the one band every lesson
+   keeps clear of canvas drawing (TOP_MARGIN). The bottom edge is not free:
+   altitudes.ts writes its scroll hint there and similar.ts anchors its figure
+   to it. */
+
+#nav {
+  position: fixed;
+  top: 16px;
+  left: 18px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 15px ui-sans-serif, system-ui, sans-serif;
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: rgba(233, 240, 247, 0.7);
+  text-decoration: none;
+  background: rgba(6, 10, 16, 0.5);
+  backdrop-filter: blur(4px);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+a.nav-pill:hover {
+  color: #fff;
+  background: rgba(6, 10, 16, 0.68);
+}
+
+.nav-pill:focus-visible {
+  outline: 2px solid #38d9a9;
+  outline-offset: 2px;
+}
+
+/* Both ends of the run keep a dimmed arrow rather than dropping it, so the row
+   does not reflow as you page through. */
+.nav-pill[aria-disabled="true"] {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.nav-arrow {
+  padding: 0 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.nav-step {
+  /* Fixed digit width — the counter must not jitter between lessons. */
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  padding: 0 10px;
+  color: rgba(233, 240, 247, 0.5);
+}
