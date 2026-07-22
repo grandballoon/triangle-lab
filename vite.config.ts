@@ -4,6 +4,10 @@ import { resolve } from "node:path";
 // One project, several lesson pages. Each demo is its own HTML entry point; the
 // root index.html is the lesson menu that links them.
 export default defineConfig({
+  // GitHub Pages serves this project site from a subpath
+  // (grandballoon.github.io/triangle-lab/), so asset URLs must be
+  // prefixed accordingly. Left as "/" for local dev and previews.
+  base: process.env.GITHUB_ACTIONS ? "/triangle-lab/" : "/",
   server: {
     // getUserMedia needs a secure context; localhost qualifies, so the
     // webcam background works out of the box under `npm run dev`.
