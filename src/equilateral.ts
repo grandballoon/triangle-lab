@@ -7,6 +7,7 @@
 // "don't worry about code duplication for now") — only the webcam device and
 // this file's own little vector helpers are involved.
 
+import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -82,7 +83,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (dist(p, corners()[0]) <= GRAB_RADIUS) {
     dragging = true;
     canvas.classList.add("grabbing");
-    canvas.setPointerCapture(e.pointerId);
+    capturePointer(canvas, e);
     drive(p);
   }
 });
@@ -95,7 +96,7 @@ function endDrag(e: PointerEvent): void {
   if (!dragging) return;
   dragging = false;
   canvas.classList.remove("grabbing");
-  canvas.releasePointerCapture(e.pointerId);
+  releasePointer(canvas, e);
 }
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);

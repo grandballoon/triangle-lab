@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Triangles · Lessons</title>
+    <title>Triangle Lab · Geometry</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%2338d9a9' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
@@ -16,18 +16,21 @@
           radial-gradient(1200px 600px at 50% -10%, #12202a 0%, #0b0f14 60%);
         color: #e9f0f7;
         font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-        min-height: 100vh; display: flex; align-items: center; justify-content: center;
-        padding: 48px 24px;
+        min-height: 100vh; display: flex; justify-content: center;
+        padding: 64px 24px;
       }
-      .wrap { width: 100%; max-width: 760px; }
+      .wrap { width: 100%; max-width: 1080px; }
       .eyebrow {
         text-transform: uppercase; letter-spacing: 0.18em; font-size: 13px;
         font-weight: 600; color: #38d9a9; margin-bottom: 10px;
       }
       h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02em; }
       .sub { color: rgba(233, 240, 247, 0.6); margin-top: 10px; font-size: 17px; }
+      .chapter { margin-top: 48px; }
+      .chapter h2 { font-size: 24px; font-weight: 750; letter-spacing: -0.01em; }
+      .chapter .blurb { color: rgba(233, 240, 247, 0.55); margin-top: 4px; font-size: 15px; }
       .grid {
-        margin-top: 36px; display: grid; gap: 16px;
+        margin-top: 18px; display: grid; gap: 16px;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       }
       .card {
@@ -55,18 +58,18 @@
       }
       .meta .name { font-size: 19px; font-weight: 700; margin-top: 2px; }
       .meta .desc { font-size: 14px; color: rgba(233, 240, 247, 0.55); margin-top: 3px; }
-      .foot { margin-top: 30px; font-size: 13px; color: rgba(233, 240, 247, 0.35); }
+      .foot { margin-top: 48px; font-size: 13px; color: rgba(233, 240, 247, 0.35); }
     </style>
   </head>
   <body>
     <div class="wrap">
       <div class="eyebrow">Triangle Lab</div>
-      <h1>Triangles</h1>
-      <p class="sub">Grab a vertex and feel the geometry change under your hand.</p>
+      <h1>Geometry</h1>
+      <p class="sub">Pinch a point in front of your camera and feel the geometry change under your hand.</p>
 
-      <div class="grid" id="grid"></div>
+      <div id="menu"></div>
 
-      <p class="foot">More sides &amp; steps coming soon.</p>
+      <p class="foot">Hand tracking needs a camera; every lesson also works with a mouse or a finger.</p>
     </div>
     <script type="module" src="/src/index.ts"></script>
   </body>

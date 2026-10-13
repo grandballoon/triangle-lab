@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triangle Lab</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%2338d9a9' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body class="hands-top">
+    <video id="cam" playsinline muted autoplay></video>
+    <div id="veil"></div>
+    <canvas id="stage"></canvas>
+
+    <header id="topbar">
+      <div id="heading">
+        <span id="eyebrow"></span>
+        <h1 id="title"></h1>
+      </div>
+    </header>
+    <div id="controls" aria-label="Lesson controls"></div>
+
+    <aside id="formulas" aria-label="Formulas">
+      <h2>Formulas</h2>
+      <div id="readouts"></div>
+    </aside>
+
+    <section id="steps" aria-live="polite">
+      <button id="step-prev" class="step-arrow" type="button" aria-label="Previous step">‹</button>
+      <div id="step-body">
+        <div id="step-count"></div>
+        <h2 id="step-title"></h2>
+        <p id="step-text"></p>
+      </div>
+      <button id="step-next" class="step-arrow" type="button" aria-label="Next step">›</button>
+    </section>
+
+    <script type="module" src="/src/lab/main.ts"></script>
+  </body>
+</html>

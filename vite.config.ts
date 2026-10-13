@@ -1,13 +1,25 @@
 import { defineConfig } from "vite";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-// One project, several lesson pages. Each demo is its own HTML entry point; the
-// root index.html is the lesson menu that links them.
+// The hand-tracking WASM runtime is fetched from a CDN at run time and must
+// match the installed library exactly, so its version is read from the
+// package rather than repeated in source (src/hands/tracker.ts).
+const mediapipe = JSON.parse(
+  readFileSync(resolve(__dirname, "node_modules/@mediapipe/tasks-vision/package.json"), "utf8"),
+) as { version: string };
+
+// One project, several pages. The root index.html is the lesson menu; each
+// standalone lesson is its own HTML entry point; lab.html hosts every lab
+// lesson (src/lab/lessons), loading each one on demand.
 export default defineConfig({
   // GitHub Pages serves this project site from a subpath
   // (grandballoon.github.io/triangle-lab/), so asset URLs must be
   // prefixed accordingly. Left as "/" for local dev and previews.
   base: process.env.GITHUB_ACTIONS ? "/triangle-lab/" : "/",
+  define: {
+    __MEDIAPIPE_VERSION__: JSON.stringify(mediapipe.version),
+  },
   server: {
     // getUserMedia needs a secure context; localhost qualifies, so the
     // webcam background works out of the box under `npm run dev`.
@@ -18,6 +30,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, "index.html"),
+        lab: resolve(__dirname, "lab.html"),
         angles: resolve(__dirname, "angles.html"),
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),

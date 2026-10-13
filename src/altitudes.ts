@@ -29,6 +29,7 @@
 // Self-contained on purpose, matching medians.ts / bisectors.ts / etc. — only
 // the webcam device and this file's own little vector helpers are involved.
 
+import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -555,7 +556,7 @@ canvas.addEventListener("pointerdown", (e) => {
     }
   }
   canvas.classList.add("grabbing");
-  canvas.setPointerCapture(e.pointerId);
+  capturePointer(canvas, e);
   if (best) {
     grabbed = best;
     drive(best, p);
@@ -584,7 +585,7 @@ function endDrag(e: PointerEvent): void {
   }
   panFrom = null;
   canvas.classList.remove("grabbing");
-  if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+  releasePointer(canvas, e);
 }
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);

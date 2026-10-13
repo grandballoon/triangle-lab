@@ -12,6 +12,7 @@
 // Self-contained on purpose, matching medians.ts / perimeter.ts / etc. — only
 // the webcam device and this file's own little vector helpers are involved.
 
+import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -225,7 +226,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (best === null) return;
   grabbed = best;
   canvas.classList.add("grabbing");
-  canvas.setPointerCapture(e.pointerId);
+  capturePointer(canvas, e);
   drive(best, p);
 });
 
@@ -239,7 +240,7 @@ function endDrag(e: PointerEvent): void {
   // nothing locks; you can always slide back through the bisector.
   grabbed = null;
   canvas.classList.remove("grabbing");
-  canvas.releasePointerCapture(e.pointerId);
+  releasePointer(canvas, e);
 }
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);

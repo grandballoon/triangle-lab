@@ -12,6 +12,7 @@ import {
   type Vec,
 } from "./geometry.ts";
 import { render, SPLASH_LIFE, type Scene, type Splash } from "./render.ts";
+import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 const video = document.getElementById("cam") as HTMLVideoElement;
@@ -82,7 +83,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (dist(p, triangle.c) <= GRAB_RADIUS || dist(p, knob) <= GRAB_RADIUS) {
     dragging = true;
     canvas.classList.add("grabbing");
-    canvas.setPointerCapture(e.pointerId);
+    capturePointer(canvas, e);
     updateApex(p);
   }
 });
@@ -95,7 +96,7 @@ function endDrag(e: PointerEvent): void {
   if (!dragging) return;
   dragging = false;
   canvas.classList.remove("grabbing");
-  canvas.releasePointerCapture(e.pointerId);
+  releasePointer(canvas, e);
   knob = triangle.c; // handle settles back onto the vertex
 }
 canvas.addEventListener("pointerup", endDrag);

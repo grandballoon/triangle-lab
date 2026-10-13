@@ -1,0 +1,277 @@
+/* The lab page: a full-screen camera view with the figure drawn over it, and
+   three pieces of chrome around the edge — a top bar (pager, lesson title,
+   lesson controls), the formula panel on the right and the step card along
+   the bottom.
+
+   --edge, --top-band, --step-card-height and --panel-width are set by
+   shell.ts, which fits the figure into the space these leave free. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0f14;
+  color: #e9f0f7;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+[hidden] { display: none !important; }
+
+#cam {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: saturate(0.85) brightness(0.7);
+}
+
+#veil { position: fixed; inset: 0; background: rgba(6, 10, 16, 0.5); }
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+#stage.can-grab { cursor: grab; }
+#stage.grabbing { cursor: grabbing; }
+
+/* --- Top bar --------------------------------------------------------------- */
+
+#topbar {
+  position: fixed;
+  top: 16px;
+  left: var(--edge);
+  /* Stops short of the hands pill in the top-right corner. */
+  right: calc(var(--edge) + 240px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+}
+
+#topbar > * { pointer-events: auto; }
+
+/* The pager is fixed-position on standalone pages; here it joins the bar. */
+#topbar #nav { position: static; flex: none; }
+
+#heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+}
+
+#eyebrow {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#title {
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+#controls {
+  position: fixed;
+  top: 60px;
+  left: var(--edge);
+  right: calc(var(--edge) * 2 + var(--panel-width));
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+#controls > * { pointer-events: auto; }
+
+.chip-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 6px;
+}
+
+.chip-group-label {
+  font-size: 13px;
+  color: rgba(233, 240, 247, 0.6);
+  margin-right: 2px;
+}
+
+.chip {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font: 500 14px/1 inherit;
+  font-family: inherit;
+  color: rgba(233, 240, 247, 0.85);
+  background: rgba(6, 10, 16, 0.55);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.chip:hover,
+.chip.hand-hover {
+  border-color: var(--accent);
+  background: rgba(6, 10, 16, 0.75);
+}
+
+.chip[aria-pressed="true"] {
+  color: #071018;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 650;
+}
+
+/* --- Formula panel --------------------------------------------------------- */
+
+#formulas {
+  position: fixed;
+  top: 60px;
+  right: var(--edge);
+  bottom: calc(var(--edge) * 2 + var(--step-card-height));
+  width: var(--panel-width);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(10, 15, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+#formulas h2 {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+#readouts { overflow-y: auto; min-height: 0; }
+
+.readout {
+  padding: 9px 0 9px 12px;
+  border-left: 3px solid rgba(255, 255, 255, 0.14);
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.readout-label {
+  display: block;
+  font-size: 12px;
+  color: rgba(233, 240, 247, 0.55);
+  margin-bottom: 4px;
+}
+
+.readout-math { display: block; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
+
+.readout-good { border-left-color: #38d9a9; }
+.readout-good .readout-math { color: #7ff0cf; }
+.readout-warn { border-left-color: #ff6b6b; }
+.readout-warn .readout-math { color: #ff9c9c; }
+.readout-dim { opacity: 0.55; }
+
+/* --- Step card --------------------------------------------------------------- */
+
+#steps {
+  position: fixed;
+  left: var(--edge);
+  right: var(--edge);
+  bottom: var(--edge);
+  height: var(--step-card-height);
+  z-index: 10;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(10, 15, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+#step-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#step-count {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#step-title {
+  flex: none;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 3px 0 4px;
+}
+
+#step-text {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: rgba(233, 240, 247, 0.85);
+}
+
+.step-arrow {
+  flex: none;
+  width: 64px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 30px;
+  line-height: 1;
+  color: #e9f0f7;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+}
+
+.step-arrow:hover:not(:disabled),
+.step-arrow.hand-hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+}
+
+.step-arrow:disabled { opacity: 0.25; cursor: default; }
+
+.chip:focus-visible,
+.step-arrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.nav-pill.hand-hover { color: #fff; background: rgba(6, 10, 16, 0.68); }

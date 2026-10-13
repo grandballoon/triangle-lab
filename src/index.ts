@@ -1,22 +1,40 @@
 // Builds the lesson menu from the shared reading order, so the order the cards
 // appear in and the order the pager walks are the same list (lessons.ts).
 
-import { lessons, type Lesson } from "./lessons.ts";
+import { chapters, hrefOf, type Chapter, type Lesson } from "./lessons.ts";
 
-const grid = document.getElementById("grid") as HTMLElement;
-grid.append(...lessons.map(card));
+const menu = document.getElementById("menu") as HTMLElement;
+menu.append(...chapters.filter((c) => c.lessons.length > 0).map(section));
+
+function section(chapter: Chapter): HTMLElement {
+  const el = document.createElement("section");
+  el.className = "chapter";
+
+  const title = document.createElement("h2");
+  title.textContent = chapter.title;
+  const blurb = document.createElement("p");
+  blurb.className = "blurb";
+  blurb.textContent = chapter.blurb;
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  grid.append(...chapter.lessons.map(card));
+
+  el.append(title, blurb, grid);
+  return el;
+}
 
 function card(lesson: Lesson): HTMLAnchorElement {
   const link = document.createElement("a");
   link.className = "card";
-  link.href = `${lesson.slug}.html`;
+  link.href = hrefOf(lesson);
   link.style.setProperty("--accent", lesson.accent);
 
   const icon = document.createElement("span");
   icon.className = "icon";
-  // Icon markup is authored in lessons.ts, not user input. The copy below goes
-  // through textContent, which keeps the ampersands and degree signs in the
-  // lesson names literal.
+  // Icon markup is authored in the chapter files, not user input. The copy
+  // below goes through textContent, which keeps the ampersands and degree
+  // signs in the lesson names literal.
   icon.innerHTML = `<svg viewBox="0 0 32 32">${lesson.icon}</svg>`;
 
   const meta = document.createElement("span");

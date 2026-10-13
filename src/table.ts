@@ -14,6 +14,7 @@
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
 // only the webcam device and this file's own little vector helpers are involved.
 
+import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -130,7 +131,7 @@ canvas.addEventListener("pointerdown", (e) => {
   if (dist(p, ptB()) > GRAB_RADIUS) return;
   dragging = true;
   canvas.classList.add("grabbing");
-  canvas.setPointerCapture(e.pointerId);
+  capturePointer(canvas, e);
   drive(p);
 });
 
@@ -142,7 +143,7 @@ function endDrag(e: PointerEvent): void {
   if (!dragging) return;
   dragging = false;
   canvas.classList.remove("grabbing");
-  canvas.releasePointerCapture(e.pointerId);
+  releasePointer(canvas, e);
 }
 canvas.addEventListener("pointerup", endDrag);
 canvas.addEventListener("pointercancel", endDrag);
