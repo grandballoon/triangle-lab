@@ -19,7 +19,53 @@
         min-height: 100vh; display: flex; justify-content: center;
         padding: 64px 24px;
       }
+      .page {
+        width: 100%; max-width: 1340px;
+        display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px;
+        align-items: start;
+      }
       .wrap { width: 100%; max-width: 1080px; }
+
+      /* The margin: each chapter's main results, by name. Sticky beside the
+         menu, scrolling on its own when it outgrows the window; every level
+         is a <details>, so it folds away when it gets long. */
+      #axioms {
+        position: sticky; top: 24px; max-height: calc(100vh - 48px);
+        overflow-y: auto; overscroll-behavior: contain;
+        padding-right: 6px; font-size: 13px; line-height: 1.45;
+        scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+      }
+      #axioms summary {
+        cursor: pointer; list-style: none; user-select: none;
+        display: flex; align-items: center; gap: 6px;
+      }
+      #axioms summary::-webkit-details-marker { display: none; }
+      #axioms summary::before {
+        content: ""; flex: none; width: 5px; height: 5px;
+        border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+        transform: rotate(-45deg); transition: transform 0.15s ease; opacity: 0.6;
+      }
+      #axioms details[open] > summary::before { transform: rotate(45deg); }
+      #axioms > details > summary {
+        text-transform: uppercase; letter-spacing: 0.18em; font-size: 12px;
+        font-weight: 600; color: #38d9a9; margin-bottom: 10px;
+      }
+      #axioms .group { margin-top: 2px; }
+      #axioms .group > summary {
+        font-weight: 650; color: #e9f0f7; padding: 5px 0;
+      }
+      #axioms .group > summary:hover { color: #38d9a9; }
+      #axioms ul {
+        list-style: none; margin: 2px 0 8px 11px; padding-left: 10px;
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #axioms li { color: rgba(233, 240, 247, 0.55); padding: 2px 0; }
+
+      @media (max-width: 960px) {
+        .page { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+        #axioms { position: static; max-height: none; overflow: visible; order: 1; }
+        .wrap { order: 0; }
+      }
       .eyebrow {
         text-transform: uppercase; letter-spacing: 0.18em; font-size: 13px;
         font-weight: 600; color: #38d9a9; margin-bottom: 10px;
@@ -62,14 +108,17 @@
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="eyebrow">Triangle Lab</div>
-      <h1>Geometry</h1>
-      <p class="sub">Pinch a point in front of your camera and feel the geometry change under your hand.</p>
+    <div class="page">
+      <nav id="axioms" aria-label="Axioms by chapter"></nav>
+      <div class="wrap">
+        <div class="eyebrow">Triangle Lab</div>
+        <h1>Geometry</h1>
+        <p class="sub">Pinch a point in front of your camera and feel the geometry change under your hand.</p>
 
-      <div id="menu"></div>
+        <div id="menu"></div>
 
-      <p class="foot">Hand tracking needs a camera; every lesson also works with a mouse or a finger.</p>
+        <p class="foot">Hand tracking needs a camera; every lesson also works with a mouse or a finger.</p>
+      </div>
     </div>
     <script type="module" src="/src/index.ts"></script>
   </body>

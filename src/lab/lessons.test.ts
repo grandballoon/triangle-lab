@@ -5,7 +5,7 @@
 // showing up as red source text on screen.
 
 import { describe, expect, it } from "vitest";
-import { lessons } from "../lessons.ts";
+import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
 import { richHtml, texHtml } from "./math.ts";
 import { Scene, type Frame, type HandPoints, type LessonBuilder, type LessonView } from "./scene.ts";
@@ -81,6 +81,13 @@ describe("reading order", () => {
   it("has a page for every standalone lesson", () => {
     const pages = Object.keys(import.meta.glob("/*.html")).map((p) => p.replace(/^\/(.+)\.html$/, "$1"));
     for (const l of lessons.filter((x) => !x.lab)) expect(pages).toContain(l.slug);
+  });
+
+  it("names the main axioms of every chapter, once each", () => {
+    for (const c of chapters) {
+      expect(c.axioms.length, c.title).toBeGreaterThan(0);
+      expect(new Set(c.axioms).size, c.title).toBe(c.axioms.length);
+    }
   });
 });
 

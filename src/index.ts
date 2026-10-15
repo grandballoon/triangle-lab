@@ -3,8 +3,41 @@
 
 import { chapters, hrefOf, type Chapter, type Lesson } from "./lessons.ts";
 
+const shown = chapters.filter((c) => c.lessons.length > 0);
+
 const menu = document.getElementById("menu") as HTMLElement;
-menu.append(...chapters.filter((c) => c.lessons.length > 0).map(section));
+menu.append(...shown.map(section));
+
+// The margin lists each chapter's main results by name. Beside the menu it
+// starts open; stacked under it on a narrow screen it starts folded, since
+// it would otherwise run on for screens.
+const margin = document.getElementById("axioms") as HTMLElement;
+margin.append(
+  disclosure("Axioms", shown.map(axiomGroup), !matchMedia("(max-width: 960px)").matches),
+);
+
+function axiomGroup(chapter: Chapter): HTMLDetailsElement {
+  const list = document.createElement("ul");
+  list.append(
+    ...chapter.axioms.map((name) => {
+      const item = document.createElement("li");
+      item.textContent = name;
+      return item;
+    }),
+  );
+  const group = disclosure(chapter.title, [list], true);
+  group.className = "group";
+  return group;
+}
+
+function disclosure(label: string, body: HTMLElement[], open: boolean): HTMLDetailsElement {
+  const details = document.createElement("details");
+  details.open = open;
+  const summary = document.createElement("summary");
+  summary.textContent = label;
+  details.append(summary, ...body);
+  return details;
+}
 
 function section(chapter: Chapter): HTMLElement {
   const el = document.createElement("section");

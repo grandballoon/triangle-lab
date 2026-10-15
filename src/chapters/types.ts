@@ -22,5 +22,8 @@ export interface Chapter {
   title: string;
   /** One line under the chapter heading on the menu. */
   blurb: string;
+  /** Names of the main results the chapter's lessons teach, in reading
+   *  order. Listed in the menu's margin; names only, no statements. */
+  axioms: string[];
   lessons: Lesson[];
 }
