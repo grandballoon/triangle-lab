@@ -12,6 +12,9 @@ dist/
 # Local tooling scratch
 .lavish/
 
+# Personal playtest notes
+/notes.md
+
 # ---------------------------------------------------------------------------
 # Source material — NEVER COMMIT
 #
