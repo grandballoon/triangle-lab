@@ -1,11 +1,12 @@
-// The pager every lesson carries: back to the menu, and a step to the previous
-// or next lesson in reading order. The order comes from lessons.ts — the same
-// list the menu renders from.
+// The pager every lesson carries: the curriculum rail's toggle, back to the
+// menu, and a step to the previous or next lesson in reading order. The order
+// comes from lessons.ts — the same list the menu and the rail render from.
 //
 // Standalone lesson pages mount it through nav.ts; the lab page mounts it
 // itself and re-mounts as it swaps lessons in place.
 
 import "./nav.css";
+import { mountCurriculum } from "./curriculum.ts";
 import { hrefOf, indexOfSlug, lessons, type Lesson } from "./lessons.ts";
 
 export interface Neighbours {
@@ -14,9 +15,9 @@ export interface Neighbours {
 }
 
 /**
- * Build (or rebuild) the pager for the lesson with this slug and return its
- * neighbours. A slug that is not in the reading order gets no pager rather
- * than a broken one.
+ * Build (or rebuild) the pager for the lesson with this slug, with the
+ * curriculum rail marked at it, and return its neighbours. A slug that is not
+ * in the reading order gets no pager rather than a broken one.
  */
 export function mountPager(slug: string, host: HTMLElement = document.body): Neighbours {
   document.getElementById("nav")?.remove();
@@ -39,7 +40,7 @@ export function mountPager(slug: string, host: HTMLElement = document.body): Nei
   step.className = "nav-pill nav-step";
   step.textContent = `${at + 1} / ${lessons.length}`;
 
-  nav.append(back, arrow(prev, "‹", "prev"), step, arrow(next, "›", "next"));
+  nav.append(mountCurriculum(slug), back, arrow(prev, "‹", "prev"), step, arrow(next, "›", "next"));
   host.prepend(nav);
   return { prev, next };
 }

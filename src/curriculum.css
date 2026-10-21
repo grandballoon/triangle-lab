@@ -1,0 +1,202 @@
+/* The curriculum rail (curriculum.ts). It hangs below the pager row and stops
+   short of the bottom-left corner, which the hands pill owns on standalone
+   pages; the lab page moves its bottom up over the step card through
+   --curriculum-bottom. Its width comes from curriculum.ts as --rail-width, so
+   the docked inset and the drawn width are the same number. */
+
+#curriculum {
+  position: fixed;
+  top: 60px;
+  left: 18px;
+  bottom: var(--curriculum-bottom, 60px);
+  width: var(--rail-width);
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 6px 6px 12px;
+  border-radius: 16px;
+  background: rgba(10, 15, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  color: #e9f0f7;
+  font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+#curriculum[hidden] { display: none; }
+
+/* Floating over the figure on a narrow screen: more opaque, above the lab's
+   own panels, and never wider than the window allows. */
+#curriculum.floating {
+  z-index: 30;
+  width: min(var(--rail-width), calc(100vw - 36px));
+  background: rgba(10, 15, 22, 0.95);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.cur-head {
+  flex: none;
+  padding: 0 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cur-accent, #38d9a9);
+}
+
+.cur-scroll {
+  position: relative; /* offsetParent for centring the open lesson */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+/* --- Disclosures ------------------------------------------------------------ */
+
+#curriculum summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+#curriculum summary::-webkit-details-marker { display: none; }
+
+#curriculum summary::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin: 0 2px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+  opacity: 0.6;
+}
+
+#curriculum details[open] > summary::before { transform: rotate(45deg); }
+
+#curriculum summary:hover,
+#curriculum summary.hand-hover { background: rgba(255, 255, 255, 0.05); }
+
+.cur-count {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  color: rgba(233, 240, 247, 0.35);
+}
+
+/* --- Chapters ----------------------------------------------------------------- */
+
+.cur-chapter + .cur-chapter {
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cur-chapter > summary { font-weight: 650; }
+
+.cur-chapter.current > summary .cur-title { color: var(--cur-accent); }
+
+/* --- Lessons ------------------------------------------------------------------- */
+
+.cur-lessons {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.cur-lesson {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: rgba(233, 240, 247, 0.62);
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.cur-lesson:hover,
+.cur-lesson.hand-hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cur-num {
+  flex: none;
+  /* Room for three digits, so the names line up down the whole list. */
+  width: 3ch;
+  text-align: right;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(233, 240, 247, 0.35);
+}
+
+.cur-name { min-width: 0; }
+
+.cur-lesson[aria-current="page"] {
+  color: #fff;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--cur-accent) 18%, transparent);
+  box-shadow: inset 2px 0 0 var(--cur-accent);
+}
+
+.cur-lesson[aria-current="page"] .cur-num { color: var(--cur-accent); }
+
+/* --- Axioms -------------------------------------------------------------------- */
+
+.cur-axioms { margin: 0 0 6px 15px; }
+
+.cur-axioms > summary {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.5);
+}
+
+.cur-axioms ul {
+  list-style: none;
+  margin: 2px 0 4px 8px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cur-axioms li {
+  padding: 2px 0;
+  font-size: 13px;
+  color: rgba(233, 240, 247, 0.55);
+}
+
+#curriculum summary:focus-visible,
+.cur-lesson:focus-visible {
+  outline: 2px solid var(--cur-accent, #38d9a9);
+  outline-offset: -2px;
+}
+
+/* --- The pill in the pager ------------------------------------------------------ */
+
+.nav-rail {
+  padding: 0 10px;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-rail:hover { color: #fff; background: rgba(6, 10, 16, 0.68); }
+
+.nav-rail svg { width: 16px; height: 16px; }
+
+.nav-rail[aria-expanded="true"] { color: #fff; }

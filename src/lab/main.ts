@@ -6,6 +6,7 @@
 import "katex/dist/katex.min.css";
 import "./lab.css";
 import { startHands } from "../hands/index.ts";
+import { railInset } from "../curriculum.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, type Lesson } from "../lessons.ts";
 import { mountPager, type Neighbours } from "../pager.ts";
 import { startWebcam } from "../webcam.ts";
@@ -46,6 +47,7 @@ const shell = new Shell(
     next: byId<HTMLButtonElement>("step-next"),
   },
   () => hands.frames(),
+  railInset,
 );
 
 let neighbours: Neighbours = { prev: undefined, next: undefined };
@@ -74,11 +76,14 @@ function go(lesson: Lesson): void {
   void show(lesson.slug);
 }
 
-// Pager links between lab lessons stay on this page.
-topbar.addEventListener("click", (e) => {
-  const link = (e.target as Element).closest<HTMLAnchorElement>("a[rel]");
-  const lesson = link?.rel === "prev" ? neighbours.prev : link?.rel === "next" ? neighbours.next : undefined;
-  if (!lesson?.lab || e.metaKey || e.ctrlKey || e.shiftKey) return;
+// Links to lab lessons — the pager's and the curriculum rail's — stay on this
+// page.
+document.addEventListener("click", (e) => {
+  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const link = (e.target as Element).closest<HTMLAnchorElement>("a[href]");
+  if (!link) return;
+  const lesson = lessons.find((l) => l.slug === slugOfLocation(new URL(link.href)));
+  if (!lesson?.lab) return;
   e.preventDefault();
   go(lesson);
 });

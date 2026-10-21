@@ -82,8 +82,8 @@ let track = { x0: 0, x1: 0, y: 0 }; // the scrub rail
 
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W = canvas.clientWidth;
+  H = canvas.clientHeight;
   canvas.width = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

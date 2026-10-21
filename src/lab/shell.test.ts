@@ -9,7 +9,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HandsPanel } from "../hands/panel.ts";
 import { PointerBridge } from "../hands/pointerBridge.ts";
 import { SettingsStore } from "../hands/settings.ts";
-import { lessons } from "../lessons.ts";
+import { railInset } from "../curriculum.ts";
+import { chapters, lessons } from "../lessons.ts";
 import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
@@ -211,6 +212,53 @@ describe("page chrome", () => {
     expect(document.querySelectorAll("#nav a")).toHaveLength(1 + (prev ? 1 : 0) + (next ? 1 : 0));
     expect(mountPager("no-such-lesson")).toEqual({ prev: undefined, next: undefined });
     expect(document.getElementById("nav")).toBeNull();
+  });
+
+  it("lists the whole curriculum beside the pager, marked at the open lesson", () => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+    mountPager("triangle-angle-sum");
+    const rail = document.getElementById("curriculum")!;
+    const links = [...rail.querySelectorAll<HTMLAnchorElement>(".cur-lesson")];
+    expect(links.map((a) => a.dataset.slug)).toEqual(lessons.map((l) => l.slug));
+    expect(rail.querySelectorAll(".cur-axioms li")).toHaveLength(
+      chapters.reduce((n, c) => n + c.axioms.length, 0),
+    );
+
+    const here = rail.querySelectorAll<HTMLAnchorElement>("[aria-current='page']");
+    expect([...here].map((a) => a.dataset.slug)).toEqual(["triangle-angle-sum"]);
+    expect(here[0].closest("details")!.open).toBe(true);
+
+    // Moving on re-marks the same rail rather than building another.
+    mountPager("exterior-angle");
+    expect(document.querySelectorAll("#curriculum")).toHaveLength(1);
+    expect(rail.querySelector<HTMLAnchorElement>("[aria-current='page']")!.dataset.slug).toBe(
+      "exterior-angle",
+    );
+  });
+
+  it("docks the rail on a wide screen and frees the room when hidden", () => {
+    vi.stubGlobal("matchMedia", () => ({ matches: true, addEventListener: () => {} }));
+    localStorage.clear();
+    mountPager("triangle-angle-sum");
+    const rail = document.getElementById("curriculum")!;
+    const toggle = document.querySelector<HTMLButtonElement>("#nav .nav-rail")!;
+    const resized = vi.fn();
+    window.addEventListener("resize", resized);
+
+    if (rail.hidden) toggle.click();
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    expect(railInset()).toBeGreaterThan(0);
+    expect(document.documentElement.style.getPropertyValue("--rail-inset")).toBe(`${railInset()}px`);
+
+    toggle.click();
+    expect(rail.hidden).toBe(true);
+    expect(railInset()).toBe(0);
+    expect(resized).toHaveBeenCalled();
+    expect(localStorage.getItem("triangle-lab:curriculum")).toBe("closed");
+
+    window.removeEventListener("resize", resized);
+    vi.unstubAllGlobals();
   });
 
   it("changes gesture settings from the panel's buttons", () => {

@@ -86,10 +86,13 @@ export class Shell {
   /**
    * @param hands Hands seen this frame in screen pixels, for lessons that
    *   measure the learner's own hand.
+   * @param leftInset Width taken from the left of the window by chrome the
+   *   figure must stay clear of (the docked curriculum rail), read each frame.
    */
   constructor(
     private readonly el: ShellElements,
     private readonly hands: () => readonly { side: "left" | "right"; screen: readonly Vec[] }[],
+    private readonly leftInset: () => number = () => 0,
   ) {
     this.ctx = el.canvas.getContext("2d")!;
     const root = document.documentElement.style;
@@ -172,7 +175,7 @@ export class Shell {
 
     const panel = this.panelWidth();
     document.documentElement.style.setProperty("--panel-width", `${panel}px`);
-    const left = EDGE;
+    const left = EDGE + this.leftInset();
     const right = width - EDGE - (this.formulasShown ? panel + EDGE : 0);
     const top = TOP_BAND;
     const bottom = height - EDGE - STEP_CARD_HEIGHT - EDGE;

@@ -493,8 +493,8 @@ function knobPos(lesson: Lesson, alt: Altitude): Vec {
 // world is two screens tall either way, and scrollY pans through it.
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W = canvas.clientWidth;
+  H = canvas.clientHeight;
   canvas.width = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

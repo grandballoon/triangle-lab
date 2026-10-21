@@ -88,8 +88,8 @@ const toScreen = (p: Vec): Vec => ({ x: center.x + p.x * unit, y: center.y + p.y
 
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W = canvas.clientWidth;
+  H = canvas.clientHeight;
   canvas.width = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

@@ -66,8 +66,8 @@ const ptB = (): Vec => ({ x: originA.x + legB * unit, y: originA.y - legA * unit
 
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W = canvas.clientWidth;
+  H = canvas.clientHeight;
   canvas.width = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

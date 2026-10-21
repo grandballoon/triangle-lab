@@ -1,7 +1,7 @@
 /* The lab page: a full-screen camera view with the figure drawn over it, and
-   three pieces of chrome around the edge — a top bar (pager, lesson title,
-   lesson controls), the formula panel on the right and the step card along
-   the bottom.
+   four pieces of chrome around the edge — a top bar (pager, lesson title,
+   lesson controls), the curriculum rail on the left (curriculum.css), the
+   formula panel on the right and the step card along the bottom.
 
    --edge, --top-band, --step-card-height and --panel-width are set by
    shell.ts, which fits the figure into the space these leave free. */
@@ -62,6 +62,9 @@ html, body {
 /* The pager is fixed-position on standalone pages; here it joins the bar. */
 #topbar #nav { position: static; flex: none; }
 
+/* The curriculum rail stops above the step card, as the formula panel does. */
+html { --curriculum-bottom: calc(var(--edge) * 2 + var(--step-card-height)); }
+
 #heading {
   display: flex;
   align-items: baseline;
@@ -91,7 +94,7 @@ html, body {
 #controls {
   position: fixed;
   top: 60px;
-  left: var(--edge);
+  left: calc(var(--edge) + var(--rail-inset, 0px));
   right: calc(var(--edge) * 2 + var(--panel-width));
   z-index: 10;
   display: flex;

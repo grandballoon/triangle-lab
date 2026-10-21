@@ -67,7 +67,11 @@ Lessons compose inside a fixed stage (x from −8 to 8, y from −5 to 5); the s
 ## The reading order (`src/lessons.ts`)
 
 One list defines every lesson and its order.
-The menu (`src/index.ts`) and the pager (`src/pager.ts`) both render from it, so they cannot drift apart.
+The menu (`src/index.ts`), the pager (`src/pager.ts`) and the curriculum rail (`src/curriculum.ts`) all render from it, so they cannot drift apart.
+
+The curriculum rail lists every chapter, lesson and axiom down the left of a lesson page, with the open lesson marked; the pager mounts it, so every lesson page has it.
+On a wide screen it docks: it publishes the width it takes as `--rail-inset` on `<html>` and fires `resize`.
+Standalone pages honour that through their `#stage` rule and size their figure from the canvas box; the lab shell takes it as `leftInset` and fits the stage beside it.
 The entries live in per-chapter files under `src/chapters/`.
 
 # Data Types
