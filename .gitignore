@@ -15,6 +15,9 @@ dist/
 # Personal playtest notes
 /notes.md
 
+# UI comments left with the dev-server overlay (tools/feedback-plugin.ts)
+/ui-feedback.md
+
 # ---------------------------------------------------------------------------
 # Source material — NEVER COMMIT
 #

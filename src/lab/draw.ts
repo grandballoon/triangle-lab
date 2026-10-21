@@ -4,6 +4,11 @@
 // legibility rather than geometry (stroke widths, arc-mark radii, label
 // offsets, fonts) are in screen pixels, so a figure reads the same at any
 // window size.
+//
+// A mark may name the formula term it shows (`term`, see scene.ts). When the
+// reader hovers that term, the shell passes it in as `focus`: matching marks
+// are drawn heavier and glowing, and their positions are kept as anchors for
+// the leader lines the shell draws from the formula to the figure.
 
 import { add, angleOf, lerp, normalize, perp, polar, scale, sub, TAU, toDeg, type Vec } from "./geo.ts";
 
@@ -51,6 +56,8 @@ export interface Stroke {
   dash?: number[];
   /** Whole-mark opacity, e.g. `f.at(2)` to fade a construction in. */
   alpha?: number;
+  /** The formula term this mark shows (scene.ts `term`). */
+  term?: string;
 }
 
 export interface Fill extends Stroke {
@@ -69,6 +76,7 @@ export interface LabelOptions {
   align?: "left" | "center" | "right";
   bold?: boolean;
   alpha?: number;
+  term?: string;
 }
 
 export interface AngleOptions extends Stroke {
@@ -84,6 +92,37 @@ export interface AngleOptions extends Stroke {
   square?: boolean;
 }
 
+export interface SpriteOptions {
+  /** Width in stage units; the height follows the image's proportions. */
+  width?: number;
+  /** Turn, in radians counter-clockwise. */
+  rotate?: number;
+  alpha?: number;
+  term?: string;
+}
+
+/** A decoded image, ready to draw. */
+export interface Picture {
+  source: CanvasImageSource;
+  width: number;
+  height: number;
+}
+
+/** Where sprites come from: null until an image has loaded (sprites.ts). */
+export interface Pictures {
+  get(src: string): Picture | null;
+}
+
+export interface DrawOptions {
+  /** The formula term the reader is pointing at, if any. */
+  focus?: string | null;
+  pictures?: Pictures;
+}
+
+/** The point halfway along a polyline's vertices. */
+const middle = (pts: readonly Vec[]): Vec =>
+  pts.length % 2 === 0 ? lerp(pts[pts.length / 2 - 1], pts[pts.length / 2], 0.5) : pts[(pts.length - 1) / 2];
+
 /** An axis number, with a true minus sign and no float noise. */
 const tick = (n: number): string => String(Math.round(n * 1e6) / 1e6).replace("-", "−");
 
@@ -91,13 +130,27 @@ const FONT = "ui-sans-serif, system-ui, -apple-system, sans-serif";
 const HALO = "rgba(6, 10, 16, 0.78)";
 const RIGHT_ANGLE_TOLERANCE = 0.6; // degrees
 
+// How a focused mark stands out, and how close two anchors of one term may be
+// before they count as the same place (an angle's arc and its label).
+const FOCUS_WIDTH = 1.8;
+const FOCUS_GLOW_PX = 14;
+const ANCHOR_MERGE_PX = 36;
+
 export class Draw {
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
     readonly view: View,
     /** The lesson's colour. */
     readonly accent: string,
+    private readonly options: DrawOptions = {},
   ) {}
+
+  private readonly anchorsByTerm = new Map<string, Vec[]>();
+
+  /** Screen positions of the visible marks drawn so far for `term`. */
+  anchors(term: string): readonly Vec[] {
+    return this.anchorsByTerm.get(term) ?? [];
+  }
 
   /** Stage units covered by `pixels` screen pixels. */
   px(pixels: number): number {
@@ -121,20 +174,21 @@ export class Draw {
   line(a: Vec, b: Vec, o: Stroke = {}): void {
     const d = normalize(sub(b, a));
     const far = this.reach();
-    this.path([sub(a, scale(d, far)), add(a, scale(d, far))], o);
+    this.anchor(o, lerp(a, b, 0.5));
+    this.strokePath([sub(a, scale(d, far)), add(a, scale(d, far))], o);
   }
 
   /** The ray from `a` through `b`. */
   ray(a: Vec, b: Vec, o: Stroke = {}): void {
-    this.path([a, add(a, scale(normalize(sub(b, a)), this.reach()))], o);
+    this.anchor(o, lerp(a, b, 0.5));
+    this.strokePath([a, add(a, scale(normalize(sub(b, a)), this.reach()))], o);
   }
 
   /** An open polyline. */
   path(pts: readonly Vec[], o: Stroke = {}): void {
     if (pts.length < 2) return;
-    this.begin(o);
-    this.trace(pts);
-    this.stroke(o);
+    this.anchor(o, middle(pts));
+    this.strokePath(pts, o);
   }
 
   arrow(a: Vec, b: Vec, o: Stroke = {}): void {
@@ -142,10 +196,11 @@ export class Draw {
     const s = toScreen(this.view, b);
     const d = normalize(sub(toScreen(this.view, b), toScreen(this.view, a)));
     const n = { x: -d.y, y: d.x };
-    const size = 10 + (o.width ?? 3);
+    const size = 10 + (o.width ?? 3) * this.weight(o);
     const { ctx } = this;
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, o.color ?? C.ink);
     ctx.fillStyle = o.color ?? C.ink;
     ctx.beginPath();
     ctx.moveTo(s.x, s.y);
@@ -160,6 +215,7 @@ export class Draw {
 
   polygon(pts: readonly Vec[], o: Fill = {}): void {
     if (pts.length < 2) return;
+    this.anchor(o, scale(pts.reduce(add), 1 / pts.length));
     this.begin(o);
     this.trace(pts);
     this.ctx.closePath();
@@ -169,6 +225,7 @@ export class Draw {
   circle(center: Vec, r: number, o: Fill = {}): void {
     if (!(r > 0)) return;
     const c = toScreen(this.view, center);
+    this.anchor(o, center);
     this.begin(o);
     this.ctx.arc(c.x, c.y, r * this.view.scale, 0, TAU);
     this.paint(o);
@@ -177,6 +234,7 @@ export class Draw {
   /** The arc of a circle from angle `from` counter-clockwise to `to`. */
   arc(center: Vec, r: number, from: number, to: number, o: Stroke = {}): void {
     if (!(r > 0)) return;
+    this.anchor(o, polar(center, r, (from + to) / 2));
     this.begin(o);
     this.traceArc(center, r * this.view.scale, from, to);
     this.stroke(o);
@@ -186,6 +244,7 @@ export class Draw {
   sector(center: Vec, r: number, from: number, to: number, o: Fill = {}): void {
     if (!(r > 0)) return;
     const c = toScreen(this.view, center);
+    this.anchor(o, polar(center, r / 2, (from + to) / 2));
     this.begin(o);
     this.ctx.moveTo(c.x, c.y);
     this.traceArc(center, r * this.view.scale, from, to);
@@ -222,10 +281,12 @@ export class Draw {
     const c = toScreen(this.view, v);
     const isRight = o.square !== false && Math.abs(degrees - 90) < RIGHT_ANGLE_TOLERANCE;
 
+    this.anchor(o, polar(v, r / this.view.scale, from + sweep / 2));
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, color);
     ctx.strokeStyle = color;
-    ctx.lineWidth = o.width ?? 2.5;
+    ctx.lineWidth = (o.width ?? 2.5) * this.weight(o);
     ctx.setLineDash(o.dash ?? []);
     ctx.lineJoin = "round";
 
@@ -258,7 +319,7 @@ export class Draw {
     if (o.label) {
       const text = o.label === true ? `${Math.round(degrees)}°` : o.label;
       const reach = (r + 5 * ((o.arcs ?? 1) - 1) + 16) / this.view.scale;
-      this.label(polar(v, reach, from + sweep / 2), text, { color, alpha: o.alpha, size: 14 });
+      this.label(polar(v, reach, from + sweep / 2), text, { color, alpha: o.alpha, size: 14, term: o.term });
     }
   }
 
@@ -270,10 +331,12 @@ export class Draw {
     const n = { x: -d.y, y: d.x };
     const m = lerp(sa, sb, 0.5);
     const { ctx } = this;
+    this.anchor(o, lerp(a, b, 0.5));
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, o.color ?? C.ink);
     ctx.strokeStyle = o.color ?? C.ink;
-    ctx.lineWidth = o.width ?? 2;
+    ctx.lineWidth = (o.width ?? 2) * this.weight(o);
     ctx.beginPath();
     for (let i = 0; i < count; i++) {
       const off = (i - (count - 1) / 2) * 5;
@@ -292,10 +355,12 @@ export class Draw {
     const n = { x: -d.y, y: d.x };
     const m = lerp(sa, sb, 0.5);
     const { ctx } = this;
+    this.anchor(o, lerp(a, b, 0.5));
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, o.color ?? C.ink);
     ctx.strokeStyle = o.color ?? C.ink;
-    ctx.lineWidth = o.width ?? 2;
+    ctx.lineWidth = (o.width ?? 2) * this.weight(o);
     ctx.lineJoin = "round";
     ctx.beginPath();
     for (let i = 0; i < count; i++) {
@@ -309,17 +374,43 @@ export class Draw {
   }
 
   /** A dot, optionally named. */
-  point(p: Vec, o: { label?: string; color?: string; r?: number; alpha?: number } = {}): void {
+  point(p: Vec, o: { label?: string; color?: string; r?: number; alpha?: number; term?: string } = {}): void {
     const s = toScreen(this.view, p);
     const { ctx } = this;
+    this.anchor(o, p);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, o.color ?? C.ink);
     ctx.fillStyle = o.color ?? C.ink;
     ctx.beginPath();
-    ctx.arc(s.x, s.y, o.r ?? 4.5, 0, TAU);
+    ctx.arc(s.x, s.y, (o.r ?? 4.5) * this.weight(o), 0, TAU);
     ctx.fill();
     ctx.restore();
-    if (o.label) this.label(p, o.label, { color: o.color, alpha: o.alpha, dx: 12, dy: 12 });
+    if (o.label) this.label(p, o.label, { color: o.color, alpha: o.alpha, dx: 12, dy: 12, term: o.term });
+  }
+
+  // --- Pictures --------------------------------------------------------------
+
+  /**
+   * An image centred on `at`, for setting a real-world object on the figure.
+   * `src` is a URL, typically an asset imported by the lesson; nothing is drawn
+   * until it has loaded.
+   */
+  sprite(src: string, at: Vec, o: SpriteOptions = {}): void {
+    const picture = this.options.pictures?.get(src);
+    if (!picture || !(picture.width > 0)) return;
+    const w = (o.width ?? 1) * this.view.scale;
+    const h = (w * picture.height) / picture.width;
+    const s = toScreen(this.view, at);
+    const { ctx } = this;
+    this.anchor(o, at);
+    ctx.save();
+    ctx.globalAlpha = o.alpha ?? 1;
+    this.glow(o, C.ink);
+    ctx.translate(s.x, s.y);
+    ctx.rotate(-(o.rotate ?? 0));
+    ctx.drawImage(picture.source, -w / 2, -h / 2, w, h);
+    ctx.restore();
   }
 
   // --- Text ----------------------------------------------------------------
@@ -330,15 +421,18 @@ export class Draw {
     const x = s.x + (o.dx ?? 0);
     const y = s.y - (o.dy ?? 0);
     const { ctx } = this;
+    const lit = this.lit(o);
+    this.anchor(o, p, { x: o.dx ?? 0, y: -(o.dy ?? 0) });
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
-    ctx.font = `${o.bold ? 700 : 600} ${o.size ?? 15}px ${FONT}`;
+    ctx.font = `${o.bold || lit ? 700 : 600} ${(o.size ?? 15) + (lit ? 2 : 0)}px ${FONT}`;
     ctx.textAlign = o.align ?? "center";
     ctx.textBaseline = "middle";
     ctx.lineJoin = "round";
     ctx.lineWidth = 4;
     ctx.strokeStyle = HALO;
     ctx.strokeText(text, x, y);
+    this.glow(o, o.color ?? C.ink);
     ctx.fillStyle = o.color ?? C.ink;
     ctx.fillText(text, x, y);
     ctx.restore();
@@ -392,11 +486,46 @@ export class Draw {
     return (this.view.width + this.view.height) / this.view.scale + 100;
   }
 
+  private strokePath(pts: readonly Vec[], o: Stroke): void {
+    this.begin(o);
+    this.trace(pts);
+    this.stroke(o);
+  }
+
+  /** Whether `o` shows the term the reader is pointing at. */
+  private lit(o: { term?: string }): boolean {
+    return o.term !== undefined && o.term === this.options.focus;
+  }
+
+  /** Line-width factor for `o`: heavier while its term is in focus. */
+  private weight(o: { term?: string }): number {
+    return this.lit(o) ? FOCUS_WIDTH : 1;
+  }
+
+  /** Make what is drawn next glow in `color` while `o`'s term is in focus. */
+  private glow(o: { term?: string }, color: string): void {
+    if (!this.lit(o)) return;
+    this.ctx.shadowColor = color;
+    this.ctx.shadowBlur = FOCUS_GLOW_PX;
+  }
+
+  /** Note where a mark showing a term sits, unless it is invisible or already noted. */
+  private anchor(o: { term?: string; alpha?: number }, at: Vec, offsetPx: Vec = { x: 0, y: 0 }): void {
+    if (o.term === undefined || (o.alpha ?? 1) <= 0.05) return;
+    const s = add(toScreen(this.view, at), offsetPx);
+    if (!Number.isFinite(s.x) || !Number.isFinite(s.y)) return;
+    const list = this.anchorsByTerm.get(o.term) ?? [];
+    if (list.some((q) => Math.hypot(q.x - s.x, q.y - s.y) < ANCHOR_MERGE_PX)) return;
+    list.push(s);
+    this.anchorsByTerm.set(o.term, list);
+  }
+
   private begin(o: Stroke): void {
     const { ctx } = this;
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
-    ctx.lineWidth = o.width ?? 3;
+    this.glow(o, o.color ?? (o as Fill).stroke ?? (o as Fill).fill ?? C.ink);
+    ctx.lineWidth = (o.width ?? 3) * this.weight(o);
     ctx.setLineDash(o.dash ?? []);
     ctx.lineJoin = "round";
     ctx.lineCap = "round";

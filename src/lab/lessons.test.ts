@@ -40,13 +40,25 @@ function frameAt(step: number, hands: HandPoints[] = []): Frame {
   return { step, at: (n) => (n <= step ? 1 : 0), time: 1.5, hands };
 }
 
-/** Draw one frame and typeset its readouts, as the shell would. */
-function show(view: LessonView, frame: Frame): void {
-  view.draw(new Draw(canvasStandIn(), VIEW, "#38d9a9"), frame);
+/** Terms marked in a formula with scene.ts `term`. */
+const termsIn = (tex: string): string[] => [...tex.matchAll(/\\htmlData\{term=([^}]+)\}/g)].map((m) => m[1]);
+
+/**
+ * Draw one frame and typeset its readouts, as the shell would. Returns the
+ * readouts' terms that the figure drew no visible mark for.
+ */
+function show(view: LessonView, frame: Frame): string[] {
+  const g = new Draw(canvasStandIn(), VIEW, "#38d9a9");
+  view.draw(g, frame);
+  const unmarked: string[] = [];
   for (const row of view.readout?.(frame) ?? []) {
     if (row.label) richHtml(row.label, true);
     texHtml(row.tex, true);
+    for (const t of [...termsIn(row.label ?? ""), ...termsIn(row.tex)]) {
+      if (g.anchors(t).length === 0) unmarked.push(t);
+    }
   }
+  return unmarked;
 }
 
 function showAllSteps(view: LessonView): void {
@@ -106,6 +118,22 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
       expect(step.title).not.toContain("$");
       expect(step.text.trim()).not.toBe("");
       richHtml(step.text, true);
+    }
+  });
+
+  it("has well-formed real-world uses, if any", () => {
+    for (const use of fresh().view.uses ?? []) {
+      expect(use.title.trim()).not.toBe("");
+      expect(use.title).not.toContain("$");
+      expect(use.text.trim()).not.toBe("");
+      richHtml(use.text, true);
+    }
+  });
+
+  it("draws a mark for every formula term, at every step", () => {
+    const { view } = fresh();
+    for (let step = 0; step < view.steps.length; step++) {
+      expect(show(view, frameAt(step)), `step ${step}`).toEqual([]);
     }
   });
 

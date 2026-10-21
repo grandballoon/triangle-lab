@@ -14,7 +14,8 @@ import { chapters, lessons } from "../lessons.ts";
 import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
-import type { Scene } from "./scene.ts";
+import { term, type Scene } from "./scene.ts";
+import { USES_HEADING } from "./steps.ts";
 import { Shell, type ShellElements } from "./shell.ts";
 
 let frames: FrameRequestCallback[] = [];
@@ -32,12 +33,9 @@ function page(): ShellElements {
   document.body.innerHTML = `
     <canvas id="stage"></canvas>
     <span id="eyebrow"></span><h1 id="title"></h1><div id="controls"></div>
-    <aside id="formulas"><div id="readouts"></div></aside>
-    <section id="steps">
-      <button id="prev"></button>
-      <div id="count"></div><h2 id="step-title"></h2><p id="text"></p>
-      <button id="next"></button>
-    </section>`;
+    <aside id="steps"><div id="step-list"></div></aside>
+    <section id="formulas"><div id="readouts"></div></section>
+    <svg id="leader"></svg>`;
   const el = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
   return {
     canvas: el("stage"),
@@ -46,12 +44,8 @@ function page(): ShellElements {
     controls: el("controls"),
     formulas: el("formulas"),
     readouts: el("readouts"),
-    stepCard: el("steps"),
-    stepCount: el("count"),
-    stepTitle: el("step-title"),
-    stepText: el("text"),
-    prev: el("prev"),
-    next: el("next"),
+    steps: el("step-list"),
+    leader: document.getElementById("leader") as unknown as SVGSVGElement,
   };
 }
 
@@ -85,26 +79,104 @@ function screenOf(shell: Shell, p: { x: number; y: number }): { x: number; y: nu
 const pointer = (type: string, at: { x: number; y: number }, pointerType = "mouse"): PointerEvent =>
   new PointerEvent(type, { bubbles: true, clientX: at.x, clientY: at.y, pointerId: 7, pointerType });
 
+/** The step the list shows as current. */
+const currentStep = (el: ShellElements): string | undefined =>
+  el.steps.querySelector<HTMLElement>("[aria-current='step']")?.dataset.step;
+
+/** jsdom does no layout: place each step section `height` pixels below the last. */
+function layOut(el: ShellElements, height: number): void {
+  el.steps.querySelectorAll<HTMLElement>(".step").forEach((section, i) => {
+    Object.defineProperty(section, "offsetTop", { configurable: true, get: () => 14 + i * height });
+  });
+}
+
 describe("Shell", () => {
-  it("shows the lesson's title, first step and live formulas", () => {
+  it("shows the lesson's title, every step at once and live formulas", () => {
     const { el } = loaded();
     expect(el.title.textContent).toBe("Angles of a Triangle");
-    expect(el.stepCount.textContent).toBe("Step 1 of 4");
-    expect(el.stepTitle.textContent).toBe("Three angles, one sum");
-    expect(el.stepText.querySelector(".katex")).not.toBeNull();
+    const titles = [...el.steps.querySelectorAll(".step-title")].map((t) => t.textContent);
+    expect(titles).toHaveLength(4);
+    expect(titles[0]).toBe("Three angles, one sum");
+    expect(el.steps.querySelector(".step-count")!.textContent).toBe("Step 1");
+    expect(el.steps.querySelector(".step-text .katex")).not.toBeNull();
+    expect(currentStep(el)).toBe("0");
     expect(el.readouts.children).toHaveLength(4);
     expect(el.readouts.textContent).toContain("180");
-    expect(el.prev.disabled).toBe(true);
   });
 
   it("walks the steps and stops at either end", () => {
     const { shell, el } = loaded();
     expect(shell.stepBy(-1)).toBe(false);
-    el.next.click();
-    expect(el.stepCount.textContent).toBe("Step 2 of 4");
+    expect(shell.stepBy(1)).toBe(true);
+    expect(currentStep(el)).toBe("1");
     expect(shell.stepBy(1) && shell.stepBy(1)).toBe(true);
     expect(shell.stepBy(1)).toBe(false);
-    expect(el.next.disabled).toBe(true);
+    expect(currentStep(el)).toBe("3");
+  });
+
+  it("makes a pressed step current and scrolls the list to it", () => {
+    const { el } = loaded();
+    layOut(el, 200);
+    // jsdom's scrollTo does nothing; jump straight there, as a browser would in the end.
+    el.steps.scrollTo = ((o: ScrollToOptions) => (el.steps.scrollTop = o.top ?? 0)) as never;
+    el.steps.querySelectorAll<HTMLButtonElement>(".step-head button")[2].click();
+    expect(currentStep(el)).toBe("2");
+    expect(el.steps.scrollTop).toBe(400);
+    // The scroll it caused does not pick a step of its own.
+    el.steps.dispatchEvent(new Event("scroll"));
+    expect(currentStep(el)).toBe("2");
+  });
+
+  it("follows the reader scrolling through the steps", () => {
+    const { el } = loaded();
+    layOut(el, 200);
+    el.steps.scrollTop = 390;
+    el.steps.dispatchEvent(new Event("scroll"));
+    expect(currentStep(el)).toBe("2");
+    el.steps.scrollTop = 0;
+    el.steps.dispatchEvent(new Event("scroll"));
+    expect(currentStep(el)).toBe("0");
+  });
+
+  it("lists a lesson's real-world uses after its steps", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
+      ...build(s),
+      uses: [{ title: "Surveying", text: "Turns add to $360^\\circ$." }],
+    }));
+    const uses = el.steps.querySelector(".uses")!;
+    expect(uses.querySelector("summary h2")!.textContent).toBe(USES_HEADING);
+    expect((uses as HTMLDetailsElement).open).toBe(false);
+    expect(uses.querySelector("h3")!.textContent).toBe("Surveying");
+    expect(uses.querySelector(".katex")).not.toBeNull();
+    expect(el.steps.lastElementChild!.previousElementSibling).toBe(uses);
+  });
+
+  it("leads from a hovered formula term to its marks on the figure", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, () => ({
+      steps: [{ title: "One", text: "Look." }],
+      draw: (g) => g.point({ x: 1, y: 1 }, { term: "apex" }),
+      readout: () => [{ tex: `${term("apex", "A")} + 1` }],
+    }));
+    tick();
+    const lines = () => [...el.leader.querySelectorAll("line")].filter((l) => l.style.display !== "none");
+    expect(lines()).toHaveLength(0);
+
+    const apex = el.readouts.querySelector<HTMLElement>("[data-term='apex']")!;
+    apex.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(lines()).toHaveLength(1);
+    const end = screenOf(shell, { x: 1, y: 1 });
+    expect(Number(lines()[0].getAttribute("x2"))).toBeCloseTo(end.x);
+    expect(Number(lines()[0].getAttribute("y2"))).toBeCloseTo(end.y);
+    expect(el.readouts.querySelector(".term-focus")).not.toBeNull();
+
+    el.canvas.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(lines()).toHaveLength(0);
   });
 
   it("drags a handle with the pointer, within its constraint", () => {
@@ -129,7 +201,7 @@ describe("Shell", () => {
     shell.stepBy(1);
     shell.reset();
     tick();
-    expect(el.stepCount.textContent).toBe("Step 1 of 4");
+    expect(currentStep(el)).toBe("0");
     expect(el.readouts.children).toHaveLength(4);
   });
 });

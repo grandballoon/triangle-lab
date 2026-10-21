@@ -18,6 +18,22 @@ export interface Step {
   text: string;
 }
 
+/**
+ * A real-world use of the lesson's idea, for the "What will we use this for?"
+ * section after the steps. Text may hold `$…$` LaTeX.
+ */
+export interface Use {
+  title: string;
+  text: string;
+}
+
+/**
+ * Mark part of a formula as the term `id`. Hovering it highlights every
+ * figure mark drawn with the same `term` (draw.ts) and draws a leader line to
+ * each, so a reader can see which piece of the figure a symbol means.
+ */
+export const term = (id: string, tex: string): string => `\\htmlData{term=${id}}{${tex}}`;
+
 /** A line of the formula panel: a LaTeX expression, usually with live values. */
 export interface Readout {
   label?: string;
@@ -51,6 +67,8 @@ export interface LessonView {
   steps: Step[];
   draw(g: Draw, f: Frame): void;
   readout?(f: Frame): Readout[];
+  /** Where people use this idea outside the classroom. */
+  uses?: Use[];
 }
 
 export type LessonBuilder = (s: Scene) => LessonView;

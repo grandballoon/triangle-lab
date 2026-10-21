@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { uiFeedback } from "./tools/feedback-plugin.ts";
 
 // The hand-tracking WASM runtime is fetched from a CDN at run time and must
 // match the installed library exactly, so its version is read from the
@@ -17,6 +18,8 @@ export default defineConfig({
   // (grandballoon.github.io/triangle-lab/), so asset URLs must be
   // prefixed accordingly. Left as "/" for local dev and previews.
   base: process.env.GITHUB_ACTIONS ? "/triangle-lab/" : "/",
+  // Dev only: Alt-click any element to leave a comment in ui-feedback.md.
+  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md"))],
   define: {
     __MEDIAPIPE_VERSION__: JSON.stringify(mediapipe.version),
   },

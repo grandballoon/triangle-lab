@@ -27,6 +27,14 @@ Node 22.12 or newer is required.
 The dev server binds to `localhost` on purpose: `getUserMedia` needs a secure context, and localhost qualifies, so the webcam works without any certificate setup.
 Chrome or Edge are the most reliable for camera permissions.
 
+### Leaving UI feedback
+
+Under `npm run dev`, every page can take comments on its own elements.
+Hold Alt (⌥) to outline the element under the cursor, Alt-click it, type a comment and press Enter.
+The comment is appended to `ui-feedback.md` at the project root, together with the page, a selector for the element, where you clicked and the window size.
+That file is gitignored; each entry starts open (`[ ]`) and is marked `[x]` once dealt with.
+The overlay exists only on the dev server and is never part of a build.
+
 ## Using your hands
 
 Hold a hand up to the camera and a ring cursor follows it.
@@ -58,7 +66,8 @@ The keyboard also works in lab lessons: `←` and `→` step through a proof and
 ## Lessons
 
 116 lessons in twelve chapters, read in order.
-The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a proof stepper and a live formula panel.
+The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
+In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
 
 | Chapter | Lessons |
 | --- | --- |
@@ -88,6 +97,8 @@ src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
+src/dev/feedback/     Dev-only overlay for commenting on page elements
+tools/                Vite plugins used by the dev server
 specs/                Design notes for the original triangle lessons
 architecture.md       How the pieces fit and where the boundaries are
 ```
@@ -102,6 +113,11 @@ The menu (`src/index.ts`) and the pager (`src/pager.ts`) both render from that o
 
 That is all: the menu card, the pager links and the page appear on their own, and `npm test` exercises the new lesson automatically.
 `src/lab/lessons/triangle-angle-sum.ts` is a good model for a stepped proof, and `src/lab/lessons/box-diagonal.ts` for a 3D figure with sliders.
+
+A lesson can also return `uses`, its real-world applications, shown after the steps.
+It can mark symbols in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks they stand for, so pointing at a symbol highlights its mark.
+And it can set pictures on the figure with `g.sprite(src, at)`.
+`src/lab/lessons/exterior-angle.ts` has uses and terms.
 
 ### Adding a standalone lesson
 

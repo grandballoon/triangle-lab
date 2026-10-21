@@ -10,6 +10,9 @@ import { capturePointer, releasePointer } from "../pointer.ts";
 import { C, Draw, tint, toScreen, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
 import { richHtml, texHtml } from "./math.ts";
+import { SpriteCache } from "./sprites.ts";
+import { StepList } from "./steps.ts";
+import { TermFocus } from "./terms.ts";
 import {
   Scene,
   type Frame,
@@ -24,11 +27,12 @@ import {
 /** Lessons compose inside this much stage, centred on the origin. */
 export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 
-// Screen space kept clear of the figure, in CSS pixels. lab.css reads the
-// same numbers through custom properties set in the constructor.
+// Screen space kept clear of the figure, in CSS pixels: the step column on
+// the right and the formula band along the bottom. lab.css reads the same
+// numbers through custom properties set here.
 const EDGE = 18;
 const TOP_BAND = 104;
-const STEP_CARD_HEIGHT = 132;
+const FORMULA_BAND_HEIGHT = 116;
 const PANEL_WIDTH = { min: 250, max: 340, share: 0.25 } as const;
 
 const STEP_FADE_SECONDS = 0.7;
@@ -44,12 +48,10 @@ export interface ShellElements {
   controls: HTMLElement;
   formulas: HTMLElement;
   readouts: HTMLElement;
-  stepCard: HTMLElement;
-  stepCount: HTMLElement;
-  stepTitle: HTMLElement;
-  stepText: HTMLElement;
-  prev: HTMLButtonElement;
-  next: HTMLButtonElement;
+  /** The scrolling list the steps are built in. */
+  steps: HTMLElement;
+  /** Click-through layer for the lines from a formula term to the figure. */
+  leader: SVGSVGElement;
 }
 
 export interface LessonHeader {
@@ -77,6 +79,9 @@ interface Loaded {
 
 export class Shell {
   private readonly ctx: CanvasRenderingContext2D;
+  private readonly stepList: StepList;
+  private readonly terms: TermFocus;
+  private readonly sprites = new SpriteCache();
   private readonly drags = new Map<number, Drag>();
   private current: Loaded | null = null;
   private formulasShown = true;
@@ -95,17 +100,17 @@ export class Shell {
     private readonly leftInset: () => number = () => 0,
   ) {
     this.ctx = el.canvas.getContext("2d")!;
+    this.stepList = new StepList(el.steps, (step, scroll) => this.select(step, scroll));
+    this.terms = new TermFocus(document, el.leader);
     const root = document.documentElement.style;
     root.setProperty("--edge", `${EDGE}px`);
     root.setProperty("--top-band", `${TOP_BAND}px`);
-    root.setProperty("--step-card-height", `${STEP_CARD_HEIGHT}px`);
+    root.setProperty("--formula-band-height", `${FORMULA_BAND_HEIGHT}px`);
 
     el.canvas.addEventListener("pointerdown", (e) => this.onDown(e));
     el.canvas.addEventListener("pointermove", (e) => this.onMove(e));
     el.canvas.addEventListener("pointerup", (e) => this.onUp(e));
     el.canvas.addEventListener("pointercancel", (e) => this.onUp(e));
-    el.prev.addEventListener("click", () => this.stepBy(-1));
-    el.next.addEventListener("click", () => this.stepBy(1));
     requestAnimationFrame((t) => this.frame(t));
   }
 
@@ -129,7 +134,7 @@ export class Shell {
     this.el.title.textContent = header.title;
     document.documentElement.style.setProperty("--accent", header.accent);
     this.renderControls();
-    this.renderStep();
+    this.stepList.show(this.current.view.steps, this.current.view.uses ?? []);
   }
 
   /** Move through the steps. Returns false when there was nowhere to go. */
@@ -138,10 +143,19 @@ export class Shell {
     if (!c) return false;
     const to = c.step + delta;
     if (to < 0 || to >= c.view.steps.length) return false;
-    c.step = to;
-    c.stepShownAt = performance.now();
-    this.renderStep();
+    this.select(to, true);
     return true;
+  }
+
+  /** Make `step` current; `scroll` brings it into view in the step list. */
+  private select(step: number, scroll: boolean): void {
+    const c = this.current;
+    if (!c) return;
+    if (step !== c.step) {
+      c.step = step;
+      c.stepShownAt = performance.now();
+    }
+    this.stepList.mark(step, scroll);
   }
 
   /** Put the lesson back the way it started. */
@@ -174,11 +188,14 @@ export class Shell {
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const panel = this.panelWidth();
-    document.documentElement.style.setProperty("--panel-width", `${panel}px`);
+    const band = this.formulasShown ? FORMULA_BAND_HEIGHT + EDGE : 0;
+    const root = document.documentElement.style;
+    root.setProperty("--panel-width", `${panel}px`);
+    root.setProperty("--bottom-reserve", `${band}px`);
     const left = EDGE + this.leftInset();
-    const right = width - EDGE - (this.formulasShown ? panel + EDGE : 0);
+    const right = width - EDGE - panel - EDGE;
     const top = TOP_BAND;
-    const bottom = height - EDGE - STEP_CARD_HEIGHT - EDGE;
+    const bottom = height - EDGE - band;
     const scale = Math.max(
       8,
       Math.min((right - left) / (2 * STAGE.halfWidth), (bottom - top) / (2 * STAGE.halfHeight)),
@@ -209,7 +226,8 @@ export class Shell {
       hands,
     };
 
-    const g = new Draw(this.ctx, view, c.header.accent);
+    const focus = this.terms.current();
+    const g = new Draw(this.ctx, view, c.header.accent, { focus: focus?.id ?? null, pictures: this.sprites });
     c.view.draw(g, frame);
     // A lesson may change a control itself (a step that picks a case, a
     // button that resets a toggle); keep the chips showing the truth.
@@ -217,6 +235,8 @@ export class Shell {
     for (const s of c.scene.sliders) this.drawSlider(g, s);
     for (const h of c.scene.handles) this.drawHandle(g, view, h, c.header.accent);
     this.renderReadouts(c.view.readout?.(frame) ?? []);
+    this.terms.lead(focus?.box ?? null, focus ? g.anchors(focus.id) : []);
+    this.stepList.fit();
   }
 
   private viewNow: View = { scale: 1, ox: 0, oy: 0, width: 0, height: 0 };
@@ -257,21 +277,6 @@ export class Shell {
   }
 
   // --- Panels ----------------------------------------------------------------
-
-  private renderStep(): void {
-    const c = this.current;
-    if (!c) return;
-    const { steps } = c.view;
-    const step = steps[c.step];
-    const single = steps.length === 1;
-    this.el.stepCount.textContent = single ? "Explore" : `Step ${c.step + 1} of ${steps.length}`;
-    this.el.stepTitle.textContent = step.title;
-    this.el.stepText.innerHTML = richHtml(step.text);
-    this.el.stepText.scrollTop = 0;
-    this.el.prev.hidden = this.el.next.hidden = single;
-    this.el.prev.disabled = c.step === 0;
-    this.el.next.disabled = c.step === steps.length - 1;
-  }
 
   private controlState(scene: Scene): string {
     return scene.controls

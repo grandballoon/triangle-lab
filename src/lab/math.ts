@@ -5,8 +5,16 @@
 
 import katex from "katex";
 
+// `\htmlData` is how formulas mark their terms (scene.ts `term`); it is the
+// only HTML extension let through, and using it is not a strictness warning.
+const KATEX_OPTIONS = {
+  displayMode: false,
+  trust: (context: { command: string }) => context.command === "\\htmlData",
+  strict: (code: string) => (code === "htmlExtension" ? "ignore" : "warn"),
+} as const;
+
 export function texHtml(tex: string, strict = false): string {
-  return katex.renderToString(tex, { throwOnError: strict, displayMode: false });
+  return katex.renderToString(tex, { ...KATEX_OPTIONS, throwOnError: strict });
 }
 
 /** Prose with `$…$` runs of LaTeX, as safe HTML. */
