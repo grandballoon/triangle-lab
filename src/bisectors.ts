@@ -45,7 +45,6 @@ interface Lesson {
 const C1 = "#f472b6"; // one half-angle (warm) while the cevian is off the bisector
 const C2 = "#60a5fa"; // the other half-angle (cool)
 const EQUAL = "#38d9a9"; // both halves once the angle is bisected
-const ACCENT = "#22d3ee"; // header
 const CEVIAN = "rgba(233,240,247,0.85)"; // the would-be bisector, before it is one
 const BASE_LINE = "rgba(233,240,247,0.28)"; // triangle sides, kept discreet
 const LABEL_BG = "rgba(10,15,22,0.72)";
@@ -53,7 +52,7 @@ const LABEL_BG = "rgba(10,15,22,0.72)";
 const GRAB_RADIUS = 36;
 const TWO_PI = Math.PI * 2;
 const DEG = 180 / Math.PI;
-const TOP_MARGIN = 64; // room for the header above the grid
+const TOP_MARGIN = 64; // room for the top bar above the grid
 
 const T_MIN = 0.07; // keep the foot off the very corners of the opposite side
 const T_MAX = 0.93;
@@ -267,7 +266,6 @@ function drive(i: number, p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   for (const lesson of lessons) renderLesson(lesson);
 }
 
@@ -400,17 +398,6 @@ function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Angle Bisectors", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText("slide each knob until the two angles match", W / 2, 48);
 }
 
 // --- small helpers -------------------------------------------------------

@@ -13,7 +13,7 @@ import { liveHold, present, type Hold } from "./hold.ts";
 import { linkTex, termAliases } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
 import { SpriteCache } from "./sprites.ts";
-import { StepList } from "./steps.ts";
+import { panelWidth, StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
 import {
   Scene,
@@ -35,7 +35,6 @@ export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 const EDGE = 18;
 const TOP_BAND = 104;
 const FORMULA_BAND_HEIGHT = 116;
-const PANEL_WIDTH = { min: 250, max: 340, share: 0.25 } as const;
 
 const STEP_FADE_SECONDS = 0.7;
 
@@ -182,11 +181,6 @@ export class Shell {
 
   // --- Layout ----------------------------------------------------------------
 
-  private panelWidth(): number {
-    const { min, max, share } = PANEL_WIDTH;
-    return Math.round(Math.min(max, Math.max(min, window.innerWidth * share)));
-  }
-
   /** Fit the stage into the screen area the panels leave free. */
   private layout(): View {
     const { canvas } = this.el;
@@ -199,7 +193,7 @@ export class Shell {
     }
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const panel = this.panelWidth();
+    const panel = panelWidth(width);
     const band = this.formulasShown ? FORMULA_BAND_HEIGHT + EDGE : 0;
     const root = document.documentElement.style;
     root.setProperty("--panel-width", `${panel}px`);

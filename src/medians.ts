@@ -49,7 +49,7 @@ interface Lesson {
   celebrateFired: number; // how many of the three celebration pulses have spawned
 }
 
-const ACCENT = "#c084fc"; // header + a median currently being pulled
+const ACCENT = "#c084fc"; // a median currently being pulled
 const DONE = "#38d9a9"; // a locked median, the centroid, and their pulses
 const STUB = "rgba(192,132,252,0.55)"; // the idle outward stub — visibly grabbable, still discreet
 const BASE_LINE = "rgba(233,240,247,0.28)"; // triangle sides + midpoint targets, kept discreet
@@ -57,7 +57,7 @@ const G_TEXT = "rgba(233,240,247,0.85)";
 
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the header above the three bands
+const TOP_MARGIN = 64; // room for the top bar above the three bands
 
 const STUB_LEN = 26; // length of the outward starting stub, in screen px
 const LENGTH_CAP = 1.3; // free end can reach at most 130% of the finished median
@@ -255,7 +255,6 @@ function lockMedian(lesson: Lesson, m: Median): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   for (const lesson of lessons) renderLesson(lesson);
 }
 
@@ -379,17 +378,6 @@ function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Medians", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText("pull each knob to the midpoint of the opposite side", W / 2, 48);
 }
 
 // --- small helpers -------------------------------------------------------

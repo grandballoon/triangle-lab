@@ -22,7 +22,7 @@ interface Vec {
   y: number;
 }
 
-const ACCENT = "#38bdf8"; // header + focused angle
+const ACCENT = "#38bdf8"; // focused angle
 const OPP = "#ff6b6b"; // the opposite leg
 const ADJ = "#4dabf7"; // the adjacent leg
 const HYP = "#ffd43b"; // the hypotenuse
@@ -38,6 +38,7 @@ const LEG_A_MIN = 1.0; // BC, vertical
 const LEG_A_MAX = 3.2;
 const LEG_B_MIN = 1.6; // AC, horizontal
 const LEG_B_MAX = 4.6;
+const MIN_UNIT = 24; // px per unit, however cramped the window
 
 // --- state -----------------------------------------------------------------
 
@@ -73,7 +74,8 @@ function layout(): void {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const figureW = W - PANEL_W - 90; // the panel owns the right side
-  unit = Math.min((figureW - 60) / LEG_B_MAX, (H - TOP_MARGIN - 170) / LEG_A_MAX);
+  // Floored so a narrow window shrinks the figure rather than inverting it.
+  unit = Math.max(MIN_UNIT, Math.min((figureW - 60) / LEG_B_MAX, (H - TOP_MARGIN - 170) / LEG_A_MAX));
   originA = { x: 48, y: TOP_MARGIN + 60 + LEG_A_MAX * unit };
 }
 
@@ -120,7 +122,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
 
   const A = ptA();
   const B = ptB();
@@ -382,21 +383,6 @@ function drawKnob(v: Vec, active: boolean): void {
   ctx.lineWidth = 3;
   ctx.strokeStyle = "rgba(10,15,22,0.85)";
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Naming the Ratios", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "drag B to reshape the triangle — click the other acute angle and watch opposite and adjacent trade places",
-    W / 2,
-    48,
-  );
 }
 
 // --- loop ------------------------------------------------------------------

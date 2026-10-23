@@ -41,7 +41,7 @@ interface Lesson {
   flashes: Flash[];
 }
 
-const ACCENT = "#60a5fa"; // header + the side currently being traced
+const ACCENT = "#60a5fa"; // the side currently being traced
 const DONE = "#38d9a9"; // a completed side/angle, and its snap flash
 const BASE_LINE = "rgba(233,240,247,0.28)"; // untraced side/angle — kept discreet
 const LABEL_MUTED = "rgba(233,240,247,0.5)"; // side-length labels — kept discreet
@@ -49,7 +49,7 @@ const LABEL_MUTED = "rgba(233,240,247,0.5)"; // side-length labels — kept disc
 const UNIT_PX = 40; // screen pixels per displayed length "unit"
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the header above the three bands
+const TOP_MARGIN = 64; // room for the top bar above the three bands
 
 // Reaching this much of the way along a side counts as "arrived" at its far
 // vertex — forgiving enough that a mouse drag can "snap" the last stretch.
@@ -239,7 +239,6 @@ function completeSide(i: number, side: number): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   for (let i = 0; i < lessons.length; i++) renderLesson(i);
 }
 
@@ -410,17 +409,6 @@ function drawScoreBox(i: number): void {
     ctx.fillStyle = DONE;
     ctx.fillText(`s = ${(pUnits / 2).toFixed(1)}`, x + 14, y + (h * 2) / 3);
   }
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Perimeter & Semiperimeter", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText("drag the knob all the way around each triangle", W / 2, 48);
 }
 
 // --- small helpers -------------------------------------------------------

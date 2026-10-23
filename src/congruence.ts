@@ -59,7 +59,7 @@ interface Cell {
   pulses: Pulse[];
 }
 
-const ACCENT = "#f97316"; // header + selected accents
+const ACCENT = "#f97316"; // selected accents
 const OK = "#38d9a9"; // a satisfied given / a pinned triangle
 const DANGER = "#ff6b6b"; // the SSA verdict
 const LOCUS = "#fbbf24"; // dashed loci of the givens
@@ -327,7 +327,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   for (const cell of cells) renderCell(cell);
 }
 
@@ -551,21 +550,6 @@ function drawKnob(v: Vec, active: boolean, ring: string | null): void {
   ctx.lineWidth = 3;
   ctx.strokeStyle = ring ?? "rgba(10,15,22,0.85)";
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Congruent Triangles", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "a congruence theorem is a set of givens that leaves C only one place to land — drag each C and see which sets do",
-    W / 2,
-    48,
-  );
 }
 
 // --- loop ------------------------------------------------------------------

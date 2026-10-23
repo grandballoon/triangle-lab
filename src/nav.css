@@ -1,20 +1,63 @@
-/* Chrome for the lesson pager. Every lesson page loads nav.ts, which pulls this
-   in — the pages no longer carry their own copy of these rules.
+/* The top bar every lesson page carries: the pager, then the lesson's chapter
+   and name. pager.ts pulls this in, so both kinds of page share it; the lab
+   page writes the bar into its HTML, and a standalone page has page.ts build
+   it.
 
-   The pager lives in the top strip because that is the one band every lesson
+   The bar lives in the top strip because that is the one band every lesson
    keeps clear of canvas drawing (TOP_MARGIN). The bottom edge is not free:
    altitudes.ts writes its scroll hint there and similar.ts anchors its figure
    to it. */
 
-#nav {
+#topbar {
   position: fixed;
   top: 16px;
-  left: 18px;
+  left: var(--edge);
+  /* Stops short of the top-right corner: the lab's hands pill, the notes
+     button on altitudes. */
+  right: calc(var(--edge) + 240px);
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+  color: #e9f0f7;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+#topbar > * { pointer-events: auto; }
+
+#nav {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 8px;
   font: 500 15px ui-sans-serif, system-ui, sans-serif;
+}
+
+#heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+}
+
+#eyebrow {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#title {
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 .nav-pill {

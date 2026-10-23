@@ -36,7 +36,7 @@ Inside the module the pipeline is a chain of small pieces, pure wherever possibl
 | `index.ts` | Wires the above and runs the per-frame loop; the only public entry | no |
 
 Besides grabbing, a hand can hold a pose to trigger an action (next step, previous step, reset, show or hide formulas).
-The page decides what an action means, through the `onAction` callback; the standalone pages have no steps and ignore them.
+The page decides what an action means, through the `onAction` callback; the standalone pages use next and previous to walk their directions and ignore the rest.
 
 Because synthetic pointers cannot be captured, lessons call `capturePointer` / `releasePointer` from `src/pointer.ts` instead of the DOM methods.
 The bridge dispatches a grab's events straight at the element it started on, which gives the same effect.
@@ -45,7 +45,9 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 **Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
-They gain the pager and hand input by loading `src/nav.ts` and `src/hands/page.ts` as extra module scripts.
+They gain the lab page's chrome by loading `src/page.ts` as an extra module script: the top bar with the pager and the lesson's name, hand input, and the step column on the right, filled with the lesson's numbered directions from `src/directions.ts`.
+The column reuses the lab's `StepList` and its stylesheet, so both kinds of lesson read alike, but the directions only describe the figure; they do not draw it in step by step.
+Like the curriculum rail, the column publishes the width it takes, as `--steps-inset`, and fires `resize`; each page's `#stage` rule leaves that width free.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show and, optionally, the real-world uses of its idea.

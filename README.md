@@ -123,8 +123,9 @@ And it can set pictures on the figure with `g.sprite(src, at)`.
 ### Adding a standalone lesson
 
 1. Add an entry (without `lab`) to a chapter file in `src/chapters/`.
-2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts`, `src/nav.ts` and `src/hands/page.ts`.
-3. Register the slug in `vite.config.ts`.
+2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and `src/page.ts`, with a `#stage` rule that leaves `--rail-inset` and `--steps-inset` free (copy one of the existing pages).
+3. Write its numbered directions in `src/directions.ts`.
+4. Register the slug in `vite.config.ts`.
 
 ## A note on sources
 

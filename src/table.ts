@@ -27,7 +27,7 @@ interface Pulse {
   age: number;
 }
 
-const ACCENT = "#f43f5e"; // header + dial
+const ACCENT = "#f43f5e"; // dial
 const OPP = "#ff6b6b"; // the opposite leg — sin θ
 const ADJ = "#4dabf7"; // the adjacent leg — cos θ
 const HYP = "#ffd43b"; // the unit hypotenuse
@@ -38,6 +38,7 @@ const TEXT_DIM = "rgba(233,240,247,0.55)";
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 const TOP_MARGIN = 64;
+const MIN_HYP_PX = 120; // however cramped the window
 const GRAB_RADIUS = 30;
 const SNAP_DEGS = [0, 30, 45, 60, 90];
 const SNAP_IN = 2.5; // degrees
@@ -115,7 +116,8 @@ function layout(): void {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const figureW = W - PANEL_W - 90;
-  hypPx = Math.min(figureW - 150, H - TOP_MARGIN - 220);
+  // Floored so a narrow window shrinks the figure rather than inverting it.
+  hypPx = Math.max(MIN_HYP_PX, Math.min(figureW - 150, H - TOP_MARGIN - 220));
   originA = { x: 80, y: TOP_MARGIN + 110 + hypPx };
 }
 
@@ -169,7 +171,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
 
   const A = originA;
   const B = ptB();
@@ -444,21 +445,6 @@ function drawPulse(p: Pulse): void {
   ctx.lineWidth = 3 * (1 - t) + 1;
   ctx.strokeStyle = rgba(ACCENT, 1 - t);
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("The Whole Table", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "hypotenuse pinned at 1: the legs ARE sin θ and cos θ — swing B through the landmark angles you derived",
-    W / 2,
-    48,
-  );
 }
 
 // --- loop ------------------------------------------------------------------

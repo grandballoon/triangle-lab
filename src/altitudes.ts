@@ -69,7 +69,7 @@ interface Lesson {
   celebrateFired: number; // how many of the three celebration pulses have spawned
 }
 
-const ACCENT = "#fb7185"; // header + an altitude currently being pulled
+const ACCENT = "#fb7185"; // an altitude currently being pulled
 const DONE = "#38d9a9"; // a locked altitude, the orthocenter, and their pulses
 const STUB = "rgba(251,113,133,0.55)"; // the idle outward stub — visibly grabbable, still discreet
 const BASE_LINE = "rgba(233,240,247,0.28)"; // triangle sides + foot targets, kept discreet
@@ -78,7 +78,7 @@ const CAPTION = "rgba(233,240,247,0.5)";
 
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the header above the three bands
+const TOP_MARGIN = 64; // room for the top bar above the three bands
 
 const STUB_LEN = 26; // length of the outward starting stub, in screen px
 const LENGTH_CAP = 1.3; // free end can reach at most 130% of the finished altitude
@@ -102,7 +102,7 @@ let H = 0;
 // Which altitude is being dragged, as [lessonIndex, altitudeIndex].
 let grabbed: [number, number] | null = null;
 // Vertical pan through the world of triangle rows; the camera (webcam,
-// header, hints) never moves — only this does.
+// top fade, hints) never moves — only this does.
 let scrollY = 0;
 let maxScroll = 0;
 // Live pan drag on empty space, as the pointer's last clientY.
@@ -646,8 +646,8 @@ function render(): void {
     renderLesson(lesson);
   }
   ctx.restore();
-  // …chrome pass: the header, scroll hint, and scrollbar stay put.
-  drawHeader();
+  // …chrome pass: the top fade, scroll hint, and scrollbar stay put.
+  drawTopFade();
   drawScrollbar();
   drawScrollHint();
 }
@@ -903,22 +903,13 @@ function strokeDashed(p: Vec, q: Vec, color: string, width: number): void {
   ctx.setLineDash([]);
 }
 
-function drawHeader(): void {
-  // A soft backdrop so scrolled triangles pass under the title, not through it.
+/** A soft backdrop so scrolled triangles pass under the top bar, not through it. */
+function drawTopFade(): void {
   const fade = ctx.createLinearGradient(0, 0, 0, TOP_MARGIN);
   fade.addColorStop(0, "rgba(11,15,20,0.85)");
   fade.addColorStop(1, "rgba(11,15,20,0)");
   ctx.fillStyle = fade;
   ctx.fillRect(0, 0, W, TOP_MARGIN);
-
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Altitudes", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText("drag each knob to drop a perpendicular onto the opposite side", W / 2, 48);
 }
 
 /** A slim thumb along the right edge showing where the pan sits in the world. */
@@ -935,7 +926,7 @@ function drawScrollbar(): void {
 }
 
 /** "scroll for more" at the bottom edge, fading out as soon as panning starts.
- *  It sits on its own soft gradient (the header's mirror image) so band
+ *  It sits on its own soft gradient (the top fade's mirror image) so band
  *  captions slide under it instead of colliding with it. */
 function drawScrollHint(): void {
   if (maxScroll <= 0) return;
