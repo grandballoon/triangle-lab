@@ -43,7 +43,7 @@ interface Lesson {
   pulses: Pulse[];
 }
 
-const ACCENT = "#a3e635"; // header + the selected side and its circles
+const ACCENT = "#a3e635"; // the selected side and its circles
 const CHANGING = "#facc15"; // the third side that stretches during a drag
 const OK = "#38d9a9"; // an inequality with comfortable slack
 const WARN = "#fbbf24"; // an inequality getting tight
@@ -52,7 +52,7 @@ const TEXT = "rgba(233,240,247,0.85)";
 const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the header above the grid
+const TOP_MARGIN = 64; // room for the top bar above the grid
 const GRAB_RADIUS = 24; // screen px around an endpoint knob
 const PICK_RADIUS = 15; // screen px around a side for click-to-select
 const SNAP_ANG = 0.055; // rad — the drag snaps onto the degenerate spots
@@ -314,7 +314,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   lessons.forEach((l, li) => renderLesson(l, li));
   drawPanel(); // last, so it reads over anything swung underneath it
 }
@@ -610,21 +609,6 @@ function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("The Triangle Inequality", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "click a side, then swing an end around its dotted circle — how far can the third side stretch?",
-    W / 2,
-    48,
-  );
 }
 
 function rgba(hex: string, alpha: number): string {

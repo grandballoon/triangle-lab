@@ -26,7 +26,7 @@ interface Pulse {
   age: number;
 }
 
-const ACCENT = "#e879f9"; // header + the folding flap
+const ACCENT = "#e879f9"; // the folding flap
 const CREASE = "#ffd43b"; // the diagonal, and the 45° arcs it creates
 const OK = "#38d9a9"; // the congruence verdict
 const EDGE = "#eef4fb";
@@ -38,6 +38,7 @@ const TOP_MARGIN = 64;
 const GRAB_RADIUS = 26;
 const A_MIN = 1.6;
 const A_MAX = 3.4;
+const MIN_UNIT = 24; // px per unit, however cramped the window
 const SNAP_T = 0.07; // fold snaps flat/closed inside this margin
 const PULSE_LIFE = 0.6;
 
@@ -100,7 +101,8 @@ function layout(): void {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const figureW = W - PANEL_W - 90;
-  unit = Math.min((figureW - 80) / (A_MAX + 0.7), (H - TOP_MARGIN - 130) / (A_MAX + 0.7));
+  // Floored so a narrow window shrinks the figure rather than inverting it.
+  unit = Math.max(MIN_UNIT, Math.min((figureW - 80) / (A_MAX + 0.7), (H - TOP_MARGIN - 130) / (A_MAX + 0.7)));
   center = { x: 50 + figureW / 2, y: TOP_MARGIN + (H - TOP_MARGIN) / 2 };
 }
 
@@ -168,7 +170,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
 
   const s1 = toScreen(p1());
   const s2 = toScreen(p2());
@@ -395,21 +396,6 @@ function drawPulse(p: Pulse): void {
   ctx.lineWidth = 3 * (1 - t) + 1;
   ctx.strokeStyle = rgba(OK, 1 - t);
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Folding the Square — 45°", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "drag the flying corner across the diagonal — bisect the right angle and the 45° triangle appears",
-    W / 2,
-    48,
-  );
 }
 
 // --- loop ------------------------------------------------------------------

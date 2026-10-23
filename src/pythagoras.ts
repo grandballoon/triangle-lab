@@ -25,7 +25,7 @@ interface Pulse {
   age: number; // seconds since it fired
 }
 
-const ACCENT = "#ffd43b"; // header, hypotenuse & its square
+const ACCENT = "#ffd43b"; // hypotenuse & its square
 const A_COLOR = "#4dabf7"; // leg a and its square
 const B_COLOR = "#38d9a9"; // leg b and its square
 const EDGE = "#eef4fb";
@@ -444,7 +444,7 @@ function labelAt(p: Vec, text: string, color: string, alpha: number): void {
   ctx.fillText(text, at.x, at.y);
 }
 
-// --- panel, header, chrome -------------------------------------------------
+// --- panel, chrome -------------------------------------------------
 
 function drawPanel(): void {
   const x = 18;
@@ -506,21 +506,6 @@ function segments(x: number, y: number, runs: [string, string][]): void {
   }
 }
 
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("The Pythagorean Theorem", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "the two leg squares hold exactly as much room as the hypotenuse square — scrub the proof and watch",
-    W / 2,
-    48,
-  );
-}
-
 function drawKnob(v: Vec, active: boolean): void {
   ctx.beginPath();
   ctx.arc(v.x, v.y, active ? 15 : 11, 0, TWO_PI);
@@ -544,7 +529,6 @@ function drawPulse(p: Pulse): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
   renderTriangle();
   renderProof();
   for (const p of pulses) drawPulse(p);

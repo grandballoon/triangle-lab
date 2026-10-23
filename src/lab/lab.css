@@ -46,52 +46,10 @@ html, body {
 
 /* --- Top bar --------------------------------------------------------------- */
 
-#topbar {
-  position: fixed;
-  top: 16px;
-  left: var(--edge);
-  /* Stops short of the hands pill in the top-right corner. */
-  right: calc(var(--edge) + 240px);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  pointer-events: none;
-}
-
-#topbar > * { pointer-events: auto; }
-
-/* The pager is fixed-position on standalone pages; here it joins the bar. */
-#topbar #nav { position: static; flex: none; }
+/* The bar itself, the pager and the lesson heading are styled in nav.css. */
 
 /* The curriculum rail stops above the formula band, as the step column does. */
 html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
-
-#heading {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  min-width: 0;
-}
-
-#eyebrow {
-  flex: none;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-#title {
-  font-size: 20px;
-  font-weight: 750;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
-}
 
 #controls {
   position: fixed;
@@ -166,17 +124,15 @@ html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
   backdrop-filter: blur(8px);
 }
 
-#formulas h2,
-.uses h2 {
+#formulas h2 {
   flex: none;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
+  margin-bottom: 6px;
 }
-
-#formulas h2 { margin-bottom: 6px; }
 
 #readouts {
   flex: 1;
@@ -253,142 +209,7 @@ html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
 #leader line { stroke: rgba(238, 244, 251, 0.55); stroke-width: 1; }
 #leader circle { fill: rgba(238, 244, 251, 0.85); }
 
-/* --- Step column -------------------------------------------------------------- */
-
-#steps {
-  position: fixed;
-  top: 60px;
-  right: var(--edge);
-  bottom: calc(var(--edge) + var(--bottom-reserve, 0px));
-  width: var(--panel-width);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  background: rgba(10, 15, 22, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  overflow: hidden;
-}
-
-/* Sections are measured against this box (steps.ts), hence the positioning. */
-#step-list {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 14px 12px 0 10px;
-}
-
-.step {
-  padding: 10px 10px 12px 12px;
-  margin-bottom: 6px;
-  border-left: 3px solid transparent;
-  border-radius: 0 10px 10px 0;
-  opacity: 0.5;
-  cursor: pointer;
-  transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-.step:hover { opacity: 0.8; }
-
-.step[aria-current="step"] {
-  opacity: 1;
-  border-left-color: var(--accent);
-  background: rgba(255, 255, 255, 0.04);
-  cursor: default;
-}
-
-.step-head button {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: inherit;
-}
-
-.step-count {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.step-title {
-  display: block;
-  font-size: 17px;
-  font-weight: 700;
-  margin: 3px 0 5px;
-}
-
-.step-text,
-.use p {
-  font-size: 15px;
-  line-height: 1.45;
-  color: rgba(233, 240, 247, 0.85);
-}
-
-.step-head button.hand-hover .step-title { color: var(--accent); }
-
-.uses {
-  margin: 18px 0 14px;
-  padding: 16px 10px 0 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.uses > summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 -6px;
-  padding: 4px 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-}
-
-.uses > summary::-webkit-details-marker { display: none; }
-
-.uses > summary::before {
-  content: "";
-  flex: none;
-  width: 5px;
-  height: 5px;
-  border-right: 1.5px solid var(--accent);
-  border-bottom: 1.5px solid var(--accent);
-  transform: rotate(-45deg);
-  transition: transform 0.15s ease;
-}
-
-.uses[open] > summary::before { transform: rotate(45deg); }
-
-.uses > summary:hover { background: rgba(255, 255, 255, 0.05); }
-
-.uses > summary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.uses[open] > summary { margin-bottom: 6px; }
-
-.use + .use { margin-top: 14px; }
-
-.use h3 {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.chip:focus-visible,
-.step-head button:focus-visible {
+.chip:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }

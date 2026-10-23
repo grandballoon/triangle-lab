@@ -27,7 +27,7 @@ interface Pulse {
   age: number;
 }
 
-const ACCENT = "#2dd4bf"; // the user's triangle + header
+const ACCENT = "#2dd4bf"; // the user's triangle
 const SAMPLE = "rgba(233,240,247,0.5)"; // the two fixed triangles
 const RATIO_BG = "#2dd4bf"; // tint behind the frozen ratio columns
 const RIGHT = "#ffd43b"; // right-angle markers
@@ -171,7 +171,6 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  drawHeader();
 
   const d = hypDir();
   const rayEnd = { x: origin.x + d.x * (R_MAX + 0.35) * unit, y: origin.y + d.y * (R_MAX + 0.35) * unit };
@@ -392,21 +391,6 @@ function drawPulse(p: Pulse): void {
   ctx.lineWidth = 3 * (1 - t) + 1;
   ctx.strokeStyle = rgba(ACCENT, 1 - t);
   ctx.stroke();
-}
-
-function drawHeader(): void {
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "700 22px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("Similar Triangles", W / 2, 30);
-  ctx.font = "400 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = "rgba(233,240,247,0.6)";
-  ctx.fillText(
-    "slide the knob along the ray — the sides change, the ratios refuse to. Turn the dial — everything changes together.",
-    W / 2,
-    48,
-  );
 }
 
 // --- loop ------------------------------------------------------------------

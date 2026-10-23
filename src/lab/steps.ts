@@ -7,6 +7,7 @@
 // The shell owns which step is current (shell.ts); this list only reports
 // what the reader picked and shows what the shell decided.
 
+import "./steps.css";
 import { linkTex } from "./link.ts";
 import { richHtml } from "./math.ts";
 import type { Step, Use } from "./scene.ts";
@@ -19,6 +20,14 @@ const SCROLL_MARGIN_PX = 14;
 const SCROLL_SETTLE_MS = 900;
 
 export const USES_HEADING = "What will we use this for?";
+
+const PANEL_WIDTH = { min: 250, max: 340, share: 0.25 } as const;
+
+/** How wide the step column is in a window this many CSS pixels wide. */
+export function panelWidth(windowWidth: number): number {
+  const { min, max, share } = PANEL_WIDTH;
+  return Math.round(Math.min(max, Math.max(min, windowWidth * share)));
+}
 
 export class StepList {
   private sections: HTMLElement[] = [];

@@ -2,7 +2,7 @@
 // menu, and a step to the previous or next lesson in reading order. The order
 // comes from lessons.ts — the same list the menu and the rail render from.
 //
-// Standalone lesson pages mount it through nav.ts; the lab page mounts it
+// Standalone lesson pages mount it through page.ts; the lab page mounts it
 // itself and re-mounts as it swaps lessons in place.
 
 import "./nav.css";
@@ -12,6 +12,20 @@ import { hrefOf, indexOfSlug, lessons, type Lesson } from "./lessons.ts";
 export interface Neighbours {
   prev: Lesson | undefined;
   next: Lesson | undefined;
+}
+
+export type Move = { kind: "step"; step: number } | { kind: "lesson"; lesson: Lesson } | null;
+
+/**
+ * Where a press of next (+1) or previous (-1) goes from `step` of `count`: to
+ * the neighbouring step, or past either end into the neighbouring lesson, so
+ * the whole course can be read with one key.
+ */
+export function moveBy(step: number, count: number, delta: -1 | 1, neighbours: Neighbours): Move {
+  const to = step + delta;
+  if (to >= 0 && to < count) return { kind: "step", step: to };
+  const lesson = delta > 0 ? neighbours.next : neighbours.prev;
+  return lesson ? { kind: "lesson", lesson } : null;
 }
 
 /**
