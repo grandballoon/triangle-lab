@@ -213,11 +213,24 @@ html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
 .readout-warn .readout-math { color: #ff9c9c; }
 .readout-dim { opacity: 0.55; }
 
-/* --- Formula terms and their leader lines ------------------------------------ */
+/* Numbers held still while the figure is dragged (hold.ts): they grey out
+   gently, and once the drag ends their new values come back to full strength. */
+.held { opacity: 0.4; }
+.held-new { animation: held-in 0.22s ease-out; }
+.settled { animation: settle-in 0.4s ease-out; }
 
-/* A term that points into the figure (terms.ts): underlined faintly, lit
-   while the pointer — or a hand — is on it. */
-[data-term] {
+@keyframes held-in { from { opacity: 1; } }
+@keyframes settle-in { from { opacity: 0.4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .held-new, .settled { animation: none; }
+}
+
+/* --- Terms and their leader lines --------------------------------------------- */
+
+/* A term the figure shows (terms.ts): underlined faintly, lit while the
+   pointer — or a hand — is on it. Terms the figure does not show stay plain. */
+[data-term].term-linked {
   border-radius: 3px;
   box-shadow: inset 0 -1px rgba(238, 244, 251, 0.28);
   transition: background 0.12s ease;

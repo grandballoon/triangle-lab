@@ -7,6 +7,7 @@
 // The shell owns which step is current (shell.ts); this list only reports
 // what the reader picked and shows what the shell decided.
 
+import { linkTex } from "./link.ts";
 import { richHtml } from "./math.ts";
 import type { Step, Use } from "./scene.ts";
 
@@ -64,7 +65,7 @@ export class StepList {
       head.append(button);
       const text = doc.createElement("p");
       text.className = "step-text";
-      text.innerHTML = richHtml(step.text);
+      text.innerHTML = richHtml(step.text, false, linkTex);
       section.append(head, text);
       section.addEventListener("click", () => this.onPick(i, true));
       return section;

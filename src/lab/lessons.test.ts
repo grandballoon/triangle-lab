@@ -1,12 +1,14 @@
 // Every lab lesson, exercised without a browser: built against a real Scene,
 // drawn at every step onto a canvas stand-in that rejects non-finite
 // coordinates, with every handle dragged around the stage and every control
-// pressed. All text is typeset strictly, so a LaTeX typo fails here instead of
-// showing up as red source text on screen.
+// pressed. All text is typeset strictly, as written and as link.ts marks it
+// up, so a LaTeX typo fails here instead of showing up as red source text on
+// screen.
 
 import { describe, expect, it } from "vitest";
 import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
+import { linkTex } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
 import { Scene, type Frame, type HandPoints, type LessonBuilder, type LessonView } from "./scene.ts";
 import { STAGE } from "./shell.ts";
@@ -52,8 +54,8 @@ function show(view: LessonView, frame: Frame): string[] {
   view.draw(g, frame);
   const unmarked: string[] = [];
   for (const row of view.readout?.(frame) ?? []) {
-    if (row.label) richHtml(row.label, true);
-    texHtml(row.tex, true);
+    if (row.label) richHtml(row.label, true, linkTex);
+    texHtml(linkTex(row.tex), true);
     for (const t of [...termsIn(row.label ?? ""), ...termsIn(row.tex)]) {
       if (g.anchors(t).length === 0) unmarked.push(t);
     }
@@ -117,7 +119,7 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
       expect(step.title.trim()).not.toBe("");
       expect(step.title).not.toContain("$");
       expect(step.text.trim()).not.toBe("");
-      richHtml(step.text, true);
+      richHtml(step.text, true, linkTex);
     }
   });
 

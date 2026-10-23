@@ -9,6 +9,8 @@
 import { capturePointer, releasePointer } from "../pointer.ts";
 import { C, Draw, tint, toScreen, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
+import { liveHold, present, type Hold } from "./hold.ts";
+import { linkTex, termAliases } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
 import { SpriteCache } from "./sprites.ts";
 import { StepList } from "./steps.ts";
@@ -85,6 +87,14 @@ export class Shell {
   private readonly drags = new Map<number, Drag>();
   private current: Loaded | null = null;
   private formulasShown = true;
+  /** What the formula band holds still while the figure is dragged. */
+  private hold: Hold = liveHold;
+  /**
+   * Found term ids that stand for one of the lesson's own terms in the
+   * formulas shown last frame (link.ts `termAliases`): a symbol the lesson
+   * marked leads to, and lights, that term's marks wherever it is written.
+   */
+  private aliases = new Map<string, string>();
   private shownReadouts: string[] = [];
   private shownControls = "";
 
@@ -128,6 +138,8 @@ export class Shell {
       loadedAt: now,
     };
     this.drags.clear();
+    this.hold = liveHold;
+    this.aliases = new Map();
     this.shownReadouts = [];
     this.el.readouts.replaceChildren();
     this.el.eyebrow.textContent = header.eyebrow;
@@ -227,15 +239,24 @@ export class Shell {
     };
 
     const focus = this.terms.current();
-    const g = new Draw(this.ctx, view, c.header.accent, { focus: focus?.id ?? null, pictures: this.sprites });
+    const lit = focus ? (this.aliases.get(focus.id) ?? focus.id) : null;
+    const g = new Draw(this.ctx, view, c.header.accent, { focus: lit, pictures: this.sprites });
     c.view.draw(g, frame);
     // A lesson may change a control itself (a step that picks a case, a
     // button that resets a toggle); keep the chips showing the truth.
     if (this.controlState(c.scene) !== this.shownControls) this.renderControls();
     for (const s of c.scene.sliders) this.drawSlider(g, s);
     for (const h of c.scene.handles) this.drawHandle(g, view, h, c.header.accent);
-    this.renderReadouts(c.view.readout?.(frame) ?? []);
-    this.terms.lead(focus?.box ?? null, focus ? g.anchors(focus.id) : []);
+    const shown = present(this.hold, this.drags.size > 0, c.view.readout?.(frame) ?? []);
+    this.hold = shown.hold;
+    this.renderReadouts(shown.rows);
+    this.aliases = termAliases(shown.rows.map((r) => r.tex).join(" "));
+    const anchors = (id: string): readonly Vec[] => {
+      const alias = this.aliases.get(id);
+      return alias ? g.anchors(id, alias) : g.anchors(id);
+    };
+    this.terms.lead(focus, focus ? anchors(focus.id) : []);
+    this.terms.showLinked((id) => anchors(id).length > 0);
     this.stepList.fit();
   }
 
@@ -328,7 +349,7 @@ export class Shell {
   }
 
   /** Re-typeset only the rows whose content changed since the last frame. */
-  private renderReadouts(rows: Readout[]): void {
+  private renderReadouts(rows: readonly Readout[]): void {
     const host = this.el.readouts;
     while (host.children.length > rows.length) host.lastElementChild!.remove();
     rows.forEach((row, i) => {
@@ -342,8 +363,8 @@ export class Shell {
       }
       node.className = `readout readout-${row.tone ?? "plain"}`;
       node.innerHTML =
-        (row.label ? `<span class="readout-label">${richHtml(row.label)}</span>` : "") +
-        `<span class="readout-math">${texHtml(row.tex)}</span>`;
+        (row.label ? `<span class="readout-label">${richHtml(row.label, false, linkTex)}</span>` : "") +
+        `<span class="readout-math">${texHtml(linkTex(row.tex))}</span>`;
     });
     this.shownReadouts.length = rows.length;
   }

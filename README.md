@@ -115,7 +115,8 @@ That is all: the menu card, the pager links and the page appear on their own, an
 `src/lab/lessons/triangle-angle-sum.ts` is a good model for a stepped proof, and `src/lab/lessons/box-diagonal.ts` for a 3D figure with sliders.
 
 A lesson can also return `uses`, its real-world applications, shown after the steps.
-It can mark symbols in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks they stand for, so pointing at a symbol highlights its mark.
+Names, angles, variables and numbers in the step text and formulas lead to the figure on their own: pointing at `AB` draws a line to segment AB, as long as the figure labels its points A and B.
+Where that is not enough, a lesson can mark a symbol in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks it stands for, so pointing at it also highlights those marks.
 And it can set pictures on the figure with `g.sprite(src, at)`.
 `src/lab/lessons/exterior-angle.ts` has uses and terms.
 

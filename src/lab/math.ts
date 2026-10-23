@@ -5,11 +5,14 @@
 
 import katex from "katex";
 
-// `\htmlData` is how formulas mark their terms (scene.ts `term`); it is the
-// only HTML extension let through, and using it is not a strictness warning.
+// `\htmlData` is how formulas mark their terms (scene.ts `term`, link.ts) and
+// `\htmlClass` how the formula band greys numbers mid-drag (hold.ts); they are
+// the only HTML extensions let through, and using them is not a strictness
+// warning.
+const TRUSTED = new Set(["\\htmlData", "\\htmlClass"]);
 const KATEX_OPTIONS = {
   displayMode: false,
-  trust: (context: { command: string }) => context.command === "\\htmlData",
+  trust: (context: { command: string }) => TRUSTED.has(context.command),
   strict: (code: string) => (code === "htmlExtension" ? "ignore" : "warn"),
 } as const;
 
@@ -17,11 +20,14 @@ export function texHtml(tex: string, strict = false): string {
   return katex.renderToString(tex, { ...KATEX_OPTIONS, throwOnError: strict });
 }
 
-/** Prose with `$…$` runs of LaTeX, as safe HTML. */
-export function richHtml(text: string, strict = false): string {
+/**
+ * Prose with `$…$` runs of LaTeX, as safe HTML. `prepare` rewrites each run
+ * before it is typeset (link.ts `linkTex`).
+ */
+export function richHtml(text: string, strict = false, prepare: (tex: string) => string = (tex) => tex): string {
   const parts = text.split("$");
   if (strict && parts.length % 2 === 0) throw new Error(`Unbalanced $ in: ${text}`);
-  return parts.map((part, i) => (i % 2 === 1 ? texHtml(part, strict) : escapeHtml(part))).join("");
+  return parts.map((part, i) => (i % 2 === 1 ? texHtml(prepare(part), strict) : escapeHtml(part))).join("");
 }
 
 function escapeHtml(text: string): string {

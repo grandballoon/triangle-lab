@@ -157,7 +157,7 @@ describe("Shell", () => {
     const el = page();
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, () => ({
-      steps: [{ title: "One", text: "Look." }],
+      steps: [{ title: "One", text: "Look at $A$." }],
       draw: (g) => g.point({ x: 1, y: 1 }, { term: "apex" }),
       readout: () => [{ tex: `${term("apex", "A")} + 1` }],
     }));
@@ -174,9 +174,75 @@ describe("Shell", () => {
     expect(Number(lines()[0].getAttribute("y2"))).toBeCloseTo(end.y);
     expect(el.readouts.querySelector(".term-focus")).not.toBeNull();
 
+    // The same symbol in the step text stands for the lesson's term.
+    el.steps.querySelector("[data-term='pt:A']")!.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(lines()).toHaveLength(1);
+    expect(Number(lines()[0].getAttribute("x2"))).toBeCloseTo(end.x);
+
     el.canvas.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
     tick();
     expect(lines()).toHaveLength(0);
+  });
+
+  it("leads from names and numbers in the steps and formulas to the figure, unless it does not show them", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    const A = { x: -2, y: 0 };
+    const B = { x: 2, y: 0 };
+    shell.load({ eyebrow: "Lines", title: "T", accent: "#f472b6" }, () => ({
+      steps: [{ title: "One", text: "Side $AB$ is not $CD$." }],
+      draw: (g) => {
+        g.segment(A, B);
+        g.along(A, B, "4");
+        g.point(A, { label: "A" });
+        g.point(B, { label: "B" });
+      },
+      readout: () => [{ tex: "AB = 4,\\ x = 9" }],
+    }));
+    tick();
+    const lines = () => [...el.leader.querySelectorAll("line")].filter((l) => l.style.display !== "none");
+    const at = (host: HTMLElement, id: string) => host.querySelector<HTMLElement>(`[data-term='${id}']`)!;
+
+    at(el.steps, "seg:A.B").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(lines()).toHaveLength(1);
+    const middle = screenOf(shell, { x: 0, y: 0 });
+    expect(Number(lines()[0].getAttribute("x2"))).toBeCloseTo(middle.x);
+    expect(Number(lines()[0].getAttribute("y2"))).toBeCloseTo(middle.y);
+    expect(at(el.steps, "seg:A.B").classList.contains("term-focus")).toBe(true);
+
+    at(el.readouts, "num:4").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(lines()).toHaveLength(1);
+
+    // Nothing on the figure is CD or 9: not underlined, not lit, no leader.
+    for (const [host, id] of [[el.steps, "seg:C.D"], [el.readouts, "num:9"]] as const) {
+      at(host, id).dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+      tick();
+      expect(lines()).toHaveLength(0);
+      expect(at(host, id).className).toBe("enclosing");
+    }
+    expect(at(el.steps, "seg:A.B").classList.contains("term-linked")).toBe(true);
+  });
+
+  it("holds the formulas' changing numbers, greyed, while a handle is dragged", () => {
+    const { shell, el, scene } = loaded();
+    const apex = scene.handles[2];
+    const visible = () => [...el.readouts.querySelectorAll(".katex-html")].map((m) => m.textContent).join(" ");
+    const before = visible();
+    el.canvas.dispatchEvent(pointer("pointerdown", screenOf(shell, apex)));
+    tick();
+    el.canvas.dispatchEvent(pointer("pointermove", screenOf(shell, { x: apex.x - 2, y: apex.y + 0.5 })));
+    tick();
+    expect(visible()).toBe(before);
+    expect(el.readouts.querySelector(".held")).not.toBeNull();
+
+    el.canvas.dispatchEvent(pointer("pointerup", screenOf(shell, apex)));
+    tick();
+    expect(visible()).not.toBe(before);
+    expect(el.readouts.querySelector(".held")).toBeNull();
+    expect(el.readouts.querySelector(".settled")).not.toBeNull();
   });
 
   it("drags a handle with the pointer, within its constraint", () => {

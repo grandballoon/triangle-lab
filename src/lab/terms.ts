@@ -1,8 +1,10 @@
-// Links a formula's terms to the figure. Typeset formulas mark their terms
-// with `data-term` (scene.ts `term`); this module follows the pointer — a
-// mouse, or a hand, which arrives as synthetic pointer events — to find the
-// term under it, and draws thin leader lines from that term to the marks the
-// figure drew for it (draw.ts anchors).
+// Links the terms of the formulas and the step text to the figure. Typeset
+// mathematics marks its terms with `data-term` (scene.ts `term`, link.ts);
+// this module follows the pointer — a mouse, or a hand, which arrives as
+// synthetic pointer events — to find the term under it, and draws thin
+// leader lines from that term to the marks the figure drew for it (draw.ts
+// anchors). Only terms the figure shows are marked as linked and light up;
+// the rest read as plain mathematics.
 //
 // The term is looked up afresh each frame from the last pointer position,
 // because formulas are re-typeset as their values change and the element
@@ -12,11 +14,13 @@ import type { Vec } from "./geo.ts";
 
 const SVG = "http://www.w3.org/2000/svg";
 const FOCUS_CLASS = "term-focus";
+const LINKED_CLASS = "term-linked";
 
 export interface FocusedTerm {
   id: string;
   /** The term's box on screen. */
   box: DOMRect;
+  element: Element;
 }
 
 export class TermFocus {
@@ -49,16 +53,21 @@ export class TermFocus {
       ? this.doc.elementFromPoint(p.x, p.y)
       : this.target;
     const el = under?.closest<HTMLElement>("[data-term]") ?? null;
+    return el?.dataset.term ? { id: el.dataset.term, box: el.getBoundingClientRect(), element: el } : null;
+  }
+
+  /**
+   * Light `focus` and draw a leader from it to each point in `to`, in client
+   * pixels. A term with nowhere to lead is not lit; none hides the leaders.
+   */
+  lead(focus: FocusedTerm | null, to: readonly Vec[]): void {
+    const box = focus && to.length > 0 ? focus.box : null;
+    const el = box ? focus!.element : null;
     if (el !== this.lit) {
       this.lit?.classList.remove(FOCUS_CLASS);
       el?.classList.add(FOCUS_CLASS);
       this.lit = el;
     }
-    return el?.dataset.term ? { id: el.dataset.term, box: el.getBoundingClientRect() } : null;
-  }
-
-  /** Draw a leader from `box` to each point in `to`, all in client pixels; none hides them. */
-  lead(box: DOMRect | null, to: readonly Vec[]): void {
     const count = box ? to.length : 0;
     while (this.lines.length < count) {
       const line = this.doc.createElementNS(SVG, "line");
@@ -82,6 +91,17 @@ export class TermFocus {
       dot.setAttribute("cx", String(end.x));
       dot.setAttribute("cy", String(end.y));
     });
+  }
+
+  /** Mark each term on the page as linked or not, by whether the figure shows it now. */
+  showLinked(shown: (id: string) => boolean): void {
+    const known = new Map<string, boolean>();
+    for (const el of this.doc.querySelectorAll<HTMLElement>("[data-term]")) {
+      const id = el.dataset.term ?? "";
+      let linked = known.get(id);
+      if (linked === undefined) known.set(id, (linked = shown(id)));
+      if (el.classList.contains(LINKED_CLASS) !== linked) el.classList.toggle(LINKED_CLASS, linked);
+    }
   }
 }
 
