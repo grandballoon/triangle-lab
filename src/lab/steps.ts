@@ -4,6 +4,11 @@
 // the reader moves through the proof; pressing a step, the arrow keys and
 // the hand gestures move it too, and the list scrolls to follow.
 //
+// On a phone the list is paged instead (`setPaged`): one step shows at a
+// time, under a row with buttons to the previous and next, and the list's
+// height is the tallest step's, so the figure above keeps its size as the
+// reader pages through (`pagedHeight`, layout.ts).
+//
 // The shell owns which step is current (shell.ts); this list only reports
 // what the reader picked and shows what the shell decided.
 
@@ -18,20 +23,21 @@ const ACTIVE_LINE_PX = 48;
 const SCROLL_MARGIN_PX = 14;
 /** Give up waiting for a programmatic scroll to settle after this long. */
 const SCROLL_SETTLE_MS = 900;
+/** Room under the tallest step when paged, plus the column's border. */
+const PAGED_BOTTOM_PX = 10;
 
 export const USES_HEADING = "What will we use this for?";
 
-const PANEL_WIDTH = { min: 250, max: 340, share: 0.25 } as const;
-
-/** How wide the step column is in a window this many CSS pixels wide. */
-export function panelWidth(windowWidth: number): number {
-  const { min, max, share } = PANEL_WIDTH;
-  return Math.round(Math.min(max, Math.max(min, windowWidth * share)));
-}
-
 export class StepList {
   private sections: HTMLElement[] = [];
+  /** Holds the sections; paged, it stacks them in one cell (steps.css). */
+  private readonly track: HTMLElement;
   private readonly spacer: HTMLElement;
+  private readonly pager: HTMLElement;
+  private readonly pagerLabel: HTMLElement;
+  private readonly prev: HTMLButtonElement;
+  private readonly next: HTMLButtonElement;
+  private paged = false;
   private current = 0;
   /** While the list scrolls itself to a step, the step it is heading for. */
   private heading: number | null = null;
@@ -46,8 +52,33 @@ export class StepList {
     private readonly host: HTMLElement,
     private readonly onPick: (step: number, scroll: boolean) => void,
   ) {
-    this.spacer = host.ownerDocument.createElement("div");
+    const doc = host.ownerDocument;
+    this.track = doc.createElement("div");
+    this.track.className = "step-track";
+    this.spacer = doc.createElement("div");
     this.spacer.className = "step-spacer";
+
+    // The paged row sits above the scrolling list, so it never scrolls away.
+    this.pager = doc.createElement("div");
+    this.pager.className = "step-pager";
+    this.pagerLabel = doc.createElement("span");
+    this.pagerLabel.className = "step-pager-label";
+    const turn = (glyph: string, label: string, delta: -1 | 1): HTMLButtonElement => {
+      const b = doc.createElement("button");
+      b.type = "button";
+      b.textContent = glyph;
+      b.setAttribute("aria-label", label);
+      b.addEventListener("click", () => {
+        const to = this.current + delta;
+        if (to >= 0 && to < this.sections.length) this.onPick(to, true);
+      });
+      return b;
+    };
+    this.prev = turn("‹", "Previous step", -1);
+    this.next = turn("›", "Next step", 1);
+    this.pager.append(this.prev, this.pagerLabel, this.next);
+    host.parentElement?.insertBefore(this.pager, host);
+
     host.addEventListener("scroll", () => this.onScroll(), { passive: true });
     host.addEventListener("scrollend", () => this.settle());
   }
@@ -80,13 +111,36 @@ export class StepList {
       return section;
     });
 
-    const nodes: HTMLElement[] = [...this.sections];
+    this.track.replaceChildren(...this.sections);
+    const nodes: HTMLElement[] = [this.track];
     if (uses.length > 0) nodes.push(usesSection(doc, uses));
     this.host.replaceChildren(...nodes, this.spacer);
+    this.host.toggleAttribute("data-single", single);
+    this.pager.hidden = single;
     this.current = 0;
     this.heading = null;
     this.host.scrollTop = 0;
     this.mark(0, false);
+  }
+
+  /**
+   * Show one step at a time (a phone) or the whole list. The stylesheet does
+   * the showing, keyed off the page's layout; this switches the behaviour.
+   */
+  setPaged(paged: boolean): void {
+    if (paged === this.paged) return;
+    this.paged = paged;
+    this.settle();
+    this.mark(this.current, true);
+  }
+
+  /**
+   * The column's height that shows the tallest step whole, with the pager
+   * row, when paged. 0 until laid out.
+   */
+  pagedHeight(): number {
+    const track = this.track.offsetTop + this.track.offsetHeight;
+    return track > 0 ? this.pager.offsetHeight + track + PAGED_BOTTOM_PX : 0;
   }
 
   /** Show `step` as current, scrolling it into place when `scroll` is set. */
@@ -96,6 +150,17 @@ export class StepList {
       if (i === step) s.setAttribute("aria-current", "step");
       else s.removeAttribute("aria-current");
     });
+    const count = this.sections.length;
+    this.pagerLabel.textContent = `Step ${step + 1} of ${count}`;
+    this.prev.disabled = step <= 0;
+    this.next.disabled = step >= count - 1;
+    // Paged, the uses follow the last step.
+    this.host.toggleAttribute("data-last", step === count - 1);
+    if (this.paged) {
+      // Each step starts at its top; the others are hidden, not scrolled past.
+      this.host.scrollTop = 0;
+      return;
+    }
     if (!scroll) return;
     const target = this.sections[step];
     if (!target) return;
@@ -117,7 +182,7 @@ export class StepList {
    */
   fit(): void {
     const last = this.sections.at(-1);
-    if (!last) return;
+    if (!last || this.paged) return;
     const room = this.host.clientHeight - ACTIVE_LINE_PX;
     const after = this.host.scrollHeight - this.spacer.offsetHeight - last.offsetTop;
     const height = Math.max(0, Math.round(room - after));
@@ -135,6 +200,8 @@ export class StepList {
   }
 
   private onScroll(): void {
+    // Paged, scrolling only reads a long step.
+    if (this.paged) return;
     const step = this.stepAtTop();
     // Steps passed on the way to a picked one are not picks themselves.
     if (this.heading !== null) {

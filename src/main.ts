@@ -11,7 +11,8 @@ import {
   type Triangle,
   type Vec,
 } from "./geometry.ts";
-import { render, SPLASH_LIFE, type Scene, type Splash } from "./render.ts";
+import { CAPTION_ROOM, render, SPLASH_LIFE, type Scene, type Splash } from "./render.ts";
+import { captionScale, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -39,6 +40,8 @@ const GRAB_RADIUS = 34;
 const TOP_MARGIN = 64;
 const APEX_MIN_GAP = 24; // keep the apex this far above the base
 const SIDE_MARGIN = 40; // apex may roam past the base (obtuse base angles), on-screen
+const SEED_HEIGHT = 1.7; // the starting apex's height, in half-bases
+const APEX_ROOM = 16; // px between the top bar and the starting apex
 
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
@@ -48,8 +51,10 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const half = Math.min(W, H) * 0.24;
-  const baseY = H * 0.6;
+  // The base sits low enough for an acute apex above it and high enough for
+  // the caption below it.
+  const baseY = Math.min(H * 0.6, H - CAPTION_ROOM * captionScale(W, H));
+  const half = Math.min(Math.min(W, H) * 0.24, (baseY - TOP_MARGIN - APEX_ROOM) / SEED_HEIGHT);
   const cx = W / 2;
   base = { a: { x: cx - half, y: baseY }, b: { x: cx + half, y: baseY } };
   triangle.a = base.a;
@@ -57,7 +62,7 @@ function layout(): void {
 
   // On first layout, seed an acute triangle; afterwards keep the apex where it
   // was, just re-clamped into the new bounds.
-  if (lastType === null) triangle.c = { x: cx, y: baseY - half * 1.7 };
+  if (lastType === null) triangle.c = { x: cx, y: baseY - half * SEED_HEIGHT };
   triangle.c = clampApex(triangle.c);
   if (!dragging) knob = triangle.c;
 }
@@ -80,7 +85,8 @@ function pointerPos(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointerPos(e);
-  if (dist(p, triangle.c) <= GRAB_RADIUS || dist(p, knob) <= GRAB_RADIUS) {
+  const reach = grabRadius(e.pointerType, GRAB_RADIUS);
+  if (dist(p, triangle.c) <= reach || dist(p, knob) <= reach) {
     dragging = true;
     canvas.classList.add("grabbing");
     capturePointer(canvas, e);

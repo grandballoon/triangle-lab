@@ -16,6 +16,15 @@ There are three layers, and each knows as little as possible about the others.
             └───────────────────────────────────────────────────────────────┘
 ```
 
+## The camera (`src/webcam.ts`)
+
+Every lesson page draws over a full-screen `<video>` of the camera, which `startWebcam` opens.
+A device with a second camera gets a switch in the top bar (`cameraSwitch.ts`): on a phone it flips between the selfie camera and the one on the back, so the figure can be laid over the room; otherwise it steps through the attached cameras.
+Which camera to try next is decided by the pure `nextCameras`, and the choice is remembered, so the next lesson page opens the same camera.
+The camera can also be turned off from the hands settings sheet, which leaves the figures on a plain background; `webcam.ts` hands the sheet that switch through `startHands`'s `camera` option, since the camera belongs to the page rather than to hand input.
+Off is remembered too, and a page opened with the camera off never asks for it.
+A camera facing the user is shown mirrored and one facing away is not; the video carries which as `data-mirror`, and hand tracking maps landmarks to the screen, and reads handedness, to match.
+
 ## Hands are a pointer (`src/hands`)
 
 Hand tracking is an input device, not a feature of any lesson.
@@ -29,7 +38,7 @@ Inside the module the pipeline is a chain of small pieces, pure wherever possibl
 | `tracker.ts` | MediaPipe wrapper: video frame → landmarks in screen pixels | no |
 | `pose.ts` | Landmarks → pinch distance, cursor points, static pose (fist, thumbs-up, …) | yes |
 | `interpreter.ts` | Per-hand state machine: readings + settings → cursor, grab, held-pose actions | yes |
-| `settings.ts` | What is configurable, its defaults, validation, persistence | yes (storage injected) |
+| `settings.ts` | What is configurable, its defaults (hands start off on a touch-first device), validation, persistence | yes (storage injected) |
 | `pointerBridge.ts` | Hand state → DOM pointer events and clicks | no |
 | `overlay.ts` | Cursor rings, hold progress, optional skeleton on a click-through canvas | no |
 | `panel.ts` | The settings sheet, built only from buttons so a pinch can work it | no |
@@ -45,9 +54,18 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 **Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
-They gain the lab page's chrome by loading `src/page.ts` as an extra module script: the top bar with the pager and the lesson's name, hand input, and the step column on the right, filled with the lesson's numbered directions from `src/directions.ts`.
-The column reuses the lab's `StepList` and its stylesheet, so both kinds of lesson read alike, but the directions only describe the figure; they do not draw it in step by step.
-Like the curriculum rail, the column publishes the width it takes, as `--steps-inset`, and fires `resize`; each page's `#stage` rule leaves that width free.
+They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts`, and, for a lesson with live numbers, the formula band.
+The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
+Where they go comes from the same layout the lab uses (see "Fitting the window" below); `page.ts` publishes the box left for the canvas as `--stage-left`, `--stage-top`, `--stage-width` and `--stage-height`, which each page's `#stage` rule reads, and fires `resize`.
+
+The lesson and `page.ts` are separate scripts and meet only in `src/chrome.ts`, a module both import.
+`page.ts` sets the current step there, which a lesson may read to hold part of its figure back (`pythagoras.ts` brings in its proof at the step that scrubs it).
+A lesson with live numbers asks for the formula band there while its module is first evaluated, which is why its script must come first, and hands it fresh rows each frame.
+Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
+The band is used by perimeter, the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
+Each standalone figure sizes itself for anything from a phone to a desktop.
+`src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
+On a canvas taller than wide, `pythagoras.ts` shows its proof in place of the triangle rather than beside it.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show and, optionally, the real-world uses of its idea.
@@ -62,6 +80,9 @@ It never touches the DOM.
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
 | `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's uses. |
+| `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
+| `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
+| `lab/arrange.ts` | Writes a layout onto the page. |
 | `lab/link.ts` | Finds the names, angles, variables and numbers in a formula or step text and marks them as terms. Pure. |
 | `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to the marks that show it. Pure. |
 | `lab/terms.ts` | Finds the term under the pointer and draws leader lines from it to the figure. |
@@ -70,8 +91,8 @@ It never touches the DOM.
 | `lab/main.ts` | Entry point: picks the lesson from the URL, swaps lessons in place. |
 | `lab/kit/` | Helpers shared by several lessons of one chapter. |
 
-The page puts the steps in a column on the right and the formulas in a band along the bottom.
-All steps are visible at once; the one scrolled to the top of the column is current, and scrolling, pressing a step, the arrow keys and the hand gestures all change it through the shell, which owns the current step and the fade-in of each step's construction.
+The page puts the steps in a column on the right and the formulas in a band along the bottom, or, on a phone, both under the figure.
+All steps are visible at once (on a phone, one at a time; see "Fitting the window"); the one scrolled to the top of the column is current, and scrolling, pressing a step, the arrow keys and the hand gestures all change it through the shell, which owns the current step and the fade-in of each step's construction.
 
 ### Terms and the figure
 
@@ -105,6 +126,23 @@ A formula whose shape changes mid-drag (a new term, a different verdict) is held
 `Draw` sees images only through the `Pictures` interface, so lessons and their tests stay DOM-free.
 
 Lessons compose inside a fixed stage (x from −8 to 8, y from −5 to 5); the shell fits that stage into whatever screen space the panels leave free, so a lesson never handles resizing.
+
+## Fitting the window (`src/lab/layout.ts`)
+
+Both kinds of lesson page lay out their chrome with one pure function, `layoutChrome`: the window's size, the docked rail's width, and whether the formula band and a controls row are showing go in; boxes for the step column, the band and the controls row, and the room left for the figure, come out.
+The lab shell calls it every frame and fits its stage into `figure`; `page.ts` calls it on `resize` and publishes `canvas` for the standalone page's `#stage` rule.
+`arrange.ts` writes the result onto the page, and only when it changed.
+
+There are two arrangements.
+In a wide window the steps run down the right and the band along the bottom.
+Below 700px across (a phone held upright) the page stacks: the top bar takes two rows, and the band and the steps sit under the figure at full width.
+The steps then show one at a time, paged with a row of buttons above them (`StepList.setPaged`).
+All steps share one grid cell with only the current one visible, so the list's height is its tallest step's (`pagedHeight`, at most a third of the window, scrolling past that), the figure keeps its size from step to step, and it gets all the rest.
+A short window (a phone on its side) keeps the wide arrangement but goes compact: thinner margins and a band without its heading.
+
+The arrangement is marked on `<html>` as `data-layout` (and `data-compact`), and the stylesheets key their phone rules off it: the two-row top bar (`nav.css`), the single swipeable row of lab controls (`lab.css`), and the hands pill showing an icon for its status text (`hands.css`).
+Those rules draw the heights `layout.ts` assumes, so the two are changed together.
+The standalone lessons keep the top 64px of their canvas clear for the top bar; when the bar is taller, the canvas starts lower by the difference.
 
 ## The reading order (`src/lessons.ts`)
 
@@ -149,12 +187,18 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 
 - `src/hands/hands.test.ts`: pose classification on synthetic hands, the grab and hold state machine, settings rules.
 - `src/lab/geo.test.ts`: the geometry kernel.
+- `src/lab/layout.test.ts`: the chrome's boxes in wide and phone windows, and that the chrome never covers the figure at any common screen size.
 - `src/lab/draw.test.ts`: focused terms, the anchors leader lines run to, and sprites.
 - `src/lab/link.test.ts`: which pieces of LaTeX become found terms, and which are left alone.
 - `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures, and reading labels.
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
 - `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
-- `src/lab/shell.test.ts`: the shell, step column, formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+- `src/pages.test.ts`: every standalone page's stage rule, script order and directions.
+- `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
+- `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
+- `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
+- `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 

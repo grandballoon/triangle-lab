@@ -5,11 +5,12 @@
 
 import "katex/dist/katex.min.css";
 import "./lab.css";
+import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, type Lesson } from "../lessons.ts";
 import { mountPager, type Neighbours } from "../pager.ts";
-import { startWebcam } from "../webcam.ts";
+import { camera, startWebcam } from "../webcam.ts";
 import type { LessonBuilder } from "./scene.ts";
 import { Shell } from "./shell.ts";
 
@@ -19,10 +20,12 @@ const byId = <T extends HTMLElement>(id: string): T => document.getElementById(i
 
 const video = byId<HTMLVideoElement>("cam");
 const topbar = byId("topbar");
+mountCameraSwitch(topbar);
 
 const hands = startHands({
   video,
   multiPointer: true,
+  camera,
   onAction: (action) => {
     if (action === "next") shell.stepBy(1);
     else if (action === "previous") shell.stepBy(-1);
@@ -39,6 +42,7 @@ const shell = new Shell(
     controls: byId("controls"),
     formulas: byId("formulas"),
     readouts: byId("readouts"),
+    column: byId("steps"),
     steps: byId("step-list"),
     leader: document.getElementById("leader") as unknown as SVGSVGElement,
   },

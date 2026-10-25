@@ -55,6 +55,21 @@ export default lesson((s) => {
       },
     ],
 
+    uses: [
+      {
+        title: "Is the deck square?",
+        text: "Before carpenters nail down the frame of a deck or a shed, they check that each corner is a right angle. They mark 3 feet along one board from the corner and 4 feet along the other, then measure between the two marks. Because $3^2 + 4^2 = 5^2$, that distance is exactly 5 feet only when the corner is square. If it comes out at 5 feet and an inch, the corner is a little too wide, and they nudge the boards before anything is fixed. On a big deck they use 6, 8 and 10 feet, or 9, 12 and 15, which work for the same reason.",
+      },
+      {
+        title: "How big is a 55-inch TV?",
+        text: "Screens are sold by the length of their diagonal, corner to corner. The width and the height are the two legs of a right triangle, and the diagonal is its hypotenuse. A 55-inch TV is about 48 inches wide and 27 inches tall, and $48^2 + 27^2$ comes out at almost exactly $55^2$. Furniture designers work it backwards like this to know how wide to make a TV stand or a wall cabinet for each size of screen.",
+      },
+      {
+        title: "Can the monster see you?",
+        text: "In a video game, every character has a position across the screen and a position up it. To decide whether an enemy is close enough to spot the player, the game finds how far apart they are across and how far apart they are up. Those are the legs of a right triangle, and the straight-line distance between them is its hypotenuse, $\\sqrt{a^2 + b^2}$. Games check this for every enemy, many times a second, so they often skip the square root and compare $a^2 + b^2$ with the square of the enemy's sight range instead.",
+      },
+    ],
+
     draw(g, f) {
       const { a, b, c } = legs();
 

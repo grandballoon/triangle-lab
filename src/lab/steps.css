@@ -1,18 +1,16 @@
-/* The step column (steps.ts), down the right of a lesson page: every step as
-   a section of one scrolling list, the current one marked, then the lesson's
-   uses. Both kinds of page show it, so it is styled here rather than in
-   either page's stylesheet.
+/* The step column (steps.ts), down the right of a lesson page or along the
+   bottom of a phone's: every step as a section of one scrolling list, the
+   current one marked, then the lesson's uses. Both kinds of page show it, so
+   it is styled here rather than in either page's stylesheet.
 
-   The page sets --edge, --panel-width and --accent; --bottom-reserve is the
-   room the lab keeps for its formula band, and is 0 on a standalone page. */
+   Its box comes from the shared layout (layout.ts, placed by arrange.ts); the
+   page sets --accent. */
 
 #steps {
   position: fixed;
-  top: 60px;
-  right: var(--edge);
-  bottom: calc(var(--edge) + var(--bottom-reserve, 0px));
-  width: var(--panel-width);
   z-index: 10;
+  /* A quick second tap moves on a step; it must not zoom the page. */
+  touch-action: manipulation;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -152,3 +150,79 @@
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* --- Paged, on a phone -------------------------------------------------------
+
+   Stacked under the figure (html[data-layout="stacked"]), the list shows one
+   step at a time (steps.ts setPaged). Every step sits in the same grid cell
+   and only the current one is visible, so the cell, and with it the
+   column's height, is the tallest step's: the figure keeps its size from
+   step to step. A row above the list pages through, and the uses come with
+   the last step. */
+
+.step-pager { display: none; }
+
+html[data-layout="stacked"] .step-pager {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 0;
+}
+
+html[data-layout="stacked"] .step-pager[hidden] { display: none; }
+
+.step-pager-label {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.step-pager button {
+  width: 48px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e9f0f7;
+  font: 18px/1 ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.step-pager button:disabled { opacity: 0.3; cursor: default; }
+
+.step-pager button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-layout="stacked"] #step-list { padding: 4px 8px 0; }
+html[data-layout="stacked"] .step-track { display: grid; }
+
+html[data-layout="stacked"] .step,
+html[data-layout="stacked"] .step[aria-current="step"] {
+  grid-area: 1 / 1;
+  margin: 0;
+  padding: 4px 6px 6px;
+  border-left: 0;
+  background: none;
+  opacity: 1;
+  cursor: default;
+}
+
+html[data-layout="stacked"] .step:not([aria-current]) { visibility: hidden; }
+
+/* The pager row says which step this is; a lone "Explore" step keeps its label. */
+html[data-layout="stacked"] #step-list:not([data-single]) .step-count { display: none; }
+
+html[data-layout="stacked"] .step-title { font-size: 16px; margin: 0 0 4px; }
+html[data-layout="stacked"] .step-text { font-size: 14.5px; line-height: 1.4; }
+html[data-layout="stacked"] .step-spacer { display: none; }
+html[data-layout="stacked"] .uses { display: none; margin-top: 10px; }
+html[data-layout="stacked"] #step-list[data-last] .uses { display: block; }

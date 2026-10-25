@@ -1,10 +1,12 @@
 // The written directions for the standalone lesson pages, keyed by slug. Each
-// page shows its own in the step column on the right (page.ts), in the same
-// format as a lab lesson's steps. Text may hold `$…$` LaTeX.
+// page shows its own in the step column (page.ts), in the same format as a
+// lab lesson's steps. Text may hold `$…$` LaTeX.
 //
-// The steps here only describe the figure; they do not drive it. A lab
-// lesson's steps draw its construction in, but a standalone page has one
-// bespoke interaction and shows all of it at once.
+// The steps here mostly only describe the figure. A lab lesson's steps draw
+// its construction in, but a standalone page has one bespoke interaction and
+// shows nearly all of it at once; a page that holds part of its figure back
+// reads the current step from chrome.ts (pythagoras.ts brings in its proof at
+// "Scrub the proof").
 
 import type { Step } from "./lab/scene.ts";
 
@@ -76,11 +78,15 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Keep a running total",
-      text: "Each side you finish adds its length to $p$ in that triangle's box.",
+      text: "Each side you finish adds its length to that triangle's $p$ in the formulas below.",
+    },
+    {
+      title: "Halfway round",
+      text: "Once the knob has walked half of the way round, a gold mark drops on that spot. The distance walked so far is the semiperimeter $s$.",
     },
     {
       title: "All the way round",
-      text: "Bring the knob back to where it started. The perimeter is $p = a + b + c$, and the semiperimeter $s = \\frac{p}{2}$ joins it.",
+      text: "Bring the knob back to where it started. The perimeter is $p = a + b + c$, and the semiperimeter is half of it, $s = \\frac{p}{2}$.",
     },
   ],
   medians: [
@@ -118,7 +124,11 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Lock the altitude",
-      text: "At the foot it locks with a right-angle mark and is labelled $h$. On an obtuse triangle the foot can lie beyond the side, on a dashed extension.",
+      text: "At the foot it locks with a right-angle mark and is labelled $h$.",
+    },
+    {
+      title: "Past the end of a side",
+      text: "On an obtuse triangle, the altitudes from the two sharp corners miss the opposite side. Extend that side, along the gold dashed line, and the altitude lands on the extension, outside the triangle.",
     },
     {
       title: "Find the orthocenter",
@@ -126,7 +136,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Scroll for more",
-      text: "Scroll, or drag empty space, to pan through thirty triangles. The flatter the triangle, the farther $H$ flies.",
+      text: "Scroll, or drag empty space, to pan through fifteen triangles. The flatter the triangle, the farther $H$ flies.",
     },
   ],
   inequality: [
@@ -140,7 +150,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Watch the sums",
-      text: "The panel checks $a + b > c$, $b + c > a$ and $c + a > b$ as you swing.",
+      text: "The formulas below check $a + b > c$, $b + c > a$ and $c + a > b$ as you swing.",
     },
     {
       title: "Lie flat",
@@ -150,37 +160,43 @@ export const directions: Record<string, Step[]> = {
   pythagoras: [
     {
       title: "Shape the triangle",
-      text: "Drag the knobs on the left triangle. A square sits on every side, labelled with its area.",
+      text: "Drag the knobs on the triangle's corners. A square sits on every side, labelled with its area.",
     },
     {
       title: "Compare the areas",
-      text: "The panel adds the two leg squares: $a^2 + b^2$ always equals $c^2$, the hypotenuse square.",
+      text: "The formulas below add the two leg squares: $a^2 + b^2$ always equals $c^2$, the hypotenuse square.",
     },
     {
       title: "Scrub the proof",
-      text: "On the right, slide the knob along its rail. The same four triangles move around inside one square of side $a + b$.",
+      text: "A proof joins the triangle, beside it or, on a narrow screen, in its place. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
     },
     {
       title: "Why it is true",
       text: "At one end the space left over is the two squares $a^2$ and $b^2$; at the other it is one tilted square $c^2$. Same box, same four triangles, so $a^2 + b^2 = c^2$.",
     },
   ],
+  // congruence.ts shows one test per step where its figures would otherwise
+  // be too small: the first step and the next one show SSS, then one each.
   congruence: [
     {
       title: "Drag each C",
-      text: "Each cell has the same fixed base $AB$ and a free corner $C$. The dashed circles and rays show where $C$ must go to match the given sides and angles.",
+      text: "Each test has the same fixed base $AB$ and a free corner $C$. The dashed circles and rays show where $C$ must go to match the given sides and angles. The formulas below tick each measurement as it matches, and $C$ snaps onto the spots where the dashed lines cross.",
     },
     {
-      title: "Meet the givens",
-      text: "The checklist ticks each measurement as it matches. $C$ snaps onto the spots where the dashed lines cross.",
+      title: "SSS: three sides",
+      text: "A circle round each end of $AB$ gives the other two sides, and they cross at one spot above the base: three sides fix a single triangle. The crossing below is its mirror image across $AB$, the same triangle flipped.",
     },
     {
-      title: "SSS, SAS, ASA",
-      text: "These three leave $C$ only one place to land, so the givens fix a single triangle. SSS also shows its mirror image across $AB$, the same triangle flipped.",
+      title: "SAS: two sides and the angle between",
+      text: "The ray from $A$ gives the angle and the circle round $A$ the side $AC$. They meet at one spot, so two sides and the angle between them fix a single triangle.",
+    },
+    {
+      title: "ASA: two angles and the side between",
+      text: "The rays from $A$ and $B$ give the two angles at the ends of $AB$, and they cross once: two angles and the side between them fix a single triangle.",
     },
     {
       title: "Why not SSA",
-      text: "In the SSA cell, the ray and the circle cross twice. Land $C$ on one spot and the other stays as a ghost: two different triangles from the same givens.",
+      text: "In SSA, the ray from $A$ and the circle round $B$ cross twice. Land $C$ on one spot and the other stays as a ghost: two different triangles from the same givens.",
     },
   ],
   similar: [
@@ -189,8 +205,8 @@ export const directions: Record<string, Step[]> = {
       text: "Drag the knob along the tilted ray. Each right triangle under it has angles $90^\\circ$, $\\theta$ and $90^\\circ - \\theta$, so they are all similar.",
     },
     {
-      title: "Read the table",
-      text: "As you slide, the sides change but the ratios $\\frac{\\text{opp}}{\\text{hyp}}$, $\\frac{\\text{adj}}{\\text{hyp}}$ and $\\frac{\\text{opp}}{\\text{adj}}$ hold still.",
+      title: "Read the ratios",
+      text: "The formulas below work out $\\frac{\\text{opp}}{\\text{hyp}}$, $\\frac{\\text{adj}}{\\text{hyp}}$ and $\\frac{\\text{opp}}{\\text{adj}}$ in all three triangles. As you slide, the sides change but every ratio holds still.",
     },
     {
       title: "Turn the dial",
@@ -204,7 +220,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Six ratios",
-      text: "The panel builds $\\sin$, $\\cos$ and $\\tan$ from the sides, and beneath them their flips $\\csc$, $\\sec$ and $\\cot$.",
+      text: "The formulas below build $\\sin$, $\\cos$ and $\\tan$ from the sides, then their flips $\\csc$, $\\sec$ and $\\cot$.",
     },
     {
       title: "Switch angles",
@@ -212,7 +228,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Always one",
-      text: "The footer shows $\\sin^2 + \\cos^2 = \\frac{a^2 + b^2}{c^2} = 1$. That is the Pythagorean theorem again.",
+      text: "The last formula shows $\\sin^2 + \\cos^2 = \\frac{a^2 + b^2}{c^2} = 1$. That is the Pythagorean theorem again.",
     },
   ],
   fortyfive: [
@@ -262,7 +278,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Read the table",
-      text: "The table lists all six ratios at each landmark angle, with the column nearest the dial highlighted.",
+      text: "The formulas below list all six ratios at each landmark angle, one angle to a row, with the one the dial rests on lit up.",
     },
     {
       title: "The ends",

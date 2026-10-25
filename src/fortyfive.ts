@@ -6,14 +6,19 @@
 // the corner right angles and 45° arcs appear at both ends of the crease.
 // What remains is the 45-45-90 triangle: legs a and a, and the Pythagorean
 // Theorem computes the hypotenuse √(a² + a²) = a√2 with live numbers. The
-// panel builds all six ratios from those sides and shows the a's cancel:
-// sin 45° = a/(a√2) = 1/√2 = √2/2 ≈ 0.707. Resize the square — every decimal
-// on the sides changes, every ratio holds still. That is the whole lesson.
+// formula band below builds all six ratios from those sides and shows the
+// a's cancel: sin 45° = a/(a√2) = 1/√2 = √2/2 ≈ 0.707. Resize the square —
+// every decimal on the sides changes, every ratio holds still. That is the
+// whole lesson.
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the page's formula band, the small-screen helpers
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grabRadius, nearest } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { foldOf, fortyFiveReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -31,7 +36,6 @@ const CREASE = "#ffd43b"; // the diagonal, and the 45° arcs it creates
 const OK = "#38d9a9"; // the congruence verdict
 const EDGE = "#eef4fb";
 const TEXT = "rgba(233,240,247,0.85)";
-const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
 const TOP_MARGIN = 64;
@@ -39,6 +43,7 @@ const GRAB_RADIUS = 26;
 const A_MIN = 1.6;
 const A_MAX = 3.4;
 const MIN_UNIT = 24; // px per unit, however cramped the window
+const PAD = 22; // px around the square, on top of its 0.7 units of room, for the side labels
 const SNAP_T = 0.07; // fold snaps flat/closed inside this margin
 const PULSE_LIFE = 0.6;
 
@@ -58,11 +63,11 @@ let W = 0;
 let H = 0;
 let unit = 1;
 let center: Vec = { x: 0, y: 0 };
+const showFormulas = formulaBand();
 
 // --- helpers ---------------------------------------------------------------
 
 const clamp = (v: number, lo: number, hi: number): number => (v < lo ? lo : v > hi ? hi : v);
-const dist = (p: Vec, q: Vec): number => Math.hypot(p.x - q.x, p.y - q.y);
 
 function rgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -100,10 +105,11 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const figureW = W - PANEL_W - 90;
+  // Sized for the largest square, so resizing never rescales the world.
   // Floored so a narrow window shrinks the figure rather than inverting it.
-  unit = Math.max(MIN_UNIT, Math.min((figureW - 80) / (A_MAX + 0.7), (H - TOP_MARGIN - 130) / (A_MAX + 0.7)));
-  center = { x: 50 + figureW / 2, y: TOP_MARGIN + (H - TOP_MARGIN) / 2 };
+  const usableH = H - TOP_MARGIN;
+  unit = Math.max(MIN_UNIT, Math.min((W - 2 * PAD) / (A_MAX + 0.7), (usableH - 2 * PAD) / (A_MAX + 0.7)));
+  center = { x: W / 2, y: TOP_MARGIN + usableH / 2 };
 }
 
 // --- interaction -----------------------------------------------------------
@@ -117,13 +123,9 @@ const foldKnobPos = (): Vec => toScreen(foldPoint(p1(), fold));
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, foldKnobPos()) <= GRAB_RADIUS) {
-    drag = "fold";
-  } else if (dist(p, toScreen(p2())) <= GRAB_RADIUS) {
-    drag = "size";
-  } else {
-    return;
-  }
+  const hit = nearest(p, [foldKnobPos(), toScreen(p2())], grabRadius(e.pointerType, GRAB_RADIUS));
+  if (hit < 0) return;
+  drag = hit === 0 ? "fold" : "size";
   canvas.classList.add("grabbing");
   capturePointer(canvas, e);
   drive(p);
@@ -258,25 +260,11 @@ function render(): void {
   if (isFolded) {
     drawHalfAngle(s4, -Math.PI / 4, 0);
     drawHalfAngle(s2, Math.PI / 2, Math.PI * 0.75);
-    ctx.font = "600 13px ui-sans-serif, system-ui, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillStyle = OK;
-    ctx.fillText("the halves match — congruent — so the fold BISECTS the right angles", center.x, s3.y + 52);
-  } else {
-    ctx.font = "500 13px ui-sans-serif, system-ui, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText(
-      fold === 0 ? "a square: four sides a, four right angles" : "folding over the diagonal…",
-      center.x,
-      s3.y + 52,
-    );
   }
 
   for (const p of pulses) drawPulse(p);
   drawKnob(f1, drag === "fold");
   drawKnob(s2, drag === "size");
-  drawPanel();
 }
 
 /** A 45° arc + label at a crease end, spanning [from, to] in canvas angles. */
@@ -293,88 +281,6 @@ function drawHalfAngle(v: Vec, from: number, to: number): void {
   ctx.textBaseline = "middle";
   ctx.fillStyle = CREASE;
   ctx.fillText("45°", v.x + Math.cos(mid) * (r + 17), v.y + Math.sin(mid) * (r + 17));
-}
-
-// --- panel -----------------------------------------------------------------
-
-const PANEL_W = 348;
-const PANEL_PAD = 14;
-
-function drawPanel(): void {
-  const x = W - PANEL_W - 18;
-  const y = TOP_MARGIN;
-  const h = 332;
-  ctx.beginPath();
-  ctx.roundRect(x, y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.65)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  const a = side;
-  const hyp = a * Math.SQRT2;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  let ty = y + PANEL_PAD + 14;
-
-  ctx.font = "700 15px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("half a square = 45°-45°-90°", x + PANEL_PAD, ty);
-  ty += 24;
-
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(x + PANEL_PAD, ty, [
-    ["hyp", CREASE],
-    [" = √(a² + a²)", TEXT],
-    [` = √${(2 * a * a).toFixed(2)}`, TEXT_DIM],
-    [" = a√2", CREASE],
-  ]);
-  ty += 19;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText(`Pythagoras on legs a, a — here √2·${a.toFixed(2)} = ${hyp.toFixed(2)}`, x + PANEL_PAD, ty);
-  ty += 26;
-
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  const row = (name: string, live: string, exact: string, value: string): void => {
-    segments(x + PANEL_PAD, ty, [
-      [name.padEnd(8), TEXT],
-      ["= ", TEXT_DIM],
-      [live.padEnd(12), TEXT_DIM],
-      ["= ", TEXT_DIM],
-      [exact.padEnd(12), ACCENT],
-      [`= ${value}`, TEXT],
-    ]);
-    ty += 21;
-  };
-
-  row("sin 45°", `${a.toFixed(2)}/${hyp.toFixed(2)}`, "a/a√2 → 1/√2", "0.707");
-  row("cos 45°", `${a.toFixed(2)}/${hyp.toFixed(2)}`, "1/√2 = √2/2", "0.707");
-  row("tan 45°", `${a.toFixed(2)}/${a.toFixed(2)}`, "a/a → 1", "1.000");
-  row("csc 45°", `${hyp.toFixed(2)}/${a.toFixed(2)}`, "√2", "1.414");
-  row("sec 45°", `${hyp.toFixed(2)}/${a.toFixed(2)}`, "√2", "1.414");
-  row("cot 45°", `${a.toFixed(2)}/${a.toFixed(2)}`, "1", "1.000");
-
-  ty += 4;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("the a's cancel every time: the size never mattered.", x + PANEL_PAD, ty);
-  ty += 17;
-  ctx.fillText("resize the square — decimals move, ratios hold.", x + PANEL_PAD, ty);
-  ty += 17;
-  ctx.fillStyle = TEXT;
-  ctx.fillText("hyp : leg is always √2 in a 45-45-90 triangle.", x + PANEL_PAD, ty);
-}
-
-/** Draw colored text runs left-to-right from (x, y). */
-function segments(x: number, y: number, runs: [string, string][]): void {
-  let cx = x;
-  for (const [text, color] of runs) {
-    ctx.fillStyle = color;
-    ctx.fillText(text, cx, y);
-    cx += ctx.measureText(text).width;
-  }
 }
 
 // --- chrome ----------------------------------------------------------------
@@ -407,6 +313,7 @@ function frame(now: number): void {
   prev = now;
   pulses = pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   render();
+  showFormulas(fortyFiveReadouts(side, foldOf(fold)));
   requestAnimationFrame(frame);
 }
 

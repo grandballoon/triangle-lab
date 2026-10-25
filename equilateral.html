@@ -19,11 +19,13 @@
       }
       #veil { position: fixed; inset: 0; background: rgba(6, 10, 16, 0.45); }
       #stage {
-        /* Clear of the curriculum rail on the left and the step column on
-           the right (page.ts). A canvas keeps its 300x150 default unless
-           sized explicitly; insets alone do not stretch it. */
-        position: fixed; top: 0; left: var(--rail-inset, 0px);
-        width: calc(100% - var(--rail-inset, 0px) - var(--steps-inset, 0px)); height: 100%;
+        /* The room the page chrome leaves the figure (page.ts): clear of the
+           curriculum rail, the step column and any formula band. A canvas
+           keeps its 300x150 default unless sized explicitly; insets alone
+           do not stretch it. */
+        position: fixed;
+        left: var(--stage-left, 0px); top: var(--stage-top, 0px);
+        width: var(--stage-width, 100%); height: var(--stage-height, 100%);
         touch-action: none; cursor: grab;
       }
       #stage.grabbing { cursor: grabbing; }

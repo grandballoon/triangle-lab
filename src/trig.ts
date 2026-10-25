@@ -3,18 +3,22 @@
 // One right triangle ABC, right angle at C, with a knob on B that reshapes it
 // freely. With respect to the focused acute angle, the opposite leg, adjacent
 // leg, and hypotenuse each wear their own color, and the words themselves
-// ride the sides. The panel builds all six ratios as colored fractions with
-// live lengths and values: sin, cos, tan, and beneath them their three flips
-// csc, sec, cot — literally the same fractions upside-down. Click the other
-// acute angle and the opposite/adjacent colors trade places on the same
-// triangle while the panel shows sin A = cos B with equal live numbers: the
-// cofunction identity sin A = cos(90° − A), embodied. The footer computes
+// ride the sides. The formula band below builds all six ratios as fractions
+// with live lengths and values: sin, cos, tan, then their three flips csc,
+// sec, cot — literally the same fractions upside-down. Click the other acute
+// angle and the opposite/adjacent colors trade places on the same triangle
+// while the band shows sin A = cos B with equal live numbers: the cofunction
+// identity sin A = cos(90° − A), embodied. Its last row computes
 // sin² + cos² = (a² + b²)/c² live — always 1, because that IS Pythagoras.
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the page's formula band, the small-screen helpers
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { fillFitted, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { trigReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -27,7 +31,6 @@ const OPP = "#ff6b6b"; // the opposite leg
 const ADJ = "#4dabf7"; // the adjacent leg
 const HYP = "#ffd43b"; // the hypotenuse
 const EDGE = "#eef4fb";
-const TEXT = "rgba(233,240,247,0.85)";
 const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
@@ -39,6 +42,13 @@ const LEG_A_MAX = 3.2;
 const LEG_B_MIN = 1.6; // AC, horizontal
 const LEG_B_MAX = 4.6;
 const MIN_UNIT = 24; // px per unit, however cramped the window
+// Room around the triangle for its labels and knob, in screen px.
+const PAD_X = 44;
+const PAD_Y = 42;
+const FOCUS_RADIUS = 80; // a click this near an acute angle stands there
+const LABEL_SPILL = 30; // how far a side's label may run past the side's ends, px
+
+const SIDE_LABEL = { font: (px: number): string => `700 ${px}px ui-sans-serif, system-ui, sans-serif`, size: 14 };
 
 // --- state -----------------------------------------------------------------
 
@@ -55,6 +65,7 @@ let W = 0;
 let H = 0;
 let unit = 1;
 let originA: Vec = { x: 0, y: 0 }; // screen position of A
+const showFormulas = formulaBand();
 
 // --- helpers ---------------------------------------------------------------
 
@@ -73,10 +84,15 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const figureW = W - PANEL_W - 90; // the panel owns the right side
-  // Floored so a narrow window shrinks the figure rather than inverting it.
-  unit = Math.max(MIN_UNIT, Math.min((figureW - 60) / LEG_B_MAX, (H - TOP_MARGIN - 170) / LEG_A_MAX));
-  originA = { x: 48, y: TOP_MARGIN + 60 + LEG_A_MAX * unit };
+  // Sized and centred for the largest the triangle can grow, so a drag never
+  // rescales it. Floored so a narrow window shrinks the figure rather than
+  // inverting it.
+  const usableH = H - TOP_MARGIN;
+  unit = Math.max(MIN_UNIT, Math.min((W - 2 * PAD_X) / LEG_B_MAX, (usableH - 2 * PAD_Y) / LEG_A_MAX));
+  originA = {
+    x: (W - LEG_B_MAX * unit) / 2,
+    y: TOP_MARGIN + (usableH + LEG_A_MAX * unit) / 2,
+  };
 }
 
 // --- interaction -----------------------------------------------------------
@@ -88,7 +104,7 @@ function pointer(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, ptB()) <= GRAB_RADIUS) {
+  if (dist(p, ptB()) <= grabRadius(e.pointerType, GRAB_RADIUS)) {
     dragging = true;
     canvas.classList.add("grabbing");
     capturePointer(canvas, e);
@@ -96,8 +112,8 @@ canvas.addEventListener("pointerdown", (e) => {
     return;
   }
   // Clicking near an acute angle (but not on the knob) moves the focus there.
-  if (dist(p, ptA()) <= 80) focus = "A";
-  else if (dist(p, ptB()) <= 80) focus = "B";
+  if (dist(p, ptA()) <= FOCUS_RADIUS) focus = "A";
+  else if (dist(p, ptB()) <= FOCUS_RADIUS) focus = "B";
 });
 
 canvas.addEventListener("pointermove", (e) => {
@@ -156,33 +172,26 @@ function render(): void {
   ctx.strokeStyle = EDGE;
   ctx.stroke();
 
-  // The words ride their sides.
-  const vertMidY = (C.y + B.y) / 2;
+  // The words ride their sides, shrinking to fit a short one.
   const vertWord = focus === "A" ? "opposite" : "adjacent";
-  const vertColor = focus === "A" ? OPP : ADJ;
-  ctx.save();
-  ctx.translate(C.x + 16, vertMidY);
-  ctx.rotate(-Math.PI / 2);
-  ctx.font = "700 14px ui-sans-serif, system-ui, sans-serif";
+  const horizWord = focus === "A" ? "adjacent" : "opposite";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillStyle = vertColor;
-  ctx.fillText(`${vertWord} · a = ${legA.toFixed(2)}`, 0, 0);
+  ctx.save();
+  ctx.translate(C.x + 16, (C.y + B.y) / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillStyle = focus === "A" ? OPP : ADJ;
+  fillFitted(ctx, `${vertWord} · a = ${legA.toFixed(2)}`, 0, 0, dist(B, C) + LABEL_SPILL, SIDE_LABEL);
   ctx.restore();
 
-  const horizWord = focus === "A" ? "adjacent" : "opposite";
-  const horizColor = focus === "A" ? ADJ : OPP;
-  ctx.font = "700 14px ui-sans-serif, system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillStyle = horizColor;
-  ctx.fillText(`${horizWord} · b = ${legB.toFixed(2)}`, (A.x + C.x) / 2, A.y + 20);
+  ctx.fillStyle = focus === "A" ? ADJ : OPP;
+  fillFitted(ctx, `${horizWord} · b = ${legB.toFixed(2)}`, (A.x + C.x) / 2, A.y + 20, dist(A, C) + LABEL_SPILL, SIDE_LABEL);
 
   ctx.save();
   ctx.translate((A.x + B.x) / 2, (A.y + B.y) / 2);
   ctx.rotate(Math.atan2(B.y - A.y, B.x - A.x));
   ctx.fillStyle = HYP;
-  ctx.fillText(`hypotenuse · c = ${hyp.toFixed(2)}`, 0, -14);
+  fillFitted(ctx, `hypotenuse · c = ${hyp.toFixed(2)}`, 0, -14, dist(A, B) + LABEL_SPILL, SIDE_LABEL);
   ctx.restore();
 
   // The two acute angles: focused one bright, the other a clickable dim arc.
@@ -197,13 +206,13 @@ function render(): void {
   ctx.fillText("C", C.x + 14, C.y + 14);
 
   drawKnob(ptB(), dragging);
-  drawPanel(hyp, thetaA);
 }
 
 /** One acute angle: an arc + degree label, bright when focused. */
 function drawAcuteAngle(which: "A" | "B", v: Vec, degrees: number): void {
   const focused = focus === which;
-  const r = focused ? 46 : 38;
+  // Inside the shorter leg, however small the triangle is drawn.
+  const r = clamp(Math.min(legA, legB) * unit * 0.45, 20, focused ? 46 : 38);
   ctx.beginPath();
   if (which === "A") {
     // At A the angle opens upward from the base toward the hypotenuse.
@@ -234,134 +243,6 @@ function drawAcuteAngle(which: "A" | "B", v: Vec, degrees: number): void {
   }
 }
 
-// --- the panel of six ratios ----------------------------------------------
-
-const PANEL_W = 342;
-const PANEL_PAD = 14;
-
-function drawPanel(hyp: number, thetaA: number): void {
-  const x = W - PANEL_W - 18;
-  const y = TOP_MARGIN;
-  const h = 366;
-  ctx.beginPath();
-  ctx.roundRect(x, y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.65)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  const theta = focus === "A" ? thetaA : 90 - thetaA;
-  const opp = focus === "A" ? legA : legB;
-  const adj = focus === "A" ? legB : legA;
-  const oppName = focus === "A" ? "a" : "b";
-  const adjName = focus === "A" ? "b" : "a";
-
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  let ty = y + PANEL_PAD + 14;
-
-  ctx.font = "700 15px ui-sans-serif, system-ui, sans-serif";
-  segments(x + PANEL_PAD, ty, [
-    [`standing at ∠${focus} = ${theta.toFixed(1)}°`, ACCENT],
-  ]);
-  ty += 26;
-
-  const mono = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  ctx.font = mono;
-  const row = (
-    name: string,
-    top: string,
-    bot: string,
-    topColor: string,
-    botColor: string,
-    topLen: number,
-    botLen: number,
-  ): void => {
-    segments(x + PANEL_PAD, ty, [
-      [name.padEnd(6), TEXT],
-      ["= ", TEXT_DIM],
-      [top, topColor],
-      ["/", TEXT_DIM],
-      [bot.padEnd(4), botColor],
-      [" = ", TEXT_DIM],
-      [topLen.toFixed(2), topColor],
-      ["/", TEXT_DIM],
-      [botLen.toFixed(2), botColor],
-      [` = ${(topLen / botLen).toFixed(3)}`, TEXT],
-    ]);
-    ty += 21;
-  };
-
-  row(`sin ${focus}`, "opp", "hyp", OPP, HYP, opp, hyp);
-  row(`cos ${focus}`, "adj", "hyp", ADJ, HYP, adj, hyp);
-  row(`tan ${focus}`, "opp", "adj", OPP, ADJ, opp, adj);
-
-  ty += 4;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("flip each fraction upside-down:", x + PANEL_PAD, ty);
-  ty += 20;
-  ctx.font = mono;
-
-  row(`csc ${focus}`, "hyp", "opp", HYP, OPP, hyp, opp);
-  row(`sec ${focus}`, "hyp", "adj", HYP, ADJ, hyp, adj);
-  row(`cot ${focus}`, "adj", "opp", ADJ, OPP, adj, opp);
-
-  ty += 6;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText(`so csc = 1/sin, sec = 1/cos, cot = 1/tan — nothing new,`, x + PANEL_PAD, ty);
-  ty += 16;
-  ctx.fillText(`just the first three, flipped. (${oppName} is opp, ${adjName} is adj here.)`, x + PANEL_PAD, ty);
-  ty += 26;
-
-  // Cofunctions: the same triangle seen from the other corner.
-  const other = focus === "A" ? "B" : "A";
-  const sinHere = opp / hyp;
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(x + PANEL_PAD, ty, [
-    [`sin ${focus}`, TEXT],
-    [" = ", TEXT_DIM],
-    [sinHere.toFixed(3), OPP],
-    [" = ", TEXT_DIM],
-    [`cos ${other}`, TEXT],
-    [`   (∠${other} = 90° − ∠${focus})`, TEXT_DIM],
-  ]);
-  ty += 18;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("my opposite is the other angle's adjacent: sin θ = cos(90° − θ)", x + PANEL_PAD, ty);
-  ty += 26;
-
-  // The identity — Pythagoras in trigonometric clothes.
-  const a2 = legA * legA;
-  const b2 = legB * legB;
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(x + PANEL_PAD, ty, [
-    [`sin²${focus} + cos²${focus}`, TEXT],
-    [" = ", TEXT_DIM],
-    [`(${a2.toFixed(2)} + ${b2.toFixed(2)})`, TEXT],
-    ["/", TEXT_DIM],
-    [`${(a2 + b2).toFixed(2)}`, HYP],
-    [" = 1", ACCENT],
-  ]);
-  ty += 18;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("(a² + b²)/c² — the Pythagorean Theorem, wearing new clothes", x + PANEL_PAD, ty);
-}
-
-/** Draw colored text runs left-to-right from (x, y). */
-function segments(x: number, y: number, runs: [string, string][]): void {
-  let cx = x;
-  for (const [text, color] of runs) {
-    ctx.fillStyle = color;
-    ctx.fillText(text, cx, y);
-    cx += ctx.measureText(text).width;
-  }
-}
-
 // --- chrome ----------------------------------------------------------------
 
 function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
@@ -389,6 +270,7 @@ function drawKnob(v: Vec, active: boolean): void {
 
 function frame(): void {
   render();
+  showFormulas(trigReadouts({ focus, a: legA, b: legB }));
   requestAnimationFrame(frame);
 }
 

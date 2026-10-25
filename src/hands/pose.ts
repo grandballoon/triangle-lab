@@ -137,18 +137,20 @@ export function palmPoint(hand: HandFrame): XY {
 }
 
 /**
- * Map a normalised video landmark to CSS pixels of a mirrored, `object-fit:
- * cover` video that fills the viewport — the layout every lesson page uses.
+ * Map a normalised video landmark to CSS pixels of an `object-fit: cover`
+ * video that fills the viewport — the layout every lesson page uses — shown
+ * mirrored (a camera facing the user) or as it is (one facing away).
  */
 export function videoToScreen(
   norm: XY,
   video: { width: number; height: number },
   view: { width: number; height: number },
+  mirrored = true,
 ): XY {
   const scale = Math.max(view.width / video.width, view.height / video.height);
   const shownW = video.width * scale;
   const shownH = video.height * scale;
   const x = norm.x * shownW - (shownW - view.width) / 2;
   const y = norm.y * shownH - (shownH - view.height) / 2;
-  return { x: view.width - x, y };
+  return { x: mirrored ? view.width - x : x, y };
 }

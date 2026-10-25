@@ -1,20 +1,20 @@
 // Parts · Four — Altitudes (first, drag-driven implementation).
 //
-// Thirty static triangles — from the three basic classifications through the
-// classic right triangles (45-45-90, 3-4-5, 30-60-90), a knife-edge 89°/91°
-// pair, assorted acute and scalene variations, and an obtuse gallery: a
-// 100°-to-140° progression over one base, the golden gnomon, label and
-// orientation variants, and the classic extend-BC-to-D figure — living in
-// a world taller than the screen: scroll the wheel (or drag empty space) to
-// pan vertically. The webcam stays fixed behind everything and the triangles
-// keep the same size; only the geometry pans.
+// Fifteen static triangles — from the three basic classifications through the
+// classic right triangles (45-45-90, 30-60-90), a knife-edge 89°/91° pair,
+// the classic extend-BC-to-D figure and a 100°-to-140° obtuse progression
+// over one base — living in a world taller than the screen: scroll the wheel
+// (or drag empty space) to pan vertically. The webcam stays fixed behind
+// everything and the triangles keep the same size; only the geometry pans.
 //
 // On each triangle, every vertex sprouts a short outward stub carrying a knob.
 // Grab a knob and pull it toward the foot of the perpendicular on the line
 // containing the opposite side — the segment follows your hand in any
 // direction, capped at 130% of the finished altitude. Where a foot falls
-// outside its side (the obtuse triangles), the side shows a dashed extension
-// so the perpendicular has somewhere to land. Reach the foot and the altitude
+// outside its side (the obtuse triangles), the side shows a gold dashed
+// extension, named for the side it extends, so the perpendicular has
+// somewhere to land; it brightens while that altitude is pulled and stays lit
+// once it locks. Reach the foot and the altitude
 // pulses once, locks along the true perpendicular, gets a right-angle marker
 // at its foot, and is labelled h with its vertex subscript. Lock all three and
 // the orthocenter H lights up with three brief pulses: inside the acute,
@@ -29,6 +29,7 @@
 // Self-contained on purpose, matching medians.ts / bisectors.ts / etc. — only
 // the webcam device and this file's own little vector helpers are involved.
 
+import { fillFitted, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -47,6 +48,7 @@ interface Band {
 interface Pulse {
   center: Vec;
   age: number; // seconds since it fired
+  color: string;
 }
 
 interface Altitude {
@@ -71,6 +73,7 @@ interface Lesson {
 
 const ACCENT = "#fb7185"; // an altitude currently being pulled
 const DONE = "#38d9a9"; // a locked altitude, the orthocenter, and their pulses
+const EXTEND = "#fbbf24"; // a side extended past its end to meet an altitude's foot
 const STUB = "rgba(251,113,133,0.55)"; // the idle outward stub — visibly grabbable, still discreet
 const BASE_LINE = "rgba(233,240,247,0.28)"; // triangle sides + foot targets, kept discreet
 const H_TEXT = "rgba(233,240,247,0.85)";
@@ -87,7 +90,8 @@ const PULSE_LIFE = 0.6;
 const CELEBRATE_GAP = 0.22; // seconds between the three orthocenter pulses
 const EXTENSION_OVERHANG = 16; // dashed side extension runs this far past the foot
 const MARKER = 11; // side length of the right-angle marker at a locked foot
-const SHAPE_SCALE = 0.26; // normalized units → fraction of min(band.w, band.h)
+const SHAPE_SCALE = 0.3; // normalized units → fraction of min(band.w, band.h)
+const MIN_BAND_W = 400; // a band is never narrower than this, unless the canvas is
 
 // Vertex 0 is A, 1 is B, 2 is C on every triangle.
 const VERTEX_NAMES = ["A", "B", "C"] as const;
@@ -136,7 +140,7 @@ function makeLesson(name: string, shape: [Vec, Vec, Vec], doneCaption: string): 
 }
 
 const lessons: Lesson[] = [
-  // Row 1 — the three basic classifications.
+  // The three basic classifications.
   makeLesson(
     "acute triangle",
     [
@@ -164,7 +168,7 @@ const lessons: Lesson[] = [
     ],
     "obtuse — H falls outside the triangle",
   ),
-  // Row 2 — symmetry, and how far H can stray.
+  // Symmetry, and how far H can stray.
   makeLesson(
     "equilateral triangle",
     [
@@ -192,7 +196,8 @@ const lessons: Lesson[] = [
     ],
     "very obtuse — the flatter it gets, the farther H flies",
   ),
-  // Row 3 — the classic right triangles: legs double as altitudes.
+  // The classic right triangles, whose legs double as altitudes, and an
+  // obtuse corner at A, where the other two sides get extended.
   makeLesson(
     "right isosceles (45-45-90)",
     [
@@ -203,15 +208,6 @@ const lessons: Lesson[] = [
     "45-45-90 — H on C, whose altitude bisects the hypotenuse",
   ),
   makeLesson(
-    "the 3-4-5 right triangle",
-    [
-      { x: 1, y: 0.75 },
-      { x: -1, y: -0.75 },
-      { x: -1, y: 0.75 },
-    ],
-    "3-4-5 — right, so H sits on the corner C",
-  ),
-  makeLesson(
     "the 30-60-90 right triangle",
     [
       { x: -0.9, y: 0.5196 },
@@ -220,17 +216,17 @@ const lessons: Lesson[] = [
     ],
     "30-60-90 — the legs are altitudes, so H is at C",
   ),
-  // Row 4 — a right triangle resting on its hypotenuse, then the knife-edge
-  // pair around 90°: watch H cross straight through the vertex.
   makeLesson(
-    "right triangle, hypotenuse down",
+    "triangle obtuse at A",
     [
-      { x: -1.2, y: 0.5739 },
-      { x: 1.2, y: 0.5739 },
-      { x: 0.35, y: -0.5739 },
+      { x: -0.4653, y: -0.334 },
+      { x: 1.5347, y: 0.016 },
+      { x: -1.0153, y: -1.484 },
     ],
-    "hypotenuse down — H on C, its altitude falling to the hypotenuse",
+    "obtuse at A — now the other sides get extended",
   ),
+  // The knife-edge pair around 90°, where H crosses straight through the
+  // vertex, and the classic extend-BC-to-D figure.
   makeLesson(
     "almost right — 89° at C",
     [
@@ -249,64 +245,17 @@ const lessons: Lesson[] = [
     ],
     "91° — just obtuse, so H slips outside past C",
   ),
-  // Row 5 — proportions steer H around the inside.
   makeLesson(
-    "tall acute triangle",
+    "the classic figure",
     [
-      { x: -0.55, y: 1.2 },
-      { x: 0.55, y: 1.2 },
-      { x: 0.1, y: -1.2 },
+      { x: 1.125, y: -1.2922 },
+      { x: -1.125, y: 0.3078 },
+      { x: 0.425, y: 0.3078 },
     ],
-    "tall — H sinks toward the base",
+    "extend BC to D, and altitude AD can land",
   ),
-  makeLesson(
-    "wide acute triangle",
-    [
-      { x: -1.4, y: 0.75 },
-      { x: 1.4, y: 0.75 },
-      { x: 0.1, y: -0.75 },
-    ],
-    "wide — H crowds the apex",
-  ),
-  makeLesson(
-    "tilted scalene triangle",
-    [
-      { x: -1.025, y: 1 },
-      { x: 1.025, y: 0.3 },
-      { x: -0.425, y: -1 },
-    ],
-    "tilted scalene — no symmetry, same meeting at H",
-  ),
-  // Row 6 — obtuse variations: which sides get extended, and where H exits.
-  makeLesson(
-    "obtuse isosceles triangle",
-    [
-      { x: -1.3, y: 1.1267 },
-      { x: 1.3, y: 1.1267 },
-      { x: 0, y: 0.3767 },
-    ],
-    "obtuse isosceles — H outside, still on the axis",
-  ),
-  makeLesson(
-    "triangle obtuse at A",
-    [
-      { x: -0.4653, y: -0.334 },
-      { x: 1.5347, y: 0.016 },
-      { x: -1.0153, y: -1.484 },
-    ],
-    "obtuse at A — now the other sides get extended",
-  ),
-  makeLesson(
-    "obtuse triangle, flipped",
-    [
-      { x: -1.25, y: -0.9517 },
-      { x: 1.25, y: -0.7017 },
-      { x: 0.5, y: -0.0517 },
-    ],
-    "flipped — H flies out the other side",
-  ),
-  // Rows 7-8 — an obtuse progression over the same base: as C flattens from
-  // 100° to 140°, watch the feet run up the extensions and H march away.
+  // An obtuse progression over one base: as C flattens from 100° to 140°,
+  // the feet run up the extensions and H marches away.
   makeLesson(
     "obtuse: 100° at C",
     [
@@ -315,15 +264,6 @@ const lessons: Lesson[] = [
       { x: 0.2, y: -0.2333 },
     ],
     "100° — H steps just outside",
-  ),
-  makeLesson(
-    "obtuse: 110° at C",
-    [
-      { x: -1, y: 0.7046 },
-      { x: 1, y: 0.7046 },
-      { x: 0.2, y: 0.0233 },
-    ],
-    "110° — H drifts farther out",
   ),
   makeLesson(
     "obtuse: 120° at C",
@@ -335,15 +275,6 @@ const lessons: Lesson[] = [
     "120° — farther still",
   ),
   makeLesson(
-    "obtuse: 130° at C",
-    [
-      { x: -1, y: 1.0645 },
-      { x: 1, y: 1.0645 },
-      { x: 0.2, y: 0.6137 },
-    ],
-    "130° — the feet run far up the extensions",
-  ),
-  makeLesson(
     "obtuse: 140° at C",
     [
       { x: -1, y: 1.3673 },
@@ -351,71 +282,6 @@ const lessons: Lesson[] = [
       { x: 0.2, y: 1.0162 },
     ],
     "140° — H lands almost seven heights away",
-  ),
-  makeLesson(
-    "golden gnomon (36-36-108)",
-    [
-      { x: -1.1326, y: 0.7795 },
-      { x: 1.1326, y: 0.7795 },
-      { x: 0, y: -0.0434 },
-    ],
-    "the golden gnomon — the pentagon's obtuse isosceles",
-  ),
-  // Row 9 — same idea, different labels and orientations.
-  makeLesson(
-    "obtuse at B",
-    [
-      { x: -1.25, y: 1.1302 },
-      { x: 0.45, y: 0.3302 },
-      { x: 1.25, y: 0.8802 },
-    ],
-    "obtuse at B — only B's own altitude stays inside",
-  ),
-  makeLesson(
-    "obtuse, pointing left",
-    [
-      { x: 0.6355, y: -1.1 },
-      { x: 0.6355, y: 1.1 },
-      { x: -0.3145, y: 0.05 },
-    ],
-    "pointing left — H exits through the wide angle",
-  ),
-  makeLesson(
-    "obtuse, pointing right",
-    [
-      { x: -0.6355, y: -1.1 },
-      { x: -0.6355, y: 1.1 },
-      { x: 0.3145, y: 0.05 },
-    ],
-    "its mirror — H exits right",
-  ),
-  // Row 10 — the classic figure, a perpendicular special case, and a closer.
-  makeLesson(
-    "the classic figure",
-    [
-      { x: 1.125, y: -1.2922 },
-      { x: -1.125, y: 0.3078 },
-      { x: 0.425, y: 0.3078 },
-    ],
-    "extend BC to D, and altitude AD can land",
-  ),
-  makeLesson(
-    "obtuse with a vertical side",
-    [
-      { x: -0.6444, y: -1.15 },
-      { x: -0.6444, y: 0.75 },
-      { x: 1.1556, y: 1.15 },
-    ],
-    "a vertical side makes C's altitude horizontal",
-  ),
-  makeLesson(
-    "one last scalene, obtuse",
-    [
-      { x: -1, y: -0.0204 },
-      { x: 1, y: 0.7296 },
-      { x: 0.45, y: -0.4704 },
-    ],
-    "no tricks left — just three lines meeting at H",
   ),
 ];
 
@@ -487,10 +353,9 @@ function knobPos(lesson: Lesson, alt: Altitude): Vec {
 
 // --- layout ----------------------------------------------------------------
 
-// Bands keep the exact dimensions of the original three-triangle layout —
-// landscape rows of three full-height bands, portrait a single column of
-// third-height bands — so the triangles keep their size. With six lessons the
-// world is two screens tall either way, and scrollY pans through it.
+// As many columns as fit bands at least MIN_BAND_W wide, up to three; each
+// band is square unless the screen is too short for that. The world is as
+// many rows tall as that takes, and scrollY pans through it.
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
   W = canvas.clientWidth;
@@ -500,24 +365,18 @@ function layout(): void {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const usableH = H - TOP_MARGIN;
-  const columns = W >= H; // landscape-ish: rows of three; else one long stack
+  const cols = clamp(Math.floor(W / MIN_BAND_W), 1, 3);
+  const bandW = W / cols;
+  const bandH = Math.min(bandW, usableH);
 
   for (let i = 0; i < lessons.length; i++) {
     const lesson = lessons[i];
-    const band: Band = columns
-      ? {
-          cx: (W / 3) * ((i % 3) + 0.5),
-          cy: TOP_MARGIN + usableH * (Math.floor(i / 3) + 0.5),
-          w: W / 3,
-          h: usableH,
-        }
-      : {
-          cx: W / 2,
-          cy: TOP_MARGIN + (usableH / 3) * (i + 0.5),
-          w: W,
-          h: usableH / 3,
-        };
-
+    const band: Band = {
+      cx: bandW * ((i % cols) + 0.5),
+      cy: TOP_MARGIN + bandH * (Math.floor(i / cols) + 0.5),
+      w: bandW,
+      h: bandH,
+    };
     const s = Math.min(band.w, band.h) * SHAPE_SCALE;
     lesson.band = band;
     lesson.verts = lesson.shape.map((o) => ({
@@ -526,8 +385,7 @@ function layout(): void {
     })) as [Vec, Vec, Vec];
   }
 
-  const rows = columns ? Math.ceil(lessons.length / 3) : lessons.length / 3;
-  const worldH = TOP_MARGIN + usableH * rows;
+  const worldH = TOP_MARGIN + bandH * Math.ceil(lessons.length / cols);
   maxScroll = Math.max(0, worldH - H);
   scrollY = clamp(scrollY, 0, maxScroll);
 }
@@ -543,7 +401,7 @@ function pointer(e: PointerEvent): Vec {
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   let best: [number, number] | null = null;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < lessons.length; i++) {
     for (let k = 0; k < 3; k++) {
       const alt = lessons[i].altitudes[k];
@@ -625,7 +483,8 @@ function drive([i, k]: [number, number], p: Vec): void {
 function lockAltitude(lesson: Lesson, alt: Altitude): void {
   alt.locked = true;
   alt.drag = null;
-  lesson.pulses.push({ center: altitudeFoot(lesson.verts, alt.vertex).point, age: 0 });
+  const foot = altitudeFoot(lesson.verts, alt.vertex);
+  lesson.pulses.push({ center: foot.point, age: 0, color: offSide(foot.t) ? EXTEND : DONE });
   // The moment the third altitude locks, arm the orthocenter celebration.
   if (lesson.celebrateAge < 0 && lesson.altitudes.every((x) => x.locked)) {
     lesson.celebrateAge = 0;
@@ -662,11 +521,12 @@ function renderLesson(lesson: Lesson): void {
   }
   // Dashed side extensions wherever a foot misses its side — part of the
   // figure from the start, exactly like the classic extension of BC to D.
-  for (const alt of lesson.altitudes) drawExtension(v, alt.vertex);
+  for (const alt of lesson.altitudes) drawExtension(lesson, alt);
 
   // Target rings first, so the altitude lines draw over them.
   for (const alt of lesson.altitudes) {
-    if (!alt.locked) drawTarget(altitudeFoot(v, alt.vertex).point);
+    const foot = altitudeFoot(v, alt.vertex);
+    if (!alt.locked) drawTarget(foot.point, offSide(foot.t) ? EXTEND : BASE_LINE);
   }
   if (complete) drawOrthocenterLines(lesson);
   for (const alt of lesson.altitudes) drawAltitude(lesson, alt);
@@ -698,33 +558,62 @@ function drawSide(a: Vec, b: Vec): void {
   strokeSegment(a, b, BASE_LINE, 3);
 }
 
-/** Dashed extension of the side opposite vertex `k`, drawn only when the
- *  altitude's foot lands outside the segment (the obtuse triangle's case). */
-function drawExtension(v: [Vec, Vec, Vec], k: number): void {
+/** Whether a foot at position `t` along its side misses the side itself.
+ *  The epsilon keeps float noise from sprouting a phantom extension when a
+ *  foot sits exactly on a side endpoint (the right triangle's legs). */
+function offSide(t: number): boolean {
+  return t < -0.01 || t > 1.01;
+}
+
+/** Gold dashed extension of the side opposite the altitude's vertex, drawn
+ *  only when its foot lands outside the segment (the obtuse triangle's case)
+ *  and named for the side it extends. It brightens while that altitude is
+ *  being pulled and once it has locked. */
+function drawExtension(lesson: Lesson, alt: Altitude): void {
+  const v = lesson.verts;
+  const k = alt.vertex;
   const [a, b] = oppositeSide(v, k);
   const { point, t } = altitudeFoot(v, k);
-  // The epsilon keeps float noise from sprouting a phantom extension when a
-  // foot sits exactly on a side endpoint (the right triangle's legs).
-  if (t >= -0.01 && t <= 1.01) return;
+  if (!offSide(t)) return;
   const from = t < 0 ? a : b;
   const dir = unit(sub(point, from));
   const to = add(point, scale(dir, EXTENSION_OVERHANG));
-  strokeDashed(from, to, BASE_LINE, 2);
+  const lit = alt.locked || isGrabbed(lesson, alt);
+  strokeDashed(from, to, rgba(EXTEND, lit ? 0.95 : 0.6), lit ? 3 : 2.5);
+
+  // The side's name along the extension, on the side away from the triangle.
+  const m = mid(from, point);
+  let n = { x: -dir.y, y: dir.x };
+  if (dot(n, sub(m, centroid(v))) < 0) n = scale(n, -1);
+  const at = add(m, scale(n, 13));
+  let angle = Math.atan2(dir.y, dir.x);
+  if (angle > Math.PI / 2) angle -= Math.PI;
+  else if (angle < -Math.PI / 2) angle += Math.PI;
+  const name = `${VERTEX_NAMES[(k + 1) % 3]}${VERTEX_NAMES[(k + 2) % 3]}`;
+  ctx.save();
+  ctx.translate(at.x, at.y);
+  ctx.rotate(angle);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "600 12px ui-sans-serif, system-ui, sans-serif";
+  ctx.fillStyle = rgba(EXTEND, lit ? 0.95 : 0.7);
+  ctx.fillText(`${name} extended`, 0, 0);
+  ctx.restore();
 }
 
-/** A faint hollow ring marking the perpendicular foot an altitude aims for. */
-function drawTarget(m: Vec): void {
+/** A hollow ring marking the perpendicular foot an altitude aims for. */
+function drawTarget(m: Vec, color: string): void {
   ctx.beginPath();
   ctx.arc(m.x, m.y, SNAP_RADIUS, 0, TWO_PI);
   ctx.setLineDash([3, 4]);
   ctx.lineWidth = 1.5;
-  ctx.strokeStyle = BASE_LINE;
+  ctx.strokeStyle = color;
   ctx.stroke();
   ctx.setLineDash([]);
 
   ctx.beginPath();
   ctx.arc(m.x, m.y, 2.5, 0, TWO_PI);
-  ctx.fillStyle = BASE_LINE;
+  ctx.fillStyle = color;
   ctx.fill();
 }
 
@@ -734,8 +623,7 @@ function drawTarget(m: Vec): void {
 function drawAltitude(lesson: Lesson, alt: Altitude): void {
   const start = lesson.verts[alt.vertex];
   const end = knobPos(lesson, alt);
-  const dragging =
-    grabbed !== null && grabbed[0] === lessons.indexOf(lesson) && grabbed[1] === alt.vertex;
+  const dragging = isGrabbed(lesson, alt);
 
   if (alt.locked) {
     strokeSegment(start, end, DONE, 4);
@@ -816,6 +704,10 @@ function drawVertexLabels(lesson: Lesson): void {
   }
 }
 
+function isGrabbed(lesson: Lesson, alt: Altitude): boolean {
+  return grabbed !== null && grabbed[0] === lessons.indexOf(lesson) && grabbed[1] === alt.vertex;
+}
+
 function drawKnob(v: Vec, locked: boolean, active: boolean): void {
   const r = locked ? 6 : active ? 15 : 11;
   ctx.beginPath();
@@ -872,9 +764,12 @@ function drawCaption(lesson: Lesson, celebrated: boolean): void {
 
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "500 13px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = celebrated ? rgba(DONE, 0.85) : CAPTION;
-  ctx.fillText(celebrated ? lesson.doneCaption : lesson.name, band.cx, y);
+  fillFitted(ctx, celebrated ? lesson.doneCaption : lesson.name, band.cx, y, band.w - 24, {
+    font: (px) => `500 ${px}px ui-sans-serif, system-ui, sans-serif`,
+    size: 13,
+    min: 11,
+  });
 }
 
 function drawPulse(p: Pulse): void {
@@ -882,7 +777,7 @@ function drawPulse(p: Pulse): void {
   ctx.beginPath();
   ctx.arc(p.center.x, p.center.y, 8 + t * 40, 0, TWO_PI);
   ctx.lineWidth = 3 * (1 - t) + 1;
-  ctx.strokeStyle = rgba(DONE, 1 - t);
+  ctx.strokeStyle = rgba(p.color, 1 - t);
   ctx.stroke();
 }
 
@@ -981,7 +876,7 @@ function frame(now: number): void {
         lesson.celebrateFired < 3 &&
         lesson.celebrateAge >= lesson.celebrateFired * CELEBRATE_GAP
       ) {
-        lesson.pulses.push({ center: orthocenter(lesson.verts), age: 0 });
+        lesson.pulses.push({ center: orthocenter(lesson.verts), age: 0, color: DONE });
         lesson.celebrateFired += 1;
       }
     }

@@ -27,9 +27,16 @@ describe("standalone pages", () => {
     expect(rule).toMatch(/(^|[\s;])height:/);
   });
 
-  it.each(slugs)("%s leaves the step column free and loads the page chrome", (slug) => {
-    expect(stageRule(slug)).toContain("var(--steps-inset");
+  it.each(slugs)("%s fills the box the page chrome leaves it and loads the page chrome", (slug) => {
+    for (const side of ["left", "top", "width", "height"]) expect(stageRule(slug)).toContain(`var(--stage-${side}`);
     expect(pages[`../${slug}.html`]).toContain('src="/src/page.ts"');
+  });
+
+  it.each(slugs)("%s runs its lesson before the page chrome", (slug) => {
+    // chrome.ts: page.ts reads whether the lesson asked for a formula band.
+    const scripts = [...(pages[`../${slug}.html`] ?? "").matchAll(/<script[^>]*src="([^"]+)"/g)].map((m) => m[1]);
+    expect(scripts.at(-1)).toBe("/src/page.ts");
+    expect(scripts.length).toBeGreaterThan(1);
   });
 
   it.each(slugs)("%s has directions that typeset", (slug) => {
@@ -39,6 +46,19 @@ describe("standalone pages", () => {
       expect(step.title).not.toBe("");
       richHtml(step.text, true, linkTex);
     }
+  });
+
+  it("brings in the Pythagoras proof at the step that scrubs it", () => {
+    // pythagoras.ts PROOF_STEP.
+    expect(directions.pythagoras[2].title).toBe("Scrub the proof");
+  });
+
+  it("gives congruence an intro and then one step per test, which a phone shows alone", () => {
+    // congruence.ts shown(): step n > 0 shows cell n − 1.
+    const steps = directions.congruence;
+    expect(steps).toHaveLength(5);
+    expect(steps.slice(1, 4).map((s) => s.title.split(":")[0])).toEqual(["SSS", "SAS", "ASA"]);
+    expect(steps[4].title).toContain("SSA");
   });
 
   it("has directions only for standalone lessons", () => {

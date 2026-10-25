@@ -28,7 +28,10 @@
    own panels, and never wider than the window allows. */
 #curriculum.floating {
   z-index: 30;
-  width: min(var(--rail-width), calc(100vw - 36px));
+  /* Just under the pager row: the rail opens over the title on a phone. */
+  top: 50px;
+  left: var(--edge, 18px);
+  width: min(var(--rail-width), calc(100vw - 2 * var(--edge, 18px)));
   background: rgba(10, 15, 22, 0.95);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }

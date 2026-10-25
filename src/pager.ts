@@ -48,7 +48,9 @@ export function mountPager(slug: string, host: HTMLElement = document.body): Nei
   const back = document.createElement("a");
   back.className = "nav-pill";
   back.href = "index.html";
-  back.textContent = "← Lessons";
+  back.setAttribute("aria-label", "Lessons");
+  // The word gives way to the arrow alone on a phone (nav.css).
+  back.innerHTML = '← <span class="nav-label">Lessons</span>';
 
   const step = document.createElement("span");
   step.className = "nav-pill nav-step";

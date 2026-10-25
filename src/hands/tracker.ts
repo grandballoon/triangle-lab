@@ -45,13 +45,19 @@ export class HandTracker {
     const result = this.landmarker.detectForVideo(video, nowMs);
     const videoSize = { width: video.videoWidth, height: video.videoHeight };
     const view = { width: window.innerWidth, height: window.innerHeight };
-    this.lastResult = result.landmarks.map((landmarks, i) => ({
-      // MediaPipe labels handedness as if the image were already mirrored. We
-      // feed it the raw camera frame, so its "Left" is the user's right hand.
-      side: result.handedness[i]?.[0]?.categoryName === "Left" ? "right" : "left",
-      screen: landmarks.map((l) => videoToScreen(l, videoSize, view)),
-      world: result.worldLandmarks[i] ?? landmarks,
-    }));
+    // The page shows a camera facing the user mirrored (webcam.ts).
+    const mirrored = video.dataset.mirror !== "false";
+    this.lastResult = result.landmarks.map((landmarks, i) => {
+      // MediaPipe labels handedness as if the image were a mirrored selfie. A
+      // raw selfie frame is the other way round, so its "Left" is the user's
+      // right hand; a camera facing away sees as the user does, and is right.
+      const left = result.handedness[i]?.[0]?.categoryName === "Left";
+      return {
+        side: left === mirrored ? "right" : "left",
+        screen: landmarks.map((l) => videoToScreen(l, videoSize, view, mirrored)),
+        world: result.worldLandmarks[i] ?? landmarks,
+      };
+    });
     return this.lastResult;
   }
 }

@@ -1,6 +1,13 @@
 FIRST IMPLEMENTATION:
 # Part One: Perimeter and semiperimeter
-The screen displays 3 triangles of different sizes with sides and angles discreetly labeled, displaying their values. A knob appears on one vertex. Click-and-drag the knob along the sides to see the perimeter drawn and animated. Each side highlights in one color and changes to another color with a "snap" animation along the side and second angle upon filling. Its total value is then added to a box in the corner with a value for perimeter *p.* Trace the full triangle to show the value of p. s is calculated upon the completion of the figure.
+The screen displays 3 triangles of different sizes with sides and angles discreetly labeled, displaying their values.
+They are laid out as large as the screen allows, in a row, a column, or two above one.
+A knob appears on one vertex.
+Click-and-drag the knob along the sides to see the perimeter drawn and animated.
+Each side highlights in one color and changes to another color with a "snap" animation along the side and second angle upon filling.
+Its length is then added to that triangle's running perimeter *p* in the formula band along the bottom of the screen.
+The moment the knob has walked half the perimeter, a gold mark with a pulse drops on that spot, labeled *s*, and the formula band names the semiperimeter.
+Trace the full triangle to show the value of p and s = p/2.
 
 # Part Two: Medians
 The screen displays three triangles. On each, a small partial line segment points outward from each vertex. It displays a knob. Pull the knob towards the opposite side's midpoint. The segments can be pulled in arbitrary directions, but the length is capped to, say, 130% of their final value. Upon hitting the midpoint, the end of the segment briefly pulses once, and locks in place.  Upon the completion of all medians, the centroid, G, is highlighted with a slightly enlarged dot, and displays three brief pulses. 
@@ -11,15 +18,15 @@ The page displays four triangles. A line is drawn from a vertex to a point on th
 # Part Four: 
 
 # Part Five: Altitudes
-The screen displays thirty triangles, in rows that build on each other: the three basic classifications (acute, right, obtuse); symmetry and reach (equilateral, isosceles, very flat obtuse); the classic right triangles (45-45-90, 3-4-5, 30-60-90); a right triangle resting on its hypotenuse plus a knife-edge 89°/91° pair that shows *H* crossing straight through the vertex as the angle passes 90°; proportion studies (tall acute, wide acute, tilted scalene); and obtuse variations (obtuse isosceles, obtuse at *A*, and a flipped obtuse).
-The last four rows are an obtuse gallery: a 100°-110°-120°-130°-140° progression over the same base that sends the feet up the extensions and *H* marching away, the golden gnomon (36-36-108), label and orientation variants (obtuse at *B*, pointing left, pointing right), the classic obtuse figure (extend *BC* to *D* so altitude *AD* can land), an obtuse triangle with a vertical side (making one altitude horizontal), and a closing scalene.
-They live in a geometry space several screens tall: scroll the wheel or drag empty space to pan vertically, while the webcam view, header, and triangle sizes stay fixed.
+The screen displays fifteen triangles, in groups that build on each other: the three basic classifications (acute, right, obtuse); symmetry and reach (equilateral, isosceles, very flat obtuse); the classic right triangles (45-45-90, 30-60-90) beside a triangle obtuse at *A*; a knife-edge 89°/91° pair that shows *H* crossing straight through the vertex as the angle passes 90°, with the classic obtuse figure (extend *BC* to *D* so altitude *AD* can land); and a 100°-120°-140° progression over the same base that sends the feet up the extensions and *H* marching away.
+They are laid out two or three to a row, as large as the screen's width allows, in a geometry space several screens tall: scroll the wheel or drag empty space to pan vertically, while the webcam view, header, and triangle sizes stay fixed.
 A slim scrollbar on the right edge and a fading "scroll for more" hint at the bottom signal the extra space.
 On each triangle, every vertex sprouts a short outward stub carrying a knob.
 Pull the knob through the triangle to drop a perpendicular onto the line containing the opposite side; a dashed ring marks the foot.
 The segment follows the hand in any direction, but its length is capped at 130% of the finished altitude.
 When the free end reaches the foot, the altitude pulses once, locks along the true perpendicular, shows a right-angle marker at its foot, and is labeled *h(sub)a*, *h(sub)b*, or *h(sub)c*.
-On the obtuse triangle, the sides whose feet fall outside them show dashed extensions from the start, exactly like the classic extension of *BC* to *D*.
+On the obtuse triangles, the sides whose feet fall outside them show gold dashed extensions from the start, exactly like the classic extension of *BC* to *D*, each named for the side it extends ("*BC* extended") and with its target ring in the same gold.
+An extension brightens while its altitude is pulled and stays lit once it locks, and the lock pulses in gold, so it is plain that this altitude needed its side made longer.
 When all three altitudes lock, the orthocenter *H* lights up with three brief pulses: inside the acute, equilateral (where it coincides with the centroid *G*), and isosceles (where it rides the axis of symmetry) triangles, exactly on the right-angle vertex of the right triangle, and outside the obtuse triangles, where dashed extensions of the altitude lines show that only the lines, not the segments, are concurrent — the flatter the triangle, the farther *H* flies.
 A caption under each triangle states where *H* landed, answering the closing question about the right triangle.
 The page also carries a "Notes & solutions" drawer that elaborates the concept and works through the circumcenter, circumradius, and median-to-hypotenuse facts for right triangles.

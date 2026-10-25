@@ -3,30 +3,35 @@
 // Four cells — SSS, SAS, ASA, and SSA — each with the same fixed base AB and
 // a free knob for the third vertex C. The given measurements are drawn as
 // dashed loci: a given side is a dashed circle around its endpoint, a given
-// angle a dashed ray out of its vertex. Drag C anywhere; a checklist compares
-// each live measurement against its given and ticks when it matches. C can
-// only satisfy everything where the loci cross, and the knob snaps onto those
-// spots. SSS / SAS / ASA cross at ONE spot (SSS also shows the mirror across
-// AB — the same triangle, flipped): the data force one triangle. SSA is the
-// warning: its ray and circle cross TWICE, and when C lands on either spot
-// the other triangle stays as a ghost — same givens, different triangle.
+// angle a dashed ray out of its vertex. Drag C anywhere; a checklist in the
+// formula band below compares each live measurement against its given and
+// ticks when it matches. C can only satisfy everything where the loci cross,
+// and the knob snaps onto those spots. SSS / SAS / ASA cross at ONE spot (SSS
+// also shows the mirror across AB — the same triangle, flipped): the data
+// force one triangle. SSA is the warning: its ray and circle cross TWICE, and
+// when C lands on either spot the other triangle stays as a ghost — same
+// givens, different triangle.
+//
+// Where the four would be too small to work with (a phone), the page shows
+// one at a time, at full size: the one the current step is about (the steps
+// in directions.ts go intro, SSS, SAS, ASA, SSA).
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the shared grid layout, the page's formula band,
+// the small-screen helpers and this file's own little vector helpers are
+// involved.
 
+import { currentStep, formulaBand } from "./chrome.ts";
+import { grabRadius, nearest } from "./fit.ts";
+import { grid, type Cell as Band } from "./grid.ts";
+import type { Readout } from "./lab/scene.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { congruenceReadout } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
   x: number;
   y: number;
-}
-
-interface Band {
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
 }
 
 interface Pulse {
@@ -41,12 +46,12 @@ interface Given {
   kind: "side" | "angle";
   at: VertexName;
   value: number; // units for sides, degrees for angles
-  label: string;
+  label: string; // as LaTeX
 }
 
 interface Cell {
   key: "SSS" | "SAS" | "ASA" | "SSA";
-  subtitle: string;
+  givenLabel: string; // what is given, as label text with $…$ LaTeX
   givens: Given[];
   solutions: Vec[]; // where every given checks out
   twoTriangles: boolean; // SSA: the two spots are genuinely different triangles
@@ -54,9 +59,17 @@ interface Cell {
   knob: Vec; // C, live, in unit coords
   snappedTo: number; // index into solutions, or -1
   extent: { x0: number; x1: number; y0: number; y1: number };
+  /** Where the cell is drawn now: its tile in the grid, or the whole canvas alone. */
   band: Band;
   unitPx: number;
+  tile: Placement;
+  solo: Placement;
   pulses: Pulse[];
+}
+
+interface Placement {
+  band: Band;
+  unitPx: number;
 }
 
 const ACCENT = "#f97316"; // selected accents
@@ -64,16 +77,19 @@ const OK = "#38d9a9"; // a satisfied given / a pinned triangle
 const DANGER = "#ff6b6b"; // the SSA verdict
 const LOCUS = "#fbbf24"; // dashed loci of the givens
 const EDGE = "#eef4fb";
-const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 const TOP_MARGIN = 64;
 const GRAB_RADIUS = 26;
+// Below this many px per unit in the grid, the cells show one at a time.
+const MIN_TILE_UNIT_PX = 28;
 const SNAP_PX = 20; // magnetic radius around a solution spot, screen px
-const SIDE_TOL = 0.07; // units — when a measured side "matches" its given
-const ANGLE_TOL = 1.6; // degrees
 const PULSE_LIFE = 0.6;
+// The largest extent of any cell, and the room every cell keeps around it:
+// the key over the figure, and the labels round A, B and C.
+const EXTENT = { w: 6.8, h: 6.0 };
+const ROOM = { units: 0.3, px: 12 };
 
 // The shared base: every cell pins A and B (so side AB is a given everywhere).
 const A: Vec = { x: -2, y: 1.4 };
@@ -86,6 +102,9 @@ const ctx = canvas.getContext("2d")!;
 let W = 0;
 let H = 0;
 let drag: Cell | null = null;
+/** Whether the cells show one at a time, because the grid would make them too small. */
+let single = false;
+const showFormulas = formulaBand();
 
 // --- vector helpers --------------------------------------------------------
 
@@ -119,6 +138,8 @@ function rayDir(at: VertexName, degrees: number): Vec {
 
 // --- the four cells --------------------------------------------------------
 
+const UNPLACED: Placement = { band: { cx: 0, cy: 0, w: 0, h: 0 }, unitPx: 1 };
+
 // Shared target triangle for SSS / SAS / ASA: ∠A = 40°, AC = 3 off the same
 // base, so the three cells pin the very same triangle three different ways.
 const ALPHA = 40;
@@ -147,7 +168,7 @@ function ssaSolutions(): Vec[] {
 const cells: Cell[] = [
   {
     key: "SSS",
-    subtitle: "given AB, AC, BC",
+    givenLabel: "$AB$, $AC$, $BC$",
     givens: [
       { kind: "side", at: "A", value: SIDE_B, label: "AC" },
       { kind: "side", at: "B", value: SIDE_A, label: "BC" },
@@ -159,14 +180,16 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -1.6, y1: 4.4 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
   {
     key: "SAS",
-    subtitle: "given AB, ∠A, AC",
+    givenLabel: "$AB$, $\\angle A$, $AC$",
     givens: [
-      { kind: "angle", at: "A", value: ALPHA, label: "∠A" },
+      { kind: "angle", at: "A", value: ALPHA, label: "\\angle A" },
       { kind: "side", at: "A", value: SIDE_B, label: "AC" },
     ],
     solutions: [TARGET],
@@ -176,15 +199,17 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
   {
     key: "ASA",
-    subtitle: "given ∠A, AB, ∠B",
+    givenLabel: "$\\angle A$, $AB$, $\\angle B$",
     givens: [
-      { kind: "angle", at: "A", value: ALPHA, label: "∠A" },
-      { kind: "angle", at: "B", value: BETA, label: "∠B" },
+      { kind: "angle", at: "A", value: ALPHA, label: "\\angle A" },
+      { kind: "angle", at: "B", value: BETA, label: "\\angle B" },
     ],
     solutions: [TARGET],
     twoTriangles: false,
@@ -193,14 +218,16 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
   {
     key: "SSA",
-    subtitle: "given AB, ∠A, BC — the warning",
+    givenLabel: "$AB$, $\\angle A$, $BC$",
     givens: [
-      { kind: "angle", at: "A", value: SSA_ALPHA, label: "∠A" },
+      { kind: "angle", at: "A", value: SSA_ALPHA, label: "\\angle A" },
       { kind: "side", at: "B", value: SSA_SIDE_A, label: "BC" },
     ],
     solutions: ssaSolutions(),
@@ -210,6 +237,8 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
@@ -225,25 +254,43 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const usableH = H - TOP_MARGIN;
-  const cols = W >= H ? 2 : 1;
-  const rows = Math.ceil(cells.length / cols);
-
-  cells.forEach((cell, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    cell.band = {
-      cx: (W / cols) * (col + 0.5),
-      cy: TOP_MARGIN + (usableH / rows) * (row + 0.5),
-      w: W / cols,
-      h: usableH / rows,
-    };
-    const ex = cell.extent;
-    cell.unitPx = Math.min(
-      (cell.band.w * 0.92) / (ex.x1 - ex.x0),
-      (cell.band.h * 0.86) / (ex.y1 - ex.y0),
-    );
+  const area = { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN };
+  const tiles = grid(cells.length, area, EXTENT, ROOM);
+  single = tiles.scale < MIN_TILE_UNIT_PX;
+  const whole: Band = { cx: area.x + area.w / 2, cy: area.y + area.h / 2, w: area.w, h: area.h };
+  tiles.cells.forEach((band, i) => {
+    const cell = cells[i];
+    cell.tile = placed(cell, band);
+    cell.solo = placed(cell, whole);
   });
+  place();
+}
+
+/** The cell filling `band`, keeping its room. */
+function placed(cell: Cell, band: Band): Placement {
+  const ex = cell.extent;
+  const unitPx = Math.min(
+    (band.w * 0.92) / (ex.x1 - ex.x0),
+    (band.h * 0.86) / (ex.y1 - ex.y0),
+    (band.w - 2 * ROOM.px) / (ex.x1 - ex.x0),
+    (band.h - 2 * ROOM.px) / (ex.y1 - ex.y0),
+  );
+  return { band, unitPx };
+}
+
+/** The cells on screen: all four, or the current step's alone. */
+function shown(): Cell[] {
+  // Step 0 introduces the cells and shows the first; each later step its own.
+  return single ? [cells[Math.min(cells.length - 1, Math.max(0, currentStep() - 1))]] : cells;
+}
+
+/** Draw every shown cell where it belongs now; the step may have changed. */
+function place(): void {
+  for (const cell of shown()) {
+    const at = single ? cell.solo : cell.tile;
+    cell.band = at.band;
+    cell.unitPx = at.unitPx;
+  }
 }
 
 function toScreen(cell: Cell, p: Vec): Vec {
@@ -271,15 +318,17 @@ function pointer(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  for (const cell of cells) {
-    if (dist(p, toScreen(cell, cell.knob)) <= GRAB_RADIUS) {
-      drag = cell;
-      canvas.classList.add("grabbing");
-      capturePointer(canvas, e);
-      drive(p);
-      return;
-    }
-  }
+  const live = shown();
+  const hit = nearest(
+    p,
+    live.map((cell) => toScreen(cell, cell.knob)),
+    grabRadius(e.pointerType, GRAB_RADIUS),
+  );
+  if (hit < 0) return;
+  drag = live[hit];
+  canvas.classList.add("grabbing");
+  capturePointer(canvas, e);
+  drive(p);
 });
 
 canvas.addEventListener("pointermove", (e) => {
@@ -327,7 +376,7 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  for (const cell of cells) renderCell(cell);
+  for (const cell of shown()) renderCell(cell);
 }
 
 function renderCell(cell: Cell): void {
@@ -408,8 +457,7 @@ function renderCell(cell: Cell): void {
   ctx.fillText("B", sB.x + 14, sB.y + 12);
   ctx.fillText("C", sC.x + 16, sC.y - 10);
 
-  drawChecklist(cell);
-  drawCellCaption(cell, pinned);
+  drawKey(cell);
 
   for (const p of cell.pulses) {
     const c = toScreen(cell, p.center);
@@ -424,66 +472,33 @@ function renderCell(cell: Cell): void {
   drawKnob(sC, drag === cell, pinned ? verdictColor : null);
 }
 
-/** The live checklist: every given, measured right now, ticked when matched. */
-function drawChecklist(cell: Cell): void {
-  const x = cell.band.cx - cell.band.w / 2 + 14;
-  let y = cell.band.cy - cell.band.h / 2 + 30;
-
+/** The cell's name in its top-left corner. */
+function drawKey(cell: Cell): void {
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.font = "700 14px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = cell.twoTriangles ? DANGER : ACCENT;
-  ctx.fillText(cell.key, x, y);
-  ctx.font = "500 11px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText(cell.subtitle, x + ctx.measureText(cell.key).width + 26, y);
-  y += 18;
-
-  ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, monospace";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("AB 4.00 ✓", x, y); // the base is fixed, so it always checks
-  y += 16;
-
-  for (const g of cell.givens) {
-    const v = vertex(g.at);
-    let measured: number;
-    let ok: boolean;
-    if (g.kind === "side") {
-      measured = dist(cell.knob, v);
-      ok = Math.abs(measured - g.value) <= SIDE_TOL;
-    } else {
-      measured = angleAt(v, vertex(g.at === "A" ? "B" : "A"), cell.knob);
-      ok = Math.abs(measured - g.value) <= ANGLE_TOL;
-    }
-    const want = g.kind === "side" ? g.value.toFixed(2) : `${g.value.toFixed(0)}°`;
-    const got = g.kind === "side" ? measured.toFixed(2) : `${measured.toFixed(0)}°`;
-    ctx.fillStyle = ok ? OK : TEXT_DIM;
-    ctx.fillText(`${g.label} ${got} / ${want} ${ok ? "✓" : "·"}`, x, y);
-    y += 16;
-  }
+  ctx.fillText(cell.key, cell.band.cx - cell.band.w / 2 + 14, cell.band.cy - cell.band.h / 2 + 24);
 }
 
-function drawCellCaption(cell: Cell, pinned: boolean): void {
-  const y = cell.band.cy + cell.band.h / 2 - 12;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  if (!pinned) {
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText(
-      cell.twoTriangles
-        ? "drag C onto a crossing — how many are there?"
-        : "drag C until every given checks out",
-      cell.band.cx,
-      y,
-    );
-  } else if (cell.twoTriangles) {
-    ctx.fillStyle = DANGER;
-    ctx.fillText("same givens, two DIFFERENT triangles — there is no SSA", cell.band.cx, y);
-  } else {
-    ctx.fillStyle = OK;
-    ctx.fillText(`pinned — ${cell.key} forces this one triangle`, cell.band.cx, y);
-  }
+// --- formulas ----------------------------------------------------------------
+
+/** Each cell's checklist: every given, measured right now. */
+function readouts(): Readout[] {
+  return shown().map((cell) =>
+    congruenceReadout({
+      key: cell.key,
+      givens: cell.givenLabel,
+      checks: cell.givens.map((g) => {
+        const v = vertex(g.at);
+        const measured =
+          g.kind === "side" ? dist(cell.knob, v) : angleAt(v, vertex(g.at === "A" ? "B" : "A"), cell.knob);
+        return { name: g.label, kind: g.kind, measured, given: g.value };
+      }),
+      pinned: cell.snappedTo >= 0,
+      twoTriangles: cell.twoTriangles,
+    }),
+  );
 }
 
 /** Small arc + label showing a given angle at its vertex. */
@@ -562,7 +577,9 @@ function frame(now: number): void {
   for (const cell of cells) {
     cell.pulses = cell.pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   }
+  place();
   render();
+  showFormulas(readouts());
   requestAnimationFrame(frame);
 }
 

@@ -5,7 +5,7 @@
 
 import { HandInterpreter, type HandState } from "./interpreter.ts";
 import { HandOverlay, type OverlayHand } from "./overlay.ts";
-import { HandsPanel, type HandsStatus } from "./panel.ts";
+import { HandsPanel, type CameraControl, type HandsStatus } from "./panel.ts";
 import { PointerBridge, type HandKey } from "./pointerBridge.ts";
 import {
   classifyPose,
@@ -15,7 +15,7 @@ import {
   type HandFrame,
   type XY,
 } from "./pose.ts";
-import { SettingsStore, type Action } from "./settings.ts";
+import { defaultSettings, SettingsStore, type Action } from "./settings.ts";
 import { HandTracker } from "./tracker.ts";
 
 export type { Action } from "./settings.ts";
@@ -29,6 +29,8 @@ export interface HandsOptions {
   multiPointer: boolean;
   /** Called when a held pose fires its bound action. */
   onAction?: (action: Action) => void;
+  /** The page's camera, for the settings sheet to turn on and off. */
+  camera?: CameraControl;
 }
 
 export interface Hands {
@@ -47,8 +49,9 @@ interface Live {
 }
 
 export function startHands(options: HandsOptions): Hands {
-  const store = new SettingsStore();
-  const panel = new HandsPanel(store);
+  const touchFirst = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+  const store = new SettingsStore(undefined, defaultSettings(touchFirst));
+  const panel = new HandsPanel(store, options.camera);
   const overlay = new HandOverlay();
   const bridge = new PointerBridge(options.multiPointer);
   const live = new Map<HandKey, Live>();
@@ -60,6 +63,7 @@ export function startHands(options: HandsOptions): Hands {
 
   function status(): HandsStatus {
     if (!store.get().enabled) return "off";
+    if (options.camera && !options.camera.on()) return "noCamera";
     if (failed) return "failed";
     if (tracker) return "ready";
     return options.video.readyState >= 2 ? "loading" : "camera";

@@ -6,7 +6,11 @@
    The bar lives in the top strip because that is the one band every lesson
    keeps clear of canvas drawing (TOP_MARGIN). The bottom edge is not free:
    altitudes.ts writes its scroll hint there and similar.ts anchors its figure
-   to it. */
+   to it.
+
+   On a phone (html[data-layout="stacked"], set from layout.ts) the bar takes
+   two rows, the pager and then the title, and ends where layout.ts's
+   STACKED.bar says: 10px margin + 32px pager + 6px gap + a 22px title. */
 
 #topbar {
   position: fixed;
@@ -104,3 +108,45 @@ a.nav-pill:hover {
   padding: 0 10px;
   color: rgba(233, 240, 247, 0.5);
 }
+
+/* The camera switch (cameraSwitch.ts), shown once a second camera is seen. */
+.nav-camera {
+  flex: none;
+  padding: 0 10px;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-camera[hidden] { display: none; }
+.nav-camera:disabled { opacity: 0.5; cursor: progress; }
+.nav-camera:hover { color: #fff; background: rgba(6, 10, 16, 0.68); }
+.nav-camera svg { width: 17px; height: 17px; }
+
+/* --- Stacked, on a phone ------------------------------------------------------ */
+
+html[data-layout="stacked"] #topbar {
+  top: 10px;
+  /* The hands pill sits at the end of the pager row, and the title row runs
+     under it. */
+  right: var(--edge);
+  flex-wrap: wrap;
+  row-gap: 6px;
+  column-gap: 8px;
+}
+
+html[data-layout="stacked"] #nav { gap: 6px; }
+
+html[data-layout="stacked"] #heading { flex: 1 0 100%; }
+
+html[data-layout="stacked"] #eyebrow,
+html[data-layout="stacked"] .nav-label { display: none; }
+
+html[data-layout="stacked"] #title {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* The lesson count gives way, so the pager, the camera switch and the hands
+   pill share one row on the narrowest phone. */
+html[data-layout="stacked"] .nav-step { display: none; }
