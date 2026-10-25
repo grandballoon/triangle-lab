@@ -1,0 +1,275 @@
+/* The recall page (recall.html, page.ts). Same ground, type and accent as
+   the lesson menu, in one reading column. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+body {
+  background: radial-gradient(1200px 600px at 50% -10%, #12202a 0%, #0b0f14 60%);
+  background-color: #0b0f14;
+  color: #e9f0f7;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px 64px;
+}
+
+.rc-page { width: 100%; max-width: 720px; }
+
+.rc-back {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: rgba(233, 240, 247, 0.6);
+  text-decoration: none;
+}
+
+.rc-back:hover { color: #fff; }
+
+.rc-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 13px;
+  font-weight: 600;
+  color: #38d9a9;
+  margin-bottom: 10px;
+}
+
+h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02em; }
+
+.rc-sub { color: rgba(233, 240, 247, 0.6); margin-top: 10px; font-size: 17px; }
+
+#recall { margin-top: 32px; }
+
+/* --- Shared pieces ---------------------------------------------------------- */
+
+.rc-lead { font-size: 24px; font-weight: 750; letter-spacing: -0.01em; }
+
+.rc-note { margin-top: 6px; font-size: 15px; line-height: 1.5; color: rgba(233, 240, 247, 0.6); }
+
+.rc-note:empty { display: none; }
+
+.rc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+
+.rc-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(233, 240, 247, 0.85);
+  font: 500 15px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.rc-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); color: #fff; }
+
+.rc-button:disabled { opacity: 0.4; cursor: default; }
+
+.rc-button.rc-primary { background: #38d9a9; border-color: #38d9a9; color: #06110d; font-weight: 650; }
+
+.rc-button.rc-primary:hover:not(:disabled) { background: #5ae4bb; border-color: #5ae4bb; color: #06110d; }
+
+.rc-button.rc-small { min-height: 30px; padding: 0 11px; font-size: 13px; border-radius: 8px; }
+
+.rc-button[data-confirm] { color: #ff8787; border-color: rgba(255, 107, 107, 0.5); }
+
+.rc-button:focus-visible,
+.rc-back:focus-visible,
+.rc-group h2 a:focus-visible,
+.rc-source:focus-visible {
+  outline: 2px solid #38d9a9;
+  outline-offset: 2px;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  font-family: inherit;
+  /* 16px stops a phone zooming in on the box. */
+  font-size: 16px;
+  line-height: 1.45;
+  outline: none;
+}
+
+textarea:focus { border-color: #38d9a9; }
+
+.rc-hint { font-size: 12.5px; color: rgba(233, 240, 247, 0.45); }
+
+@media (pointer: coarse) {
+  .rc-hint { display: none; }
+}
+
+/* --- Overview ------------------------------------------------------------------ */
+
+.rc-summary,
+.rc-ask {
+  padding: 22px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rc-group { margin-top: 40px; }
+
+.rc-group h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+
+.rc-group h2 a { color: inherit; text-decoration: none; }
+
+.rc-group h2 a:hover { color: #38d9a9; }
+
+.rc-cards { list-style: none; margin-top: 10px; }
+
+.rc-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rc-question { font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.rc-meta {
+  grid-column: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 13px;
+  color: rgba(233, 240, 247, 0.45);
+}
+
+.rc-meta .rc-due { color: #38d9a9; font-weight: 600; }
+
+.rc-actions {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.rc-card .rc-edit,
+.rc-card .rc-edit + .rc-row { grid-column: 1 / -1; }
+
+.rc-card .rc-edit + .rc-row { margin-top: 6px; }
+
+.rc-keep { margin-top: 48px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
+.rc-keep .rc-note { font-size: 14px; }
+
+.rc-notice { margin-top: 12px; font-size: 14px; color: #38d9a9; }
+
+.rc-notice.rc-error { color: #ff8787; }
+
+/* --- A sitting ----------------------------------------------------------------- */
+
+.rc-sitting-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rc-progress {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(233, 240, 247, 0.6);
+}
+
+.rc-from {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #38d9a9;
+}
+
+.rc-asked {
+  margin: 10px 0 20px;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.rc-answer { min-height: 110px; }
+
+.rc-yours { margin-top: 14px; }
+
+.rc-yours h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.45);
+}
+
+.rc-said {
+  margin-top: 4px;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rc-said.rc-quiet { color: rgba(233, 240, 247, 0.5); font-style: italic; }
+
+.rc-source {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #38d9a9;
+  text-decoration: none;
+}
+
+.rc-source:hover { text-decoration: underline; }
+
+.rc-grade-prompt { margin-top: 24px; }
+
+.rc-grades {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.rc-button.rc-grade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: 8px 10px;
+}
+
+.rc-grade-name { font-weight: 650; }
+
+.rc-grade-when { font-size: 12.5px; color: rgba(233, 240, 247, 0.5); }
+
+.rc-grade.rc-missed { border-color: rgba(255, 107, 107, 0.45); }
+.rc-grade.rc-shaky { border-color: rgba(255, 212, 59, 0.45); }
+.rc-grade.rc-recalled { border-color: rgba(56, 217, 169, 0.55); }
+
+.rc-finished .rc-note + .rc-note { margin-top: 2px; }
+
+@media (max-width: 600px) {
+  body { padding: 32px 16px 48px; }
+  /* The question gets the full width; its buttons go under it. */
+  .rc-card { grid-template-columns: minmax(0, 1fr); }
+  .rc-actions { grid-column: 1; grid-row: auto; margin-top: 6px; }
+  .rc-summary, .rc-ask { padding: 18px 16px; }
+  .rc-asked { font-size: 19px; }
+  .rc-grades { gap: 8px; }
+}

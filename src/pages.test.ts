@@ -12,6 +12,9 @@ import { lessons } from "./lessons.ts";
 import { moveBy } from "./pager.ts";
 
 const pages = import.meta.glob<string>("../*.html", { query: "?raw", import: "default", eager: true });
+const viteConfig = Object.values(
+  import.meta.glob<string>("../vite.config.ts", { query: "?raw", import: "default", eager: true }),
+)[0];
 const standalone = lessons.filter((l) => !l.lab);
 const slugs = standalone.map((l) => l.slug);
 
@@ -63,6 +66,14 @@ describe("standalone pages", () => {
 
   it("has directions only for standalone lessons", () => {
     expect(Object.keys(directions).sort()).toEqual([...slugs].sort());
+  });
+});
+
+describe("every page", () => {
+  // A page left out of the build works under `vite dev` and is missing from
+  // the deployed site, where its links then lead nowhere.
+  it.each(Object.keys(pages).map((path) => path.slice(3)))("%s is built", (file) => {
+    expect(viteConfig).toContain(`resolve(__dirname, "${file}")`);
   });
 });
 

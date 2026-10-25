@@ -30,6 +30,6 @@ export function richHtml(text: string, strict = false, prepare: (tex: string) =>
   return parts.map((part, i) => (i % 2 === 1 ? texHtml(prepare(part), strict) : escapeHtml(part))).join("");
 }
 
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

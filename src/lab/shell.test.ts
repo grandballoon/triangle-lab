@@ -115,6 +115,18 @@ describe("Shell", () => {
     expect(currentStep(el)).toBe("3");
   });
 
+  it("goes to a step asked for by number, as a link to a step does, and says which is current", () => {
+    expect(new Shell(page(), () => []).currentStep()).toBeNull();
+    const { shell, el } = loaded();
+    shell.goTo(2);
+    expect(currentStep(el)).toBe("2");
+    const title = el.steps.querySelectorAll(".step-title")[2].textContent;
+    expect(shell.currentStep()).toEqual({ step: 2, title });
+    shell.goTo(9);
+    shell.goTo(-1);
+    expect(shell.currentStep()?.step).toBe(2);
+  });
+
   it("makes a pressed step current and scrolls the list to it", () => {
     const { el } = loaded();
     layOut(el, 200);

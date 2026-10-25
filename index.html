@@ -77,6 +77,19 @@
       }
       h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02em; }
       .sub { color: rgba(233, 240, 247, 0.6); margin-top: 10px; font-size: 17px; }
+      /* The way to the recall page, with how many questions are due (index.ts). */
+      #recall-link {
+        display: inline-flex; align-items: center; gap: 8px; margin-top: 18px;
+        padding: 8px 15px; border-radius: 999px; font-size: 14px; font-weight: 600;
+        color: #e9f0f7; text-decoration: none;
+        background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: border-color 0.15s ease, background 0.15s ease;
+      }
+      #recall-link:hover { border-color: #38d9a9; background: rgba(255, 255, 255, 0.07); }
+      #recall-link .due {
+        padding: 1px 8px; border-radius: 999px; font-size: 12.5px; font-variant-numeric: tabular-nums;
+        color: #06110d; background: #38d9a9;
+      }
       .chapter { margin-top: 48px; }
       .chapter h2 { font-size: 24px; font-weight: 750; letter-spacing: -0.01em; }
       .chapter .blurb { color: rgba(233, 240, 247, 0.55); margin-top: 4px; font-size: 15px; }
@@ -119,6 +132,7 @@
         <div class="eyebrow">Triangle Lab</div>
         <h1>Geometry</h1>
         <p class="sub">Pinch a point in front of your camera and feel the geometry change under your hand.</p>
+        <a id="recall-link" href="recall.html">Recall</a>
 
         <div id="menu"></div>
 

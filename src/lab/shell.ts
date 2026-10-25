@@ -152,6 +152,18 @@ export class Shell {
     return true;
   }
 
+  /** Make `step` current, if the lesson has one so numbered. */
+  goTo(step: number): void {
+    const c = this.current;
+    if (c && step >= 0 && step < c.view.steps.length) this.select(step, true);
+  }
+
+  /** The current step and its title, or null before a lesson has loaded. */
+  currentStep(): { step: number; title: string } | null {
+    const c = this.current;
+    return c ? { step: c.step, title: c.view.steps[c.step]?.title ?? "" } : null;
+  }
+
   /** Make `step` current; `scroll` brings it into view in the step list. */
   private select(step: number, scroll: boolean): void {
     const c = this.current;

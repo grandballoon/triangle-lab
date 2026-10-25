@@ -154,6 +154,38 @@ On a wide screen it docks: it publishes the width it takes as `--rail-inset` on 
 Standalone pages honour that through their `#stage` rule and size their figure from the canvas box; the lab shell takes it as `leftInset` and fits the stage beside it.
 The entries live in per-chapter files under `src/chapters/`.
 
+## Recall (`src/recall`)
+
+While working through a lesson, the learner can note a question they want to be able to answer from memory later; `recall.html` asks the questions back.
+It is separate from the lessons: no lesson knows it exists, and each kind of page only says where the learner is.
+
+A pill in the top bar, or the Q key, opens a sheet for the question (`capture.ts`).
+`page.ts` and the lab's `main.ts` mount it with a function returning the current lesson's slug and step, and the question is saved with both and the step's title.
+Keys typed into the sheet stop there, so they never reach a lesson's shortcuts.
+
+The recall page lists every question by lesson and runs review sittings.
+A sitting asks each due question in turn: the learner answers from memory, in writing or not, then checks against their earlier answers and the lesson itself, and grades themselves missed, shaky or recalled.
+"Check in the lesson" opens the lesson in a new tab at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
+
+| File | Role | Pure |
+| --- | --- | --- |
+| `deck.ts` | Cards, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
+| `session.ts` | A review sitting: ask, check, grade, one more try after a first miss; reading one back after a reload | yes |
+| `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
+| `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
+| `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
+| `capture.ts` | The pill and sheet on a lesson page | no |
+| `page.ts` | The recall page: overview, sittings, saving to and loading from a file | no |
+
+Scheduling is a Leitner system.
+A card starts in box 0, due at once; recalling it moves it up a box, a shaky answer moves it down one (never below 1), and a miss sends it back to 0.
+Boxes 1 to 5 come back after 1, 3, 7, 16 and 35 days, each a few hours early, so a card answered in the evening is ready the next morning.
+
+The deck lives in the browser only, so the recall page can save it to a JSON file and load one back, merged card by card with the copy changed last winning.
+A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background while the learner checks an answer in the lesson's tab.
+
+Every change to the store is read-modify-write against storage, so two tabs cannot undo each other's questions; if storage refuses a write, the page keeps its deck for as long as it is open and says so.
+
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
 
 A review aid for the dev server, separate from the lessons: Alt-click any element to leave a comment on it.
@@ -180,6 +212,8 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `TermRef` (`src/lab/link.ts`): what a found term refers to — a point, segment, angle, polygon, symbol or number.
 - `FigureIndex` (`src/lab/figure.ts`): the lines, arcs, angle marks, shapes and labels one frame drew, in screen pixels.
 - `Hold` (`src/lab/hold.ts`): whether the formula band is live, held through a drag, or settling after one.
+- `Card`, `Deck`, `Place`, `Attempt` (`src/recall/deck.ts`): a noted question, where it was asked, its answers and when it is next due.
+- `Session` (`src/recall/session.ts`): a review sitting in progress.
 
 # Testing
 
@@ -194,11 +228,15 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
 - `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
 - `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
-- `src/pages.test.ts`: every standalone page's stage rule, script order and directions.
+- `src/pages.test.ts`: every standalone page's stage rule, script order and directions, and that every page is a build entry.
 - `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
+- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings, links to a step, labels and the Enter key.
+- `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
+- `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 
