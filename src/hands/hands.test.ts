@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { HandInterpreter, pinchThresholds, type HandReading } from "./interpreter.ts";
 import { classifyPose, pinchRatio, videoToScreen, type HandFrame, type XYZ } from "./pose.ts";
-import { bind, DEFAULT_SETTINGS, sanitize, setGrab, SettingsStore, type GestureSettings } from "./settings.ts";
+import {
+  bind,
+  DEFAULT_SETTINGS,
+  defaultSettings,
+  sanitize,
+  setGrab,
+  SettingsStore,
+  type GestureSettings,
+} from "./settings.ts";
 
 // --- A synthetic hand ---------------------------------------------------------
 //
@@ -67,6 +75,13 @@ describe("videoToScreen", () => {
     expect(videoToScreen({ x: 0.5, y: 0.5 }, video, view)).toEqual({ x: 400, y: 450 });
     // A landmark on the camera's left appears on the screen's right.
     expect(videoToScreen({ x: 0.25, y: 0 }, video, view)).toEqual({ x: 800, y: 0 });
+  });
+
+  it("keeps x as it is for a camera facing away", () => {
+    const video = { width: 1600, height: 900 };
+    const view = { width: 800, height: 900 };
+    expect(videoToScreen({ x: 0.25, y: 0 }, video, view, false)).toEqual({ x: 0, y: 0 });
+    expect(videoToScreen({ x: 0.5, y: 0.5 }, video, view, false)).toEqual({ x: 400, y: 450 });
   });
 });
 
@@ -174,5 +189,20 @@ describe("settings", () => {
     store.set({ ...store.get(), holdMs: 1200, hands: "left" });
     expect(seen).toBe(1);
     expect(new SettingsStore(storage).get()).toMatchObject({ holdMs: 1200, hands: "left" });
+  });
+
+  it("starts with hands off where touch is the main input, until the user turns them on", () => {
+    expect(defaultSettings(false).enabled).toBe(true);
+    const touch = defaultSettings(true);
+    expect(touch).toEqual({ ...DEFAULT_SETTINGS, enabled: false });
+
+    const data = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => data.get(k) ?? null,
+      setItem: (k: string, v: string) => void data.set(k, v),
+    };
+    expect(new SettingsStore(storage, touch).get().enabled).toBe(false);
+    new SettingsStore(storage, touch).set({ ...touch, enabled: true });
+    expect(new SettingsStore(storage, touch).get().enabled).toBe(true);
   });
 });

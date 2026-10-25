@@ -29,6 +29,7 @@
 // Self-contained on purpose, matching medians.ts / bisectors.ts / etc. — only
 // the webcam device and this file's own little vector helpers are involved.
 
+import { fillFitted, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -400,7 +401,7 @@ function pointer(e: PointerEvent): Vec {
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   let best: [number, number] | null = null;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < lessons.length; i++) {
     for (let k = 0; k < 3; k++) {
       const alt = lessons[i].altitudes[k];
@@ -763,9 +764,12 @@ function drawCaption(lesson: Lesson, celebrated: boolean): void {
 
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "500 13px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = celebrated ? rgba(DONE, 0.85) : CAPTION;
-  ctx.fillText(celebrated ? lesson.doneCaption : lesson.name, band.cx, y);
+  fillFitted(ctx, celebrated ? lesson.doneCaption : lesson.name, band.cx, y, band.w - 24, {
+    font: (px) => `500 ${px}px ui-sans-serif, system-ui, sans-serif`,
+    size: 13,
+    min: 11,
+  });
 }
 
 function drawPulse(p: Pulse): void {

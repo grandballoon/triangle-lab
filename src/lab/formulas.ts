@@ -7,9 +7,6 @@ import "./formulas.css";
 import { richHtml, texHtml } from "./math.ts";
 import type { Readout } from "./scene.ts";
 
-/** The band's height in CSS pixels; pages keep this much free above the bottom edge. */
-export const FORMULA_BAND_HEIGHT = 116;
-
 /** A readout row as HTML. `prepare` rewrites its LaTeX before typesetting (link.ts `linkTex`). */
 export function readoutHtml(row: Readout, prepare: (tex: string) => string = (tex) => tex): string {
   const label = row.label ? `<span class="readout-label">${richHtml(row.label, false, prepare)}</span>` : "";

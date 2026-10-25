@@ -1,9 +1,9 @@
 // Links the terms of the formulas and the step text to the figure. Typeset
 // mathematics marks its terms with `data-term` (scene.ts `term`, link.ts);
-// this module follows the pointer — a mouse, or a hand, which arrives as
-// synthetic pointer events — to find the term under it, and draws thin
-// leader lines from that term to the marks the figure drew for it (draw.ts
-// anchors). Only terms the figure shows are marked as linked and light up;
+// this module follows the pointer — a mouse, a tapping finger, or a hand,
+// which arrives as synthetic pointer events — to find the term under it, and
+// draws thin leader lines from that term to the marks the figure drew for it
+// (draw.ts anchors). Only terms the figure shows are marked as linked and light up;
 // the rest read as plain mathematics.
 //
 // The term is looked up afresh each frame from the last pointer position,
@@ -35,15 +35,23 @@ export class TermFocus {
     private readonly doc: Document,
     private readonly svg: SVGSVGElement,
   ) {
-    doc.addEventListener("pointermove", (e) => {
+    const follow = (e: PointerEvent): void => {
       this.pointer = { x: e.clientX, y: e.clientY };
       this.target = e.target instanceof Element ? e.target : null;
-    });
-    // The mouse left the window.
-    doc.documentElement.addEventListener("pointerleave", () => {
+    };
+    const drop = (): void => {
       this.pointer = null;
       this.target = null;
+    };
+    doc.addEventListener("pointermove", follow);
+    // A finger has no hover: tapping a term lights it, and it stays lit until
+    // the next tap. A touch that turns into a scroll lights nothing.
+    doc.addEventListener("pointerdown", follow);
+    doc.addEventListener("pointercancel", (e) => {
+      if (e.pointerType === "touch") drop();
     });
+    // The mouse left the window.
+    doc.documentElement.addEventListener("pointerleave", drop);
   }
 
   /** The term under the pointer now, if any. */

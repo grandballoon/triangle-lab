@@ -5,7 +5,10 @@
    The pill sits bottom-left by default — the one corner the standalone lesson
    pages leave free (the pager owns the top-left, altitudes its top-right
    notes button). A page with that corner taken adds the `hands-top` class to
-   <body>, which moves the pill top-right and opens the sheet downward. */
+   <body>, which moves the pill top-right and opens the sheet downward.
+
+   On a phone (<html data-layout="stacked">, set by the lesson pages) the
+   pill shares the pager's row, so it shows a hand for its status text. */
 
 #hands-overlay {
   position: fixed;
@@ -62,6 +65,17 @@ body.hands-top #hands-ui {
   background: rgba(233, 240, 247, 0.35);
 }
 
+.hands-icon {
+  display: none;
+  width: 15px;
+  height: 15px;
+}
+
+html[data-layout="stacked"] #hands-ui { right: var(--edge); top: 10px; }
+html[data-layout="stacked"] .hands-pill { gap: 6px; padding: 0 11px; }
+html[data-layout="stacked"] .hands-icon { display: block; }
+html[data-layout="stacked"] .hands-pill-text { display: none; }
+
 .hands-pill[data-status="ready"]::before { background: #38d9a9; }
 .hands-pill[data-status="loading"]::before,
 .hands-pill[data-status="camera"]::before { background: #ffd43b; }
@@ -74,8 +88,8 @@ body.hands-top #hands-ui {
 }
 
 .hands-sheet {
-  width: min(400px, calc(100vw - 36px));
-  max-height: calc(100vh - 80px);
+  width: min(400px, calc(100vw - 2 * var(--edge, 18px)));
+  max-height: calc(100dvh - 80px);
   overflow-y: auto;
   padding: 6px 16px 16px;
   border-radius: 16px;

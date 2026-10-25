@@ -18,6 +18,7 @@
 import { formulaBand } from "./chrome.ts";
 import { grid, type Cell } from "./grid.ts";
 import type { Readout } from "./lab/scene.ts";
+import { grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { perimeterReadout } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
@@ -69,8 +70,9 @@ const SHAPE: [Vec, Vec, Vec] = [
 const SIZE_FACTOR = [0.72, 1.0, 1.34]; // small, medium, large
 const SIZE_NAME = ["Small", "Medium", "Large"];
 const ROTATION = [-0.15, 0.3, -0.45]; // radians — just enough to avoid looking cloned
-// Room around each triangle for its side and angle labels, in SHAPE units.
-const LABEL_ROOM = 0.6;
+// Room around each triangle for its side labels and its s mark: SHAPE units
+// while it is drawn large, screen px once it is drawn small.
+const LABEL_ROOM = { units: 0.6, px: 24 };
 
 /** SHAPE as triangle i is drawn, in SHAPE units about its cell's centre. */
 function placed(i: number): [Vec, Vec, Vec] {
@@ -94,7 +96,7 @@ const CONTENT = (() => {
     w = Math.max(w, Math.max(...xs) - Math.min(...xs));
     h = Math.max(h, Math.max(...ys) - Math.min(...ys));
   }
-  return { w: w + 2 * LABEL_ROOM, h: h + 2 * LABEL_ROOM };
+  return { w, h };
 })();
 
 const showFormulas = formulaBand();
@@ -202,7 +204,7 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT);
+  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT, LABEL_ROOM);
   unitPx = scale / LENGTH_PER_SHAPE;
   cells.forEach((cell: Cell, i) => {
     lessons[i].verts = placed(i).map((o) => ({ x: cell.cx + o.x * scale, y: cell.cy + o.y * scale })) as [
@@ -223,7 +225,7 @@ function pointer(e: PointerEvent): Vec {
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   let best = -1;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < lessons.length; i++) {
     if (lessons[i].sideIndex >= 3) continue;
     const d = dist(p, knobPos(i));

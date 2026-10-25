@@ -6,14 +6,19 @@
 // WHY the foot is the midpoint (the base splits into a + a) and why the apex
 // angle splits into 30° + 30°. What remains is the 30-60-90 triangle:
 // hypotenuse 2a, short leg a, and the Pythagorean Theorem computes the long
-// leg √((2a)² − a²) = a√3 live — the ratio 1 : √3 : 2. The panel derives
-// every ratio of 30° and of 60° with the cancellations shown (a/2a = 1/2),
-// plus the callout that the hypotenuse is twice the leg opposite 30°.
+// leg √((2a)² − a²) = a√3 live — the ratio 1 : √3 : 2. The formula band
+// below derives every ratio of 30° and of 60° with the cancellations shown
+// (a/2a = 1/2), plus the callout that the hypotenuse is twice the leg
+// opposite 30°.
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the page's formula band, the small-screen helpers
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grabRadius, nearest } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { foldOf, thirtySixtyReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -41,6 +46,7 @@ const GRAB_RADIUS = 26;
 const U_MIN = 0.9;
 const U_MAX = 1.8;
 const MIN_UNIT = 24; // px per unit, however cramped the window
+const PAD = 22; // px around the triangle, on top of its 0.6 units of room, for the side labels
 const SNAP_T = 0.07;
 const PULSE_LIFE = 0.6;
 
@@ -60,11 +66,11 @@ let W = 0;
 let H = 0;
 let unit = 1;
 let center: Vec = { x: 0, y: 0 };
+const showFormulas = formulaBand();
 
 // --- helpers ---------------------------------------------------------------
 
 const clamp = (v: number, lo: number, hi: number): number => (v < lo ? lo : v > hi ? hi : v);
-const dist = (p: Vec, q: Vec): number => Math.hypot(p.x - q.x, p.y - q.y);
 
 function rgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -95,10 +101,16 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const figureW = W - PANEL_W - 90;
+  // Sized for the largest triangle, so resizing never rescales the world.
   // Floored so a narrow window shrinks the figure rather than inverting it.
-  unit = Math.max(MIN_UNIT, Math.min((figureW - 80) / (2 * U_MAX + 0.6), (H - TOP_MARGIN - 150) / (U_MAX * SQRT3 + 0.6)));
-  center = { x: 50 + figureW / 2, y: TOP_MARGIN + (H - TOP_MARGIN) / 2 - 10 };
+  const usableH = H - TOP_MARGIN;
+  unit = Math.max(
+    MIN_UNIT,
+    Math.min((W - 2 * PAD) / (2 * U_MAX + 0.6), (usableH - 2 * PAD) / (U_MAX * SQRT3 + 0.6)),
+  );
+  // The centre is the centroid, a third of the way up: lower it by a sixth
+  // of the largest height so that triangle sits in the middle.
+  center = { x: W / 2, y: TOP_MARGIN + usableH / 2 + (U_MAX * SQRT3 * unit) / 6 };
 }
 
 // --- interaction -----------------------------------------------------------
@@ -112,15 +124,11 @@ const foldKnobPos = (): Vec => toScreen(foldPoint(ptL(), fold));
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, foldKnobPos()) <= GRAB_RADIUS) {
-    drag = "fold";
-  } else if (dist(p, toScreen(ptT())) <= GRAB_RADIUS) {
-    // The apex resizes — the fold knob ends its ride ON the base corner, so
-    // the two grips must never share a vertex.
-    drag = "size";
-  } else {
-    return;
-  }
+  // The apex resizes — the fold knob ends its ride ON the base corner, so
+  // the two grips must never share a vertex.
+  const hit = nearest(p, [foldKnobPos(), toScreen(ptT())], grabRadius(e.pointerType, GRAB_RADIUS));
+  if (hit < 0) return;
+  drag = hit === 0 ? "fold" : "size";
   canvas.classList.add("grabbing");
   capturePointer(canvas, e);
   drive(p);
@@ -263,24 +271,9 @@ function render(): void {
   ctx.fillText(isFolded ? `a√3 = ${(half * SQRT3).toFixed(2)}` : "the altitude", 0, 0);
   ctx.restore();
 
-  // Caption.
-  ctx.font = isFolded ? "600 13px ui-sans-serif, system-ui, sans-serif" : "500 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillStyle = isFolded ? OK : TEXT_DIM;
-  ctx.fillText(
-    isFolded
-      ? "the halves match (ASA) — the base splits at its MIDPOINT, the apex into 30° + 30°"
-      : fold === 0
-        ? "an equilateral triangle: three sides 2a, three 60° angles"
-        : "folding over the altitude…",
-    center.x,
-    sM.y + 52,
-  );
-
   for (const p of pulses) drawPulse(p);
   drawKnob(fL, drag === "fold");
   drawKnob(sT, drag === "size");
-  drawPanel();
 }
 
 function drawArc(v: Vec, from: number, to: number, label: string, color: string): void {
@@ -296,101 +289,6 @@ function drawArc(v: Vec, from: number, to: number, label: string, color: string)
   ctx.textBaseline = "middle";
   ctx.fillStyle = color;
   ctx.fillText(label, v.x + Math.cos(mid) * (r + 16), v.y + Math.sin(mid) * (r + 16));
-}
-
-// --- panel -----------------------------------------------------------------
-
-const PANEL_W = 360;
-const PANEL_PAD = 14;
-
-function drawPanel(): void {
-  const x = W - PANEL_W - 18;
-  const y = TOP_MARGIN;
-  const h = 348;
-  ctx.beginPath();
-  ctx.roundRect(x, y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.65)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  const a = half;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  let ty = y + PANEL_PAD + 14;
-
-  ctx.font = "700 15px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText("half an equilateral = 30°-60°-90°", x + PANEL_PAD, ty);
-  ty += 22;
-
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(x + PANEL_PAD, ty, [
-    ["long leg", CREASE],
-    [" = √((2a)² − a²) = √(3a²) = a√3", TEXT],
-  ]);
-  ty += 19;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText(
-    `Pythagoras on hyp 2a, short leg a — here √3·${a.toFixed(2)} = ${(a * SQRT3).toFixed(2)}`,
-    x + PANEL_PAD,
-    ty,
-  );
-  ty += 20;
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(x + PANEL_PAD, ty, [
-    ["short : long : hyp", TEXT],
-    ["  =  ", TEXT_DIM],
-    ["1 : √3 : 2", ACCENT],
-    ["   (hyp = 2 × short)", TEXT_DIM],
-  ]);
-  ty += 26;
-
-  // The two derived columns: standing at 30° (apex) and at 60° (base corner).
-  const col30 = x + PANEL_PAD + 64;
-  const col60 = col30 + 140;
-  ctx.font = "600 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("at 30° (opp = a)", col30, ty);
-  ctx.fillText("at 60° (opp = a√3)", col60, ty);
-  ty += 19;
-
-  const mono = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  ctx.font = mono;
-  const row = (name: string, thirty: string, sixty: string): void => {
-    ctx.fillStyle = TEXT;
-    ctx.fillText(name, x + PANEL_PAD, ty);
-    ctx.fillStyle = ACCENT;
-    ctx.fillText(thirty, col30, ty);
-    ctx.fillText(sixty, col60, ty);
-    ty += 21;
-  };
-
-  row("sin", "a/2a = 1/2", "a√3/2a = √3/2");
-  row("cos", "√3/2", "1/2");
-  row("tan", "a/a√3 = √3/3", "a√3/a = √3");
-  row("csc", "2", "2√3/3");
-  row("sec", "2√3/3", "2");
-  row("cot", "√3", "√3/3");
-
-  ty += 2;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("forget which is 1/2? the leg opposite 30° is the SHORT one,", x + PANEL_PAD, ty);
-  ty += 16;
-  ctx.fillText("so sin 30° = 1/2 — just redraw this triangle.", x + PANEL_PAD, ty);
-}
-
-/** Draw colored text runs left-to-right from (x, y). */
-function segments(x: number, y: number, runs: [string, string][]): void {
-  let cx = x;
-  for (const [text, color] of runs) {
-    ctx.fillStyle = color;
-    ctx.fillText(text, cx, y);
-    cx += ctx.measureText(text).width;
-  }
 }
 
 // --- chrome ----------------------------------------------------------------
@@ -423,6 +321,7 @@ function frame(now: number): void {
   prev = now;
   pulses = pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   render();
+  showFormulas(thirtySixtyReadouts(half, foldOf(fold)));
   requestAnimationFrame(frame);
 }
 

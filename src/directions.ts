@@ -1,6 +1,6 @@
 // The written directions for the standalone lesson pages, keyed by slug. Each
-// page shows its own in the step column on the right (page.ts), in the same
-// format as a lab lesson's steps. Text may hold `$…$` LaTeX.
+// page shows its own in the step column (page.ts), in the same format as a
+// lab lesson's steps. Text may hold `$…$` LaTeX.
 //
 // The steps here mostly only describe the figure. A lab lesson's steps draw
 // its construction in, but a standalone page has one bespoke interaction and
@@ -168,7 +168,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Scrub the proof",
-      text: "A proof joins the triangle on the right. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
+      text: "A proof joins the triangle, beside it or, on a narrow screen, in its place. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
     },
     {
       title: "Why it is true",
@@ -182,7 +182,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Meet the givens",
-      text: "The checklist ticks each measurement as it matches. $C$ snaps onto the spots where the dashed lines cross.",
+      text: "The formulas below tick each measurement as it matches. $C$ snaps onto the spots where the dashed lines cross.",
     },
     {
       title: "SSS, SAS, ASA",
@@ -199,8 +199,8 @@ export const directions: Record<string, Step[]> = {
       text: "Drag the knob along the tilted ray. Each right triangle under it has angles $90^\\circ$, $\\theta$ and $90^\\circ - \\theta$, so they are all similar.",
     },
     {
-      title: "Read the table",
-      text: "As you slide, the sides change but the ratios $\\frac{\\text{opp}}{\\text{hyp}}$, $\\frac{\\text{adj}}{\\text{hyp}}$ and $\\frac{\\text{opp}}{\\text{adj}}$ hold still.",
+      title: "Read the ratios",
+      text: "The formulas below work out $\\frac{\\text{opp}}{\\text{hyp}}$, $\\frac{\\text{adj}}{\\text{hyp}}$ and $\\frac{\\text{opp}}{\\text{adj}}$ in all three triangles. As you slide, the sides change but every ratio holds still.",
     },
     {
       title: "Turn the dial",
@@ -214,7 +214,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Six ratios",
-      text: "The panel builds $\\sin$, $\\cos$ and $\\tan$ from the sides, and beneath them their flips $\\csc$, $\\sec$ and $\\cot$.",
+      text: "The formulas below build $\\sin$, $\\cos$ and $\\tan$ from the sides, then their flips $\\csc$, $\\sec$ and $\\cot$.",
     },
     {
       title: "Switch angles",
@@ -222,7 +222,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Always one",
-      text: "The footer shows $\\sin^2 + \\cos^2 = \\frac{a^2 + b^2}{c^2} = 1$. That is the Pythagorean theorem again.",
+      text: "The last formula shows $\\sin^2 + \\cos^2 = \\frac{a^2 + b^2}{c^2} = 1$. That is the Pythagorean theorem again.",
     },
   ],
   fortyfive: [
@@ -272,7 +272,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Read the table",
-      text: "The table lists all six ratios at each landmark angle, with the column nearest the dial highlighted.",
+      text: "The formulas below list all six ratios at each landmark angle, one angle to a row, with the one the dial rests on lit up.",
     },
     {
       title: "The ends",

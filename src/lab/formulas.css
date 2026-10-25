@@ -1,17 +1,10 @@
 /* The formula band (formulas.ts) along the bottom of a lesson page. Both kinds
    of page show it: the lab page always, a standalone page when its lesson has
-   live formulas (page.ts). The page sets --edge, --accent and
-   --formula-band-height. */
-
-/* The curriculum rail stops above the band, as the step column does. */
-html:has(#formulas) { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
+   live formulas (page.ts). Its box comes from the shared layout (layout.ts,
+   placed by arrange.ts); the page sets --accent. */
 
 #formulas {
   position: fixed;
-  left: var(--edge);
-  right: var(--edge);
-  bottom: var(--edge);
-  height: var(--formula-band-height);
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -60,6 +53,14 @@ html:has(#formulas) { --curriculum-bottom: calc(var(--edge) + var(--bottom-reser
 }
 
 .readout-math { display: block; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
+
+/* Short of room (layout.ts compact), the band drops its heading and the rows
+   sit closer, so its numbers fit a phone. A row never runs wider than the
+   band, so swiping along the band brings each into view whole. */
+html[data-compact] #formulas { padding: 8px 12px 4px; }
+html[data-compact] #formulas h2 { display: none; }
+html[data-compact] #readouts { gap: 16px; scroll-snap-type: x proximity; }
+html[data-compact] .readout { max-width: 100%; padding: 4px 0 4px 10px; scroll-snap-align: start; }
 
 .readout-good { border-left-color: #38d9a9; }
 .readout-good .readout-math { color: #7ff0cf; }

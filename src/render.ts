@@ -13,6 +13,7 @@ import {
   type TriangleAngles,
   type Vec,
 } from "./geometry.ts";
+import { captionScale, fillFitted } from "./fit.ts";
 
 const COLORS: Record<AngleType, string> = {
   acute: "#38d9a9", // all acute angles share one colour
@@ -51,7 +52,7 @@ export function render(ctx: CanvasRenderingContext2D, w: number, h: number, s: S
 
   for (const sp of s.splashes) drawSplash(ctx, sp);
   drawKnob(ctx, s.knob, t.c, s.dragging, s.snapped);
-  drawCaption(ctx, w, Math.max(t.a.y, t.b.y), angles.type);
+  drawCaption(ctx, w, h, Math.max(t.a.y, t.b.y), angles.type);
 }
 
 const rank = (k: AngleType): number => (k === "acute" ? 0 : 1);
@@ -216,20 +217,33 @@ const CAPTIONS: Record<AngleType, { title: string; sub: string }> = {
   obtuse: { title: "Obtuse Triangle", sub: "one angle is greater than 90°" },
 };
 
-function drawCaption(ctx: CanvasRenderingContext2D, w: number, baseY: number, type: AngleType): void {
+// The caption under the base, at full size: from the base to the title's
+// baseline, from there to the subtitle's, and the whole depth. It shrinks on
+// a small canvas (captionScale).
+const CAPTION_GAP = 62;
+const CAPTION_LINE = 26;
+export const CAPTION_ROOM = CAPTION_GAP + CAPTION_LINE + 10;
+
+function drawCaption(ctx: CanvasRenderingContext2D, w: number, h: number, baseY: number, type: AngleType): void {
   const { title, sub } = CAPTIONS[type];
+  const k = captionScale(w, h);
   const cx = w / 2;
-  const y = baseY + 62;
+  const y = baseY + CAPTION_GAP * k;
+  const room = w - 32;
 
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "700 34px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = COLORS[type];
-  ctx.fillText(title, cx, y);
+  fillFitted(ctx, title, cx, y, room, {
+    font: (px) => `700 ${px}px ui-sans-serif, system-ui, sans-serif`,
+    size: Math.round(34 * k),
+  });
 
-  ctx.font = "400 17px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = "rgba(233,240,247,0.75)";
-  ctx.fillText(sub, cx, y + 26);
+  fillFitted(ctx, sub, cx, y + CAPTION_LINE * k, room, {
+    font: (px) => `400 ${px}px ui-sans-serif, system-ui, sans-serif`,
+    size: Math.round(17 * k),
+  });
 }
 
 // --- small drawing helpers ----------------------------------------------

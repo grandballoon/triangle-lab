@@ -10,21 +10,17 @@
 // can drift past the true bisector to either side and the colours split again.
 //
 // Self-contained on purpose, matching medians.ts / perimeter.ts / etc. — only
-// the webcam device and this file's own little vector helpers are involved.
+// the webcam device, the shared grid layout, the small-screen helpers and
+// this file's own little vector helpers are involved.
 
+import { grabRadius } from "./fit.ts";
+import { grid } from "./grid.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
   x: number;
   y: number;
-}
-
-interface Band {
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
 }
 
 interface Pulse {
@@ -36,7 +32,6 @@ interface Lesson {
   shape: [Vec, Vec, Vec]; // normalised triangle, centred on its own centroid
   apex: number; // index (0,1,2) of the vertex the bisector springs from
   verts: [Vec, Vec, Vec]; // placed on screen by layout()
-  band: Band;
   t: number; // foot position along the opposite side, P -> Q, in [T_MIN, T_MAX]
   wasEqual: boolean; // were the two angles equal last frame (for one-shot pulse)
   pulses: Pulse[];
@@ -54,6 +49,9 @@ const TWO_PI = Math.PI * 2;
 const DEG = 180 / Math.PI;
 const TOP_MARGIN = 64; // room for the top bar above the grid
 
+// Each triangle's unit, its normalised coordinates, is this share of its
+// cell's smaller side.
+const SHAPE_SCALE = 0.3;
 const T_MIN = 0.07; // keep the foot off the very corners of the opposite side
 const T_MAX = 0.93;
 const EQUAL_EPS_DEG = 0.7; // half-angles within this of each other count as bisected
@@ -150,7 +148,6 @@ const lessons: Lesson[] = LESSON_SEEDS.map((seed) => {
       { x: 0, y: 0 },
       { x: 0, y: 0 },
     ] as [Vec, Vec, Vec],
-    band: { cx: 0, cy: 0, w: 0, h: 0 },
     t: 0, // set below, once verts exist to derive the bisector point
     wasEqual: false,
     pulses: [],
@@ -165,30 +162,16 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const usableH = H - TOP_MARGIN;
-  // Square-ish 2×2 when there is width to spare; a single column on a tall,
-  // narrow phone so no triangle gets pinched.
-  const cols = W >= H * 0.9 ? 2 : 1;
-  const rows = Math.ceil(lessons.length / cols);
-  const cellW = W / cols;
-  const cellH = usableH / rows;
-
-  for (let i = 0; i < lessons.length; i++) {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const band: Band = {
-      cx: (col + 0.5) * cellW,
-      cy: TOP_MARGIN + (row + 0.5) * cellH,
-      w: cellW,
-      h: cellH,
-    };
-    const s = Math.min(cellW, cellH) * 0.3;
-    lessons[i].band = band;
+  // As many columns as draws the triangles largest: a row of four on a wide
+  // screen, 2×2 on a squarer one, a single column on a tall, narrow one.
+  const content = { w: 1 / SHAPE_SCALE, h: 1 / SHAPE_SCALE };
+  const { cells, scale } = grid(lessons.length, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, content);
+  cells.forEach((band, i) => {
     lessons[i].verts = lessons[i].shape.map((o) => ({
-      x: band.cx + o.x * s,
-      y: band.cy + o.y * s,
+      x: band.cx + o.x * scale,
+      y: band.cy + o.y * scale,
     })) as [Vec, Vec, Vec];
-  }
+  });
 }
 
 /** Start each cevian clearly off its bisector, nudged to alternating sides so
@@ -214,7 +197,7 @@ function pointer(e: PointerEvent): Vec {
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   let best: number | null = null;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < lessons.length; i++) {
     const d = dist(p, foot(lessons[i]));
     if (d <= bestD) {

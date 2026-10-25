@@ -43,6 +43,15 @@ export const DEFAULT_SETTINGS: GestureSettings = {
   showSkeleton: false,
 };
 
+/**
+ * The defaults for a device. Where touch is the main input (a phone or a
+ * tablet, held rather than propped up before the camera) hand tracking starts
+ * off: it would load a model and watch the hand holding the device.
+ */
+export function defaultSettings(touchFirst: boolean): GestureSettings {
+  return touchFirst ? { ...DEFAULT_SETTINGS, enabled: false } : DEFAULT_SETTINGS;
+}
+
 export const HOLD_MS_RANGE = { min: 300, max: 2000, step: 100 } as const;
 
 const clamp01 = (v: unknown, fallback: number): number =>
@@ -54,9 +63,8 @@ const clamp01 = (v: unknown, fallback: number): number =>
  * one job. The grab gesture wins over an action, and earlier actions win over
  * later ones.
  */
-export function sanitize(raw: unknown): GestureSettings {
+export function sanitize(raw: unknown, d: GestureSettings = DEFAULT_SETTINGS): GestureSettings {
   const r = (raw && typeof raw === "object" ? raw : {}) as Partial<GestureSettings>;
-  const d = DEFAULT_SETTINGS;
   const grab: GrabGesture = r.grab === "fist" ? "fist" : "pinch";
   const hands = r.hands === "left" || r.hands === "right" ? r.hands : "both";
   const holdRaw = typeof r.holdMs === "number" && Number.isFinite(r.holdMs) ? r.holdMs : d.holdMs;
@@ -111,8 +119,15 @@ export class SettingsStore {
   private value: GestureSettings;
   private readonly listeners = new Set<(s: GestureSettings) => void>();
 
-  constructor(private readonly storage: StorageLike | null = defaultStorage()) {
-    this.value = sanitize(this.read());
+  /**
+   * @param defaults What a setting the user never chose falls back to, and
+   *   what "Restore defaults" restores.
+   */
+  constructor(
+    private readonly storage: StorageLike | null = defaultStorage(),
+    readonly defaults: GestureSettings = DEFAULT_SETTINGS,
+  ) {
+    this.value = sanitize(this.read(), defaults);
   }
 
   get(): GestureSettings {
@@ -120,7 +135,7 @@ export class SettingsStore {
   }
 
   set(next: GestureSettings): void {
-    this.value = sanitize(next);
+    this.value = sanitize(next, this.defaults);
     try {
       this.storage?.setItem(STORAGE_KEY, JSON.stringify(this.value));
     } catch {

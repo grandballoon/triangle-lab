@@ -14,6 +14,7 @@
 // vector helpers are involved.
 
 import { grid } from "./grid.ts";
+import { grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -69,8 +70,10 @@ const SHAPE: [Vec, Vec, Vec] = [
 ];
 const SIZE_FACTOR = [0.72, 1.0, 1.34]; // small, medium, large
 const ROTATION = [-0.15, 0.3, -0.45]; // radians — just enough to avoid looking cloned
-// Room around each triangle for its stubs and knobs, in SHAPE units.
-const KNOB_ROOM = 0.4;
+// Room around each triangle for its stubs and knobs: SHAPE units while it is
+// drawn large, screen px once it is drawn small (a knob may then poke out of
+// its cell by part of a stub).
+const KNOB_ROOM = { units: 0.4, px: 24 };
 
 /** SHAPE as triangle i is drawn, in SHAPE units about its cell's centre. */
 function placed(i: number): [Vec, Vec, Vec] {
@@ -94,7 +97,7 @@ const CONTENT = (() => {
     w = Math.max(w, Math.max(...xs) - Math.min(...xs));
     h = Math.max(h, Math.max(...ys) - Math.min(...ys));
   }
-  return { w: w + 2 * KNOB_ROOM, h: h + 2 * KNOB_ROOM };
+  return { w, h };
 })();
 
 const video = document.getElementById("cam") as HTMLVideoElement;
@@ -171,7 +174,7 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT);
+  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT, KNOB_ROOM);
   cells.forEach((cell, i) => {
     lessons[i].verts = placed(i).map((o) => ({ x: cell.cx + o.x * scale, y: cell.cy + o.y * scale })) as [
       Vec,
@@ -191,7 +194,7 @@ function pointer(e: PointerEvent): Vec {
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   let best: [number, number] | null = null;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < lessons.length; i++) {
     for (let k = 0; k < 3; k++) {
       const m = lessons[i].medians[k];

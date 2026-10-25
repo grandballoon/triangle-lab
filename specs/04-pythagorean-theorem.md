@@ -4,6 +4,7 @@ The screen first shows, large and centred, one right triangle with its right ang
 Dragging the knobs resizes the two legs, and the squares follow, each labeled with its live area (a², b², c²).
 The formula band along the bottom of the screen shows the equation a² + b² = c² with the live numbers, plus the resulting c = √(a² + b²).
 From the step that scrubs the proof, the triangle glides to the left half of the screen and the proof fades in on the right: a single big square of side a + b containing four congruent copies of the triangle, with a scrub knob on a track beneath it.
+On a screen taller than wide there is no room for both side by side, so the triangle fades out and the proof takes its place.
 At one end of the scrub the four triangles pair into two rectangles and the leftover space is visibly two squares of areas a² and b²; at the other end the same four triangles sit in the corners and the leftover space is one tilted square of area c².
 Every triangle travels by pure translation, so scrubbing slides them smoothly between the two packings: same box, same four triangles, so the leftovers must be equal.
 Reaching either end of the scrub snaps and fires a pulse, and the leftover regions light up with their labels.

@@ -15,7 +15,7 @@ import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
 import { term, type Scene } from "./scene.ts";
-import { USES_HEADING } from "./steps.ts";
+import { StepList, USES_HEADING } from "./steps.ts";
 import { Shell, type ShellElements } from "./shell.ts";
 
 let frames: FrameRequestCallback[] = [];
@@ -44,6 +44,7 @@ function page(): ShellElements {
     controls: el("controls"),
     formulas: el("formulas"),
     readouts: el("readouts"),
+    column: el("steps"),
     steps: el("step-list"),
     leader: document.getElementById("leader") as unknown as SVGSVGElement,
   };
@@ -272,6 +273,63 @@ describe("Shell", () => {
   });
 });
 
+describe("StepList, paged", () => {
+  function list(): { steps: StepList; host: HTMLElement; picks: number[] } {
+    document.body.innerHTML = `<aside id="steps"><div id="step-list"></div></aside>`;
+    const host = document.getElementById("step-list")!;
+    const picks: number[] = [];
+    const steps = new StepList(host, (step) => {
+      picks.push(step);
+      steps.mark(step, true);
+    });
+    steps.show(
+      [1, 2, 3].map((n) => ({ title: `Step ${n}`, text: "Look." })),
+      [{ title: "Bridges", text: "Trusses." }],
+    );
+    steps.setPaged(true);
+    return { steps, host, picks };
+  }
+
+  const pagerButton = (label: string): HTMLButtonElement =>
+    document.querySelector<HTMLButtonElement>(`.step-pager button[aria-label="${label}"]`)!;
+
+  it("pages through the steps with the row above the list", () => {
+    const { picks } = list();
+    const label = document.querySelector(".step-pager-label")!;
+    expect(document.querySelector("#steps")!.firstElementChild!.className).toBe("step-pager");
+    expect(label.textContent).toBe("Step 1 of 3");
+    expect(pagerButton("Previous step").disabled).toBe(true);
+
+    pagerButton("Next step").click();
+    pagerButton("Next step").click();
+    expect(picks).toEqual([1, 2]);
+    expect(label.textContent).toBe("Step 3 of 3");
+    expect(pagerButton("Next step").disabled).toBe(true);
+    expect(document.querySelector('[aria-current="step"]')!.textContent).toContain("Step 3");
+  });
+
+  it("marks the last step, which the uses follow", () => {
+    const { host } = list();
+    expect(host.hasAttribute("data-last")).toBe(false);
+    pagerButton("Next step").click();
+    pagerButton("Next step").click();
+    expect(host.hasAttribute("data-last")).toBe(true);
+  });
+
+  it("reads a long step by scrolling without changing the step", () => {
+    const { host, picks } = list();
+    host.scrollTop = 400;
+    host.dispatchEvent(new Event("scroll"));
+    expect(picks).toEqual([]);
+  });
+
+  it("hides the pager for a lesson of one step", () => {
+    const { steps } = list();
+    steps.show([{ title: "Explore", text: "Drag." }], []);
+    expect(document.querySelector<HTMLElement>(".step-pager")!.hidden).toBe(true);
+  });
+});
+
 describe("PointerBridge", () => {
   const still = { started: false, ended: false, active: false };
   const down = { started: true, ended: false, active: true };
@@ -417,5 +475,30 @@ describe("page chrome", () => {
     press("Restore defaults");
     expect(store.get().grab).toBe("pinch");
     expect(document.querySelector(".hands-pill")!.textContent).toBe("Hands off");
+  });
+
+  it("turns the camera on and off from the panel", () => {
+    document.body.innerHTML = "";
+    let on = true;
+    const listeners: (() => void)[] = [];
+    const panel = new HandsPanel(new SettingsStore(null), {
+      on: () => on,
+      set: (next) => {
+        on = next;
+        for (const fn of listeners) fn();
+      },
+      subscribe: (fn) => void listeners.push(fn),
+    });
+    const cameraRow = (): HTMLElement =>
+      [...document.querySelectorAll<HTMLElement>(".hands-row")].find(
+        (r) => r.querySelector(".hands-label")!.textContent === "Camera",
+      )!;
+    const pressed = (): string => cameraRow().querySelector('[aria-pressed="true"]')!.textContent!;
+    expect(pressed()).toBe("On");
+    [...cameraRow().querySelectorAll("button")].find((b) => b.textContent === "Off")!.click();
+    expect(on).toBe(false);
+    expect(pressed()).toBe("Off");
+    panel.setStatus("noCamera");
+    expect(document.querySelector(".hands-pill")!.textContent).toBe("Camera off");
   });
 });

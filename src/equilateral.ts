@@ -7,6 +7,7 @@
 // "don't worry about code duplication for now") — only the webcam device and
 // this file's own little vector helpers are involved.
 
+import { captionScale, centreY, fillFitted, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -20,6 +21,13 @@ const UNIT_PX = 40; // screen pixels per displayed length "unit"
 const R_MIN = 60;
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
+const TOP_MARGIN = 64; // room for the top bar above the triangle
+const LABEL_ROOM = 34; // px outside a side for its length label
+// The caption under the triangle, at full size: from the lowest corner to the
+// title's baseline, from there to the subtitle's, and the whole depth.
+const CAPTION_GAP = 78;
+const CAPTION_LINE = 25;
+const CAPTION_ROOM = CAPTION_GAP + CAPTION_LINE + 10;
 
 const video = document.getElementById("cam") as HTMLVideoElement;
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -29,6 +37,7 @@ let W = 0;
 let H = 0;
 let center: Vec = { x: 0, y: 0 };
 let rMax = 300;
+let captionK = 1; // how far the caption shrinks on a small canvas
 
 // The triangle is fully described by its circumradius and rotation; corner 0
 // (the knob) sits at `theta`, the other two at +120° and +240°.
@@ -56,6 +65,9 @@ function sideUnits(): number {
 
 // --- layout --------------------------------------------------------------
 
+/** The smallest the triangle may be: R_MIN, or less on a canvas too small for it. */
+const rMin = (): number => Math.min(R_MIN, rMax / 2);
+
 function layout(): void {
   const dpr = window.devicePixelRatio || 1;
   W = canvas.clientWidth;
@@ -64,11 +76,15 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  center = { x: W / 2, y: H / 2 };
+  // The triangle spins freely, so any corner may point down at the caption
+  // or up at the top bar: keep its whole circle clear of both.
+  captionK = captionScale(W, H);
+  const below = CAPTION_ROOM * captionK;
   const prevMax = rMax;
-  rMax = Math.min(W, H) * 0.34;
+  rMax = Math.min(Math.min(W, H) * 0.34, W / 2 - LABEL_ROOM, (H - TOP_MARGIN - LABEL_ROOM - below) / 2);
+  center = { x: W / 2, y: centreY(H, TOP_MARGIN + LABEL_ROOM, rMax, below) };
   // First run seeds a comfortable size; later runs keep the relative size.
-  radius = prevMax === rMax ? clamp(radius, R_MIN, rMax) : rMax * 0.62;
+  radius = prevMax === rMax ? clamp(radius, rMin(), rMax) : rMax * 0.62;
 }
 
 // --- interaction ---------------------------------------------------------
@@ -80,7 +96,7 @@ function pointer(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, corners()[0]) <= GRAB_RADIUS) {
+  if (dist(p, corners()[0]) <= grabRadius(e.pointerType, GRAB_RADIUS)) {
     dragging = true;
     canvas.classList.add("grabbing");
     capturePointer(canvas, e);
@@ -104,7 +120,7 @@ canvas.addEventListener("pointercancel", endDrag);
 /** The grabbed corner follows the pointer: its distance sets the size, its
  *  direction sets the rotation. The triangle stays equilateral throughout. */
 function drive(p: Vec): void {
-  radius = clamp(dist(p, center), R_MIN, rMax);
+  radius = clamp(dist(p, center), rMin(), rMax);
   theta = Math.atan2(p.y - center.y, p.x - center.x);
 }
 
@@ -213,16 +229,22 @@ function drawKnob(v: Vec): void {
 
 function drawCaption(cs: Vec[]): void {
   // Sit clear of a bottom side's outside length label (edge + ~35px).
-  const baseY = Math.max(cs[0].y, cs[1].y, cs[2].y) + 78;
+  const k = captionK;
+  const baseY = Math.max(cs[0].y, cs[1].y, cs[2].y) + CAPTION_GAP * k;
+  const room = W - 32;
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "700 32px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = ACCENT;
-  ctx.fillText("Equilateral Triangle", center.x, baseY);
-  ctx.font = "400 16px ui-sans-serif, system-ui, sans-serif";
+  fillFitted(ctx, "Equilateral Triangle", center.x, baseY, room, { font: titleFont, size: Math.round(32 * k) });
   ctx.fillStyle = "rgba(233,240,247,0.75)";
-  ctx.fillText("all three sides equal · all three angles 60°", center.x, baseY + 25);
+  fillFitted(ctx, "all three sides equal · all three angles 60°", center.x, baseY + CAPTION_LINE * k, room, {
+    font: subFont,
+    size: Math.round(16 * k),
+  });
 }
+
+const titleFont = (px: number): string => `700 ${px}px ui-sans-serif, system-ui, sans-serif`;
+const subFont = (px: number): string => `400 ${px}px ui-sans-serif, system-ui, sans-serif`;
 
 // --- small helpers -------------------------------------------------------
 

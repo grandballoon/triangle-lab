@@ -27,9 +27,8 @@ describe("standalone pages", () => {
     expect(rule).toMatch(/(^|[\s;])height:/);
   });
 
-  it.each(slugs)("%s leaves the step column and formula band free and loads the page chrome", (slug) => {
-    expect(stageRule(slug)).toContain("var(--steps-inset");
-    expect(stageRule(slug)).toContain("var(--formulas-inset");
+  it.each(slugs)("%s fills the box the page chrome leaves it and loads the page chrome", (slug) => {
+    for (const side of ["left", "top", "width", "height"]) expect(stageRule(slug)).toContain(`var(--stage-${side}`);
     expect(pages[`../${slug}.html`]).toContain('src="/src/page.ts"');
   });
 

@@ -4,7 +4,8 @@
 // builds what the lab page has around its figure, so the two kinds of lesson
 // read alike:
 //
-//   - the top bar: the pager, then the chapter and the lesson's name;
+//   - the top bar: the pager, the camera switch (cameraSwitch.ts), then the
+//     chapter and the lesson's name;
 //   - the step column on the right, holding the lesson's written directions
 //     (directions.ts);
 //   - the formula band along the bottom, for a lesson with live formulas;
@@ -13,22 +14,26 @@
 // The lesson and this file talk through chrome.ts: this sets the current
 // step there, and reads the lesson's formulas from it.
 //
-// The step column takes room from the right of the window and the formula
-// band from the bottom. Like the docked curriculum rail (curriculum.ts), they
-// publish that room as custom properties, `--steps-inset` and
-// `--formulas-inset`, and fire `resize`; each page's #stage rule leaves it
-// free and the lesson refits its figure on the event.
+// Where the column and the band go, and the room they leave the figure,
+// comes from the layout both kinds of page share (lab/layout.ts): beside the
+// figure on a wide screen, stacked under it on a phone. The box left for the
+// canvas is published as `--stage-left`, `--stage-top`, `--stage-width` and
+// `--stage-height`, which each page's #stage rule reads, and `resize` fires;
+// the lesson refits its figure on the event.
 
 import "katex/dist/katex.min.css";
+import { mountCameraSwitch } from "./cameraSwitch.ts";
 import { formulaRows, setStep } from "./chrome.ts";
+import { railInset } from "./curriculum.ts";
 import { directions } from "./directions.ts";
 import { startHands } from "./hands/index.ts";
-import { FORMULA_BAND_HEIGHT, FormulaBand } from "./lab/formulas.ts";
-import { panelWidth, StepList } from "./lab/steps.ts";
+import { Arranger } from "./lab/arrange.ts";
+import { FormulaBand } from "./lab/formulas.ts";
+import { layoutChrome } from "./lab/layout.ts";
+import { StepList } from "./lab/steps.ts";
 import { chapters, hrefOf, lessons, slugOfLocation } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
-
-const EDGE = 18;
+import { camera } from "./webcam.ts";
 
 function mount(): void {
   const slug = slugOfLocation(location);
@@ -36,7 +41,6 @@ function mount(): void {
   const chapter = chapters.find((c) => lesson && c.lessons.includes(lesson));
   const steps = directions[slug] ?? [];
   const root = document.documentElement.style;
-  root.setProperty("--edge", `${EDGE}px`);
   if (lesson) root.setProperty("--accent", lesson.accent);
 
   const topbar = element("header", "topbar");
@@ -45,6 +49,7 @@ function mount(): void {
   topbar.append(heading);
   document.body.append(topbar);
   const neighbours = mountPager(slug, topbar);
+  mountCameraSwitch(topbar);
 
   const column = element("aside", "steps");
   column.setAttribute("aria-label", "Steps");
@@ -79,6 +84,7 @@ function mount(): void {
   startHands({
     video: document.getElementById("cam") as HTMLVideoElement,
     multiPointer: false,
+    camera,
     onAction: (action) => {
       if (action === "next") go(1);
       else if (action === "previous") go(-1);
@@ -86,53 +92,56 @@ function mount(): void {
   });
 
   const band = formulaRows() ? mountFormulaBand() : null;
+  const arranger = new Arranger({ steps: column, formulas: band?.section });
 
-  let inset = -1;
   const fit = (): void => {
-    const width = panelWidth(window.innerWidth);
-    root.setProperty("--panel-width", `${width}px`);
-    const next = width + 2 * EDGE;
-    if (next !== inset) {
-      inset = next;
-      root.setProperty("--steps-inset", `${inset}px`);
-      // The lesson sizes its figure on resize, and only then.
-      window.dispatchEvent(new Event("resize"));
-    }
+    const chrome = layoutChrome({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      rail: railInset(),
+      formulas: band !== null,
+      controls: false,
+      steps: list.pagedHeight(),
+    });
+    list.setPaged(chrome.mode === "stacked");
+    if (!arranger.apply(chrome)) return;
+    // The band, or the stacked steps, take the bottom-left corner the hands
+    // pill sits in otherwise, so the pill moves to the top right, as on the
+    // lab page.
+    document.body.classList.toggle("hands-top", band !== null || chrome.mode === "stacked");
+    const { x, y, width, height } = chrome.canvas;
+    root.setProperty("--stage-left", `${x}px`);
+    root.setProperty("--stage-top", `${y}px`);
+    root.setProperty("--stage-width", `${width}px`);
+    root.setProperty("--stage-height", `${height}px`);
+    // The lesson sizes its figure on resize, and only then. This listener
+    // hears the event too, and finds nothing left to move.
+    window.dispatchEvent(new Event("resize"));
   };
   window.addEventListener("resize", fit);
   fit();
 
   // Typeset text and web fonts settle after the first layout, so the padding
-  // that lets the last step reach the top is kept up to date every frame, as
-  // the lab shell does.
+  // that lets the last step reach the top, and on a phone the height of the
+  // paged steps, are kept up to date every frame, as the lab shell does.
   // The lesson's formulas are refreshed in the same frames.
   const pad = (): void => {
+    fit();
     list.fit();
-    band?.show(formulaRows() ?? []);
+    band?.rows.show(formulaRows() ?? []);
     requestAnimationFrame(pad);
   };
   requestAnimationFrame(pad);
 }
 
-/**
- * Build the formula band and keep the stage, the step column and the rail
- * clear of it. The band takes the bottom-left corner the hands pill sits in
- * otherwise, so the pill moves to the top right, as on the lab page.
- */
-function mountFormulaBand(): FormulaBand {
+/** Build the formula band, for a lesson with live numbers. */
+function mountFormulaBand(): { section: HTMLElement; rows: FormulaBand } {
   const section = element("section", "formulas");
   section.setAttribute("aria-label", "Formulas");
   const rows = element("div", "readouts");
   section.append(element("h2", "", "Formulas"), rows);
   document.body.append(section);
-  document.body.classList.add("hands-top");
-
-  const root = document.documentElement.style;
-  const reserve = FORMULA_BAND_HEIGHT + EDGE;
-  root.setProperty("--formula-band-height", `${FORMULA_BAND_HEIGHT}px`);
-  root.setProperty("--bottom-reserve", `${reserve}px`);
-  root.setProperty("--formulas-inset", `${reserve + EDGE}px`);
-  return new FormulaBand(rows);
+  return { section, rows: new FormulaBand(rows) };
 }
 
 function element(tag: string, id: string, text = ""): HTMLElement {

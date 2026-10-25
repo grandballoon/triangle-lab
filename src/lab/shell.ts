@@ -9,11 +9,13 @@
 import { capturePointer, releasePointer } from "../pointer.ts";
 import { C, Draw, tint, toScreen, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
-import { FORMULA_BAND_HEIGHT, FormulaBand } from "./formulas.ts";
+import { Arranger } from "./arrange.ts";
+import { FormulaBand } from "./formulas.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
+import { layoutChrome } from "./layout.ts";
 import { linkTex, termAliases } from "./link.ts";
 import { SpriteCache } from "./sprites.ts";
-import { panelWidth, StepList } from "./steps.ts";
+import { StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
 import {
   Scene,
@@ -28,12 +30,6 @@ import {
 /** Lessons compose inside this much stage, centred on the origin. */
 export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 
-// Screen space kept clear of the figure, in CSS pixels: the step column on
-// the right and the formula band along the bottom. lab.css reads the same
-// numbers through custom properties set here.
-const EDGE = 18;
-const TOP_BAND = 104;
-
 const STEP_FADE_SECONDS = 0.7;
 
 // How close a press must land to grab a handle. A pinch is far less precise
@@ -47,6 +43,8 @@ export interface ShellElements {
   controls: HTMLElement;
   formulas: HTMLElement;
   readouts: HTMLElement;
+  /** The step column, which the layout places. */
+  column: HTMLElement;
   /** The scrolling list the steps are built in. */
   steps: HTMLElement;
   /** Click-through layer for the lines from a formula term to the figure. */
@@ -81,6 +79,7 @@ export class Shell {
   private readonly stepList: StepList;
   private readonly band: FormulaBand;
   private readonly terms: TermFocus;
+  private readonly arranger: Arranger;
   private readonly sprites = new SpriteCache();
   private readonly drags = new Map<number, Drag>();
   private current: Loaded | null = null;
@@ -110,10 +109,7 @@ export class Shell {
     this.stepList = new StepList(el.steps, (step, scroll) => this.select(step, scroll));
     this.band = new FormulaBand(el.readouts, linkTex);
     this.terms = new TermFocus(document, el.leader);
-    const root = document.documentElement.style;
-    root.setProperty("--edge", `${EDGE}px`);
-    root.setProperty("--top-band", `${TOP_BAND}px`);
-    root.setProperty("--formula-band-height", `${FORMULA_BAND_HEIGHT}px`);
+    this.arranger = new Arranger({ steps: el.column, formulas: el.formulas, controls: el.controls });
 
     el.canvas.addEventListener("pointerdown", (e) => this.onDown(e));
     el.canvas.addEventListener("pointermove", (e) => this.onMove(e));
@@ -179,7 +175,7 @@ export class Shell {
 
   // --- Layout ----------------------------------------------------------------
 
-  /** Fit the stage into the screen area the panels leave free. */
+  /** Place the panels for this window, and fit the stage into the room they leave. */
   private layout(): View {
     const { canvas } = this.el;
     const dpr = window.devicePixelRatio || 1;
@@ -191,20 +187,19 @@ export class Shell {
     }
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const panel = panelWidth(width);
-    const band = this.formulasShown ? FORMULA_BAND_HEIGHT + EDGE : 0;
-    const root = document.documentElement.style;
-    root.setProperty("--panel-width", `${panel}px`);
-    root.setProperty("--bottom-reserve", `${band}px`);
-    const left = EDGE + this.leftInset();
-    const right = width - EDGE - panel - EDGE;
-    const top = TOP_BAND;
-    const bottom = height - EDGE - band;
-    const scale = Math.max(
-      8,
-      Math.min((right - left) / (2 * STAGE.halfWidth), (bottom - top) / (2 * STAGE.halfHeight)),
-    );
-    return { scale, ox: (left + right) / 2, oy: (top + bottom) / 2, width, height };
+    const chrome = layoutChrome({
+      width,
+      height,
+      rail: this.leftInset(),
+      formulas: this.formulasShown,
+      controls: (this.current?.scene.controls.length ?? 0) > 0,
+      steps: this.stepList.pagedHeight(),
+    });
+    this.arranger.apply(chrome);
+    this.stepList.setPaged(chrome.mode === "stacked");
+    const { x, y, width: w, height: h } = chrome.figure;
+    const scale = Math.max(8, Math.min(w / (2 * STAGE.halfWidth), h / (2 * STAGE.halfHeight)));
+    return { scale, ox: x + w / 2, oy: y + h / 2, width, height };
   }
 
   // --- Frame -----------------------------------------------------------------

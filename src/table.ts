@@ -4,17 +4,22 @@
 // leg literally IS sin θ and the adjacent leg literally IS cos θ. A dial at A
 // drives θ from 0° to 90°, snapping at 0°, 30°, 45°, 60°, 90°; at each snap
 // the sides trade their decimals for the exact values the last two lessons
-// derived, and the caption names which special triangle you are holding. At
-// θ = 0° the triangle degenerates — B and C become the same point, so
+// derived, and the formula band names which special triangle you are
+// holding. At θ = 0° the triangle degenerates — B and C become the same point, so
 // sin 0° = 0; at 90° the adjacent leg vanishes and tan 90° divides by zero.
-// The right side holds the full six-function table in exact form, the column
-// nearest the dial highlighted, with a live decimal column between snaps. And
-// the footer: sin²θ + cos²θ = 1 — on this triangle, that IS Pythagoras.
+// The formula band below leads with the six ratios now, exact at a snap and
+// live decimals between, and sin²θ + cos²θ = 1 — on this triangle, that IS
+// Pythagoras — then holds the full six-function table in exact form, one
+// landmark angle a row, the one the dial rests on lit.
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the page's formula band, the small-screen helpers
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { LANDMARKS, tableReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -32,28 +37,19 @@ const OPP = "#ff6b6b"; // the opposite leg — sin θ
 const ADJ = "#4dabf7"; // the adjacent leg — cos θ
 const HYP = "#ffd43b"; // the unit hypotenuse
 const EDGE = "#eef4fb";
-const TEXT = "rgba(233,240,247,0.85)";
-const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 const TOP_MARGIN = 64;
 const MIN_HYP_PX = 120; // however cramped the window
+// Room around the triangle for its labels, the dial's and the knob, in screen px.
+const PAD_LEFT = 40;
+const PAD_RIGHT = 50;
+const PAD_Y = 40;
 const GRAB_RADIUS = 30;
-const SNAP_DEGS = [0, 30, 45, 60, 90];
+const SNAP_DEGS = LANDMARKS;
 const SNAP_IN = 2.5; // degrees
 const PULSE_LIFE = 0.6;
-
-// The table itself — every entry derived in the previous lessons.
-const COLUMNS = ["0°", "30°", "45°", "60°", "90°"];
-const TABLE: { name: string; sub: string; cells: string[] }[] = [
-  { name: "sin", sub: "opp/hyp", cells: ["0", "1/2", "√2/2", "√3/2", "1"] },
-  { name: "cos", sub: "adj/hyp", cells: ["1", "√3/2", "√2/2", "1/2", "0"] },
-  { name: "tan", sub: "sin/cos", cells: ["0", "√3/3", "1", "√3", "—"] },
-  { name: "sec", sub: "1/cos", cells: ["1", "2√3/3", "√2", "2", "—"] },
-  { name: "csc", sub: "1/sin", cells: ["—", "2", "√2", "2√3/3", "1"] },
-  { name: "cot", sub: "cos/sin", cells: ["—", "√3", "1", "√3/3", "0"] },
-];
 
 // Exact side labels to swap in at each snap: [sin, cos].
 const EXACT_SIDES: Record<number, [string, string]> = {
@@ -62,14 +58,6 @@ const EXACT_SIDES: Record<number, [string, string]> = {
   45: ["√2/2", "√2/2"],
   60: ["√3/2", "1/2"],
   90: ["1", "0"],
-};
-
-const CAPTIONS: Record<number, string> = {
-  0: "flat: B and C are the SAME point — the opposite leg vanished, and AB lies on AC",
-  30: "you are holding half an equilateral triangle — short leg opposite the 30°",
-  45: "you are holding half a square — two 45°s, legs equal",
-  60: "half an equilateral again, stood on its short leg — long leg opposite the 60°",
-  90: "flat the other way: C slid back onto A — the adjacent leg vanished",
 };
 
 // --- state -----------------------------------------------------------------
@@ -87,6 +75,7 @@ let W = 0;
 let H = 0;
 let hypPx = 300; // the pixel length of "1"
 let originA: Vec = { x: 0, y: 0 };
+const showFormulas = formulaBand();
 
 // --- helpers ---------------------------------------------------------------
 
@@ -115,10 +104,14 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const figureW = W - PANEL_W - 90;
+  // The triangle sweeps a quarter circle of radius 1 about A; centre that.
   // Floored so a narrow window shrinks the figure rather than inverting it.
-  hypPx = Math.max(MIN_HYP_PX, Math.min(figureW - 150, H - TOP_MARGIN - 220));
-  originA = { x: 80, y: TOP_MARGIN + 110 + hypPx };
+  const usableH = H - TOP_MARGIN;
+  hypPx = Math.max(MIN_HYP_PX, Math.min(W - PAD_LEFT - PAD_RIGHT, usableH - 2 * PAD_Y));
+  originA = {
+    x: PAD_LEFT + (W - PAD_LEFT - PAD_RIGHT - hypPx) / 2,
+    y: TOP_MARGIN + (usableH + hypPx) / 2,
+  };
 }
 
 // --- interaction -----------------------------------------------------------
@@ -130,7 +123,7 @@ function pointer(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, ptB()) > GRAB_RADIUS) return;
+  if (dist(p, ptB()) > grabRadius(e.pointerType, GRAB_RADIUS)) return;
   dragging = true;
   canvas.classList.add("grabbing");
   capturePointer(canvas, e);
@@ -239,31 +232,8 @@ function render(): void {
   ctx.fillText("B", B.x + 6, B.y - 16);
   if (!degenerate) ctx.fillText("C", C.x + 14, C.y + 14);
 
-  // Caption + identity, beneath the figure.
-  const capY = A.y + 54;
-  ctx.font = "500 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.textAlign = "left";
-  if (snapDeg !== null) {
-    ctx.fillStyle = degenerate ? OPP : ACCENT;
-    ctx.fillText(CAPTIONS[snapDeg], 40, capY);
-  } else {
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText("between the landmarks — the ratios still exist, just not with tidy exact forms", 40, capY);
-  }
-  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-  segments(40, capY + 24, [
-    ["sin²θ + cos²θ", TEXT],
-    [" = ", TEXT_DIM],
-    [(sinT * sinT).toFixed(3), OPP],
-    [" + ", TEXT_DIM],
-    [(cosT * cosT).toFixed(3), ADJ],
-    [" = 1", HYP],
-    ["   — with hypotenuse 1, that IS Pythagoras", TEXT_DIM],
-  ]);
-
   for (const p of pulses) drawPulse(p);
   drawKnob(B, dragging);
-  drawTable(sinT, cosT);
 }
 
 const fmtDeg = (): string => (snapDeg !== null ? `${snapDeg}°` : `${(theta / DEG).toFixed(1)}°`);
@@ -322,99 +292,6 @@ function tick(A: Vec, t: number, r: number, len: number, color: string, width: n
   ctx.stroke();
 }
 
-// --- the table -------------------------------------------------------------
-
-const PANEL_W = 392;
-const PANEL_PAD = 14;
-
-function drawTable(sinT: number, cosT: number): void {
-  const x = W - PANEL_W - 18;
-  const y = TOP_MARGIN;
-  const live = snapDeg === null;
-  const h = live ? 328 : 306;
-  ctx.beginPath();
-  ctx.roundRect(x, y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.68)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  const nameW = 74;
-  const colW = 58;
-  const col0 = x + PANEL_PAD + nameW;
-  const rowH = 34;
-  const headY = y + PANEL_PAD + 14;
-  const bodyY = headY + 14;
-
-  // Highlight slab behind the column we're resting on.
-  if (snapDeg !== null) {
-    const ci = SNAP_DEGS.indexOf(snapDeg);
-    ctx.beginPath();
-    ctx.roundRect(col0 + ci * colW - 8, y + 10, colW - 2, h - 20, 8);
-    ctx.fillStyle = rgba(ACCENT, 0.13);
-    ctx.fill();
-  }
-
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  ctx.font = "600 12px ui-sans-serif, system-ui, sans-serif";
-  COLUMNS.forEach((c, i) => {
-    ctx.fillStyle = snapDeg === SNAP_DEGS[i] ? ACCENT : TEXT_DIM;
-    ctx.fillText(c, col0 + i * colW, headY);
-  });
-  if (live) {
-    ctx.fillStyle = ACCENT;
-    ctx.fillText("now", col0 + 5 * colW, headY);
-  }
-
-  const liveVals = [
-    sinT,
-    cosT,
-    cosT > 0.02 ? sinT / cosT : NaN,
-    cosT > 0.02 ? 1 / cosT : NaN,
-    sinT > 0.02 ? 1 / sinT : NaN,
-    sinT > 0.02 ? cosT / sinT : NaN,
-  ];
-
-  TABLE.forEach((row, ri) => {
-    const ry = bodyY + ri * rowH + 14;
-    ctx.font = "700 14px ui-monospace, SFMono-Regular, Menlo, monospace";
-    ctx.fillStyle = TEXT;
-    ctx.fillText(row.name, x + PANEL_PAD, ry);
-    ctx.font = "500 10px ui-monospace, SFMono-Regular, Menlo, monospace";
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText(row.sub, x + PANEL_PAD, ry + 13);
-
-    ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, monospace";
-    row.cells.forEach((cell, ci) => {
-      ctx.fillStyle = snapDeg === SNAP_DEGS[ci] ? TEXT : TEXT_DIM;
-      ctx.fillText(cell, col0 + ci * colW, ry + 6);
-    });
-    if (live) {
-      const v = liveVals[ri];
-      ctx.fillStyle = ACCENT;
-      ctx.fillText(Number.isNaN(v) ? "—" : v.toFixed(2), col0 + 5 * colW, ry + 6);
-    }
-  });
-
-  const footY = bodyY + TABLE.length * rowH + 16;
-  ctx.font = "500 11px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("— means undefined: that ratio divides by a leg of length 0.", x + PANEL_PAD, footY);
-  ctx.fillText("nothing here was memorized — every entry came off a triangle.", x + PANEL_PAD, footY + 16);
-}
-
-/** Draw colored text runs left-to-right from (x, y). */
-function segments(x: number, y: number, runs: [string, string][]): void {
-  let cx = x;
-  for (const [text, color] of runs) {
-    ctx.fillStyle = color;
-    ctx.fillText(text, cx, y);
-    cx += ctx.measureText(text).width;
-  }
-}
-
 // --- chrome ----------------------------------------------------------------
 
 function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
@@ -456,6 +333,7 @@ function frame(now: number): void {
   prev = now;
   pulses = pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   render();
+  showFormulas(tableReadouts(theta / DEG, snapDeg));
   requestAnimationFrame(frame);
 }
 

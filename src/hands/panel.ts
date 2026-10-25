@@ -8,7 +8,6 @@ import { ACTION_LABEL } from "./overlay.ts";
 import {
   ACTIONS,
   bind,
-  DEFAULT_SETTINGS,
   HOLD_MS_RANGE,
   POSES,
   setGrab,
@@ -17,10 +16,22 @@ import {
   type SettingsStore,
 } from "./settings.ts";
 
-export type HandsStatus = "off" | "camera" | "loading" | "ready" | "failed";
+export type HandsStatus = "off" | "noCamera" | "camera" | "loading" | "ready" | "failed";
+
+/**
+ * The page's camera, which the sheet can turn on and off. Hands need it, but
+ * it belongs to the page (webcam.ts), so it is handed in.
+ */
+export interface CameraControl {
+  on(): boolean;
+  set(on: boolean): void | Promise<void>;
+  /** Call `fn` whenever the camera is turned on or off. */
+  subscribe(fn: () => void): void;
+}
 
 const STATUS_TEXT: Record<HandsStatus, string> = {
   off: "Hands off",
+  noCamera: "Camera off",
   camera: "Waiting for camera",
   loading: "Loading hand tracking",
   ready: "Hands ready",
@@ -37,17 +48,35 @@ const POSE_LABEL: Record<Pose, string> = {
 
 const STEP = 0.1;
 
+// A raised hand, shown in place of the status text where the pill is short of
+// room (hands.css). No text nodes, so the pill's text is the status alone.
+const HAND_ICON =
+  '<svg class="hands-icon" viewBox="0 0 16 16" aria-hidden="true">' +
+  '<rect x="4" y="7" width="8.6" height="7.5" rx="3.2" fill="currentColor"/>' +
+  '<g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">' +
+  '<line x1="5.3" y1="8" x2="5.3" y2="3.6"/><line x1="7.5" y1="8" x2="7.5" y2="2.2"/>' +
+  '<line x1="9.7" y1="8" x2="9.7" y2="2.8"/><line x1="11.7" y1="9" x2="11.7" y2="4.6"/>' +
+  '<line x1="4.4" y1="11.2" x2="2.4" y2="8.4"/></g></svg>';
+
 export class HandsPanel {
   private readonly root = document.createElement("div");
   private readonly pill = document.createElement("button");
   private readonly sheet = document.createElement("div");
-  private status: HandsStatus = "off";
+  private readonly label = document.createElement("span");
+  private status: HandsStatus | null = null;
 
-  constructor(private readonly store: SettingsStore) {
+  constructor(
+    private readonly store: SettingsStore,
+    private readonly camera?: CameraControl,
+  ) {
     this.root.id = "hands-ui";
     this.pill.type = "button";
     this.pill.className = "hands-pill";
     this.pill.setAttribute("aria-expanded", "false");
+    this.pill.title = "Gesture settings";
+    this.label.className = "hands-pill-text";
+    this.pill.innerHTML = HAND_ICON;
+    this.pill.append(this.label);
     this.pill.addEventListener("click", () => this.toggle());
     this.sheet.className = "hands-sheet";
     this.sheet.hidden = true;
@@ -58,15 +87,18 @@ export class HandsPanel {
       if (e.key === "Escape" && !this.sheet.hidden) this.toggle();
     });
     store.subscribe(() => this.renderSheet());
-    this.setStatus(this.status);
+    camera?.subscribe(() => this.renderSheet());
+    this.setStatus("off");
     this.renderSheet();
   }
 
+  /** Show `status` on the pill. Called every frame, so it writes only on a change. */
   setStatus(status: HandsStatus): void {
+    if (status === this.status) return;
     this.status = status;
     this.pill.dataset.status = status;
-    this.pill.textContent = STATUS_TEXT[status];
-    this.pill.title = "Gesture settings";
+    this.label.textContent = STATUS_TEXT[status];
+    this.pill.setAttribute("aria-label", `${STATUS_TEXT[status]}: gesture settings`);
   }
 
   private toggle(): void {
@@ -78,7 +110,15 @@ export class HandsPanel {
     const s = this.store.get();
     const set = (patch: Partial<GestureSettings>): void => this.store.set({ ...s, ...patch });
 
+    const camera = this.camera;
     const rows: HTMLElement[] = [
+      // Off, the figures sit on a plain background, and hands cannot be seen.
+      ...(camera
+        ? [
+            heading("Camera"),
+            row("Camera", choice([["On", true], ["Off", false]], camera.on(), (v) => void camera.set(v))),
+          ]
+        : []),
       heading("Hand tracking"),
       row("Tracking", choice([["On", true], ["Off", false]], s.enabled, (v) => set({ enabled: v }))),
       row(
@@ -134,7 +174,7 @@ export class HandsPanel {
     reset.type = "button";
     reset.className = "hands-reset";
     reset.textContent = "Restore defaults";
-    reset.addEventListener("click", () => this.store.set(DEFAULT_SETTINGS));
+    reset.addEventListener("click", () => this.store.set(this.store.defaults));
 
     this.sheet.replaceChildren(...rows, reset);
   }

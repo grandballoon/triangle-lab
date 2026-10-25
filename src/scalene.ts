@@ -16,6 +16,7 @@
 // Self-contained on purpose, matching equilateral.ts / isosceles.ts — only the
 // webcam device and this file's own little vector helpers are involved.
 
+import { captionScale, fillFitted, grabRadius } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
@@ -33,14 +34,32 @@ const LEAD = SIDE_COLORS[0]; // caption / heading accent
 const UNIT_PX = 40; // screen pixels per displayed length "unit"
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
+const TOP_MARGIN = 64; // room for the top bar above the triangle
+const LABEL_ROOM = 30; // px above the highest vertex for its labels
+// The caption under the triangle, at full size: from the lowest vertex to the
+// title's baseline, from there to the subtitle's, and the whole depth.
+const CAPTION_GAP = 78;
+const CAPTION_LINE = 25;
+const CAPTION_ROOM = CAPTION_GAP + CAPTION_LINE + 10;
+// The seed triangle's corners, as multiples of its scale about its centre.
+// They give sides in roughly 1 : 1.6 : 2.1 proportion — decisively scalene,
+// with every pair of sides well outside EQUAL_TOL at any viewport.
+const SEED: [Vec, Vec, Vec] = [
+  { x: -0.58, y: -1.19 }, // apex, high and left
+  { x: 1.17, y: 0.96 }, // far bottom right
+  { x: -0.77, y: 0.12 }, // mid left, closer in
+];
 
-// How far apart the guard keeps things. Two sides are never allowed within
-// EQUAL_TOL pixels of each other (that would read as isosceles), and a vertex
-// is never allowed within MIN_HEIGHT pixels of its opposite side (that would
-// collapse the triangle toward a degenerate sliver).
+// How far apart the guard keeps things, at full size. Two sides are never
+// allowed within EQUAL_TOL pixels of each other (that would read as
+// isosceles), and a vertex is never allowed within MIN_HEIGHT pixels of its
+// opposite side (that would collapse the triangle toward a degenerate
+// sliver). On a canvas too small for the full-size triangle they shrink with
+// it (`guard`).
 const EQUAL_TOL = 26;
 const MIN_HEIGHT = 46;
 const MIN_SIDE = 70;
+const FULL_SEED = 150; // seed scale, px, at and above which the guard is full size
 
 // The drag is resolved by marching toward the pointer STEP_PX at a time (fine
 // enough to slip cleanly across the thin forbidden bands), capped so a big jump
@@ -55,7 +74,11 @@ const ctx = canvas.getContext("2d")!;
 let W = 0;
 let H = 0;
 let margin = 90; // keep vertices (and their outside labels) on-screen
-
+// Where a vertex may go: inside the margin, below the top bar and above the
+// caption's room.
+let bounds = { x0: 0, x1: 0, y0: 0, y1: 0 };
+let guard = 1; // the share of the full-size guard distances in force
+let captionK = 1; // how far the caption shrinks on a small canvas
 // The scalene triangle is stored as three free points — there is no symmetry to
 // parametrise, so the vertices simply are the state.
 let verts: [Vec, Vec, Vec] = [
@@ -87,29 +110,48 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   margin = Math.min(90, Math.min(W, H) * 0.16);
+  captionK = captionScale(W, H);
+  bounds = {
+    x0: margin,
+    x1: W - margin,
+    y0: Math.max(margin, TOP_MARGIN + LABEL_ROOM),
+    y1: H - Math.max(margin, CAPTION_ROOM * captionK),
+  };
+  const s = seedScale();
+  guard = Math.min(1, s / FULL_SEED);
 
   if (prevW === 0) {
-    seed();
+    seed(s);
   } else {
     for (const v of verts) {
-      v.x = clamp(v.x, margin, W - margin);
-      v.y = clamp(v.y, margin, H - margin);
+      v.x = clamp(v.x, bounds.x0, bounds.x1);
+      v.y = clamp(v.y, bounds.y0, bounds.y1);
     }
   }
 }
 
+/** The seed's scale: a third of the canvas, or less when that would not fit the bounds. */
+function seedScale(): number {
+  const xs = SEED.map((p) => p.x);
+  const ys = SEED.map((p) => p.y);
+  return Math.min(
+    Math.min(W, H) * 0.32,
+    (bounds.x1 - bounds.x0) / (Math.max(...xs) - Math.min(...xs)),
+    (bounds.y1 - bounds.y0) / (Math.max(...ys) - Math.min(...ys)),
+  );
+}
+
 /** A deliberately lopsided starting triangle, scaled to the viewport. Its three
- *  sides are visibly different so it opens already, unambiguously, scalene. */
-function seed(): void {
-  // These offsets give sides in roughly 1 : 1.6 : 2.1 proportion — decisively
-  // scalene, with every pair of sides well outside EQUAL_TOL at any viewport.
-  const c: Vec = { x: W / 2, y: H / 2 };
-  const s = Math.min(W, H) * 0.32;
-  verts = [
-    { x: c.x - 0.58 * s, y: c.y - 1.19 * s }, // apex, high and left
-    { x: c.x + 1.17 * s, y: c.y + 0.96 * s }, // far bottom right
-    { x: c.x - 0.77 * s, y: c.y + 0.12 * s }, // mid left, closer in
-  ];
+ *  sides are visibly different so it opens already, unambiguously, scalene.
+ *  Centred on the canvas, moved just enough to sit inside the bounds. */
+function seed(s: number): void {
+  const xs = SEED.map((p) => p.x * s);
+  const ys = SEED.map((p) => p.y * s);
+  const c: Vec = {
+    x: clamp(W / 2, bounds.x0 - Math.min(...xs), bounds.x1 - Math.max(...xs)),
+    y: clamp(H / 2, bounds.y0 - Math.min(...ys), bounds.y1 - Math.max(...ys)),
+  };
+  verts = SEED.map((p) => ({ x: c.x + p.x * s, y: c.y + p.y * s })) as [Vec, Vec, Vec];
 }
 
 // --- interaction ---------------------------------------------------------
@@ -123,7 +165,7 @@ canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
   // Pick the nearest vertex within grabbing range (nearest wins if two overlap).
   let best = -1;
-  let bestD = GRAB_RADIUS;
+  let bestD = grabRadius(e.pointerType, GRAB_RADIUS);
   for (let i = 0; i < 3; i++) {
     const d = dist(p, verts[i]);
     if (d <= bestD) {
@@ -163,8 +205,8 @@ function others(k: number): [number, number] {
 function drive(p: Vec): void {
   if (grab === null) return;
   const target: Vec = {
-    x: clamp(p.x, margin, W - margin),
-    y: clamp(p.y, margin, H - margin),
+    x: clamp(p.x, bounds.x0, bounds.x1),
+    y: clamp(p.y, bounds.y0, bounds.y1),
   };
   verts[grab] = march(grab, target);
 }
@@ -185,13 +227,14 @@ function valid(k: number, a: Vec): boolean {
   const sOpp = dist(Pi, Pj);
   const di = dist(a, Pi);
   const dj = dist(a, Pj);
-  if (di < MIN_SIDE || dj < MIN_SIDE) return false;
-  if (Math.abs(di - dj) < EQUAL_TOL) return false;
-  if (Math.abs(di - sOpp) < EQUAL_TOL) return false;
-  if (Math.abs(dj - sOpp) < EQUAL_TOL) return false;
+  const tol = EQUAL_TOL * guard;
+  if (di < MIN_SIDE * guard || dj < MIN_SIDE * guard) return false;
+  if (Math.abs(di - dj) < tol) return false;
+  if (Math.abs(di - sOpp) < tol) return false;
+  if (Math.abs(dj - sOpp) < tol) return false;
   const n = unit(perp(sub(Pj, Pi)));
   const height = ((a.x - Pi.x) * n.x + (a.y - Pi.y) * n.y) * orientSign;
-  return height >= MIN_HEIGHT;
+  return height >= MIN_HEIGHT * guard;
 }
 
 /** Walk the grabbed vertex from where it is now toward the pointer target in
@@ -329,17 +372,24 @@ function drawKnob(v: Vec, active: boolean): void {
 }
 
 function drawCaption(cs: Vec[]): void {
-  const baseY = Math.max(cs[0].y, cs[1].y, cs[2].y) + 78;
-  const cx = centroid().x;
+  const k = captionK;
+  const baseY = Math.max(cs[0].y, cs[1].y, cs[2].y) + CAPTION_GAP * k;
+  // Centred under the triangle, but never hanging off the canvas.
+  const room = Math.min(W - 32, 420);
+  const cx = clamp(centroid().x, 16 + room / 2, W - 16 - room / 2);
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "700 32px ui-sans-serif, system-ui, sans-serif";
   ctx.fillStyle = LEAD;
-  ctx.fillText("Scalene Triangle", cx, baseY);
-  ctx.font = "400 16px ui-sans-serif, system-ui, sans-serif";
+  fillFitted(ctx, "Scalene Triangle", cx, baseY, room, { font: titleFont, size: Math.round(32 * k) });
   ctx.fillStyle = "rgba(233,240,247,0.75)";
-  ctx.fillText("no equal sides · no equal angles", cx, baseY + 25);
+  fillFitted(ctx, "no equal sides · no equal angles", cx, baseY + CAPTION_LINE * k, room, {
+    font: subFont,
+    size: Math.round(16 * k),
+  });
 }
+
+const titleFont = (px: number): string => `700 ${px}px ui-sans-serif, system-ui, sans-serif`;
+const subFont = (px: number): string => `400 ${px}px ui-sans-serif, system-ui, sans-serif`;
 
 // --- small helpers -------------------------------------------------------
 

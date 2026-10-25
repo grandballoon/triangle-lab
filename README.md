@@ -7,7 +7,8 @@ You pinch a vertex in mid-air and drag it until the angle snaps to right.
 You swing a point around a circle and watch a product of two lengths refuse to change.
 You step through a proof one construction at a time, and each new line fades in over the figure you were just holding.
 
-The lessons draw over a live, mirrored webcam feed, so the geometry sits over your own image and your own hands.
+The lessons draw over a live webcam feed, mirrored, so the geometry sits over your own image and your own hands.
+On a phone you can switch to the camera on the back and lay the figures over the room around you, or turn the camera off and see only the figures.
 If the camera is unavailable or denied, a lesson falls back to a dark background and works exactly the same with a mouse or a finger.
 
 ## Running it
@@ -55,7 +56,7 @@ Everything above is configurable from the status pill labelled "Hands" (top righ
 - turn tracking on or off, or restrict it to one hand;
 - grab with a pinch or with a closed fist;
 - how far apart the fingers may be for a pinch to count, and how heavily the cursor is steadied;
-- which held pose (thumbs-up, two fingers, open palm, point, fist) triggers next step, previous step, reset, and showing or hiding the formula panel, and how long it must be held;
+- which held pose (thumbs-up, two fingers, open palm, point, fist) triggers next step, previous step, reset, and showing or hiding the formula band, and how long it must be held;
 - whether to draw the tracked hand skeleton.
 
 Settings are saved in the browser and shared by every lesson.
@@ -67,7 +68,7 @@ The keyboard also works in lab lessons: `←` and `→` step through a proof and
 
 116 lessons in twelve chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
-Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem) show them in the same formula band.
+Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
 In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
 
 | Chapter | Lessons |
@@ -124,7 +125,7 @@ And it can set pictures on the figure with `g.sprite(src, at)`.
 ### Adding a standalone lesson
 
 1. Add an entry (without `lab`) to a chapter file in `src/chapters/`.
-2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and then `src/page.ts`, with a `#stage` rule that leaves `--rail-inset`, `--steps-inset` and `--formulas-inset` free (copy one of the existing pages).
+2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and then `src/page.ts`, with a `#stage` rule that fills the box `page.ts` publishes as `--stage-left`, `--stage-top`, `--stage-width` and `--stage-height` (copy one of the existing pages).
 3. Write its numbered directions in `src/directions.ts`.
 4. Register the slug in `vite.config.ts`.
 

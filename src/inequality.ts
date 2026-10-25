@@ -16,6 +16,7 @@
 // this file's own little vector helpers are involved.
 
 import { formulaBand } from "./chrome.ts";
+import { fillFitted, grabRadius, nearest } from "./fit.ts";
 import { grid } from "./grid.ts";
 import type { Readout } from "./lab/scene.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
@@ -61,8 +62,10 @@ const PICK_RADIUS = 15; // screen px around a side for click-to-select
 const SNAP_ANG = 0.055; // rad — the drag snaps onto the degenerate spots
 const PULSE_LIFE = 0.6;
 // A seed's extent (its farthest vertex from the centroid) is drawn at this
-// share of its cell's smaller side, leaving room for the dotted circles.
+// share of its cell's smaller side, leaving room for the dotted circles; on a
+// small screen at least LABEL_ROOM px are kept round it for its labels.
 const REACH = 0.32;
+const LABEL_ROOM = 28;
 
 // Edge k joins verts[k] and verts[(k+1)%3]. Vertices are labeled A, B, C, so
 // per the standard convention (a = BC, b = CA, c = AB) the edges read c, a, b.
@@ -173,8 +176,9 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const content = { w: 1 / REACH, h: 1 / REACH };
-  const { cells, scale } = grid(lessons.length, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, content);
+  // In units of each seed's extent, the seed spans 2 across.
+  const room = { units: 1 / (2 * REACH) - 1, px: LABEL_ROOM };
+  const { cells, scale } = grid(lessons.length, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, { w: 2, h: 2 }, room);
   lessons.forEach((l, i) => {
     l.band = cells[i];
     // Scale is pinned to the seed's extent, so a resize mid-exploration only
@@ -204,23 +208,22 @@ canvas.addEventListener("pointerdown", (e) => {
 
   // A knob on the selected side gets first claim on the pointer.
   if (sel) {
-    const l = lessons[sel.li];
-    for (const end of [0, 1] as const) {
-      const knob = toScreen(l, l.verts[(sel.side + end) % 3]);
-      if (dist(p, knob) <= GRAB_RADIUS) {
-        drag = { li: sel.li, side: sel.side, movEnd: end, snapped: false };
-        canvas.classList.add("grabbing");
-        capturePointer(canvas, e);
-        drive(p);
-        return;
-      }
+    const { li, side } = sel;
+    const knobs = [0, 1].map((end) => toScreen(lessons[li], lessons[li].verts[(side + end) % 3]));
+    const end = nearest(p, knobs, grabRadius(e.pointerType, GRAB_RADIUS));
+    if (end >= 0) {
+      drag = { li, side, movEnd: end === 0 ? 0 : 1, snapped: false };
+      canvas.classList.add("grabbing");
+      capturePointer(canvas, e);
+      drive(p);
+      return;
     }
   }
 
   // Otherwise (re)select whichever side sits under the pointer; empty space
   // clears the selection.
   let best: { li: number; side: number } | null = null;
-  let bestD = PICK_RADIUS;
+  let bestD = grabRadius(e.pointerType, PICK_RADIUS);
   lessons.forEach((l, li) => {
     for (let k = 0; k < 3; k++) {
       const d = pointSegDist(p, toScreen(l, l.verts[k]), toScreen(l, l.verts[(k + 1) % 3]));
@@ -446,20 +449,24 @@ function drawPulse(l: Lesson, p: Pulse): void {
 
 /** The triangle's name under its band — and its state when it is flattening. */
 function drawCaption(l: Lesson, slack: number): void {
-  ctx.font = "500 11px ui-sans-serif, system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  const y = l.band.cy + l.band.h / 2 - 10;
+  let text = l.name;
   if (slack <= FLAT_SLACK) {
     ctx.fillStyle = DANGER;
-    ctx.fillText(`${l.name} — degenerate: a straight line`, l.band.cx, y);
+    text = `${l.name} — degenerate: a straight line`;
   } else if (slack < TIGHT_SLACK) {
     ctx.fillStyle = WARN;
-    ctx.fillText(`${l.name} — almost flat`, l.band.cx, y);
+    text = `${l.name} — almost flat`;
   } else {
     ctx.fillStyle = "rgba(233,240,247,0.35)";
-    ctx.fillText(l.name, l.band.cx, y);
   }
+  fillFitted(ctx, text, l.band.cx, l.band.cy + l.band.h / 2 - 10, l.band.w - 16, {
+    font: (px) => `500 ${px}px ui-sans-serif, system-ui, sans-serif`,
+    size: 11,
+    min: 10,
+    grow: "up",
+  });
 }
 
 /** Idle sides blush toward red as the triangle's tightest inequality closes. */

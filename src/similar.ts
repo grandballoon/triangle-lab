@@ -5,16 +5,21 @@
 // any point of the tilted ray makes a right triangle, and every such triangle
 // shares the angles 90°, θ, 90°−θ — AA similarity made visible by the
 // parallel vertical legs. Two sample triangles sit at fixed spots on the ray;
-// a third belongs to the user via a knob that slides along the ray. The table
-// shows each triangle's three sides and the three ratios opp/hyp, adj/hyp,
-// opp/adj: slide the knob and the sides churn while the ratio columns hold
-// still; turn the dial and all three columns move together. The ratio belongs
-// to the ANGLE — a function of θ worth naming, which is the next lesson.
+// a third belongs to the user via a knob that slides along the ray. The
+// formula band below works out each ratio opp/hyp, adj/hyp, opp/adj in all
+// three triangles side by side: slide the knob and the sides churn while each
+// ratio holds still; turn the dial and all three move together. The ratio
+// belongs to the ANGLE — a function of θ worth naming, which is the next
+// lesson.
 //
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the page's formula band, the small-screen helpers
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grabRadius, nearest } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { similarReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -29,7 +34,6 @@ interface Pulse {
 
 const ACCENT = "#2dd4bf"; // the user's triangle
 const SAMPLE = "rgba(233,240,247,0.5)"; // the two fixed triangles
-const RATIO_BG = "#2dd4bf"; // tint behind the frozen ratio columns
 const RIGHT = "#ffd43b"; // right-angle markers
 const TEXT = "rgba(233,240,247,0.85)";
 const TEXT_DIM = "rgba(233,240,247,0.55)";
@@ -48,6 +52,14 @@ const SAMPLES = [2.2, 3.9]; // fixed hypotenuse lengths of the two samples
 const DIAL_R = 1.05; // radius (units) of the dial arc
 const SNAP_DEGS = [30, 45, 60]; // the dial leans onto the angles coming next
 const SNAP_IN = 1.3; // degrees
+// Room around the figure for its labels, in screen px: θ and the dial's
+// ticks left of A, "opp" right of the widest foot, "adj" under the base and
+// each triangle's name over its apex.
+const PAD_LEFT = 34;
+const PAD_RIGHT = 84;
+const PAD_TOP = 36;
+const PAD_BOTTOM = 32;
+const KNOB_GAP = 44; // px the slide knob keeps from the dial knob on the same ray
 
 // --- state -----------------------------------------------------------------
 
@@ -65,11 +77,11 @@ let W = 0;
 let H = 0;
 let unit = 1;
 let origin: Vec = { x: 0, y: 0 }; // screen position of A
+const showFormulas = formulaBand();
 
 // --- helpers ---------------------------------------------------------------
 
 const clamp = (v: number, lo: number, hi: number): number => (v < lo ? lo : v > hi ? hi : v);
-const dist = (p: Vec, q: Vec): number => Math.hypot(p.x - q.x, p.y - q.y);
 
 function rgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -93,10 +105,22 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // Room for the tallest (θ = 72°) and widest (θ = 15°) the ray can reach.
-  unit = Math.min((W - 120) / (R_MAX * Math.cos(THETA_MIN) + 0.6), (H - TOP_MARGIN - 120) / (R_MAX * Math.sin(THETA_MAX) + 0.4));
-  origin = { x: 60, y: H - 60 };
+  // Room for the widest (θ = 15°) and tallest (θ = 72°) the ray can reach,
+  // centred in the canvas.
+  const reachW = R_MAX * Math.cos(THETA_MIN) + 0.6;
+  const reachH = R_MAX * Math.sin(THETA_MAX) + 0.4;
+  const usableW = W - PAD_LEFT - PAD_RIGHT;
+  const usableH = H - TOP_MARGIN - PAD_TOP - PAD_BOTTOM;
+  unit = Math.min(usableW / reachW, usableH / reachH);
+  origin = {
+    x: PAD_LEFT + (usableW - reachW * unit) / 2,
+    y: H - PAD_BOTTOM - (usableH - reachH * unit) / 2,
+  };
+  rUser = clamp(rUser, rMin(), R_MAX);
 }
+
+/** The shortest the learner's hypotenuse may be: its knob stays clear of the dial's. */
+const rMin = (): number => Math.max(R_MIN, DIAL_R + KNOB_GAP / unit);
 
 // --- interaction -----------------------------------------------------------
 
@@ -114,13 +138,9 @@ function dialKnobPos(): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  if (dist(p, apexOf(rUser)) <= GRAB_RADIUS) {
-    drag = "size";
-  } else if (dist(p, dialKnobPos()) <= GRAB_RADIUS) {
-    drag = "dial";
-  } else {
-    return;
-  }
+  const hit = nearest(p, [apexOf(rUser), dialKnobPos()], grabRadius(e.pointerType, GRAB_RADIUS));
+  if (hit < 0) return;
+  drag = hit === 0 ? "size" : "dial";
   canvas.classList.add("grabbing");
   capturePointer(canvas, e);
   drive(p);
@@ -144,7 +164,7 @@ function drive(p: Vec): void {
     // Project the pointer onto the hypotenuse ray.
     const d = hypDir();
     const along = ((p.x - origin.x) * d.x + (p.y - origin.y) * d.y) / unit;
-    rUser = clamp(along, R_MIN, R_MAX);
+    rUser = clamp(along, rMin(), R_MAX);
     return;
   }
   if (drag === "dial") {
@@ -186,7 +206,6 @@ function render(): void {
 
   drawDial();
   for (const p of pulses) drawPulse(p);
-  drawPanel();
 }
 
 function drawTriangle(r: number, mine: boolean, label: string): void {
@@ -285,82 +304,6 @@ function drawDial(): void {
   drawKnob(dialKnobPos(), drag === "dial");
 }
 
-// --- the table -------------------------------------------------------------
-
-const PANEL_X = 18;
-const PANEL_Y = 64;
-const PANEL_PAD = 12;
-const COLS = [46, 52, 52, 52, 62, 62, 62]; // label, opp, adj, hyp, three ratios
-const PANEL_W = COLS.reduce((a, b) => a + b, 0) + PANEL_PAD * 2;
-
-function drawPanel(): void {
-  const rows = [...SAMPLES, rUser];
-  const h = 172;
-  ctx.beginPath();
-  ctx.roundRect(PANEL_X, PANEL_Y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.6)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  // The tinted slab behind the three ratio columns — the ones that refuse
-  // to move while the sides churn.
-  const ratioX = PANEL_X + PANEL_PAD + COLS[0] + COLS[1] + COLS[2] + COLS[3];
-  const ratioW = COLS[4] + COLS[5] + COLS[6];
-  ctx.beginPath();
-  ctx.roundRect(ratioX - 6, PANEL_Y + 8, ratioW + 8, h - 66, 8);
-  ctx.fillStyle = rgba(RATIO_BG, 0.09);
-  ctx.fill();
-
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  let y = PANEL_Y + PANEL_PAD + 12;
-
-  ctx.font = "600 11px ui-sans-serif, system-ui, sans-serif";
-  const headers = ["", "opp", "adj", "hyp", "opp/hyp", "adj/hyp", "opp/adj"];
-  let x = PANEL_X + PANEL_PAD;
-  headers.forEach((hdr, i) => {
-    ctx.fillStyle = i >= 4 ? ACCENT : TEXT_DIM;
-    ctx.fillText(hdr, x, y);
-    x += COLS[i];
-  });
-  y += 20;
-
-  ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, monospace";
-  rows.forEach((r, i) => {
-    const mine = i === rows.length - 1;
-    const opp = r * Math.sin(theta);
-    const adj = r * Math.cos(theta);
-    const values = [
-      mine ? "yours" : `△${i + 1}`,
-      opp.toFixed(2),
-      adj.toFixed(2),
-      r.toFixed(2),
-      (opp / r).toFixed(3),
-      (adj / r).toFixed(3),
-      (opp / adj).toFixed(3),
-    ];
-    let cx = PANEL_X + PANEL_PAD;
-    values.forEach((v, col) => {
-      ctx.fillStyle = col === 0 ? (mine ? ACCENT : TEXT_DIM) : col >= 4 ? ACCENT : mine ? TEXT : TEXT_DIM;
-      ctx.fillText(v, cx, y);
-      cx += COLS[col];
-    });
-    y += 19;
-  });
-
-  y += 8;
-  ctx.font = "500 12px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = TEXT;
-  ctx.fillText(`all three: 90°, θ = ${(theta / DEG).toFixed(1)}°, ${(90 - theta / DEG).toFixed(1)}°  —  AA ⇒ similar`, PANEL_X + PANEL_PAD, y);
-  y += 18;
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText("sides scale, ratios hold: the ratio belongs to the angle.", PANEL_X + PANEL_PAD, y);
-  y += 16;
-  ctx.fillText("A function of θ alone — worth naming. Next lesson.", PANEL_X + PANEL_PAD, y);
-}
-
 // --- chrome ----------------------------------------------------------------
 
 function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
@@ -402,6 +345,7 @@ function frame(now: number): void {
   prev = now;
   pulses = pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   render();
+  showFormulas(similarReadouts(theta / DEG, [rUser, ...SAMPLES]));
   requestAnimationFrame(frame);
 }
 

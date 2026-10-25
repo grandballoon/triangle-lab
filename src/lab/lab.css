@@ -2,12 +2,11 @@
    four pieces of chrome around the edge — a top bar (pager, lesson title,
    lesson controls), the curriculum rail on the left (curriculum.css), the
    step column on the right (steps.css) and the formula band along the bottom
-   (formulas.css).
+   (formulas.css). On a phone the column and the band stack under the figure.
 
-   --edge, --top-band, --formula-band-height, --bottom-reserve (the band's
-   height plus its gap, or 0 while the formulas are hidden) and --panel-width
-   are set by shell.ts, which fits the figure into the space these leave
-   free. */
+   Where each goes comes from layout.ts, which shell.ts applies: it places
+   the column, the band and the controls row, sets --edge, and marks <html>
+   with the arrangement (data-layout) for the rules below. */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -51,9 +50,6 @@ html, body {
 
 #controls {
   position: fixed;
-  top: 60px;
-  left: calc(var(--edge) + var(--rail-inset, 0px));
-  right: calc(var(--edge) * 2 + var(--panel-width));
   z-index: 10;
   display: flex;
   flex-wrap: wrap;
@@ -63,6 +59,20 @@ html, body {
 }
 
 #controls > * { pointer-events: auto; }
+
+/* On a phone the controls keep to one row under the title, and a row too long
+   for the screen is swiped along rather than wrapped over the figure. */
+html[data-layout="stacked"] #controls {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  pointer-events: auto;
+}
+
+html[data-layout="stacked"] #controls::-webkit-scrollbar { display: none; }
+
+html[data-layout="stacked"] .chip-group,
+html[data-layout="stacked"] .chip { flex: none; }
 
 .chip-group {
   display: inline-flex;
