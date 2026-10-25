@@ -10,21 +10,16 @@
 // three times.
 //
 // Self-contained on purpose, matching perimeter.ts / equilateral.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the shared grid layout and this file's own little
+// vector helpers are involved.
 
+import { grid } from "./grid.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
   x: number;
   y: number;
-}
-
-interface Band {
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
 }
 
 interface Pulse {
@@ -40,7 +35,6 @@ interface Median {
 
 interface Lesson {
   verts: [Vec, Vec, Vec];
-  band: Band;
   medians: [Median, Median, Median];
   pulses: Pulse[];
   // Centroid celebration: -1 = not yet triggered; otherwise seconds elapsed
@@ -57,7 +51,7 @@ const G_TEXT = "rgba(233,240,247,0.85)";
 
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the top bar above the three bands
+const TOP_MARGIN = 64; // room for the top bar above the triangles
 
 const STUB_LEN = 26; // length of the outward starting stub, in screen px
 const LENGTH_CAP = 1.3; // free end can reach at most 130% of the finished median
@@ -75,6 +69,33 @@ const SHAPE: [Vec, Vec, Vec] = [
 ];
 const SIZE_FACTOR = [0.72, 1.0, 1.34]; // small, medium, large
 const ROTATION = [-0.15, 0.3, -0.45]; // radians — just enough to avoid looking cloned
+// Room around each triangle for its stubs and knobs, in SHAPE units.
+const KNOB_ROOM = 0.4;
+
+/** SHAPE as triangle i is drawn, in SHAPE units about its cell's centre. */
+function placed(i: number): [Vec, Vec, Vec] {
+  const cosR = Math.cos(ROTATION[i]);
+  const sinR = Math.sin(ROTATION[i]);
+  const k = SIZE_FACTOR[i];
+  return SHAPE.map((o) => ({ x: (o.x * cosR - o.y * sinR) * k, y: (o.x * sinR + o.y * cosR) * k })) as [
+    Vec,
+    Vec,
+    Vec,
+  ];
+}
+
+// Every cell is the size of the one the largest triangle needs.
+const CONTENT = (() => {
+  let w = 0;
+  let h = 0;
+  for (let i = 0; i < 3; i++) {
+    const xs = placed(i).map((p) => p.x);
+    const ys = placed(i).map((p) => p.y);
+    w = Math.max(w, Math.max(...xs) - Math.min(...xs));
+    h = Math.max(h, Math.max(...ys) - Math.min(...ys));
+  }
+  return { w: w + 2 * KNOB_ROOM, h: h + 2 * KNOB_ROOM };
+})();
 
 const video = document.getElementById("cam") as HTMLVideoElement;
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -91,7 +112,6 @@ const lessons: Lesson[] = [0, 1, 2].map(() => ({
     { x: 0, y: 0 },
     { x: 0, y: 0 },
   ],
-  band: { cx: 0, cy: 0, w: 0, h: 0 },
   medians: [0, 1, 2].map((vertex) => ({ vertex, locked: false, drag: null })) as [
     Median,
     Median,
@@ -151,26 +171,14 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const usableH = H - TOP_MARGIN;
-  const columns = W >= H; // landscape-ish: side by side; else stacked
-
-  for (let i = 0; i < 3; i++) {
-    const band: Band = columns
-      ? { cx: (W / 3) * (i + 0.5), cy: TOP_MARGIN + usableH / 2, w: W / 3, h: usableH }
-      : { cx: W / 2, cy: TOP_MARGIN + (usableH / 3) * (i + 0.5), w: W, h: usableH / 3 };
-
-    const scale = Math.min(band.w, band.h) * 0.17 * SIZE_FACTOR[i];
-    const rot = ROTATION[i];
-    const cosR = Math.cos(rot);
-    const sinR = Math.sin(rot);
-    const verts = SHAPE.map((o) => ({
-      x: band.cx + (o.x * cosR - o.y * sinR) * scale,
-      y: band.cy + (o.x * sinR + o.y * cosR) * scale,
-    })) as [Vec, Vec, Vec];
-
-    lessons[i].band = band;
-    lessons[i].verts = verts;
-  }
+  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT);
+  cells.forEach((cell, i) => {
+    lessons[i].verts = placed(i).map((o) => ({ x: cell.cx + o.x * scale, y: cell.cy + o.y * scale })) as [
+      Vec,
+      Vec,
+      Vec,
+    ];
+  });
 }
 
 // --- interaction -------------------------------------------------------------

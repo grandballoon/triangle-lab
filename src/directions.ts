@@ -2,9 +2,11 @@
 // page shows its own in the step column on the right (page.ts), in the same
 // format as a lab lesson's steps. Text may hold `$…$` LaTeX.
 //
-// The steps here only describe the figure; they do not drive it. A lab
-// lesson's steps draw its construction in, but a standalone page has one
-// bespoke interaction and shows all of it at once.
+// The steps here mostly only describe the figure. A lab lesson's steps draw
+// its construction in, but a standalone page has one bespoke interaction and
+// shows nearly all of it at once; a page that holds part of its figure back
+// reads the current step from chrome.ts (pythagoras.ts brings in its proof at
+// "Scrub the proof").
 
 import type { Step } from "./lab/scene.ts";
 
@@ -76,11 +78,15 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Keep a running total",
-      text: "Each side you finish adds its length to $p$ in that triangle's box.",
+      text: "Each side you finish adds its length to that triangle's $p$ in the formulas below.",
+    },
+    {
+      title: "Halfway round",
+      text: "Once the knob has walked half of the way round, a gold mark drops on that spot. The distance walked so far is the semiperimeter $s$.",
     },
     {
       title: "All the way round",
-      text: "Bring the knob back to where it started. The perimeter is $p = a + b + c$, and the semiperimeter $s = \\frac{p}{2}$ joins it.",
+      text: "Bring the knob back to where it started. The perimeter is $p = a + b + c$, and the semiperimeter is half of it, $s = \\frac{p}{2}$.",
     },
   ],
   medians: [
@@ -118,7 +124,11 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Lock the altitude",
-      text: "At the foot it locks with a right-angle mark and is labelled $h$. On an obtuse triangle the foot can lie beyond the side, on a dashed extension.",
+      text: "At the foot it locks with a right-angle mark and is labelled $h$.",
+    },
+    {
+      title: "Past the end of a side",
+      text: "On an obtuse triangle, the altitudes from the two sharp corners miss the opposite side. Extend that side, along the gold dashed line, and the altitude lands on the extension, outside the triangle.",
     },
     {
       title: "Find the orthocenter",
@@ -126,7 +136,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Scroll for more",
-      text: "Scroll, or drag empty space, to pan through thirty triangles. The flatter the triangle, the farther $H$ flies.",
+      text: "Scroll, or drag empty space, to pan through fifteen triangles. The flatter the triangle, the farther $H$ flies.",
     },
   ],
   inequality: [
@@ -140,7 +150,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Watch the sums",
-      text: "The panel checks $a + b > c$, $b + c > a$ and $c + a > b$ as you swing.",
+      text: "The formulas below check $a + b > c$, $b + c > a$ and $c + a > b$ as you swing.",
     },
     {
       title: "Lie flat",
@@ -150,15 +160,15 @@ export const directions: Record<string, Step[]> = {
   pythagoras: [
     {
       title: "Shape the triangle",
-      text: "Drag the knobs on the left triangle. A square sits on every side, labelled with its area.",
+      text: "Drag the knobs on the triangle's corners. A square sits on every side, labelled with its area.",
     },
     {
       title: "Compare the areas",
-      text: "The panel adds the two leg squares: $a^2 + b^2$ always equals $c^2$, the hypotenuse square.",
+      text: "The formulas below add the two leg squares: $a^2 + b^2$ always equals $c^2$, the hypotenuse square.",
     },
     {
       title: "Scrub the proof",
-      text: "On the right, slide the knob along its rail. The same four triangles move around inside one square of side $a + b$.",
+      text: "A proof joins the triangle on the right. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
     },
     {
       title: "Why it is true",

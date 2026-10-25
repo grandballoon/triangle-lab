@@ -1,6 +1,6 @@
 // Constraints · One — The Triangle Inequality.
 //
-// Six triangles. Click any side to select it: the side lights up, both of its
+// Three triangles. Click any side to select it: the side lights up, both of its
 // endpoints grow knobs, and a dotted circle appears around each end — the
 // locus that end can travel while the side keeps its length. Grab a knob and
 // the side rotates rigidly about its other endpoint, the third side
@@ -8,13 +8,18 @@
 // mark where the moving vertex crosses the line through the other two — the
 // degenerate spots where one side exactly equals the sum (or difference) of
 // the other two — and the pointer snaps onto them so exact equality is
-// reachable. Side lengths live on the sides themselves, and a panel in the
-// upper left shows a, b, c and all three inequalities as they tighten.
+// reachable. Side lengths live on the sides themselves, and the formula band
+// below shows a, b, c and all three inequalities as they tighten.
 //
 // Self-contained on purpose, matching perimeter.ts / medians.ts / etc. —
-// only the webcam device and this file's own little vector helpers are involved.
+// only the webcam device, the shared grid layout, the page's formula band and
+// this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grid } from "./grid.ts";
+import type { Readout } from "./lab/scene.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { FLAT_SLACK, inequalityReadouts, TIGHT_SLACK } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -45,10 +50,8 @@ interface Lesson {
 
 const ACCENT = "#a3e635"; // the selected side and its circles
 const CHANGING = "#facc15"; // the third side that stretches during a drag
-const OK = "#38d9a9"; // an inequality with comfortable slack
 const WARN = "#fbbf24"; // an inequality getting tight
 const DANGER = "#ff6b6b"; // equality — the degenerate straight line
-const TEXT = "rgba(233,240,247,0.85)";
 const TEXT_DIM = "rgba(233,240,247,0.55)";
 
 const TWO_PI = Math.PI * 2;
@@ -56,16 +59,17 @@ const TOP_MARGIN = 64; // room for the top bar above the grid
 const GRAB_RADIUS = 24; // screen px around an endpoint knob
 const PICK_RADIUS = 15; // screen px around a side for click-to-select
 const SNAP_ANG = 0.055; // rad — the drag snaps onto the degenerate spots
-const DEGEN_EPS = 0.01; // slack (units) below which the triangle is a line
-const TIGHT = 0.55; // slack (units) where the flattening warnings begin
 const PULSE_LIFE = 0.6;
+// A seed's extent (its farthest vertex from the centroid) is drawn at this
+// share of its cell's smaller side, leaving room for the dotted circles.
+const REACH = 0.32;
 
 // Edge k joins verts[k] and verts[(k+1)%3]. Vertices are labeled A, B, C, so
 // per the standard convention (a = BC, b = CA, c = AB) the edges read c, a, b.
 const VERTEX_NAME = ["A", "B", "C"] as const;
 const EDGE_NAME = ["c", "a", "b"] as const;
 
-// Six seed triangles in unit coordinates (y down, centered at startup) —
+// Three seed triangles in unit coordinates (y down, centered at startup) —
 // their coordinates ARE the displayed lengths, so the numbers read nicely.
 const SEEDS: { name: string; verts: [Vec, Vec, Vec] }[] = [
   {
@@ -77,27 +81,11 @@ const SEEDS: { name: string; verts: [Vec, Vec, Vec] }[] = [
     ],
   },
   {
-    name: "equilateral",
-    verts: [
-      { x: -2, y: 1.155 },
-      { x: 2, y: 1.155 },
-      { x: 0, y: -2.309 },
-    ],
-  },
-  {
     name: "isosceles 5·5·6",
     verts: [
       { x: -3, y: 1.6 },
       { x: 3, y: 1.6 },
       { x: 0, y: -2.4 },
-    ],
-  },
-  {
-    name: "obtuse",
-    verts: [
-      { x: -3.5, y: 1 },
-      { x: 3.5, y: 1 },
-      { x: -4.8, y: -1.2 },
     ],
   },
   {
@@ -108,14 +96,6 @@ const SEEDS: { name: string; verts: [Vec, Vec, Vec] }[] = [
       { x: -0.5, y: -0.8 },
     ],
   },
-  {
-    name: "tall scalene",
-    verts: [
-      { x: -1.5, y: 2.5 },
-      { x: 1.5, y: 2.5 },
-      { x: 0.5, y: -2.5 },
-    ],
-  },
 ];
 
 const video = document.getElementById("cam") as HTMLVideoElement;
@@ -124,6 +104,7 @@ const ctx = canvas.getContext("2d")!;
 
 let W = 0;
 let H = 0;
+const showFormulas = formulaBand();
 
 // The one selected side, page-wide; the panel reads from it.
 let sel: { li: number; side: number } | null = null;
@@ -192,22 +173,13 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const usableH = H - TOP_MARGIN;
-  const cols = W >= H ? 3 : 2; // landscape-ish: 3×2; portrait: 2×3
-  const rows = Math.ceil(lessons.length / cols);
-
+  const content = { w: 1 / REACH, h: 1 / REACH };
+  const { cells, scale } = grid(lessons.length, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, content);
   lessons.forEach((l, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    l.band = {
-      cx: (W / cols) * (col + 0.5),
-      cy: TOP_MARGIN + (usableH / rows) * (row + 0.5),
-      w: W / cols,
-      h: usableH / rows,
-    };
+    l.band = cells[i];
     // Scale is pinned to the seed's extent, so a resize mid-exploration only
     // rescales — the shape the user has made survives.
-    l.unitPx = (Math.min(l.band.w, l.band.h) * 0.23) / l.r0;
+    l.unitPx = scale / l.r0;
   });
 }
 
@@ -315,7 +287,6 @@ function drive(p: Vec): void {
 function render(): void {
   ctx.clearRect(0, 0, W, H);
   lessons.forEach((l, li) => renderLesson(l, li));
-  drawPanel(); // last, so it reads over anything swung underneath it
 }
 
 function renderLesson(l: Lesson, li: number): void {
@@ -479,10 +450,10 @@ function drawCaption(l: Lesson, slack: number): void {
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
   const y = l.band.cy + l.band.h / 2 - 10;
-  if (slack <= DEGEN_EPS) {
+  if (slack <= FLAT_SLACK) {
     ctx.fillStyle = DANGER;
     ctx.fillText(`${l.name} — degenerate: a straight line`, l.band.cx, y);
-  } else if (slack < TIGHT) {
+  } else if (slack < TIGHT_SLACK) {
     ctx.fillStyle = WARN;
     ctx.fillText(`${l.name} — almost flat`, l.band.cx, y);
   } else {
@@ -493,109 +464,21 @@ function drawCaption(l: Lesson, slack: number): void {
 
 /** Idle sides blush toward red as the triangle's tightest inequality closes. */
 function flattenTint(slack: number): string {
-  const t = clamp(1 - slack / TIGHT, 0, 1);
+  const t = clamp(1 - slack / TIGHT_SLACK, 0, 1);
   const r = Math.round(233 + (255 - 233) * t);
   const g = Math.round(240 + (107 - 240) * t);
   const b = Math.round(247 + (107 - 247) * t);
   return `rgba(${r}, ${g}, ${b}, ${0.28 + 0.5 * t})`;
 }
 
-// --- the readout panel -------------------------------------------------------
+// --- formulas ----------------------------------------------------------------
 
-const PANEL_X = 18;
-const PANEL_Y = 64; // just under the back link
-const PANEL_W = 258;
-const PANEL_PAD = 12;
-const MONO = "600 12px ui-monospace, SFMono-Regular, Menlo, monospace";
-const SANS = "500 12px ui-sans-serif, system-ui, sans-serif";
-
-function drawPanel(): void {
-  const h = sel ? 168 : 64;
-  ctx.beginPath();
-  ctx.roundRect(PANEL_X, PANEL_Y, PANEL_W, h, 12);
-  ctx.fillStyle = "rgba(6, 10, 16, 0.6)";
-  ctx.fill();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.stroke();
-
-  ctx.textAlign = "left";
-  ctx.textBaseline = "alphabetic";
-  let y = PANEL_Y + PANEL_PAD + 11;
-
-  if (!sel) {
-    ctx.font = SANS;
-    ctx.fillStyle = TEXT;
-    ctx.fillText("Click any side to select it,", PANEL_X + PANEL_PAD, y);
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText("then swing one of its round ends.", PANEL_X + PANEL_PAD, y + 18);
-    return;
-  }
-
+/** The selected triangle's side lengths for the formula band. Edges (c, a, b)
+ *  run 0, 1, 2 round the triangle. */
+function readouts(): Readout[] {
+  if (!sel) return inequalityReadouts(null);
   const l = lessons[sel.li];
-
-  ctx.font = "700 13px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = ACCENT;
-  ctx.fillText(`△ ${sel.li + 1} · ${l.name}`, PANEL_X + PANEL_PAD, y);
-  y += 17;
-  ctx.font = SANS;
-  ctx.fillStyle = TEXT_DIM;
-  ctx.fillText(`side ${EDGE_NAME[sel.side]} selected — grab an end`, PANEL_X + PANEL_PAD, y);
-  y += 24;
-
-  // a, b, c across one row, each colored by its role. Edges (c, a, b) are
-  // shown in letter order a, b, c — edge indices 1, 2, 0.
-  const changingEdge = drag !== null ? (drag.side + 2 - drag.movEnd) % 3 : -1;
-  const colW = (PANEL_W - PANEL_PAD * 2) / 3;
-  ctx.font = MONO;
-  [1, 2, 0].forEach((k, col) => {
-    ctx.fillStyle = k === sel!.side ? ACCENT : k === changingEdge ? CHANGING : TEXT;
-    ctx.fillText(
-      `${EDGE_NAME[k]} = ${edgeLen(l, k).toFixed(2)}`,
-      PANEL_X + PANEL_PAD + colW * col,
-      y,
-    );
-  });
-  y += 22;
-
-  // The three inequalities, live. Rows are (pair) vs (third edge index).
-  const rows: { label: [number, number]; third: number }[] = [
-    { label: [1, 0], third: 2 }, // a + c ? b
-    { label: [2, 0], third: 1 }, // b + c ? a
-    { label: [1, 2], third: 0 }, // a + b ? c
-  ];
-  for (const row of rows) {
-    const sum = edgeLen(l, row.label[0]) + edgeLen(l, row.label[1]);
-    const third = edgeLen(l, row.third);
-    const slack = sum - third;
-    const sym = slack <= DEGEN_EPS ? "=" : ">";
-    const color = slack <= DEGEN_EPS ? DANGER : slack < TIGHT ? WARN : OK;
-    ctx.font = MONO;
-    ctx.fillStyle = color;
-    ctx.fillText(
-      `${EDGE_NAME[row.label[0]]} + ${EDGE_NAME[row.label[1]]} ${sym} ${EDGE_NAME[row.third]}`,
-      PANEL_X + PANEL_PAD,
-      y,
-    );
-    ctx.textAlign = "right";
-    ctx.fillText(`${sum.toFixed(2)} ${sym} ${third.toFixed(2)}`, PANEL_X + PANEL_W - PANEL_PAD, y);
-    ctx.textAlign = "left";
-    y += 17;
-  }
-  y += 6;
-
-  const slack = minSlack(l);
-  ctx.font = SANS;
-  if (slack <= DEGEN_EPS) {
-    ctx.fillStyle = DANGER;
-    ctx.fillText("degenerate — a straight line, not a triangle", PANEL_X + PANEL_PAD, y);
-  } else if (slack < TIGHT) {
-    ctx.fillStyle = WARN;
-    ctx.fillText("nearly flat — one sum is barely winning", PANEL_X + PANEL_PAD, y);
-  } else {
-    ctx.fillStyle = TEXT_DIM;
-    ctx.fillText("a real triangle — every sum wins", PANEL_X + PANEL_PAD, y);
-  }
+  return inequalityReadouts({ name: l.name, a: edgeLen(l, 1), b: edgeLen(l, 2), c: edgeLen(l, 0) });
 }
 
 // --- shared strokes & helpers ----------------------------------------------
@@ -630,6 +513,7 @@ function frame(now: number): void {
     l.pulses = l.pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   }
   render();
+  showFormulas(readouts());
   requestAnimationFrame(frame);
 }
 

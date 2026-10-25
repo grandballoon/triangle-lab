@@ -21,11 +21,13 @@
       /* A dim veil keeps the geometry legible over a busy camera image. */
       #veil { position: fixed; inset: 0; background: rgba(6, 10, 16, 0.45); }
       #stage {
-        /* Clear of the curriculum rail on the left and the step column on
-           the right (page.ts). A canvas keeps its 300x150 default unless
-           sized explicitly; insets alone do not stretch it. */
+        /* Clear of the curriculum rail on the left, the step column on the
+           right and any formula band below (page.ts). A canvas keeps its
+           300x150 default unless sized explicitly; insets alone do not
+           stretch it. */
         position: fixed; top: 0; left: var(--rail-inset, 0px);
-        width: calc(100% - var(--rail-inset, 0px) - var(--steps-inset, 0px)); height: 100%;
+        width: calc(100% - var(--rail-inset, 0px) - var(--steps-inset, 0px));
+        height: calc(100% - var(--formulas-inset, 0px));
         touch-action: none; cursor: grab;
       }
       #stage.grabbing { cursor: grabbing; }

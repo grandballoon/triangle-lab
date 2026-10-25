@@ -1,7 +1,8 @@
 /* The lab page: a full-screen camera view with the figure drawn over it, and
    four pieces of chrome around the edge — a top bar (pager, lesson title,
    lesson controls), the curriculum rail on the left (curriculum.css), the
-   step column on the right and the formula band along the bottom.
+   step column on the right (steps.css) and the formula band along the bottom
+   (formulas.css).
 
    --edge, --top-band, --formula-band-height, --bottom-reserve (the band's
    height plus its gap, or 0 while the formulas are hidden) and --panel-width
@@ -47,9 +48,6 @@ html, body {
 /* --- Top bar --------------------------------------------------------------- */
 
 /* The bar itself, the pager and the lesson heading are styled in nav.css. */
-
-/* The curriculum rail stops above the formula band, as the step column does. */
-html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
 
 #controls {
   position: fixed;
@@ -104,82 +102,6 @@ html { --curriculum-bottom: calc(var(--edge) + var(--bottom-reserve, 0px)); }
   background: var(--accent);
   border-color: var(--accent);
   font-weight: 650;
-}
-
-/* --- Formula band ---------------------------------------------------------- */
-
-#formulas {
-  position: fixed;
-  left: var(--edge);
-  right: var(--edge);
-  bottom: var(--edge);
-  height: var(--formula-band-height);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  padding: 12px 16px 6px;
-  border-radius: 16px;
-  background: rgba(10, 15, 22, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-}
-
-#formulas h2 {
-  flex: none;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 6px;
-}
-
-#readouts {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 22px;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.readout {
-  flex: none;
-  max-width: 460px;
-  padding: 6px 0 6px 12px;
-  border-left: 3px solid rgba(255, 255, 255, 0.14);
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
-}
-
-.readout-label {
-  display: block;
-  font-size: 12px;
-  color: rgba(233, 240, 247, 0.55);
-  margin-bottom: 4px;
-  white-space: nowrap;
-}
-
-.readout-math { display: block; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
-
-.readout-good { border-left-color: #38d9a9; }
-.readout-good .readout-math { color: #7ff0cf; }
-.readout-warn { border-left-color: #ff6b6b; }
-.readout-warn .readout-math { color: #ff9c9c; }
-.readout-dim { opacity: 0.55; }
-
-/* Numbers held still while the figure is dragged (hold.ts): they grey out
-   gently, and once the drag ends their new values come back to full strength. */
-.held { opacity: 0.4; }
-.held-new { animation: held-in 0.22s ease-out; }
-.settled { animation: settle-in 0.4s ease-out; }
-
-@keyframes held-in { from { opacity: 1; } }
-@keyframes settle-in { from { opacity: 0.4; } }
-
-@media (prefers-reduced-motion: reduce) {
-  .held-new, .settled { animation: none; }
 }
 
 /* --- Terms and their leader lines --------------------------------------------- */

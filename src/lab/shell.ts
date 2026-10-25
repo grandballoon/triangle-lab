@@ -9,9 +9,9 @@
 import { capturePointer, releasePointer } from "../pointer.ts";
 import { C, Draw, tint, toScreen, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
+import { FORMULA_BAND_HEIGHT, FormulaBand } from "./formulas.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
 import { linkTex, termAliases } from "./link.ts";
-import { richHtml, texHtml } from "./math.ts";
 import { SpriteCache } from "./sprites.ts";
 import { panelWidth, StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
@@ -22,7 +22,6 @@ import {
   type HandPoints,
   type LessonBuilder,
   type LessonView,
-  type Readout,
   type Slider,
 } from "./scene.ts";
 
@@ -34,7 +33,6 @@ export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 // numbers through custom properties set here.
 const EDGE = 18;
 const TOP_BAND = 104;
-const FORMULA_BAND_HEIGHT = 116;
 
 const STEP_FADE_SECONDS = 0.7;
 
@@ -81,6 +79,7 @@ interface Loaded {
 export class Shell {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly stepList: StepList;
+  private readonly band: FormulaBand;
   private readonly terms: TermFocus;
   private readonly sprites = new SpriteCache();
   private readonly drags = new Map<number, Drag>();
@@ -94,7 +93,6 @@ export class Shell {
    * marked leads to, and lights, that term's marks wherever it is written.
    */
   private aliases = new Map<string, string>();
-  private shownReadouts: string[] = [];
   private shownControls = "";
 
   /**
@@ -110,6 +108,7 @@ export class Shell {
   ) {
     this.ctx = el.canvas.getContext("2d")!;
     this.stepList = new StepList(el.steps, (step, scroll) => this.select(step, scroll));
+    this.band = new FormulaBand(el.readouts, linkTex);
     this.terms = new TermFocus(document, el.leader);
     const root = document.documentElement.style;
     root.setProperty("--edge", `${EDGE}px`);
@@ -139,8 +138,7 @@ export class Shell {
     this.drags.clear();
     this.hold = liveHold;
     this.aliases = new Map();
-    this.shownReadouts = [];
-    this.el.readouts.replaceChildren();
+    this.band.clear();
     this.el.eyebrow.textContent = header.eyebrow;
     this.el.title.textContent = header.title;
     document.documentElement.style.setProperty("--accent", header.accent);
@@ -243,7 +241,7 @@ export class Shell {
     for (const h of c.scene.handles) this.drawHandle(g, view, h, c.header.accent);
     const shown = present(this.hold, this.drags.size > 0, c.view.readout?.(frame) ?? []);
     this.hold = shown.hold;
-    this.renderReadouts(shown.rows);
+    this.band.show(shown.rows);
     this.aliases = termAliases(shown.rows.map((r) => r.tex).join(" "));
     const anchors = (id: string): readonly Vec[] => {
       const alias = this.aliases.get(id);
@@ -340,27 +338,6 @@ export class Shell {
       }
     }
     this.el.controls.replaceChildren(...nodes);
-  }
-
-  /** Re-typeset only the rows whose content changed since the last frame. */
-  private renderReadouts(rows: readonly Readout[]): void {
-    const host = this.el.readouts;
-    while (host.children.length > rows.length) host.lastElementChild!.remove();
-    rows.forEach((row, i) => {
-      const key = `${row.tone ?? "plain"}|${row.label ?? ""}|${row.tex}`;
-      if (this.shownReadouts[i] === key && host.children[i]) return;
-      this.shownReadouts[i] = key;
-      let node = host.children[i] as HTMLElement | undefined;
-      if (!node) {
-        node = document.createElement("div");
-        host.append(node);
-      }
-      node.className = `readout readout-${row.tone ?? "plain"}`;
-      node.innerHTML =
-        (row.label ? `<span class="readout-label">${richHtml(row.label, false, linkTex)}</span>` : "") +
-        `<span class="readout-math">${texHtml(linkTex(row.tex))}</span>`;
-    });
-    this.shownReadouts.length = rows.length;
   }
 
   // --- Pointer input -----------------------------------------------------------

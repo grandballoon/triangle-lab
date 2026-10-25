@@ -7,16 +7,23 @@
 //   - the top bar: the pager, then the chapter and the lesson's name;
 //   - the step column on the right, holding the lesson's written directions
 //     (directions.ts);
+//   - the formula band along the bottom, for a lesson with live formulas;
 //   - hand input, as synthetic pointers (src/hands).
 //
-// The step column takes room from the right of the window. Like the docked
-// curriculum rail (curriculum.ts), it publishes that room as a custom
-// property, `--steps-inset`, and fires `resize`; each page's #stage rule
-// leaves it free and the lesson refits its figure on the event.
+// The lesson and this file talk through chrome.ts: this sets the current
+// step there, and reads the lesson's formulas from it.
+//
+// The step column takes room from the right of the window and the formula
+// band from the bottom. Like the docked curriculum rail (curriculum.ts), they
+// publish that room as custom properties, `--steps-inset` and
+// `--formulas-inset`, and fire `resize`; each page's #stage rule leaves it
+// free and the lesson refits its figure on the event.
 
 import "katex/dist/katex.min.css";
+import { formulaRows, setStep } from "./chrome.ts";
 import { directions } from "./directions.ts";
 import { startHands } from "./hands/index.ts";
+import { FORMULA_BAND_HEIGHT, FormulaBand } from "./lab/formulas.ts";
 import { panelWidth, StepList } from "./lab/steps.ts";
 import { chapters, hrefOf, lessons, slugOfLocation } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
@@ -48,6 +55,7 @@ function mount(): void {
   let current = 0;
   const select = (step: number, scroll: boolean): void => {
     current = step;
+    setStep(step);
     list.mark(step, scroll);
   };
   const list = new StepList(host, select);
@@ -77,6 +85,8 @@ function mount(): void {
     },
   });
 
+  const band = formulaRows() ? mountFormulaBand() : null;
+
   let inset = -1;
   const fit = (): void => {
     const width = panelWidth(window.innerWidth);
@@ -95,16 +105,39 @@ function mount(): void {
   // Typeset text and web fonts settle after the first layout, so the padding
   // that lets the last step reach the top is kept up to date every frame, as
   // the lab shell does.
+  // The lesson's formulas are refreshed in the same frames.
   const pad = (): void => {
     list.fit();
+    band?.show(formulaRows() ?? []);
     requestAnimationFrame(pad);
   };
   requestAnimationFrame(pad);
 }
 
+/**
+ * Build the formula band and keep the stage, the step column and the rail
+ * clear of it. The band takes the bottom-left corner the hands pill sits in
+ * otherwise, so the pill moves to the top right, as on the lab page.
+ */
+function mountFormulaBand(): FormulaBand {
+  const section = element("section", "formulas");
+  section.setAttribute("aria-label", "Formulas");
+  const rows = element("div", "readouts");
+  section.append(element("h2", "", "Formulas"), rows);
+  document.body.append(section);
+  document.body.classList.add("hands-top");
+
+  const root = document.documentElement.style;
+  const reserve = FORMULA_BAND_HEIGHT + EDGE;
+  root.setProperty("--formula-band-height", `${FORMULA_BAND_HEIGHT}px`);
+  root.setProperty("--bottom-reserve", `${reserve}px`);
+  root.setProperty("--formulas-inset", `${reserve + EDGE}px`);
+  return new FormulaBand(rows);
+}
+
 function element(tag: string, id: string, text = ""): HTMLElement {
   const el = document.createElement(tag);
-  el.id = id;
+  if (id) el.id = id;
   el.textContent = text;
   return el;
 }

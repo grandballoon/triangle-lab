@@ -45,9 +45,14 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 **Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
-They gain the lab page's chrome by loading `src/page.ts` as an extra module script: the top bar with the pager and the lesson's name, hand input, and the step column on the right, filled with the lesson's numbered directions from `src/directions.ts`.
-The column reuses the lab's `StepList` and its stylesheet, so both kinds of lesson read alike, but the directions only describe the figure; they do not draw it in step by step.
-Like the curriculum rail, the column publishes the width it takes, as `--steps-inset`, and fires `resize`; each page's `#stage` rule leaves that width free.
+They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column on the right, filled with the lesson's numbered directions from `src/directions.ts`, and, for a lesson with live numbers, the formula band along the bottom.
+The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
+Like the curriculum rail, the column and the band publish the room they take, as `--steps-inset` and `--formulas-inset`, and fire `resize`; each page's `#stage` rule leaves that room free.
+
+The lesson and `page.ts` are separate scripts and meet only in `src/chrome.ts`, a module both import.
+`page.ts` sets the current step there, which a lesson may read to hold part of its figure back (`pythagoras.ts` brings in its proof at the step that scrubs it).
+A lesson with live numbers asks for the formula band there while its module is first evaluated, which is why its script must come first, and hands it fresh rows each frame.
+Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show and, optionally, the real-world uses of its idea.
@@ -62,6 +67,7 @@ It never touches the DOM.
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
 | `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's uses. |
+| `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/link.ts` | Finds the names, angles, variables and numbers in a formula or step text and marks them as terms. Pure. |
 | `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to the marks that show it. Pure. |
 | `lab/terms.ts` | Finds the term under the pointer and draws leader lines from it to the figure. |
@@ -155,6 +161,9 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
 - `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
 - `src/lab/shell.test.ts`: the shell, step column, formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+- `src/pages.test.ts`: every standalone page's stage rule, script order and directions.
+- `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
+- `src/grid.test.ts`: laying several figures out at the largest size that fits.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 

@@ -6,14 +6,20 @@
 // current side; the traveled portion fills in an accent color while the rest
 // of that side stays dim. Reach the far vertex and the side "snaps" to its
 // done color, the angle you just arrived at (the side's second endpoint)
-// snaps too with a brief flash, and a running perimeter total appears in a
-// small box tucked in that triangle's corner. Loop all the way back to the
-// start and the semiperimeter s = p/2 joins it.
+// snaps too with a brief flash, and the running perimeter total in the
+// formula band below grows by that side. The moment the knob has walked half
+// the perimeter, a gold mark drops on that spot: the semiperimeter s. Loop
+// all the way back to the start and the formula reads p and s = p/2 in full.
 //
 // Self-contained on purpose, matching equilateral.ts / isosceles.ts / scalene.ts
-// — only the webcam device and this file's own little vector helpers are involved.
+// — only the webcam device, the shared grid layout, the page's formula band
+// and this file's own little vector helpers are involved.
 
+import { formulaBand } from "./chrome.ts";
+import { grid, type Cell } from "./grid.ts";
+import type { Readout } from "./lab/scene.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
+import { perimeterReadout } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
 
 interface Vec {
@@ -21,35 +27,30 @@ interface Vec {
   y: number;
 }
 
-interface Band {
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
-}
-
 interface Flash {
   center: Vec;
   age: number; // seconds since it fired
+  color: string;
 }
 
 interface Lesson {
   verts: [Vec, Vec, Vec];
-  band: Band;
   sideIndex: number; // which side (0, 1, 2) is currently being traced; 3 = fully traced
   t: number; // progress along the current side, 0..1
+  halfway: boolean; // the knob has walked at least half the perimeter
   flashes: Flash[];
 }
 
 const ACCENT = "#60a5fa"; // the side currently being traced
 const DONE = "#38d9a9"; // a completed side/angle, and its snap flash
+const HALF = "#fbbf24"; // the semiperimeter mark, halfway round
 const BASE_LINE = "rgba(233,240,247,0.28)"; // untraced side/angle — kept discreet
 const LABEL_MUTED = "rgba(233,240,247,0.5)"; // side-length labels — kept discreet
 
-const UNIT_PX = 40; // screen pixels per displayed length "unit"
+const LENGTH_PER_SHAPE = 3; // displayed length of one SHAPE unit at size factor 1
 const GRAB_RADIUS = 34;
 const TWO_PI = Math.PI * 2;
-const TOP_MARGIN = 64; // room for the top bar above the three bands
+const TOP_MARGIN = 64; // room for the top bar above the triangles
 
 // Reaching this much of the way along a side counts as "arrived" at its far
 // vertex — forgiving enough that a mouse drag can "snap" the last stretch.
@@ -66,7 +67,37 @@ const SHAPE: [Vec, Vec, Vec] = [
   { x: -0.77, y: 0.12 },
 ];
 const SIZE_FACTOR = [0.72, 1.0, 1.34]; // small, medium, large
+const SIZE_NAME = ["Small", "Medium", "Large"];
 const ROTATION = [-0.15, 0.3, -0.45]; // radians — just enough to avoid looking cloned
+// Room around each triangle for its side and angle labels, in SHAPE units.
+const LABEL_ROOM = 0.6;
+
+/** SHAPE as triangle i is drawn, in SHAPE units about its cell's centre. */
+function placed(i: number): [Vec, Vec, Vec] {
+  const cosR = Math.cos(ROTATION[i]);
+  const sinR = Math.sin(ROTATION[i]);
+  const k = SIZE_FACTOR[i];
+  return SHAPE.map((o) => ({ x: (o.x * cosR - o.y * sinR) * k, y: (o.x * sinR + o.y * cosR) * k })) as [
+    Vec,
+    Vec,
+    Vec,
+  ];
+}
+
+// Every cell is the size of the one the largest triangle needs.
+const CONTENT = (() => {
+  let w = 0;
+  let h = 0;
+  for (let i = 0; i < 3; i++) {
+    const xs = placed(i).map((p) => p.x);
+    const ys = placed(i).map((p) => p.y);
+    w = Math.max(w, Math.max(...xs) - Math.min(...xs));
+    h = Math.max(h, Math.max(...ys) - Math.min(...ys));
+  }
+  return { w: w + 2 * LABEL_ROOM, h: h + 2 * LABEL_ROOM };
+})();
+
+const showFormulas = formulaBand();
 
 const video = document.getElementById("cam") as HTMLVideoElement;
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -74,6 +105,7 @@ const ctx = canvas.getContext("2d")!;
 
 let W = 0;
 let H = 0;
+let unitPx = 1; // screen pixels per displayed length unit
 let grabbed: number | null = null;
 
 const lessons: Lesson[] = [0, 1, 2].map(() => ({
@@ -82,9 +114,9 @@ const lessons: Lesson[] = [0, 1, 2].map(() => ({
     { x: 0, y: 0 },
     { x: 0, y: 0 },
   ],
-  band: { cx: 0, cy: 0, w: 0, h: 0 },
   sideIndex: 0,
   t: 0,
+  halfway: false,
   flashes: [],
 }));
 
@@ -123,14 +155,41 @@ function knobPos(i: number): Vec {
   return { x: a.x + (b.x - a.x) * lesson.t, y: a.y + (b.y - a.y) * lesson.t };
 }
 
-/** Sum of the sides already traced, fresh from the current geometry (so a
- *  mid-trace resize never leaves a stale total behind). */
-function completedPerimeterPx(i: number): number {
+/** Length of side k (vertex k to vertex k + 1) as displayed, to one place.
+ *  Read fresh from the geometry, so a resize never leaves a stale total. */
+function sideLength(i: number, k: number): number {
+  const v = lessons[i].verts;
+  return Math.round((dist(v[k], v[(k + 1) % 3]) / unitPx) * 10) / 10;
+}
+
+function halfPerimeterPx(v: [Vec, Vec, Vec]): number {
+  return (dist(v[0], v[1]) + dist(v[1], v[2]) + dist(v[2], v[0])) / 2;
+}
+
+/** How far the knob has walked from the start, in screen pixels. */
+function walkedPx(i: number): number {
   const lesson = lessons[i];
-  const count = Math.min(lesson.sideIndex, 3);
+  const v = lesson.verts;
   let sum = 0;
-  for (let k = 0; k < count; k++) sum += dist(lesson.verts[k], lesson.verts[(k + 1) % 3]);
+  for (let k = 0; k < Math.min(lesson.sideIndex, 3); k++) sum += dist(v[k], v[(k + 1) % 3]);
+  if (lesson.sideIndex < 3) sum += dist(v[lesson.sideIndex], v[(lesson.sideIndex + 1) % 3]) * lesson.t;
   return sum;
+}
+
+/** The point half the perimeter from the start, walking the sides in order,
+ *  and the direction of the side it lies on. */
+function halfwayPoint(v: [Vec, Vec, Vec]): { at: Vec; along: Vec } {
+  let left = halfPerimeterPx(v);
+  for (let k = 0; ; k++) {
+    const a = v[k];
+    const b = v[(k + 1) % 3];
+    const len = dist(a, b);
+    if (left <= len || k === 2) {
+      const t = len < 1e-9 ? 0 : Math.min(1, left / len);
+      return { at: { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, along: unit(sub(b, a)) };
+    }
+    left -= len;
+  }
 }
 
 // --- layout ----------------------------------------------------------------
@@ -143,26 +202,15 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const usableH = H - TOP_MARGIN;
-  const columns = W >= H; // landscape-ish: side by side; else stacked
-
-  for (let i = 0; i < 3; i++) {
-    const band: Band = columns
-      ? { cx: (W / 3) * (i + 0.5), cy: TOP_MARGIN + usableH / 2, w: W / 3, h: usableH }
-      : { cx: W / 2, cy: TOP_MARGIN + (usableH / 3) * (i + 0.5), w: W, h: usableH / 3 };
-
-    const scale = Math.min(band.w, band.h) * 0.17 * SIZE_FACTOR[i];
-    const rot = ROTATION[i];
-    const cosR = Math.cos(rot);
-    const sinR = Math.sin(rot);
-    const verts = SHAPE.map((o) => ({
-      x: band.cx + (o.x * cosR - o.y * sinR) * scale,
-      y: band.cy + (o.x * sinR + o.y * cosR) * scale,
-    })) as [Vec, Vec, Vec];
-
-    lessons[i].band = band;
-    lessons[i].verts = verts;
-  }
+  const { cells, scale } = grid(3, { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN }, CONTENT);
+  unitPx = scale / LENGTH_PER_SHAPE;
+  cells.forEach((cell: Cell, i) => {
+    lessons[i].verts = placed(i).map((o) => ({ x: cell.cx + o.x * scale, y: cell.cy + o.y * scale })) as [
+      Vec,
+      Vec,
+      Vec,
+    ];
+  });
 }
 
 // --- interaction -------------------------------------------------------------
@@ -218,6 +266,11 @@ function drive(i: number, p: Vec): void {
     if (t < SNAP_T) break;
     completeSide(i, side);
   }
+  // Half a pixel short still counts, so the mark can land on a vertex.
+  if (!lesson.halfway && walkedPx(i) >= halfPerimeterPx(lesson.verts) - 0.5) {
+    lesson.halfway = true;
+    lesson.flashes.push({ center: halfwayPoint(lesson.verts).at, age: 0, color: HALF });
+  }
 }
 
 function projectT(p: Vec, a: Vec, b: Vec): number {
@@ -232,7 +285,7 @@ function completeSide(i: number, side: number): void {
   const arrival = lesson.verts[(side + 1) % 3];
   lesson.sideIndex = side + 1;
   lesson.t = 0;
-  lesson.flashes.push({ center: { ...arrival }, age: 0 });
+  lesson.flashes.push({ center: { ...arrival }, age: 0, color: DONE });
 }
 
 // --- rendering ---------------------------------------------------------------
@@ -250,10 +303,10 @@ function renderLesson(i: number): void {
   drawBody(v);
   for (let s = 0; s < 3; s++) drawSide(i, s, c);
   for (let k = 0; k < 3; k++) drawAngle(i, k);
+  if (lesson.halfway) drawHalfway(v, c);
   for (const f of lesson.flashes) drawFlash(f);
   if (lesson.sideIndex < 3) drawKnob(knobPos(i), grabbed === i, false);
   else drawKnob(v[0], false, true);
-  drawScoreBox(i);
 }
 
 function drawBody(v: [Vec, Vec, Vec]): void {
@@ -291,7 +344,7 @@ function drawSide(i: number, sideIdx: number, c: Vec): void {
     strokeSegment(a, b, BASE_LINE, 3);
   }
 
-  drawSideLabel(a, b, c, dist(a, b) / UNIT_PX);
+  drawSideLabel(a, b, c, sideLength(i, sideIdx));
 }
 
 function strokeSegment(p: Vec, q: Vec, color: string, width: number): void {
@@ -362,12 +415,33 @@ function drawAngle(i: number, k: number): void {
   ctx.fillText(`${Math.round(degrees)}°`, pos.x, pos.y);
 }
 
+/** The semiperimeter mark: a gold bar across the perimeter half of the way
+ *  round from the start, labelled s on the outside. */
+function drawHalfway(v: [Vec, Vec, Vec], c: Vec): void {
+  const { at, along } = halfwayPoint(v);
+  let n = { x: -along.y, y: along.x };
+  if (dot(n, sub(at, c)) < 0) n = { x: -n.x, y: -n.y };
+  ctx.beginPath();
+  ctx.moveTo(at.x - n.x * 11, at.y - n.y * 11);
+  ctx.lineTo(at.x + n.x * 11, at.y + n.y * 11);
+  ctx.lineCap = "round";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = HALF;
+  ctx.stroke();
+
+  ctx.font = "italic 700 15px ui-sans-serif, system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = HALF;
+  ctx.fillText("s", at.x + n.x * 24, at.y + n.y * 24);
+}
+
 function drawFlash(f: Flash): void {
   const p = clamp(f.age / FLASH_LIFE, 0, 1);
   ctx.beginPath();
   ctx.arc(f.center.x, f.center.y, 8 + p * 40, 0, TWO_PI);
   ctx.lineWidth = 3 * (1 - p) + 1;
-  ctx.strokeStyle = rgba(DONE, 1 - p);
+  ctx.strokeStyle = rgba(f.color, 1 - p);
   ctx.stroke();
 }
 
@@ -382,46 +456,20 @@ function drawKnob(v: Vec, active: boolean, done: boolean): void {
   ctx.stroke();
 }
 
-/** The running perimeter (and, once the figure closes, the semiperimeter),
- *  tucked in the corner of each triangle's own band. */
-function drawScoreBox(i: number): void {
-  const lesson = lessons[i];
-  const b = lesson.band;
-  const pUnits = completedPerimeterPx(i) / UNIT_PX;
-  const complete = lesson.sideIndex >= 3;
+// --- formulas ----------------------------------------------------------------
 
-  const x = b.cx - b.w / 2 + 16;
-  const y = b.cy - b.h / 2 + 16;
-  const w = 96;
-  const h = complete ? 58 : 34;
-
-  roundRect(x, y, w, h, 10);
-  ctx.fillStyle = "rgba(10,15,22,0.55)";
-  ctx.fill();
-
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
-  ctx.font = "600 15px ui-sans-serif, system-ui, sans-serif";
-  ctx.fillStyle = complete ? DONE : ACCENT;
-  ctx.fillText(`p = ${pUnits.toFixed(1)}`, x + 14, y + (complete ? h / 3 : h / 2));
-
-  if (complete) {
-    ctx.fillStyle = DONE;
-    ctx.fillText(`s = ${(pUnits / 2).toFixed(1)}`, x + 14, y + (h * 2) / 3);
-  }
+function readouts(): Readout[] {
+  return lessons.map((lesson, i) =>
+    perimeterReadout({
+      name: SIZE_NAME[i],
+      sides: [sideLength(i, 0), sideLength(i, 1), sideLength(i, 2)],
+      walked: lesson.sideIndex,
+      halfway: lesson.halfway,
+    }),
+  );
 }
 
 // --- small helpers -------------------------------------------------------
-
-function roundRect(x: number, y: number, w: number, h: number, r: number): void {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
 
 function rgba(hex: string, alpha: number): string {
   const h = hex.replace("#", "");
@@ -442,6 +490,7 @@ function frame(now: number): void {
     lesson.flashes = lesson.flashes.filter((f) => (f.age += dt) < FLASH_LIFE);
   }
   render();
+  showFormulas(readouts());
   requestAnimationFrame(frame);
 }
 

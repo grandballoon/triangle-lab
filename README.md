@@ -50,7 +50,7 @@ Hold a hand up to the camera and a ring cursor follows it.
 
 Both hands work at once in the lab lessons, so you can hold two vertices at the same time.
 
-Everything above is configurable from the status pill labelled "Hands" (top right in lab lessons, bottom left elsewhere):
+Everything above is configurable from the status pill labelled "Hands" (top right on pages with a formula band, bottom left elsewhere):
 
 - turn tracking on or off, or restrict it to one hand;
 - grab with a pinch or with a closed fist;
@@ -67,6 +67,7 @@ The keyboard also works in lab lessons: `←` and `→` step through a proof and
 
 116 lessons in twelve chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
+Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem) show them in the same formula band.
 In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
 
 | Chapter | Lessons |
@@ -123,9 +124,12 @@ And it can set pictures on the figure with `g.sprite(src, at)`.
 ### Adding a standalone lesson
 
 1. Add an entry (without `lab`) to a chapter file in `src/chapters/`.
-2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and `src/page.ts`, with a `#stage` rule that leaves `--rail-inset` and `--steps-inset` free (copy one of the existing pages).
+2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and then `src/page.ts`, with a `#stage` rule that leaves `--rail-inset`, `--steps-inset` and `--formulas-inset` free (copy one of the existing pages).
 3. Write its numbered directions in `src/directions.ts`.
 4. Register the slug in `vite.config.ts`.
+
+A standalone lesson with live numbers calls `formulaBand()` from `src/chrome.ts` once at start-up and passes it fresh rows each frame; its rows are best built in `src/readouts.ts`, where they can be tested.
+A lesson that changes with the steps reads `currentStep()` from the same module, as `src/pythagoras.ts` does.
 
 ## A note on sources
 
