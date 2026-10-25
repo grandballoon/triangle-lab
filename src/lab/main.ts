@@ -8,8 +8,9 @@ import "./lab.css";
 import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
-import { chapters, hrefOf, lessons, slugOfLocation, type Lesson } from "../lessons.ts";
+import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash, type Lesson } from "../lessons.ts";
 import { mountPager, type Neighbours } from "../pager.ts";
+import { mountRecall } from "../recall/capture.ts";
 import { camera, startWebcam } from "../webcam.ts";
 import type { LessonBuilder } from "./scene.ts";
 import { Shell } from "./shell.ts";
@@ -50,6 +51,13 @@ const shell = new Shell(
   railInset,
 );
 
+// Questions noted here are asked from the lesson and step on show now.
+const recall = mountRecall(topbar, () => {
+  const at = shell.currentStep();
+  const slug = slugOfLocation(location);
+  return at && lessons.some((l) => l.slug === slug) ? { lesson: slug, step: at.step, stepTitle: at.title } : null;
+});
+
 let neighbours: Neighbours = { prev: undefined, next: undefined };
 
 async function show(slug: string): Promise<void> {
@@ -62,7 +70,15 @@ async function show(slug: string): Promise<void> {
   const { default: build } = await load();
   const chapter = chapters.find((c) => c.lessons.includes(lesson));
   shell.load({ eyebrow: chapter?.title ?? "", title: lesson.name, accent: lesson.accent }, build);
+  // A link may ask for a step (`#step-3`, as the recall page's do). Once
+  // taken, the hash is dropped, so it never disagrees with the step shown.
+  const start = stepOfHash(location.hash);
+  if (start !== null) {
+    shell.goTo(start);
+    history.replaceState(history.state, "", location.pathname + location.search);
+  }
   neighbours = mountPager(slug, topbar);
+  recall.refresh();
   document.title = `${lesson.name} · Triangle Lab`;
 }
 

@@ -31,8 +31,9 @@ import { Arranger } from "./lab/arrange.ts";
 import { FormulaBand } from "./lab/formulas.ts";
 import { layoutChrome } from "./lab/layout.ts";
 import { StepList } from "./lab/steps.ts";
-import { chapters, hrefOf, lessons, slugOfLocation } from "./lessons.ts";
+import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
+import { mountRecall } from "./recall/capture.ts";
 import { camera } from "./webcam.ts";
 
 function mount(): void {
@@ -65,6 +66,18 @@ function mount(): void {
   };
   const list = new StepList(host, select);
   list.show(steps, []);
+  // A link may ask for a step (`#step-3`, as the recall page's do). Once
+  // taken, the hash is dropped, so it never disagrees with the step shown.
+  const start = stepOfHash(location.hash);
+  if (start !== null) {
+    if (start < steps.length) select(start, true);
+    history.replaceState(history.state, "", location.pathname + location.search);
+  }
+
+  // Questions noted here are asked from this lesson and the step on show.
+  mountRecall(topbar, () =>
+    lesson ? { lesson: slug, step: current, stepTitle: steps[current]?.title ?? "" } : null,
+  );
 
   const go = (delta: -1 | 1): void => {
     const move = moveBy(current, steps.length, delta, neighbours);

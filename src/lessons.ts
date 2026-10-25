@@ -247,9 +247,19 @@ export function indexOfSlug(slug: string): number {
   return lessons.findIndex((l) => l.slug === slug);
 }
 
-/** Where a lesson lives, relative to the site root. */
-export function hrefOf(lesson: Lesson): string {
-  return lesson.lab ? `lab.html?lesson=${lesson.slug}` : `${lesson.slug}.html`;
+/**
+ * Where a lesson lives, relative to the site root. With a `step` (counted
+ * from 0), the link opens the lesson at that step: `#step-3` for the third.
+ */
+export function hrefOf(lesson: Lesson, step?: number): string {
+  const page = lesson.lab ? `lab.html?lesson=${lesson.slug}` : `${lesson.slug}.html`;
+  return step === undefined ? page : `${page}#step-${step + 1}`;
+}
+
+/** The step, counted from 0, that a link's `#step-N` asks for, or null for none. */
+export function stepOfHash(hash: string): number | null {
+  const match = /^#step-([1-9]\d*)$/.exec(hash);
+  return match ? Number(match[1]) - 1 : null;
 }
 
 /** The slug of the lesson a URL points at, or "" when it names none. */

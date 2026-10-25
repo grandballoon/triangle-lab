@@ -64,6 +64,19 @@ The hand-tracking model and its runtime are downloaded from public CDNs the firs
 
 The keyboard also works in lab lessons: `←` and `→` step through a proof and roll over into the neighbouring lesson, `R` resets, `F` shows or hides the formulas.
 
+## Recalling what you learned
+
+While you work through a lesson, you can note a question you want to be able to answer later from memory.
+Press the question pill in the top bar, or `Q`, write the question and press Enter (on a phone, Enter starts a new line and the Save button saves).
+It is saved with the lesson and the step you were on.
+
+The recall page (linked from the menu, `recall.html`) asks your questions back once they are due.
+Answer each from memory first, writing it down or not, then check: your earlier answers are shown, and "Check in the lesson" opens the lesson at the step the question came from.
+Grade yourself missed, shaky or recalled; a recalled question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days), and a missed one is asked again straight away.
+
+Questions are kept in the browser, like the gesture settings.
+The recall page can save them to a file and load them back, to move them to another browser or keep a copy.
+
 ## Lessons
 
 116 lessons in twelve chapters, read in order.
@@ -91,12 +104,14 @@ In a lab lesson, pointing at a symbol in a formula highlights what it stands for
 ```
 index.html            Lesson menu
 lab.html              Hosts every lab lesson, chosen by ?lesson=<slug>
+recall.html           Asks back the questions noted in the lessons
 <slug>.html           One page per standalone lesson (the original triangle set)
 src/lessons.ts        The reading order — the single source of truth
 src/chapters/         The lesson entries, one file per chapter
 src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
+src/recall/           Noting questions in a lesson and reviewing them later
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
