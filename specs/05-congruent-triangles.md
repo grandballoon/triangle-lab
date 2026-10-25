@@ -8,6 +8,8 @@ C can only satisfy all the givens where the loci intersect, and the knob snaps m
 For SSS, SAS, and ASA the loci cross at exactly one spot (SSS also shows the mirror spot across AB — the same triangle flipped), so the data force one triangle: that is what a congruence theorem is.
 The SSA cell is the warning: its ray and circle cross at two different spots, and when C snaps onto either one the other triangle stays visible as a ghost — the same given data fit two genuinely different triangles, so there is no SSA theorem.
 Each cell's checklist is labelled with what that cell gives, and once C is pinned it says what that proves: one triangle, or for SSA two.
+The steps go: an introduction, then one step for each test in turn.
+Where the four cells would be too small to work with, as on a phone, the page shows one at a time at full size, the one the current step is about, and the formula band shows only its checklist.
 
 FOR FUTURE IMPLEMENTATION:
 AAS, HL, LL, and SA cells for right triangles.

@@ -175,22 +175,28 @@ export const directions: Record<string, Step[]> = {
       text: "At one end the space left over is the two squares $a^2$ and $b^2$; at the other it is one tilted square $c^2$. Same box, same four triangles, so $a^2 + b^2 = c^2$.",
     },
   ],
+  // congruence.ts shows one test per step where its figures would otherwise
+  // be too small: the first step and the next one show SSS, then one each.
   congruence: [
     {
       title: "Drag each C",
-      text: "Each cell has the same fixed base $AB$ and a free corner $C$. The dashed circles and rays show where $C$ must go to match the given sides and angles.",
+      text: "Each test has the same fixed base $AB$ and a free corner $C$. The dashed circles and rays show where $C$ must go to match the given sides and angles. The formulas below tick each measurement as it matches, and $C$ snaps onto the spots where the dashed lines cross.",
     },
     {
-      title: "Meet the givens",
-      text: "The formulas below tick each measurement as it matches. $C$ snaps onto the spots where the dashed lines cross.",
+      title: "SSS: three sides",
+      text: "A circle round each end of $AB$ gives the other two sides, and they cross at one spot above the base: three sides fix a single triangle. The crossing below is its mirror image across $AB$, the same triangle flipped.",
     },
     {
-      title: "SSS, SAS, ASA",
-      text: "These three leave $C$ only one place to land, so the givens fix a single triangle. SSS also shows its mirror image across $AB$, the same triangle flipped.",
+      title: "SAS: two sides and the angle between",
+      text: "The ray from $A$ gives the angle and the circle round $A$ the side $AC$. They meet at one spot, so two sides and the angle between them fix a single triangle.",
+    },
+    {
+      title: "ASA: two angles and the side between",
+      text: "The rays from $A$ and $B$ give the two angles at the ends of $AB$, and they cross once: two angles and the side between them fix a single triangle.",
     },
     {
       title: "Why not SSA",
-      text: "In the SSA cell, the ray and the circle cross twice. Land $C$ on one spot and the other stays as a ghost: two different triangles from the same givens.",
+      text: "In SSA, the ray from $A$ and the circle round $B$ cross twice. Land $C$ on one spot and the other stays as a ghost: two different triangles from the same givens.",
     },
   ],
   similar: [

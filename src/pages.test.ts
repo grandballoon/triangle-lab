@@ -53,6 +53,14 @@ describe("standalone pages", () => {
     expect(directions.pythagoras[2].title).toBe("Scrub the proof");
   });
 
+  it("gives congruence an intro and then one step per test, which a phone shows alone", () => {
+    // congruence.ts shown(): step n > 0 shows cell n − 1.
+    const steps = directions.congruence;
+    expect(steps).toHaveLength(5);
+    expect(steps.slice(1, 4).map((s) => s.title.split(":")[0])).toEqual(["SSS", "SAS", "ASA"]);
+    expect(steps[4].title).toContain("SSA");
+  });
+
   it("has directions only for standalone lessons", () => {
     expect(Object.keys(directions).sort()).toEqual([...slugs].sort());
   });

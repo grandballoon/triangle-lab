@@ -12,12 +12,16 @@
 // when C lands on either spot the other triangle stays as a ghost — same
 // givens, different triangle.
 //
+// Where the four would be too small to work with (a phone), the page shows
+// one at a time, at full size: the one the current step is about (the steps
+// in directions.ts go intro, SSS, SAS, ASA, SSA).
+//
 // Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
 // only the webcam device, the shared grid layout, the page's formula band,
 // the small-screen helpers and this file's own little vector helpers are
 // involved.
 
-import { formulaBand } from "./chrome.ts";
+import { currentStep, formulaBand } from "./chrome.ts";
 import { grabRadius, nearest } from "./fit.ts";
 import { grid, type Cell as Band } from "./grid.ts";
 import type { Readout } from "./lab/scene.ts";
@@ -55,9 +59,17 @@ interface Cell {
   knob: Vec; // C, live, in unit coords
   snappedTo: number; // index into solutions, or -1
   extent: { x0: number; x1: number; y0: number; y1: number };
+  /** Where the cell is drawn now: its tile in the grid, or the whole canvas alone. */
   band: Band;
   unitPx: number;
+  tile: Placement;
+  solo: Placement;
   pulses: Pulse[];
+}
+
+interface Placement {
+  band: Band;
+  unitPx: number;
 }
 
 const ACCENT = "#f97316"; // selected accents
@@ -70,6 +82,8 @@ const TWO_PI = Math.PI * 2;
 const DEG = Math.PI / 180;
 const TOP_MARGIN = 64;
 const GRAB_RADIUS = 26;
+// Below this many px per unit in the grid, the cells show one at a time.
+const MIN_TILE_UNIT_PX = 28;
 const SNAP_PX = 20; // magnetic radius around a solution spot, screen px
 const PULSE_LIFE = 0.6;
 // The largest extent of any cell, and the room every cell keeps around it:
@@ -88,6 +102,8 @@ const ctx = canvas.getContext("2d")!;
 let W = 0;
 let H = 0;
 let drag: Cell | null = null;
+/** Whether the cells show one at a time, because the grid would make them too small. */
+let single = false;
 const showFormulas = formulaBand();
 
 // --- vector helpers --------------------------------------------------------
@@ -121,6 +137,8 @@ function rayDir(at: VertexName, degrees: number): Vec {
 }
 
 // --- the four cells --------------------------------------------------------
+
+const UNPLACED: Placement = { band: { cx: 0, cy: 0, w: 0, h: 0 }, unitPx: 1 };
 
 // Shared target triangle for SSS / SAS / ASA: ∠A = 40°, AC = 3 off the same
 // base, so the three cells pin the very same triangle three different ways.
@@ -162,6 +180,8 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -1.6, y1: 4.4 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
@@ -179,6 +199,8 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
@@ -196,6 +218,8 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
@@ -213,6 +237,8 @@ const cells: Cell[] = [
     snappedTo: -1,
     extent: { x0: -3.4, x1: 3.4, y0: -2.6, y1: 2.2 },
     band: { cx: 0, cy: 0, w: 0, h: 0 },
+    tile: UNPLACED,
+    solo: UNPLACED,
     unitPx: 1,
     pulses: [],
   },
@@ -229,18 +255,42 @@ function layout(): void {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const area = { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN };
-  grid(cells.length, area, EXTENT, ROOM).cells.forEach((band, i) => {
+  const tiles = grid(cells.length, area, EXTENT, ROOM);
+  single = tiles.scale < MIN_TILE_UNIT_PX;
+  const whole: Band = { cx: area.x + area.w / 2, cy: area.y + area.h / 2, w: area.w, h: area.h };
+  tiles.cells.forEach((band, i) => {
     const cell = cells[i];
-    const ex = cell.extent;
-    cell.band = band;
-    // Each cell fills its band, keeping its room.
-    cell.unitPx = Math.min(
-      (band.w * 0.92) / (ex.x1 - ex.x0),
-      (band.h * 0.86) / (ex.y1 - ex.y0),
-      (band.w - 2 * ROOM.px) / (ex.x1 - ex.x0),
-      (band.h - 2 * ROOM.px) / (ex.y1 - ex.y0),
-    );
+    cell.tile = placed(cell, band);
+    cell.solo = placed(cell, whole);
   });
+  place();
+}
+
+/** The cell filling `band`, keeping its room. */
+function placed(cell: Cell, band: Band): Placement {
+  const ex = cell.extent;
+  const unitPx = Math.min(
+    (band.w * 0.92) / (ex.x1 - ex.x0),
+    (band.h * 0.86) / (ex.y1 - ex.y0),
+    (band.w - 2 * ROOM.px) / (ex.x1 - ex.x0),
+    (band.h - 2 * ROOM.px) / (ex.y1 - ex.y0),
+  );
+  return { band, unitPx };
+}
+
+/** The cells on screen: all four, or the current step's alone. */
+function shown(): Cell[] {
+  // Step 0 introduces the cells and shows the first; each later step its own.
+  return single ? [cells[Math.min(cells.length - 1, Math.max(0, currentStep() - 1))]] : cells;
+}
+
+/** Draw every shown cell where it belongs now; the step may have changed. */
+function place(): void {
+  for (const cell of shown()) {
+    const at = single ? cell.solo : cell.tile;
+    cell.band = at.band;
+    cell.unitPx = at.unitPx;
+  }
 }
 
 function toScreen(cell: Cell, p: Vec): Vec {
@@ -268,13 +318,14 @@ function pointer(e: PointerEvent): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
+  const live = shown();
   const hit = nearest(
     p,
-    cells.map((cell) => toScreen(cell, cell.knob)),
+    live.map((cell) => toScreen(cell, cell.knob)),
     grabRadius(e.pointerType, GRAB_RADIUS),
   );
   if (hit < 0) return;
-  drag = cells[hit];
+  drag = live[hit];
   canvas.classList.add("grabbing");
   capturePointer(canvas, e);
   drive(p);
@@ -325,7 +376,7 @@ function drive(p: Vec): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  for (const cell of cells) renderCell(cell);
+  for (const cell of shown()) renderCell(cell);
 }
 
 function renderCell(cell: Cell): void {
@@ -434,7 +485,7 @@ function drawKey(cell: Cell): void {
 
 /** Each cell's checklist: every given, measured right now. */
 function readouts(): Readout[] {
-  return cells.map((cell) =>
+  return shown().map((cell) =>
     congruenceReadout({
       key: cell.key,
       givens: cell.givenLabel,
@@ -526,6 +577,7 @@ function frame(now: number): void {
   for (const cell of cells) {
     cell.pulses = cell.pulses.filter((p) => (p.age += dt) < PULSE_LIFE);
   }
+  place();
   render();
   showFormulas(readouts());
   requestAnimationFrame(frame);
