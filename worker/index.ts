@@ -15,8 +15,18 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
-import { MAX_CHECK_BODY, readCheckRequest, type CheckRequest, type Verdict } from "../src/recall/check.ts";
-import { changedSince, EMPTY_DECK, loadDeck, mergeDecks, saveDeck, type Card, type Deck, type SavedDeck } from "../src/recall/deck.ts";
+import { MAX_CHECK_BODY, readCheckRequest, type CheckRequest } from "../src/recall/check.ts";
+import {
+  changedSince,
+  EMPTY_DECK,
+  loadDeck,
+  mergeDecks,
+  saveDeck,
+  type Card,
+  type Deck,
+  type SavedDeck,
+  type Verdict,
+} from "../src/recall/deck.ts";
 import { checkParams, claudeFailed, verdictOf } from "./check.ts";
 import { CHECK_PATH, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
 

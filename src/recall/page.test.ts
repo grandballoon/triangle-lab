@@ -316,6 +316,50 @@ describe("Claude checking an answer", () => {
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
   });
 
+  it("keeps what Claude said with an answer graded shaky, shows it next time, and lists it in the history", async () => {
+    worker([
+      { grade: "missed", feedback: "No: they meet at the centroid, $G$." },
+      { grade: "shaky", feedback: "Closer: say it is two thirds of the way along each median." },
+    ]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the incentre");
+    await settle();
+    buttonNamed(root, "Missed it").click();
+
+    // Asked again at the end of the sitting: Claude's word on the miss comes back.
+    const answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
+    answer.value = "At the centroid";
+    answer.dispatchEvent(new Event("input"));
+    buttonNamed(root, "Check").click();
+    await settle();
+    expect([...root.querySelectorAll(".rc-yours h3")].map((h) => h.textContent)).toEqual([
+      "Your answer",
+      "Claude's check · shaky",
+      "Last time · missed it",
+      "Claude, last time · missed it",
+    ]);
+    buttonNamed(root, "Shaky").click();
+    expect(stored()[0].attempts).toMatchObject([
+      { answer: "At the incentre", grade: "missed", claude: { grade: "missed", feedback: "No: they meet at the centroid, $G$." } },
+      { answer: "At the centroid", grade: "shaky", claude: { grade: "shaky" } },
+    ]);
+
+    // The history, newest first, opened from the question.
+    buttonNamed(root, "Back to your questions").click();
+    expect(root.querySelector(".rc-history")).toBeNull();
+    buttonNamed(root, "History").click();
+    const entries = [...root.querySelectorAll(".rc-history > li")];
+    expect(entries.map((e) => e.querySelector(".rc-history-when")!.textContent!.split(" · ").at(-1))).toEqual([
+      "Shaky",
+      "Missed it",
+    ]);
+    expect(entries[1].textContent).toContain("At the incentre");
+    expect(entries[1].querySelector(".rc-yours h3")!.textContent).toBe("Claude · missed it");
+    expect(entries[1].querySelector(".katex")).not.toBeNull();
+    buttonNamed(root, "Hide history").click();
+    expect(root.querySelector(".rc-history")).toBeNull();
+  });
+
   it("asks nothing for an answer given in the head, or without the sync key", async () => {
     const checks = worker([{ grade: "recalled", feedback: "Yes." }]);
     let root = await openSynced([card("a", "First?")]);

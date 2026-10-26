@@ -167,6 +167,28 @@ textarea:focus,
 
 .rc-card .rc-edit + .rc-row { margin-top: 6px; }
 
+/* A question's answers, under it: each a quiet date line, then the answer and what Claude said. */
+.rc-history {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin-top: 10px;
+  padding-left: 14px;
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.rc-history li + li { margin-top: 16px; }
+
+.rc-history-when {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(233, 240, 247, 0.45);
+}
+
+.rc-history .rc-said { font-size: 15px; }
+
+.rc-history .rc-yours { margin-top: 8px; }
+
 .rc-keep { margin-top: 48px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 
 .rc-keep .rc-note { font-size: 14px; }

@@ -120,6 +120,15 @@ describe("the schedule", () => {
     });
   });
 
+  it("keeps Claude's verdict with an answer graded missed or shaky, and not with one recalled", () => {
+    const claude = { grade: "shaky" as const, feedback: "Say where on each median: two thirds of the way." };
+    const answered = (grade: "missed" | "shaky" | "recalled") =>
+      answerCard(deckOf(card("a")), "a", "In the middle", grade, T0, claude).cards[0].attempts;
+    expect(answered("missed")).toEqual([{ at: T0, answer: "In the middle", grade: "missed", claude }]);
+    expect(answered("shaky")).toEqual([{ at: T0, answer: "In the middle", grade: "shaky", claude }]);
+    expect(answered("recalled")).toEqual([{ at: T0, answer: "In the middle", grade: "recalled" }]);
+  });
+
   it("lists the cards due, longest waiting first", () => {
     const deck = deckOf(
       card("later", { due: T0 + DAY_MS }),
@@ -244,13 +253,24 @@ describe("the stored form", () => {
         { ...good, id: "blank", question: "  " },
         { ...good, id: "no-time", created: "yesterday" },
         { ...good, id: "odd", step: -2, box: 99, due: null, updated: undefined, stepTitle: 4 },
-        { ...good, id: "bad-attempts", attempts: [{ at: T0, grade: "great" }, { at: T0, grade: "shaky" }] },
+        {
+          ...good,
+          id: "bad-attempts",
+          attempts: [
+            { at: T0, grade: "great" },
+            { at: T0, grade: "shaky", claude: { grade: "great", feedback: "?" } },
+            { at: T0 + 1, answer: "y", grade: "missed", claude: { grade: "missed", feedback: " No. " } },
+          ],
+        },
         good,
       ],
     });
     const byId = (id: string) => loaded!.cards.find((c) => c.id === id)!;
     expect(loaded!.cards.map((c) => c.id).sort()).toEqual(["bad-attempts", "good", "odd"]);
     expect(byId("odd")).toMatchObject({ step: 0, box: 5, due: T0, updated: T0, stepTitle: "" });
-    expect(byId("bad-attempts").attempts).toEqual([{ at: T0, answer: "", grade: "shaky" }]);
+    expect(byId("bad-attempts").attempts).toEqual([
+      { at: T0, answer: "", grade: "shaky" },
+      { at: T0 + 1, answer: "y", grade: "missed", claude: { grade: "missed", feedback: "No." } },
+    ]);
   });
 });

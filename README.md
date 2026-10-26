@@ -79,6 +79,11 @@ On a device with the sync key, a written answer is also read by Claude while you
 Claude says in a sentence or two what was right and what was missing, and marks the grade it would give; the grade is still yours to pick.
 An answer given in your head is not sent.
 
+When you grade an answer missed or shaky, what Claude said is kept with it.
+The next time the question comes up, it is shown under your last answer, so you can work from it.
+Each question on the recall page has a History button listing every answer you gave, newest first, with Claude's feedback where it was kept.
+It syncs and is saved to a file with the rest of your questions.
+
 Questions are kept in the browser, like the gesture settings.
 They can also be kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
 Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.

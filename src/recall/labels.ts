@@ -36,6 +36,11 @@ export function sourceHref(place: Place): string | null {
   return lesson ? hrefOf(lesson, place.step) : null;
 }
 
+/** "26 Oct 2026, 14:05": when an answer was given, in the reader's locale. */
+export function answeredLabel(at: number): string {
+  return new Date(at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+}
+
 /** "due now", "in 5 hours", "tomorrow", "in 3 days", "in 5 weeks". */
 export function whenLabel(due: number, now: number): string {
   const ms = due - now;

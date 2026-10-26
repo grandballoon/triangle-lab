@@ -10,7 +10,10 @@
 // themselves, which schedules the question's next asking. Once the browser
 // has the sync key, a written answer is also read by Claude while the learner
 // checks it (check.ts): its feedback is shown with the answer, and the grade
-// it suggests is marked, but the learner still picks the grade.
+// it suggests is marked, but the learner still picks the grade. On an answer
+// graded missed or shaky, the feedback is kept with it: the next time the
+// question is checked it is shown again, and each question's history lists
+// every answer with what Claude said.
 //
 // The rules are pure (deck.ts, session.ts); this file holds the page's state,
 // renders it and does the I/O.
@@ -26,12 +29,23 @@ import {
   nextDue,
   removeCard,
   saveDeck,
+  type Attempt,
   type Card,
   type Deck,
   type Grade,
 } from "./deck.ts";
 import type { Review } from "./check.ts";
-import { byLesson, gradeHint, lessonLabel, placeLabel, questionHtml, sourceHref, stepLabel, whenLabel } from "./labels.ts";
+import {
+  answeredLabel,
+  byLesson,
+  gradeHint,
+  lessonLabel,
+  placeLabel,
+  questionHtml,
+  sourceHref,
+  stepLabel,
+  whenLabel,
+} from "./labels.ts";
 import {
   askReview,
   currentCard,
@@ -69,6 +83,8 @@ let session: Session | null = kept ? prune(kept.session, store.get()) : null;
 let draft = kept?.draft ?? "";
 /** The question being reworded on the overview, and its new wording so far. */
 let editing: { id: string; text: string } | null = null;
+/** Questions whose history of answers is open on the overview. */
+const historyOpen = new Set<string>();
 /** A line about the last export or import, and whether it went wrong. */
 let notice: { text: string; error: boolean } | null = null;
 
@@ -259,6 +275,16 @@ function cardItem(card: Card, now: number): HTMLLIElement {
     el("span", "", tried === 0 ? "not yet answered" : `answered ${tried} time${tried === 1 ? "" : "s"}`),
   );
   const actions = el("div", "rc-actions");
+  if (tried > 0) {
+    const open = historyOpen.has(card.id);
+    const toggle = button(open ? "Hide history" : "History", "rc-small", () => {
+      if (open) historyOpen.delete(card.id);
+      else historyOpen.add(card.id);
+      render();
+    });
+    toggle.setAttribute("aria-expanded", String(open));
+    actions.append(toggle);
+  }
   actions.append(
     button("Edit", "rc-small", () => {
       editing = { id: card.id, text: card.question };
@@ -267,7 +293,26 @@ function cardItem(card: Card, now: number): HTMLLIElement {
     confirmButton("Delete", () => store.update((d) => removeCard(d, card.id, Date.now()))),
   );
   item.append(question, meta, actions);
+  if (tried > 0 && historyOpen.has(card.id)) item.append(history(card));
   return item;
+}
+
+/** Every answer given to `card`, newest first, with what Claude said where it was kept. */
+function history(card: Card): HTMLElement {
+  const list = el("ol", "rc-history");
+  list.setAttribute("aria-label", "Answers given");
+  list.append(
+    ...[...card.attempts].reverse().map((attempt) => {
+      const entry = el("li");
+      entry.append(
+        el("p", "rc-history-when", `${answeredLabel(attempt.at)} · ${GRADE_LABEL[attempt.grade]}`),
+        saidAnswer(attempt.answer),
+      );
+      if (attempt.claude) entry.append(claudeSaid(attempt.claude.grade, attempt.claude.feedback, "Claude"));
+      return entry;
+    }),
+  );
+  return list;
 }
 
 /**
@@ -357,16 +402,16 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
 
   const yours = el("div", "rc-yours");
   yours.append(el("h3", "", "Your answer"));
-  yours.append(s.answer.trim() ? el("p", "rc-said", s.answer) : el("p", "rc-said rc-quiet", "Answered in your head."));
+  yours.append(saidAnswer(s.answer));
   panel.append(yours);
   if (s.review) panel.append(reviewed(s.review));
 
-  const last = card.attempts.at(-1);
+  const last: Attempt | undefined = card.attempts.at(-1);
   if (last) {
     const before = el("div", "rc-yours");
-    before.append(el("h3", "", `Last time · ${GRADE_LABEL[last.grade].toLowerCase()}`));
-    before.append(last.answer ? el("p", "rc-said", last.answer) : el("p", "rc-said rc-quiet", "Answered in your head."));
+    before.append(el("h3", "", `Last time · ${GRADE_LABEL[last.grade].toLowerCase()}`), saidAnswer(last.answer));
     panel.append(before);
+    if (last.claude) panel.append(claudeSaid(last.claude.grade, last.claude.feedback, "Claude, last time"));
   }
 
   const href = sourceHref(card);
@@ -395,16 +440,13 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
 
 /** Claude's reading of the answer: under way, its feedback, or why there is none. */
 function reviewed(review: Review): HTMLElement {
-  const box = el("div", "rc-yours rc-review");
+  const { kind } = review;
+  const box = kind === "done" ? claudeSaid(review.verdict.grade, review.verdict.feedback, "Claude's check") : el("div", "rc-yours");
+  box.classList.add("rc-review");
   box.setAttribute("role", "status");
-  if (review.kind === "checking") {
+  if (kind === "checking") {
     box.append(el("h3", "", "Claude's check"), el("p", "rc-said rc-quiet", "Reading your answer…"));
-  } else if (review.kind === "done") {
-    const { grade, feedback } = review.verdict;
-    const said = el("p", "rc-said rc-feedback");
-    said.innerHTML = questionHtml(feedback);
-    box.append(el("h3", "", `Claude's check · ${GRADE_LABEL[grade].toLowerCase()}`), said);
-  } else {
+  } else if (kind === "failed") {
     box.append(
       el("h3", "", "Claude's check"),
       el("p", "rc-said rc-quiet", review.error),
@@ -416,6 +458,20 @@ function reviewed(review: Review): HTMLElement {
       ),
     );
   }
+  return box;
+}
+
+/** An answer as the learner gave it, or a note that it was given in the head. */
+function saidAnswer(answer: string): HTMLParagraphElement {
+  return answer.trim() ? el("p", "rc-said", answer) : el("p", "rc-said rc-quiet", "Answered in your head.");
+}
+
+/** Claude's feedback, typeset, under a heading naming the grade it gave. */
+function claudeSaid(grade: Grade, feedback: string, heading: string): HTMLElement {
+  const box = el("div", "rc-yours");
+  const said = el("p", "rc-said rc-feedback");
+  said.innerHTML = questionHtml(feedback);
+  box.append(el("h3", "", `${heading} · ${GRADE_LABEL[grade].toLowerCase()}`), said);
   return box;
 }
 
