@@ -1,6 +1,8 @@
-// The Worker behind /deck: the deck of recall questions (src/recall), kept
-// on the web so every device the learner uses holds the same one. The rest
-// of the site is static assets, served without running this (wrangler.jsonc).
+// The Worker behind /deck and /check. /deck is the deck of recall questions
+// (src/recall), kept on the web so every device the learner uses holds the
+// same one; /check has Claude read an answer given in a review sitting
+// (check.ts). The rest of the site is static assets, served without running
+// this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
 // storage. It merges each deck sent to it with the one it holds, using the
@@ -9,11 +11,14 @@
 // the object one at a time, so two devices syncing at once cannot undo each
 // other.
 //
-// The decisions are in rules.ts; this does the I/O.
+// The decisions are in rules.ts and check.ts; this does the I/O.
 
+import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
+import { MAX_CHECK_BODY, readCheckRequest, type CheckRequest, type Verdict } from "../src/recall/check.ts";
 import { changedSince, EMPTY_DECK, loadDeck, mergeDecks, saveDeck, type Card, type Deck, type SavedDeck } from "../src/recall/deck.ts";
-import { datedAhead, decide, MAX_BODY, tooLarge } from "./rules.ts";
+import { checkParams, claudeFailed, verdictOf } from "./check.ts";
+import { CHECK_PATH, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
 
 /** There is one learner, so one deck. */
 const DECK_NAME = "deck";
@@ -25,19 +30,20 @@ export default {
 
     const length = request.headers.get("Content-Length");
     // Counted by the caller's address, so someone guessing the key slows
-    // only themselves, never the learner's own devices.
-    const { success: withinLimit } = await env.LIMITER.limit({
-      key: request.headers.get("CF-Connecting-IP") ?? "unknown",
-    });
+    // only themselves, never the learner's own devices. Checks, which cost
+    // money, are counted again against a tighter limit of their own.
+    const caller = { key: request.headers.get("CF-Connecting-IP") ?? "unknown" };
+    const { success: withinLimit } = await env.LIMITER.limit(caller);
+    const withinCheckLimit = url.pathname !== CHECK_PATH || (await env.CHECK_LIMITER.limit(caller)).success;
     const decision = decide(
       {
         method: request.method,
         path: url.pathname,
         authorization: request.headers.get("Authorization"),
         length: length === null ? null : Number(length),
-        withinLimit,
+        withinLimit: withinLimit && withinCheckLimit,
       },
-      { key: env.RECALL_KEY ?? "" },
+      { key: env.RECALL_KEY ?? "", claude: !!env.ANTHROPIC_API_KEY },
     );
     const deck = env.DECKS.getByName(DECK_NAME);
     switch (decision.kind) {
@@ -56,9 +62,30 @@ export default {
         }
         return reply(200, await deck.merge(sent));
       }
+      case "check": {
+        const text = await request.text();
+        if (text.length > MAX_CHECK_BODY) return reply(checkTooLarge.status, { error: checkTooLarge.error });
+        const asked = readCheckRequest(parseJson(text));
+        if (!asked) return reply(400, { error: "That is not an answer to check." });
+        const verdict = await askClaude(env, asked);
+        return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
+      }
     }
   },
 } satisfies ExportedHandler<Env>;
+
+async function askClaude(env: Env, asked: CheckRequest): Promise<Verdict | Refusal> {
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
+  try {
+    return verdictOf(await client.beta.messages.create(checkParams(asked)));
+  } catch (error) {
+    if (error instanceof Anthropic.APIError) {
+      console.error("Checking an answer failed:", error.status, error.message);
+      return claudeFailed(error.status);
+    }
+    throw error;
+  }
+}
 
 export class RecallDeck extends DurableObject<Env> {
   constructor(ctx: DurableObjectState, env: Env) {
@@ -98,8 +125,12 @@ export class RecallDeck extends DurableObject<Env> {
 }
 
 function parse(text: string): Deck | null {
+  return loadDeck(parseJson(text));
+}
+
+function parseJson(text: string): unknown {
   try {
-    return loadDeck(JSON.parse(text));
+    return JSON.parse(text);
   } catch {
     return null;
   }

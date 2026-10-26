@@ -75,6 +75,10 @@ The recall page (linked from the menu, `recall.html`) asks your questions back o
 Answer each from memory first, writing it down or not, then check: your earlier answers are shown, and "Check in the lesson" opens the lesson at the step the question came from.
 Grade yourself missed, shaky or recalled; a recalled question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days), and a missed one is asked again straight away.
 
+On a device with the sync key, a written answer is also read by Claude while you check it.
+Claude says in a sentence or two what was right and what was missing, and marks the grade it would give; the grade is still yours to pick.
+An answer given in your head is not sent.
+
 Questions are kept in the browser, like the gesture settings.
 They can also be kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
 Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
@@ -96,14 +100,27 @@ It also limits each caller's address to 60 requests a minute, so a key cannot be
 Locally, the key comes from `.dev.vars`, which is gitignored; create it with `echo "RECALL_KEY=$(openssl rand -base64 24)" > .dev.vars`.
 `npm run dev` sends the deck's requests on to the Worker on `localhost:8787`, so to sync while developing, run `npm run preview` in a second terminal.
 
+### Setting up answer checking
+
+The Worker calls Claude with a Claude API key of its own, kept in its secrets like the sync key; browsers never see it:
+
+```sh
+npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.com
+```
+
+It checks only for a caller with the sync key, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
+Without the key, checking is off and the recall page says why.
+Locally, add `ANTHROPIC_API_KEY=…` to `.dev.vars`.
+
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with answer checking at `/check`.
 Giving the site an origin of its own keeps its browser storage, and the sync key in it, away from any other site.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
+A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set.
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ## Lessons
@@ -141,7 +158,7 @@ src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/recall/           Noting questions in a lesson and reviewing them later
-worker/               The Cloudflare Worker: serves the site, and syncs recall questions between devices
+worker/               The Cloudflare Worker: serves the site, syncs recall questions between devices, and has Claude check answers
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements

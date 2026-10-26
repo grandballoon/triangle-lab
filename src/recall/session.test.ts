@@ -1,9 +1,21 @@
 // A review sitting: asking, checking, grading, one more try after a first
-// miss, and cards deleted from under it.
+// miss, cards deleted from under it, and Claude reading the answer checked.
 
 import { describe, expect, it } from "vitest";
+import type { Review } from "./check.ts";
 import { dueAfter, newCard, removeCard, type Card, type Deck } from "./deck.ts";
-import { currentCard, gradeCurrent, loadSitting, progress, prune, reveal, startSession } from "./session.ts";
+import {
+  askReview,
+  currentCard,
+  gradeCurrent,
+  loadSitting,
+  progress,
+  prune,
+  reveal,
+  settleReview,
+  startSession,
+  wantsReview,
+} from "./session.ts";
 
 const T0 = 1_800_000_000_000;
 const here = { lesson: "medians", step: 0, stepTitle: "Draw the medians" };
@@ -63,7 +75,64 @@ describe("a sitting", () => {
   });
 });
 
+describe("Claude reading the answer being checked", () => {
+  const done: Review = { kind: "done", verdict: { grade: "shaky", feedback: "Nearly." } };
+  const failed: Review = { kind: "failed", error: "Offline." };
+
+  it("is wanted for a written answer, once", () => {
+    const s = reveal(startSession(deck.cards), "At the centroid");
+    expect(wantsReview(startSession(deck.cards))).toBe(false);
+    expect(wantsReview(reveal(startSession(deck.cards), "  "))).toBe(false);
+    expect(wantsReview(s)).toBe(true);
+
+    const asked = askReview(s);
+    expect(asked.review).toEqual({ kind: "checking" });
+    expect(wantsReview(asked)).toBe(false);
+    expect(askReview(asked)).toBe(asked);
+  });
+
+  it("takes in the reply for the answer asked about", () => {
+    const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
+    const settled = settleReview(asked, "a", "At the centroid", done);
+    expect(settled.review).toEqual(done);
+    expect(askReview(settled)).toBe(settled);
+  });
+
+  it("drops a reply that comes after the sitting has moved on", () => {
+    const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
+    expect(settleReview(asked, "b", "At the centroid", done)).toBe(asked);
+    expect(settleReview(asked, "a", "Something else", done)).toBe(asked);
+    const { session: next } = gradeCurrent(asked, deck, "recalled", T0);
+    expect(next.review).toBeNull();
+    expect(settleReview(next, "a", "At the centroid", done)).toBe(next);
+  });
+
+  it("is asked for again after a failure only when the learner says so", () => {
+    const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
+    const broke = settleReview(asked, "a", "At the centroid", failed);
+    expect(broke.review).toEqual(failed);
+    expect(wantsReview(broke)).toBe(false);
+    expect(askReview(broke).review).toEqual({ kind: "checking" });
+  });
+
+  it("goes with the card being checked when that card is deleted", () => {
+    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", done);
+    expect(prune(settled, removeCard(deck, "a", T0)).review).toBeNull();
+    expect(prune(settled, removeCard(deck, "b", T0)).review).toEqual(done);
+  });
+});
+
 describe("a sitting kept across a reload", () => {
+  it("keeps Claude's reading, but asks again for one still under way", () => {
+    const checked = reveal(startSession(deck.cards), "x");
+    const done: Review = { kind: "done", verdict: { grade: "recalled", feedback: "Right." } };
+    const keep = (review: Review) => loadSitting(JSON.parse(JSON.stringify({ session: { ...checked, review }, draft: "" })));
+    expect(keep(done)?.session.review).toEqual(done);
+    expect(keep({ kind: "failed", error: "Offline." })?.session.review).toEqual({ kind: "failed", error: "Offline." });
+    expect(keep({ kind: "checking" })?.session.review).toBeNull();
+    expect(keep({ kind: "done", verdict: { grade: "great", feedback: "?" } } as never)?.session.review).toBeNull();
+  });
+
   it("reads back as it was kept", () => {
     const { session } = gradeCurrent(reveal(startSession(deck.cards), "x"), deck, "missed", T0);
     const kept = { session: reveal(session, "half"), draft: "half" };

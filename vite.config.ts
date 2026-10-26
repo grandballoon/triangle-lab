@@ -16,7 +16,8 @@ const mediapipe = JSON.parse(
 // the questions noted in the lessons (src/recall).
 //
 // The built site is served from the root of its own origin by the Worker in
-// wrangler.jsonc, which also holds the recall deck at /deck.
+// wrangler.jsonc, which also holds the recall deck at /deck and checks
+// answers with Claude at /check.
 export default defineConfig({
   // Dev only: Alt-click any element to leave a comment in ui-feedback.md.
   plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md"))],
@@ -28,9 +29,9 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
-    // The recall deck, from the Worker run by `npm run preview` beside the
-    // dev server, so syncing works in development as on the site.
-    proxy: { "/deck": "http://localhost:8787" },
+    // The recall deck and answer checking, from the Worker run by `npm run
+    // preview` beside the dev server, so both work in development as on the site.
+    proxy: { "/deck": "http://localhost:8787", "/check": "http://localhost:8787" },
   },
   build: {
     rollupOptions: {

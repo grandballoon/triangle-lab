@@ -248,3 +248,123 @@ describe("syncing from the recall page", () => {
     expect(root.querySelector(".rc-question")!.textContent).toBe("Kept?");
   });
 });
+
+describe("Claude checking an answer", () => {
+  type Answer = { grade: string; feedback: string } | "busy" | "never";
+
+  /**
+   * The site's Worker: the deck kept as sent, and checks answered with
+   * `answers` in turn: a verdict, Claude being busy, or no answer ever, as
+   * for a page closed while waiting. Returns the checks asked for.
+   */
+  function worker(answers: Answer[]): unknown[] {
+    const checks: unknown[] = [];
+    vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      if (url === "/deck") return new Response(init.body, { status: 200 });
+      expect(url).toBe("/check");
+      expect((init.headers as Record<string, string>).Authorization).toBe("Bearer right");
+      checks.push(JSON.parse(init.body as string));
+      const answer = answers.shift();
+      if (answer === "never") return new Promise<Response>(() => undefined);
+      if (answer === "busy") return Response.json({ error: "Claude is busy. Try again in a minute." }, { status: 502 });
+      return Response.json(answer);
+    });
+    return checks;
+  }
+
+  const settle = async (): Promise<void> => {
+    for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
+  };
+
+  async function openSynced(cards: Card[]): Promise<HTMLElement> {
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards, removed: [] })));
+    localStorage.setItem("triangle-lab:recall-sync-key", "right");
+    return reload();
+  }
+
+  function answerWith(root: HTMLElement, text: string): void {
+    buttonNamed(root, "Start review").click();
+    const answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
+    answer.value = text;
+    answer.dispatchEvent(new Event("input"));
+    buttonNamed(root, "Check").click();
+  }
+
+  const review = (root: HTMLElement) => root.querySelector(".rc-review");
+  const suggested = (root: HTMLElement) => [...root.querySelectorAll(".rc-suggested .rc-grade-name")].map((b) => b.textContent);
+
+  it("reads a written answer, says what it makes of it and marks the grade it suggests", async () => {
+    const checks = worker([{ grade: "shaky", feedback: "Right point, but say why: the medians meet at $G$." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "In the middle");
+    expect(review(root)!.textContent).toBe("Claude's checkReading your answer…");
+    expect(suggested(root)).toEqual([]);
+
+    await settle();
+    expect(checks).toEqual([
+      { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2: Find the centroid", answer: "In the middle" },
+    ]);
+    expect(review(root)!.querySelector("h3")!.textContent).toBe("Claude's check · shaky");
+    expect(review(root)!.querySelector(".katex")).not.toBeNull();
+    expect(suggested(root)).toEqual(["Shaky"]);
+
+    // The learner still grades, and may disagree.
+    buttonNamed(root, "Recalled it").click();
+    expect(stored()[0].attempts).toMatchObject([{ answer: "In the middle", grade: "recalled" }]);
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
+  });
+
+  it("asks nothing for an answer given in the head, or without the sync key", async () => {
+    const checks = worker([{ grade: "recalled", feedback: "Yes." }]);
+    let root = await openSynced([card("a", "First?")]);
+    answerWith(root, "");
+    await settle();
+    expect(review(root)).toBeNull();
+
+    root = await open([card("a", "First?")]);
+    answerWith(root, "Written down");
+    await settle();
+    expect(review(root)).toBeNull();
+    expect(checks).toEqual([]);
+  });
+
+  it("says why a check failed, and tries again when asked", async () => {
+    const checks = worker(["busy", { grade: "missed", feedback: "No: they meet at the centroid." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the incentre");
+    await settle();
+    expect(review(root)!.textContent).toContain("Claude is busy. Try again in a minute.");
+    expect(suggested(root)).toEqual([]);
+
+    buttonNamed(root, "Try again").click();
+    await settle();
+    expect(review(root)!.textContent).toContain("they meet at the centroid");
+    expect(suggested(root)).toEqual(["Missed it"]);
+    expect(checks).toHaveLength(2);
+  });
+
+  it("keeps what Claude said across a reload, without asking again", async () => {
+    const checks = worker([{ grade: "recalled", feedback: "Exactly." }]);
+    let root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    await settle();
+
+    root = await reload();
+    await settle();
+    expect(review(root)!.textContent).toContain("Exactly.");
+    expect(suggested(root)).toEqual(["Recalled it"]);
+    expect(checks).toHaveLength(1);
+  });
+
+  it("asks again after a reload that came while Claude was reading", async () => {
+    const checks = worker(["never", { grade: "recalled", feedback: "Exactly." }]);
+    let root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    root = await reload();
+    await settle();
+    expect(review(root)!.textContent).toContain("Exactly.");
+    expect(checks).toHaveLength(2);
+  });
+});

@@ -3,10 +3,11 @@
 
 import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
+import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { CLOCK_SLACK_MS, datedAhead, decide, keyMatches, MAX_BODY, MIN_KEY, type Asked } from "./rules.ts";
 
 const KEY = "k".repeat(MIN_KEY);
-const settings = { key: KEY };
+const settings = { key: KEY, claude: true };
 const asked = (patch: Partial<Asked>): Asked => ({
   method: "GET",
   path: "/deck",
@@ -51,6 +52,29 @@ describe("decide", () => {
     expect(decide(asked({ path: "/" }), settings)).toMatchObject({ kind: "refuse", status: 404 });
     expect(decide(asked({ method: "DELETE" }), settings)).toMatchObject({ kind: "refuse", status: 405 });
     expect(decide(asked({ method: "OPTIONS" }), settings)).toMatchObject({ kind: "refuse", status: 405 });
+    expect(decide(asked({ path: "/check", method: "GET" }), settings)).toMatchObject({ status: 405 });
+  });
+});
+
+describe("decide, for an answer to check", () => {
+  const check = (patch: Partial<Asked>) => asked({ path: "/check", method: "POST", ...patch });
+
+  it("checks an answer for a caller with the key", () => {
+    expect(decide(check({}), settings)).toEqual({ kind: "check" });
+  });
+
+  it("guards checking as it guards the deck", () => {
+    expect(decide(check({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
+    expect(decide(check({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(check({ length: MAX_CHECK_BODY + 1 }), settings)).toMatchObject({ status: 413 });
+    expect(decide(check({}), { ...settings, key: "" })).toMatchObject({ status: 503 });
+  });
+
+  it("says checking is off while the Worker has no Claude API key, but only to a caller with the key", () => {
+    const off = { ...settings, claude: false };
+    expect(decide(check({}), off)).toMatchObject({ status: 503, error: expect.stringContaining("ANTHROPIC_API_KEY") });
+    expect(decide(check({ authorization: null }), off)).toMatchObject({ status: 401 });
+    expect(decide(asked({}), off)).toEqual({ kind: "read" });
   });
 });
 

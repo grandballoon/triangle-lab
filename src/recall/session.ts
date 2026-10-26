@@ -5,7 +5,12 @@
 // step the question came from, and grade themselves; the grade is recorded on
 // the card (deck.ts) and decides when it is asked again. A card missed for the
 // first time this sitting goes to the back of the queue for one more try.
+//
+// A written answer can also be read by Claude while the learner checks it
+// (check.ts): the review rides along with the card being checked, and is
+// dropped as soon as that card is graded or gone.
 
+import { loadReview, type Review } from "./check.ts";
 import { answerCard, GRADES, type Card, type Deck, type Grade } from "./deck.ts";
 
 export interface Session {
@@ -19,6 +24,8 @@ export interface Session {
   answer: string;
   /** Answers graded so far this sitting, by grade. */
   tally: Record<Grade, number>;
+  /** Claude's reading of the answer being checked, once asked for. */
+  review: Review | null;
 }
 
 export function startSession(cards: readonly Card[]): Session {
@@ -28,6 +35,7 @@ export function startSession(cards: readonly Card[]): Session {
     phase: "ask",
     answer: "",
     tally: { missed: 0, shaky: 0, recalled: 0 },
+    review: null,
   };
 }
 
@@ -46,6 +54,31 @@ export function progress(session: Session): { done: number; total: number } {
 /** Stop answering and check: the answer is kept as written. */
 export function reveal(session: Session, answer: string): Session {
   return session.phase === "ask" ? { ...session, phase: "check", answer } : session;
+}
+
+/**
+ * Whether the answer being checked is waiting to be read by Claude: it is
+ * written, and Claude has not been asked yet. A check that failed is asked
+ * again only when the learner says so (`askReview`).
+ */
+export function wantsReview(session: Session): boolean {
+  return session.phase === "check" && session.answer.trim() !== "" && session.review === null;
+}
+
+/** Ask for the answer being checked to be read, afresh if an earlier ask failed. */
+export function askReview(session: Session): Session {
+  const asked = session.review !== null && session.review.kind !== "failed";
+  if (session.phase !== "check" || !session.answer.trim() || asked) return session;
+  return { ...session, review: { kind: "checking" } };
+}
+
+/**
+ * Take in Claude's reading of `id`'s answer `answer`. It is dropped if the
+ * sitting has moved on since it was asked for.
+ */
+export function settleReview(session: Session, id: string, answer: string, review: Review): Session {
+  const current = session.queue[0] === id && session.phase === "check" && session.answer === answer;
+  return current && session.review?.kind === "checking" ? { ...session, review } : session;
 }
 
 /**
@@ -69,6 +102,7 @@ export function gradeCurrent(
       phase: "ask",
       answer: "",
       tally: { ...session.tally, [grade]: session.tally[grade] + 1 },
+      review: null,
     },
   };
 }
@@ -78,9 +112,9 @@ export function prune(session: Session, deck: Deck): Session {
   const ids = new Set(deck.cards.map((c) => c.id));
   const queue = session.queue.filter((id) => ids.has(id));
   if (queue.length === session.queue.length) return session;
-  // The card being checked is gone, so its answer is too.
-  const same = queue[0] === session.queue[0];
-  return { ...session, queue, phase: same ? session.phase : "ask", answer: same ? session.answer : "" };
+  // The card being checked is gone, so its answer and review are too.
+  if (queue[0] === session.queue[0]) return { ...session, queue };
+  return { ...session, queue, phase: "ask", answer: "", review: null };
 }
 
 // --- Kept across a reload ---------------------------------------------------
@@ -98,14 +132,22 @@ export interface Sitting {
 /** Read a kept sitting back, or null if `raw` is not one. */
 export function loadSitting(raw: unknown): Sitting | null {
   if (!isObject(raw) || typeof raw.draft !== "string" || !isObject(raw.session)) return null;
-  const { queue, retried, phase, answer, tally } = raw.session;
+  const { queue, retried, phase, answer, tally, review } = raw.session;
   if (!isIds(queue) || !isIds(retried) || (phase !== "ask" && phase !== "check") || typeof answer !== "string") {
     return null;
   }
   if (!isObject(tally) || !GRADES.every((g) => Number.isInteger(tally[g]) && (tally[g] as number) >= 0)) return null;
   const counts = tally as Record<Grade, number>;
   return {
-    session: { queue, retried, phase, answer, tally: { missed: counts.missed, shaky: counts.shaky, recalled: counts.recalled } },
+    session: {
+      queue,
+      retried,
+      phase,
+      answer,
+      tally: { missed: counts.missed, shaky: counts.shaky, recalled: counts.recalled },
+      // Kept only while checking: a review is of the answer being checked.
+      review: phase === "check" ? loadReview(review) : null,
+    },
     draft: raw.draft,
   };
 }
