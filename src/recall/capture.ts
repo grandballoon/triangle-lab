@@ -12,7 +12,8 @@ import "./capture.css";
 import { addCard, dueCards, lessonCards, newCard, removeCard, type Place } from "./deck.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { questionHtml, stepLabel, lessonName } from "./labels.ts";
-import { RecallStore } from "./store.ts";
+import { openRecall } from "./remote.ts";
+import type { RecallStore } from "./store.ts";
 
 // A card with a question mark. No text nodes, so the pill's text is its count.
 const ICON =
@@ -39,7 +40,7 @@ export interface RecallCapture {
 export function mountRecall(
   topbar: HTMLElement,
   where: () => Place | null,
-  store: RecallStore = new RecallStore(),
+  store: RecallStore = openRecall().store,
 ): RecallCapture {
   const doc = topbar.ownerDocument;
   const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] => {
@@ -103,7 +104,7 @@ export function mountRecall(
         const text = el("div", "recall-q");
         text.innerHTML = questionHtml(card.question);
         const step = el("span", "recall-q-step", `Step ${card.step + 1}`);
-        item.append(step, text, removeButton(() => store.update((d) => removeCard(d, card.id))));
+        item.append(step, text, removeButton(() => store.update((d) => removeCard(d, card.id, Date.now()))));
         return item;
       }),
     );

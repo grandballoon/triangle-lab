@@ -21,7 +21,8 @@ npm run dev      # http://localhost:5173
 ```sh
 npm test         # unit tests and a headless run of every lesson
 npm run build    # type-check, then bundle every page into dist/
-npm run preview  # serve the built output
+npm run preview  # build, then serve the site as deployed, with the recall deck, on localhost:8787
+npm run deploy   # build, then publish to Cloudflare
 ```
 
 Node 22.12 or newer is required.
@@ -75,7 +76,35 @@ Answer each from memory first, writing it down or not, then check: your earlier 
 Grade yourself missed, shaky or recalled; a recalled question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days), and a missed one is asked again straight away.
 
 Questions are kept in the browser, like the gesture settings.
-The recall page can save them to a file and load them back, to move them to another browser or keep a copy.
+They can also be kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
+Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
+Changes made offline are kept in the browser and sent with the next sync that works, and a question removed on one device stays removed on the others.
+The recall page can still save them to a file and load them back, to keep a copy.
+
+### Setting up sync
+
+The sync key is the only thing guarding your questions, so make it long and random:
+
+```sh
+npx wrangler secret put RECALL_KEY   # paste the output of `openssl rand -base64 24`
+```
+
+The key is never committed: it lives in the Worker's secrets and in each browser you enter it in.
+The Worker serves no one until its key is at least 32 characters.
+It also limits each caller's address to 60 requests a minute, so a key cannot be guessed at speed, and refuses changes dated more than an hour ahead of its clock, which would otherwise win every merge.
+
+Locally, the key comes from `.dev.vars`, which is gitignored; create it with `echo "RECALL_KEY=$(openssl rand -base64 24)" > .dev.vars`.
+`npm run dev` sends the deck's requests on to the Worker on `localhost:8787`, so to sync while developing, run `npm run preview` in a second terminal.
+
+## Deploying
+
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin.
+Giving the site an origin of its own keeps its browser storage, and the sync key in it, away from any other site.
+
+A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
+That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
+To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
+The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ## Lessons
 
@@ -112,6 +141,7 @@ src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/recall/           Noting questions in a lesson and reviewing them later
+worker/               The Cloudflare Worker: serves the site, and syncs recall questions between devices
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements

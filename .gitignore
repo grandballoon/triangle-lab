@@ -12,6 +12,10 @@ dist/
 # Local tooling scratch
 .lavish/
 
+# The Worker's local state and secrets (wrangler.jsonc)
+.wrangler/
+.dev.vars
+
 # Personal playtest notes
 /notes.md
 

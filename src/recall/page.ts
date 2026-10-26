@@ -3,7 +3,8 @@
 //
 // Out of a sitting, the page lists the questions by lesson, with when each is
 // due, and lets the learner reword or delete them, or save and restore the
-// whole set as a file. In a sitting it asks one due question at a time: the
+// whole set as a file, and shows how syncing with the learner's other
+// devices stands, taking the sync key when it has none. In a sitting it asks one due question at a time: the
 // learner answers from memory, then checks (earlier answers, and a link that
 // opens the lesson at the step the question came from) and grades
 // themselves, which schedules the question's next asking.
@@ -39,7 +40,8 @@ import {
   type Sitting,
 } from "./session.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
-import { RecallStore } from "./store.ts";
+import { openRecall } from "./remote.ts";
+import { syncLabel } from "./sync.ts";
 
 const GRADE_LABEL: Record<Grade, string> = {
   missed: "Missed it",
@@ -50,7 +52,7 @@ const GRADE_LABEL: Record<Grade, string> = {
 /** Where the sitting under way is kept for the tab (session.ts `Sitting`). */
 const SITTING_KEY = "triangle-lab:recall-sitting";
 
-const store = new RecallStore();
+const { store, sync } = openRecall();
 const root = document.getElementById("recall") as HTMLElement;
 const kept = readSitting();
 
@@ -72,6 +74,12 @@ store.subscribe((deck) => {
     session = next;
   }
   render();
+});
+
+// How syncing stands is shown on the overview only, and redrawn alone, so
+// a sync never disturbs a question being reworded.
+sync.subscribe(() => {
+  if (!session) root.querySelector(".rc-keep")?.replaceWith(keeping(store.get()));
 });
 
 window.addEventListener("keydown", (e) => {
@@ -225,22 +233,29 @@ function cardItem(card: Card, now: number): HTMLLIElement {
       editing = { id: card.id, text: card.question };
       render();
     }),
-    confirmButton("Delete", () => store.update((d) => removeCard(d, card.id))),
+    confirmButton("Delete", () => store.update((d) => removeCard(d, card.id, Date.now()))),
   );
   item.append(question, meta, actions);
   return item;
 }
 
-/** Saving the questions to a file and reading them back. */
+/**
+ * Syncing with the learner's other devices, and saving the questions to a
+ * file and reading them back.
+ */
 function keeping(deck: Deck): HTMLElement {
   const section = el("section", "rc-keep");
-  section.append(
-    el(
-      "p",
-      "rc-note",
-      "Your questions are kept in this browser only. Save them to a file to move them to another browser, or to keep a copy.",
-    ),
-  );
+  const state = sync.get();
+  section.append(el("p", "rc-note rc-sync", syncLabel(state, Date.now())));
+  if (state.kind === "no-key" || state.kind === "refused") section.append(keyForm());
+  else {
+    section.append(
+      row(
+        button("Sync now", "rc-small", () => void sync.sync()),
+        confirmButton("Stop syncing here", () => sync.forgetKey()),
+      ),
+    );
+  }
   const file = el("input");
   file.type = "file";
   file.accept = "application/json,.json";
@@ -254,6 +269,24 @@ function keeping(deck: Deck): HTMLElement {
   section.append(row(save, button("Load from a file", "", () => file.click())), file);
   if (notice) section.append(el("p", notice.error ? "rc-notice rc-error" : "rc-notice", notice.text));
   return section;
+}
+
+/** Where the learner gives this browser the sync key. */
+function keyForm(): HTMLFormElement {
+  const form = el("form", "rc-row rc-key");
+  const input = el("input", "rc-key-input");
+  input.type = "password";
+  input.autocomplete = "off";
+  input.placeholder = "Sync key";
+  input.setAttribute("aria-label", "Sync key");
+  const connect = el("button", "rc-button rc-primary", "Sync");
+  connect.type = "submit";
+  form.append(input, connect);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    void sync.setKey(input.value);
+  });
+  return form;
 }
 
 function sitting(s: Session, deck: Deck): HTMLElement[] {

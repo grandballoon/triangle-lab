@@ -5,7 +5,7 @@
 // first question to last, and rewording and deleting a question.
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DAY_MS, newCard, saveDeck, type Card } from "./deck.ts";
+import { DAY_MS, loadDeck, mergeDecks, newCard, saveDeck, type Card, type Deck } from "./deck.ts";
 
 const KEY = "triangle-lab:recall";
 const now = Date.now();
@@ -18,7 +18,7 @@ const card = (id: string, question: string, patch: Partial<Card> = {}): Card => 
 async function open(cards: Card[]): Promise<HTMLElement> {
   localStorage.clear();
   sessionStorage.clear();
-  if (cards.length > 0) localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards })));
+  if (cards.length > 0) localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards, removed: [] })));
   return reload();
 }
 
@@ -162,5 +162,89 @@ describe("the recall page", () => {
     expect(root.querySelector(".rc-answer")).toBe(answer);
     buttonNamed(root, "Check").click();
     expect(root.querySelector(".rc-answer")).toBeNull();
+  });
+});
+
+describe("syncing from the recall page", () => {
+  /** The site's Worker, holding `held` and taking only `key`. Returns the requests made of it. */
+  function worker(held: Card[], key = "right"): string[] {
+    let deck: Deck = { cards: held, removed: [] };
+    const asked: string[] = [];
+    vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      asked.push(url);
+      expect(url).toBe("/deck");
+      if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
+        return Response.json({ error: "No." }, { status: 401 });
+      }
+      deck = mergeDecks(deck, loadDeck(JSON.parse(init.body as string))!);
+      return Response.json(saveDeck(deck));
+    });
+    return asked;
+  }
+
+  const settle = async (): Promise<void> => {
+    for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
+  };
+
+  const keyBox = (root: HTMLElement) => root.querySelector<HTMLInputElement>(".rc-key-input");
+
+  function enterKey(root: HTMLElement, key: string): void {
+    keyBox(root)!.value = key;
+    root.querySelector<HTMLFormElement>(".rc-key")!.requestSubmit();
+  }
+
+  it("keeps the questions in this browser, sending nothing, until given the key", async () => {
+    const asked = worker([]);
+    const root = await open([card("a", "Mine?")]);
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toContain("kept in this browser only");
+    expect(keyBox(root)).not.toBeNull();
+    expect(asked).toEqual([]);
+  });
+
+  it("takes the sync key, then shows the questions noted on other devices", async () => {
+    worker([card("phone", "Noted on the phone?")]);
+    const root = await open([card("here", "Noted here?")]);
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toContain("Enter your sync key");
+
+    enterKey(root, "right");
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
+    expect(keyBox(root)).toBeNull();
+    expect([...root.querySelectorAll(".rc-question")].map((q) => q.textContent).sort()).toEqual([
+      "Noted here?",
+      "Noted on the phone?",
+    ]);
+    expect(localStorage.getItem("triangle-lab:recall-sync-key")).toBe("right");
+
+    // The key is kept: a reload syncs straight away.
+    const again = await reload();
+    await settle();
+    expect(again.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
+  });
+
+  it("says so when the key is wrong, and takes another", async () => {
+    worker([]);
+    const root = await open([]);
+    await settle();
+    enterKey(root, "wrong");
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toContain("doesn't take that key");
+    enterKey(root, "right");
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
+  });
+
+  it("stops syncing from this browser on a second press, keeping the questions", async () => {
+    worker([card("a", "Kept?")]);
+    localStorage.clear();
+    localStorage.setItem("triangle-lab:recall-sync-key", "right");
+    const root = await reload();
+    await settle();
+    buttonNamed(root, "Stop syncing here").click();
+    buttonNamed(root, "Stop syncing here").click();
+    expect(keyBox(root)).not.toBeNull();
+    expect(root.querySelector(".rc-question")!.textContent).toBe("Kept?");
   });
 });

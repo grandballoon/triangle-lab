@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   addCard,
   answerCard,
+  changedSince,
   DAY_MS,
   dueAfter,
   dueCards,
@@ -18,6 +19,7 @@ import {
   nextBox,
   nextDue,
   removeCard,
+  sameDeck,
   saveDeck,
   type Card,
   type Deck,
@@ -31,7 +33,7 @@ function card(id: string, patch: Partial<Card> = {}): Card {
   return { ...newCard(id, `Question ${id}?`, here, T0)!, ...patch };
 }
 
-const deckOf = (...cards: Card[]): Deck => ({ cards });
+const deckOf = (...cards: Card[]): Deck => ({ cards, removed: [] });
 
 describe("newCard", () => {
   it("keeps the question, trimmed, with where it was asked, due at once", () => {
@@ -79,8 +81,13 @@ describe("editing the deck", () => {
     expect(editCard(deck, "a", "Question a?", T0 + 5).cards[0].updated).toBe(T0);
   });
 
-  it("removes a card", () => {
-    expect(removeCard(deckOf(card("a"), card("b")), "a")).toEqual(deckOf(card("b")));
+  it("removes a card, noting when", () => {
+    expect(removeCard(deckOf(card("a"), card("b")), "a", T0 + 5)).toEqual({
+      cards: [card("b")],
+      removed: [{ id: "a", at: T0 + 5 }],
+    });
+    const deck = deckOf(card("a"));
+    expect(removeCard(deck, "gone", T0 + 5)).toBe(deck);
   });
 });
 
@@ -154,12 +161,70 @@ describe("mergeDecks", () => {
     ]);
     expect(mergeDecks(deckOf(newer), deckOf(old)).cards[0]).toBe(newer);
   });
+
+  it("does not bring back a card removed after the other copy was made", () => {
+    const before = deckOf(card("a"), card("b"));
+    const after = removeCard(before, "a", T0 + 5);
+    expect(mergeDecks(before, after)).toEqual(after);
+    expect(mergeDecks(after, before)).toEqual(after);
+  });
+
+  it("keeps a card changed after its removal elsewhere", () => {
+    const removed = removeCard(deckOf(card("a")), "a", T0 + 5);
+    const answered = answerCard(deckOf(card("a")), "a", "yes", "recalled", T0 + 9);
+    expect(mergeDecks(removed, answered)).toEqual(answered);
+    expect(mergeDecks(answered, removed)).toEqual(answered);
+  });
+
+  it("ends the same whichever order decks meet in, and merging again changes nothing", () => {
+    const base = deckOf(card("a"), card("b", { created: T0 + 1 }), card("c", { created: T0 + 2 }));
+    const phone = removeCard(editCard(base, "a", "Phone?", T0 + 3), "c", T0 + 4);
+    const laptop = editCard(answerCard(base, "b", "", "shaky", T0 + 3), "c", "Laptop?", T0 + 3);
+    const tie = editCard(base, "a", "Tied?", T0 + 3);
+    const decks = [base, phone, laptop, tie];
+    const everyOrder = [decks, [...decks].reverse(), [tie, base, laptop, phone]].map((ds) => ds.reduce(mergeDecks));
+    expect(everyOrder[1]).toEqual(everyOrder[0]);
+    expect(everyOrder[2]).toEqual(everyOrder[0]);
+    expect(mergeDecks(everyOrder[0], phone)).toEqual(everyOrder[0]);
+    expect(everyOrder[0].removed).toEqual([{ id: "c", at: T0 + 4 }]);
+  });
+});
+
+describe("changedSince", () => {
+  it("is the questions added, changed or removed since", () => {
+    const before = deckOf(card("a"), card("b"), card("c"));
+    const after = removeCard(editCard(addCard(before, card("d")), "a", "New?", T0 + 1), "c", T0 + 2);
+    expect(changedSince(before, after)).toEqual({
+      cards: [after.cards.find((c) => c.id === "a"), card("d")],
+      removed: [{ id: "c", at: T0 + 2 }],
+    });
+    expect(changedSince(after, after)).toEqual({ cards: [], removed: [] });
+  });
+});
+
+describe("sameDeck", () => {
+  it("compares the questions and their changes, not the order they are held in", () => {
+    const a = card("a");
+    const b = card("b", { created: T0 + 1 });
+    expect(sameDeck(deckOf(a, b), deckOf(b, a))).toBe(true);
+    expect(sameDeck(deckOf(a), deckOf(a, b))).toBe(false);
+    expect(sameDeck(deckOf(a), editCard(deckOf(a), "a", "New?", T0 + 1))).toBe(false);
+    expect(sameDeck(deckOf(a), removeCard(deckOf(a), "a", T0 + 1))).toBe(false);
+  });
 });
 
 describe("the stored form", () => {
   it("reads back what it saves", () => {
     const deck = answerCard(deckOf(card("a"), card("b")), "a", "yes", "shaky", T0 + 1);
     expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(deck))))).toEqual(deck);
+  });
+
+  it("reads back removals, and a deck saved before there were any", () => {
+    const deck = removeCard(deckOf(card("a"), card("b")), "a", T0 + 1);
+    expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(deck))))).toEqual(deck);
+    const { removed: _, ...older } = saveDeck(deckOf(card("b")));
+    expect(loadDeck(older)).toEqual(deckOf(card("b")));
+    expect(loadDeck({ ...older, removed: [{ id: "x", at: "soon" }, { id: "", at: T0 }, 4] })).toEqual(deckOf(card("b")));
   });
 
   it("is not fooled by something that is not a saved deck", () => {
@@ -183,8 +248,9 @@ describe("the stored form", () => {
         good,
       ],
     });
-    expect(loaded!.cards.map((c) => c.id)).toEqual(["good", "odd", "bad-attempts"]);
-    expect(loaded!.cards[1]).toMatchObject({ step: 0, box: 5, due: T0, updated: T0, stepTitle: "" });
-    expect(loaded!.cards[2].attempts).toEqual([{ at: T0, answer: "", grade: "shaky" }]);
+    const byId = (id: string) => loaded!.cards.find((c) => c.id === id)!;
+    expect(loaded!.cards.map((c) => c.id).sort()).toEqual(["bad-attempts", "good", "odd"]);
+    expect(byId("odd")).toMatchObject({ step: 0, box: 5, due: T0, updated: T0, stepTitle: "" });
+    expect(byId("bad-attempts").attempts).toEqual([{ at: T0, answer: "", grade: "shaky" }]);
   });
 });

@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	// The whole site: the built pages from dist/, and the recall deck at /deck
+	// (worker/), which keeps questions noted on one device on all the others.
+	// Pages and deck share one origin, so the site's storage and the sync key
+	// are its own, and the pages call the deck without CORS.
+	"name": "triangle-lab",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-10-19",
+	"observability": {
+		"enabled": true
+	},
+	"assets": {
+		// Built by `npm run build`. Pages are served as they are, without
+		// running the Worker; only /deck runs it.
+		"directory": "./dist",
+		"run_worker_first": ["/deck"]
+	},
+	"durable_objects": {
+		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["RecallDeck"] }],
+	// Requests per caller address, so the key cannot be guessed at speed. A
+	// device syncs a few times a minute at most. The namespace id only has
+	// to be unique within the Cloudflare account.
+	"ratelimits": [
+		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } }
+	]
+	// The RECALL_KEY secret, which every request to /deck must carry, is set
+	// with `npx wrangler secret put RECALL_KEY`, never written here. Locally
+	// it comes from .dev.vars.
+}
