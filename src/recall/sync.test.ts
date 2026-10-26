@@ -70,7 +70,6 @@ describe("syncLabel", () => {
       "Syncing went wrong: That deck is too large. Changes are kept here.",
     );
     expect(syncLabel({ kind: "refused" }, T0)).toContain("doesn't take that key");
-    expect(syncLabel({ kind: "off" }, T0)).toContain("in this browser only");
     expect(syncLabel({ kind: "no-key" }, T0)).toContain("Enter your sync key");
   });
 });

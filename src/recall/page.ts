@@ -248,7 +248,7 @@ function keeping(deck: Deck): HTMLElement {
   const state = sync.get();
   section.append(el("p", "rc-note rc-sync", syncLabel(state, Date.now())));
   if (state.kind === "no-key" || state.kind === "refused") section.append(keyForm());
-  else if (state.kind !== "off") {
+  else {
     section.append(
       row(
         button("Sync now", "rc-small", () => void sync.sync()),

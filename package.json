@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && tsc -p worker && vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "test": "vitest run",
-    "worker": "wrangler dev",
-    "worker:deploy": "wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "worker:types": "wrangler types worker/worker-configuration.d.ts"
   },
   "devDependencies": {

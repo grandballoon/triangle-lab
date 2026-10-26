@@ -1,18 +1,20 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	// The recall deck's home on the web (worker/), so questions noted on one
-	// device reach the others. The lessons themselves stay on GitHub Pages;
-	// this serves only the deck, to the origins below.
-	"name": "triangle-lab-recall",
+	// The whole site: the built pages from dist/, and the recall deck at /deck
+	// (worker/), which keeps questions noted on one device on all the others.
+	// Pages and deck share one origin, so the site's storage and the sync key
+	// are its own, and the pages call the deck without CORS.
+	"name": "triangle-lab",
 	"main": "worker/index.ts",
 	"compatibility_date": "2026-10-19",
 	"observability": {
 		"enabled": true
 	},
-	"vars": {
-		// Pages that may call the Worker: the published site, and the Vite dev
-		// and preview servers.
-		"ALLOWED_ORIGINS": "https://grandballoon.github.io http://localhost:5173 http://localhost:4173"
+	"assets": {
+		// Built by `npm run build`. Pages are served as they are, without
+		// running the Worker; only /deck runs it.
+		"directory": "./dist",
+		"run_worker_first": ["/deck"]
 	},
 	"durable_objects": {
 		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
@@ -24,7 +26,7 @@
 	"ratelimits": [
 		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } }
 	]
-	// The RECALL_KEY secret, which every request must carry, is set with
-	// `npx wrangler secret put RECALL_KEY`, never written here. Locally it
-	// comes from .dev.vars.
+	// The RECALL_KEY secret, which every request to /deck must carry, is set
+	// with `npx wrangler secret put RECALL_KEY`, never written here. Locally
+	// it comes from .dev.vars.
 }

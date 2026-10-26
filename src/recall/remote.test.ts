@@ -41,7 +41,7 @@ function worker(key = "k") {
 }
 
 /** A page: its own storage and timers, syncing with `server`. */
-function page(server: ReturnType<typeof worker>, opts: { key?: string | null; url?: string } = {}) {
+function page(server: ReturnType<typeof worker>, opts: { key?: string | null } = {}) {
   const key = opts.key === undefined ? "k" : opts.key;
   const storage = memory(key ? { [SYNC_KEY_STORAGE]: key } : {});
   const timers = new Map<number, () => void>();
@@ -51,7 +51,7 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null; ur
   let next = 0;
   let visible = true;
   const deps: SyncDeps = {
-    url: opts.url ?? "https://recall.example",
+    url: "https://triangle-lab.example",
     keys: storage,
     fetch: server.fetch,
     now: () => T0,
@@ -92,17 +92,6 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null; ur
 }
 
 describe("RecallSync", () => {
-  it("does nothing in a build with no Worker", async () => {
-    const server = worker();
-    const p = page(server, { url: "" });
-    p.sync.start();
-    p.store.update((d) => addCard(d, card("a")));
-    p.elapse();
-    await p.settle();
-    expect(server.sent).toBe(0);
-    expect(p.sync.get()).toEqual({ kind: "off" });
-  });
-
   it("waits for a key, then sends what the page holds and takes what other devices sent", async () => {
     const server = worker();
     server.deck = { cards: [card("theirs")], removed: [] };

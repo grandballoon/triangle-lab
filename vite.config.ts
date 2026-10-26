@@ -14,11 +14,10 @@ const mediapipe = JSON.parse(
 // standalone lesson is its own HTML entry point; lab.html hosts every lab
 // lesson (src/lab/lessons), loading each one on demand; recall.html asks back
 // the questions noted in the lessons (src/recall).
+//
+// The built site is served from the root of its own origin by the Worker in
+// wrangler.jsonc, which also holds the recall deck at /deck.
 export default defineConfig({
-  // GitHub Pages serves this project site from a subpath
-  // (grandballoon.github.io/triangle-lab/), so asset URLs must be
-  // prefixed accordingly. Left as "/" for local dev and previews.
-  base: process.env.GITHUB_ACTIONS ? "/triangle-lab/" : "/",
   // Dev only: Alt-click any element to leave a comment in ui-feedback.md.
   plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md"))],
   define: {
@@ -29,6 +28,9 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
+    // The recall deck, from the Worker run by `npm run preview` beside the
+    // dev server, so syncing works in development as on the site.
+    proxy: { "/deck": "http://localhost:8787" },
   },
   build: {
     rollupOptions: {

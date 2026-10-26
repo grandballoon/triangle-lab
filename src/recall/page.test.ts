@@ -46,7 +46,6 @@ function touchScreen(): void {
 beforeEach(() => {
   window.scrollTo = () => undefined;
   vi.unstubAllGlobals();
-  vi.unstubAllEnvs();
 });
 
 describe("the recall page", () => {
@@ -167,18 +166,20 @@ describe("the recall page", () => {
 });
 
 describe("syncing from the recall page", () => {
-  /** A build that names a Worker, holding `held` and taking only `key`. */
-  function worker(held: Card[], key = "right") {
+  /** The site's Worker, holding `held` and taking only `key`. Returns the requests made of it. */
+  function worker(held: Card[], key = "right"): string[] {
     let deck: Deck = { cards: held, removed: [] };
-    vi.stubEnv("VITE_RECALL_SYNC_URL", "https://recall.example/");
+    const asked: string[] = [];
     vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
-      expect(url).toBe("https://recall.example/deck");
+      asked.push(url);
+      expect(url).toBe("/deck");
       if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
         return Response.json({ error: "No." }, { status: 401 });
       }
       deck = mergeDecks(deck, loadDeck(JSON.parse(init.body as string))!);
       return Response.json(saveDeck(deck));
     });
+    return asked;
   }
 
   const settle = async (): Promise<void> => {
@@ -192,10 +193,13 @@ describe("syncing from the recall page", () => {
     root.querySelector<HTMLFormElement>(".rc-key")!.requestSubmit();
   }
 
-  it("says the questions stay in this browser when the build has no Worker", async () => {
+  it("keeps the questions in this browser, sending nothing, until given the key", async () => {
+    const asked = worker([]);
     const root = await open([card("a", "Mine?")]);
+    await settle();
     expect(root.querySelector(".rc-sync")!.textContent).toContain("kept in this browser only");
-    expect(keyBox(root)).toBeNull();
+    expect(keyBox(root)).not.toBeNull();
+    expect(asked).toEqual([]);
   });
 
   it("takes the sync key, then shows the questions noted on other devices", async () => {

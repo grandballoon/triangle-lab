@@ -12,7 +12,7 @@ dist/
 # Local tooling scratch
 .lavish/
 
-# The recall Worker's local state and secrets (wrangler.jsonc)
+# The Worker's local state and secrets (wrangler.jsonc)
 .wrangler/
 .dev.vars
 

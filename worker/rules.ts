@@ -1,6 +1,9 @@
-// What the recall Worker does with a request, decided from plain values: which
-// pages may call it, whether the caller holds the key, and what was asked
-// for. index.ts reads the request, follows the decision and does the I/O.
+// What the Worker does with a request to the recall deck, decided from plain
+// values: whether the caller holds the key, is within the rate limit, and
+// what was asked for. index.ts reads the request, follows the decision and
+// does the I/O. Only /deck reaches the Worker; the site's pages are served
+// from its assets (wrangler.jsonc), on the same origin, so no page elsewhere
+// is let in through CORS.
 //
 // The API is one resource, the deck:
 //   GET  /deck  the deck as held, a SavedDeck (src/recall/deck.ts)
@@ -28,24 +31,19 @@ export const CLOCK_SLACK_MS = 60 * 60 * 1000;
 export interface Asked {
   method: string;
   path: string;
-  /** The Origin header, if the request came from a page. */
-  origin: string | null;
   authorization: string | null;
   /** The Content-Length header, if sent. */
   length: number | null;
-  /** Whether the caller is within the rate limit; asked of every request but a preflight. */
+  /** Whether the caller is within the rate limit. */
   withinLimit: boolean;
 }
 
 export interface Settings {
   /** The key every request must carry; empty when the secret was never set. */
   key: string;
-  /** Origins allowed to call from a page, separated by spaces. */
-  origins: string;
 }
 
 export type Decision =
-  | { kind: "preflight" }
   | { kind: "read" }
   | { kind: "merge" }
   | Refusal;
@@ -58,7 +56,6 @@ export interface Refusal {
 
 export function decide(asked: Asked, settings: Settings): Decision {
   if (asked.path !== "/deck") return refuse(404, "There is nothing here but /deck.");
-  if (asked.method === "OPTIONS") return { kind: "preflight" };
   if (asked.method !== "GET" && asked.method !== "POST") return refuse(405, "Use GET or POST.");
   if (settings.key.length < MIN_KEY) {
     return refuse(503, `The Worker's RECALL_KEY is missing or shorter than ${MIN_KEY} characters.`);
@@ -81,21 +78,6 @@ export const tooLarge: Refusal = { kind: "refuse", status: 413, error: "That dec
 export function datedAhead(deck: Deck, now: number): boolean {
   const limit = now + CLOCK_SLACK_MS;
   return deck.cards.some((c) => c.updated > limit) || deck.removed.some((r) => r.at > limit);
-}
-
-/**
- * The CORS headers for a response to `origin`: none for a page not allowed,
- * so its browser keeps the response from it.
- */
-export function corsHeaders(origin: string | null, origins: string): Record<string, string> {
-  if (!origin || !origins.split(/\s+/).includes(origin)) return { Vary: "Origin" };
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
-  };
 }
 
 /** Whether `authorization` is `Bearer <key>`, compared in constant time. */

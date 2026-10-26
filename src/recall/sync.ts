@@ -1,5 +1,5 @@
 // Keeping the recall deck the same on every device the learner uses, through
-// the recall Worker (worker/). Each page sends its whole deck and takes back
+// the site's Worker (worker/), which holds the deck at /deck. Each page sends its whole deck and takes back
 // the Worker's merge of it with every other device's (mergeDecks).
 //
 // Pure: what a reply means, whether there is anything to send, and how the
@@ -9,9 +9,7 @@ import { mergeDecks, sameDeck, loadDeck, type Deck } from "./deck.ts";
 
 /** How syncing stands, for the page to show. */
 export type SyncState =
-  /** This build has no Worker to sync with. */
-  | { kind: "off" }
-  /** There is a Worker, but this browser has not been given the key. */
+  /** This browser has not been given the key. */
   | { kind: "no-key" }
   | { kind: "syncing"; last: number | null }
   | { kind: "synced"; last: number }
@@ -74,8 +72,6 @@ export function hasNews(deck: Deck, server: Deck | null): boolean {
 export function syncLabel(state: SyncState, now: number): string {
   const since = (last: number | null): string => (last === null ? "" : ` Last synced ${ago(last, now)}.`);
   switch (state.kind) {
-    case "off":
-      return "Your questions are kept in this browser only. Save them to a file to move them to another browser, or to keep a copy.";
     case "no-key":
       return "Your questions are kept in this browser only. Enter your sync key to keep them the same on every device you use.";
     // A sync after the first reads as the last success, so the line does

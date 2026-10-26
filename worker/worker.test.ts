@@ -1,7 +1,12 @@
-// The recall Worker running for real, in the local Workers runtime: its
-// HTTP contract, the deck surviving the object being evicted, and two
-// devices syncing through it from the pages' own sync code.
+// The site's Worker running for real, in the local Workers runtime, from
+// wrangler.jsonc: pages served from its assets, the recall deck's HTTP
+// contract, the deck surviving the object being evicted, and two devices
+// syncing through it from the pages' own sync code.
 
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, type Deck } from "../src/recall/deck.ts";
@@ -10,18 +15,42 @@ import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
 
 const KEY = "a-test-key-long-enough-to-be-served";
-const PAGE = "http://localhost:5173";
+const ROOT = resolve(__dirname, "..");
 const T0 = 1_700_000_000_000;
 const card = (id: string, at = T0) => newCard(id, `Question ${id}?`, { lesson: "medians", step: 0, stepTitle: "" }, at)!;
 const ids = (deck: { cards: { id: string }[] }) => deck.cards.map((c) => c.id);
 
 let harness: TestHarness;
 let base: string;
+/**
+ * Where the harness runs: away from the project, so the developer's own
+ * .dev.vars key is not read, with an assets folder standing in for dist/,
+ * which a test run may come before.
+ */
+let dir: string;
 
 beforeAll(async () => {
+  dir = await mkdtemp(join(tmpdir(), "triangle-lab-worker-"));
+  const assets = join(dir, "assets");
+  await mkdir(assets);
+  await writeFile(join(assets, "index.html"), "<title>Lessons</title>");
+  await writeFile(join(assets, "recall.html"), "<title>Recall</title>");
+  // The real configuration, with only the assets and the key swapped in.
+  const path = join(ROOT, "wrangler.jsonc");
+  const { config, error } = ts.parseConfigFileTextToJson(path, await readFile(path, "utf8"));
+  if (error) throw new Error(String(error.messageText));
   harness = createTestHarness({
-    root: `${__dirname}/..`,
-    workers: [{ configPath: "./wrangler.jsonc", secrets: { RECALL_KEY: KEY } }],
+    root: dir,
+    workers: [
+      {
+        config: {
+          ...config,
+          main: join(ROOT, config.main),
+          assets: { ...config.assets, directory: assets },
+          vars: { RECALL_KEY: KEY },
+        },
+      },
+    ],
   });
   await harness.listen();
 }, 60_000);
@@ -33,22 +62,31 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await harness?.close();
+  await rm(dir, { recursive: true, force: true });
 });
 
 const call = (method: string, body?: unknown, headers: Record<string, string> = {}) =>
   fetch(`${base}/deck`, {
     method,
-    headers: { Authorization: `Bearer ${KEY}`, Origin: PAGE, ...headers },
+    headers: { Authorization: `Bearer ${KEY}`, ...headers },
     body: body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body),
   });
 
-describe("the recall Worker", () => {
+describe("the site", () => {
+  it("serves the pages from its assets, and the deck beside them", async () => {
+    expect(await (await fetch(`${base}/`)).text()).toBe("<title>Lessons</title>");
+    expect(await (await fetch(`${base}/recall`)).text()).toBe("<title>Recall</title>");
+    expect((await fetch(`${base}/nowhere.html`)).status).toBe(404);
+    expect((await call("GET")).status).toBe(200);
+  });
+});
+
+describe("the recall deck", () => {
   it("merges each deck sent into the one it holds, and answers with the result", async () => {
     expect(await (await call("GET")).json()).toEqual(saveDeck(EMPTY_DECK));
     const stale: Deck = { cards: [card("a"), card("b", T0 + 1)], removed: [] };
     const first = await call("POST", saveDeck(stale));
     expect(first.status).toBe(200);
-    expect(first.headers.get("Access-Control-Allow-Origin")).toBe(PAGE);
     expect(await first.json()).toEqual(saveDeck(stale));
 
     // A device changes the deck; another, which has not heard, sends its older copy.
@@ -100,14 +138,6 @@ describe("the recall Worker", () => {
     }
     expect(statuses.slice(0, 60).every((s) => s === 401)).toBe(true);
     expect(statuses.at(-1)).toBe(429);
-  });
-
-  it("answers a page's preflight, and only lets the listed pages read its answers", async () => {
-    const preflight = await call("OPTIONS", undefined, { Authorization: "", "Access-Control-Request-Method": "POST" });
-    expect(preflight.status).toBe(204);
-    expect(preflight.headers.get("Access-Control-Allow-Headers")).toBe("Authorization, Content-Type");
-    const elsewhere = await call("GET", undefined, { Origin: "https://elsewhere.example" });
-    expect(elsewhere.headers.get("Access-Control-Allow-Origin")).toBeNull();
   });
 
 });

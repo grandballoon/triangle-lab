@@ -1,5 +1,6 @@
-// The recall Worker: the deck of recall questions (src/recall), kept on the
-// web so every device the learner uses holds the same one.
+// The Worker behind /deck: the deck of recall questions (src/recall), kept
+// on the web so every device the learner uses holds the same one. The rest
+// of the site is static assets, served without running this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
 // storage. It merges each deck sent to it with the one it holds, using the
@@ -12,7 +13,7 @@
 
 import { DurableObject } from "cloudflare:workers";
 import { changedSince, EMPTY_DECK, loadDeck, mergeDecks, saveDeck, type Card, type Deck, type SavedDeck } from "../src/recall/deck.ts";
-import { corsHeaders, datedAhead, decide, MAX_BODY, tooLarge } from "./rules.ts";
+import { datedAhead, decide, MAX_BODY, tooLarge } from "./rules.ts";
 
 /** There is one learner, so one deck. */
 const DECK_NAME = "deck";
@@ -20,31 +21,26 @@ const DECK_NAME = "deck";
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
-    const origin = request.headers.get("Origin");
-    const cors = corsHeaders(origin, env.ALLOWED_ORIGINS);
-    const reply = (status: number, body: unknown): Response => Response.json(body, { status, headers: cors });
+    const reply = (status: number, body: unknown): Response => Response.json(body, { status });
 
     const length = request.headers.get("Content-Length");
     // Counted by the caller's address, so someone guessing the key slows
     // only themselves, never the learner's own devices.
-    const withinLimit =
-      request.method === "OPTIONS" ||
-      (await env.LIMITER.limit({ key: request.headers.get("CF-Connecting-IP") ?? "unknown" })).success;
+    const { success: withinLimit } = await env.LIMITER.limit({
+      key: request.headers.get("CF-Connecting-IP") ?? "unknown",
+    });
     const decision = decide(
       {
         method: request.method,
         path: url.pathname,
-        origin,
         authorization: request.headers.get("Authorization"),
         length: length === null ? null : Number(length),
         withinLimit,
       },
-      { key: env.RECALL_KEY ?? "", origins: env.ALLOWED_ORIGINS },
+      { key: env.RECALL_KEY ?? "" },
     );
     const deck = env.DECKS.getByName(DECK_NAME);
     switch (decision.kind) {
-      case "preflight":
-        return new Response(null, { status: 204, headers: cors });
       case "refuse":
         return reply(decision.status, { error: decision.error });
       case "read":

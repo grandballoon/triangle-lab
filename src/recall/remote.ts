@@ -1,5 +1,5 @@
-// Syncing the recall deck with the recall Worker (worker/), from every page
-// that holds the deck: the menu, the lessons and the recall page.
+// Syncing the recall deck with the site's Worker (worker/), at /deck on the
+// site's own origin, from every page that holds the deck: the menu, the lessons and the recall page.
 //
 // A sync sends the whole deck and merges what comes back into the store.
 // One runs when the page opens, shortly after each change, when the tab is
@@ -27,7 +27,7 @@ type Timer = ReturnType<typeof setTimeout>;
 
 /** What syncing needs from the browser, passed in so a test can stand in for it. */
 export interface SyncDeps {
-  /** The Worker's address, or empty when this build has none. */
+  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`. */
   url: string;
   keys: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
   fetch: typeof fetch;
@@ -60,12 +60,11 @@ export class RecallSync {
     private readonly store: RecallStore,
     private readonly deps: SyncDeps,
   ) {
-    this.state = !deps.url ? { kind: "off" } : this.key() ? { kind: "syncing", last: null } : { kind: "no-key" };
+    this.state = this.key() ? { kind: "syncing", last: null } : { kind: "no-key" };
   }
 
   /** Sync now, and from here on whenever there is cause. */
   start(): void {
-    if (!this.deps.url) return;
     this.store.subscribe((deck) => {
       if (hasNews(deck, this.server)) this.soon();
     });
@@ -148,7 +147,6 @@ export class RecallSync {
 
   private async once(): Promise<void> {
     const key = this.key();
-    if (!this.deps.url) return;
     if (!key) return this.set({ kind: "no-key" });
     if (key === this.refused) return this.set({ kind: "refused" });
     this.set({ kind: "syncing", last: lastSynced(this.state) });
@@ -199,8 +197,8 @@ export class RecallSync {
 let opened: { store: RecallStore; sync: RecallSync } | null = null;
 
 /**
- * The page's deck, syncing with the Worker this build names, if any. Every
- * page holding the deck opens it here, once.
+ * The page's deck, syncing with the Worker once the browser has the key.
+ * Every page holding the deck opens it here, once.
  */
 export function openRecall(): { store: RecallStore; sync: RecallSync } {
   if (!opened) {
@@ -220,7 +218,8 @@ function browserDeps(): SyncDeps {
     keys = null;
   }
   return {
-    url: (import.meta.env.VITE_RECALL_SYNC_URL ?? "").trim().replace(/\/+$/, ""),
+    // The site's root, as built (vite.config.ts `base`).
+    url: import.meta.env.BASE_URL.replace(/\/+$/, ""),
     keys,
     fetch: (input, init) => fetch(input, init),
     now: () => Date.now(),
