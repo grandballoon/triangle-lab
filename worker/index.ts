@@ -12,7 +12,7 @@
 
 import { DurableObject } from "cloudflare:workers";
 import { changedSince, EMPTY_DECK, loadDeck, mergeDecks, saveDeck, type Card, type Deck, type SavedDeck } from "../src/recall/deck.ts";
-import { corsHeaders, decide, MAX_BODY } from "./rules.ts";
+import { corsHeaders, datedAhead, decide, MAX_BODY, tooLarge } from "./rules.ts";
 
 /** There is one learner, so one deck. */
 const DECK_NAME = "deck";
@@ -24,8 +24,21 @@ export default {
     const cors = corsHeaders(origin, env.ALLOWED_ORIGINS);
     const reply = (status: number, body: unknown): Response => Response.json(body, { status, headers: cors });
 
+    const length = request.headers.get("Content-Length");
+    // Counted by the caller's address, so someone guessing the key slows
+    // only themselves, never the learner's own devices.
+    const withinLimit =
+      request.method === "OPTIONS" ||
+      (await env.LIMITER.limit({ key: request.headers.get("CF-Connecting-IP") ?? "unknown" })).success;
     const decision = decide(
-      { method: request.method, path: url.pathname, origin, authorization: request.headers.get("Authorization") },
+      {
+        method: request.method,
+        path: url.pathname,
+        origin,
+        authorization: request.headers.get("Authorization"),
+        length: length === null ? null : Number(length),
+        withinLimit,
+      },
       { key: env.RECALL_KEY ?? "", origins: env.ALLOWED_ORIGINS },
     );
     const deck = env.DECKS.getByName(DECK_NAME);
@@ -37,10 +50,14 @@ export default {
       case "read":
         return reply(200, await deck.read());
       case "merge": {
+        // Content-Length was checked in decide(), but a body may come without one.
         const text = await request.text();
-        if (text.length > MAX_BODY) return reply(413, { error: "That deck is too large." });
+        if (text.length > MAX_BODY) return reply(tooLarge.status, { error: tooLarge.error });
         const sent = parse(text);
         if (!sent) return reply(400, { error: "That is not a saved deck." });
+        if (datedAhead(sent, Date.now())) {
+          return reply(400, { error: "A change on this device is dated in the future. Check its date and time." });
+        }
         return reply(200, await deck.merge(sent));
       }
     }

@@ -17,7 +17,13 @@
 	"durable_objects": {
 		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
 	},
-	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["RecallDeck"] }]
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["RecallDeck"] }],
+	// Requests per caller address, so the key cannot be guessed at speed. A
+	// device syncs a few times a minute at most. The namespace id only has
+	// to be unique within the Cloudflare account.
+	"ratelimits": [
+		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } }
+	]
 	// The RECALL_KEY secret, which every request must carry, is set with
 	// `npx wrangler secret put RECALL_KEY`, never written here. Locally it
 	// comes from .dev.vars.

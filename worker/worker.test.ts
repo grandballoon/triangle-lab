@@ -7,10 +7,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, type Deck } from "../src/recall/deck.ts";
 import { RecallSync, SYNC_KEY_STORAGE } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
+import { MAX_BODY } from "./rules.ts";
 
-const KEY = "test-key";
+const KEY = "a-test-key-long-enough-to-be-served";
 const PAGE = "http://localhost:5173";
-const T0 = 1_800_000_000_000;
+const T0 = 1_700_000_000_000;
 const card = (id: string, at = T0) => newCard(id, `Question ${id}?`, { lesson: "medians", step: 0, stepTitle: "" }, at)!;
 const ids = (deck: { cards: { id: string }[] }) => deck.cards.map((c) => c.id);
 
@@ -77,6 +78,28 @@ describe("the recall Worker", () => {
   it("refuses what is not a deck", async () => {
     expect((await call("POST", "{not json")).status).toBe(400);
     expect((await call("POST", { cards: [] })).status).toBe(400);
+  });
+
+  it("refuses a change dated well ahead of its clock, which would win every merge", async () => {
+    const ahead = await call("POST", saveDeck({ cards: [card("future", Date.now() + 365 * 86_400_000)], removed: [] }));
+    expect(ahead.status).toBe(400);
+    expect((await ahead.json()).error).toContain("dated in the future");
+    expect(ids(await (await call("GET")).json())).toEqual([]);
+    expect((await call("POST", saveDeck({ cards: [card("now", Date.now())], removed: [] }))).status).toBe(200);
+  });
+
+  it("refuses a deck too large to take", async () => {
+    const response = await call("POST", "x".repeat(MAX_BODY + 1));
+    expect(response.status).toBe(413);
+  });
+
+  it("slows a caller making too many requests, before looking at the key", async () => {
+    const statuses: number[] = [];
+    for (let i = 0; i < 70; i++) {
+      statuses.push((await call("GET", undefined, { Authorization: "Bearer guess" })).status);
+    }
+    expect(statuses.slice(0, 60).every((s) => s === 401)).toBe(true);
+    expect(statuses.at(-1)).toBe(429);
   });
 
   it("answers a page's preflight, and only lets the listed pages read its answers", async () => {

@@ -86,16 +86,18 @@ The Worker is configured in `wrangler.jsonc` and deployed separately from the si
 
 ```sh
 npx wrangler login
-npx wrangler secret put RECALL_KEY   # the sync key: any long random string, e.g. from `openssl rand -base64 24`
+npx wrangler secret put RECALL_KEY   # the sync key: paste the output of `openssl rand -base64 24`
 npm run worker:deploy                # prints the Worker's address
 ```
 
 Put that address in `.env.production` as `VITE_RECALL_SYNC_URL`, commit it, and the next published build syncs.
 The key itself is never committed: it lives in the Worker's secrets and in each browser you enter it in.
+The Worker serves no one until its key is at least 32 characters, since the key is all that guards the questions.
+It also limits each caller's address to 60 requests a minute, so a key cannot be guessed at speed, and refuses changes dated more than an hour ahead of its clock, which would otherwise win every merge.
 `ALLOWED_ORIGINS` in `wrangler.jsonc` lists the pages that may call the Worker; add any other address the site is served from.
 
 Locally, `npm run worker` runs the Worker on `localhost:8787`, which `npm run dev` syncs with (`.env.development`).
-Its key comes from `.dev.vars`, which is gitignored; create it with a line such as `RECALL_KEY=local-dev-key`.
+Its key comes from `.dev.vars`, which is gitignored; create it with `echo "RECALL_KEY=$(openssl rand -base64 24)" > .dev.vars`.
 
 ## Lessons
 
