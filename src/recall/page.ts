@@ -7,7 +7,10 @@
 // devices stands, taking the sync key when it has none. In a sitting it asks one due question at a time: the
 // learner answers from memory, then checks (earlier answers, and a link that
 // opens the lesson at the step the question came from) and grades
-// themselves, which schedules the question's next asking.
+// themselves, which schedules the question's next asking. Once the browser
+// has the sync key, a written answer is also read by Claude while the learner
+// checks it (check.ts): its feedback is shown with the answer, and the grade
+// it suggests is marked, but the learner still picks the grade.
 //
 // The rules are pure (deck.ts, session.ts); this file holds the page's state,
 // renders it and does the I/O.
@@ -27,15 +30,19 @@ import {
   type Deck,
   type Grade,
 } from "./deck.ts";
-import { byLesson, gradeHint, lessonLabel, questionHtml, sourceHref, stepLabel, whenLabel } from "./labels.ts";
+import type { Review } from "./check.ts";
+import { byLesson, gradeHint, lessonLabel, placeLabel, questionHtml, sourceHref, stepLabel, whenLabel } from "./labels.ts";
 import {
+  askReview,
   currentCard,
   gradeCurrent,
   loadSitting,
   progress,
   prune,
   reveal,
+  settleReview,
   startSession,
+  wantsReview,
   type Session,
   type Sitting,
 } from "./session.ts";
@@ -91,6 +98,8 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// A sitting kept while its answer was being read lost that request with the page.
+reviewAnswer();
 render();
 
 // --- State changes ------------------------------------------------------------
@@ -106,7 +115,29 @@ function begin(cards: readonly Card[]): void {
 function check(): void {
   if (!session) return;
   session = reveal(session, draft);
+  reviewAnswer();
   render();
+}
+
+/**
+ * Have Claude read the answer being checked, if it is waiting to be, or
+ * again after a failure when `retry`. Nothing is asked without the sync key.
+ * The caller renders; the reply renders when it comes.
+ */
+function reviewAnswer(retry = false): void {
+  if (!session || !sync.canCheck() || !(retry || wantsReview(session))) return;
+  const card = currentCard(session, store.get());
+  const asked = askReview(session);
+  if (!card || asked === session) return;
+  session = asked;
+  const { answer } = asked;
+  void sync.check({ question: card.question, where: placeLabel(card), answer }).then((review) => {
+    if (!session) return;
+    const next = settleReview(session, card.id, answer, review);
+    if (next === session) return;
+    session = next;
+    render();
+  });
 }
 
 function gradeAnswer(grade: Grade): void {
@@ -302,7 +333,7 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   const panel = el("section", "rc-ask");
   const question = el("div", "rc-asked");
   question.innerHTML = questionHtml(card.question);
-  panel.append(el("p", "rc-from", `${lessonLabel(card.lesson)} · ${stepLabel(card)}`), question);
+  panel.append(el("p", "rc-from", placeLabel(card)), question);
 
   if (s.phase === "ask") {
     const answer = el("textarea", "rc-answer");
@@ -328,6 +359,7 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   yours.append(el("h3", "", "Your answer"));
   yours.append(s.answer.trim() ? el("p", "rc-said", s.answer) : el("p", "rc-said rc-quiet", "Answered in your head."));
   panel.append(yours);
+  if (s.review) panel.append(reviewed(s.review));
 
   const last = card.attempts.at(-1);
   if (last) {
@@ -347,17 +379,44 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   }
 
   const now = Date.now();
+  const suggested = s.review?.kind === "done" ? s.review.verdict.grade : null;
   const grades = el("div", "rc-grades");
   grades.append(
     ...GRADES.map((g, i) => {
-      const b = button("", `rc-grade rc-${g}`, () => gradeAnswer(g));
+      const b = button("", `rc-grade rc-${g}${g === suggested ? " rc-suggested" : ""}`, () => gradeAnswer(g));
       b.append(el("span", "rc-grade-name", GRADE_LABEL[g]), el("span", "rc-grade-when", gradeHint(card, g, now)));
-      b.title = `${GRADE_LABEL[g]} (${i + 1})`;
+      b.title = `${GRADE_LABEL[g]} (${i + 1})${g === suggested ? ", as Claude suggests" : ""}`;
       return b;
     }),
   );
   panel.append(el("p", "rc-hint rc-grade-prompt", "How did it go? (1 · 2 · 3)"), grades);
   return [top, panel];
+}
+
+/** Claude's reading of the answer: under way, its feedback, or why there is none. */
+function reviewed(review: Review): HTMLElement {
+  const box = el("div", "rc-yours rc-review");
+  box.setAttribute("role", "status");
+  if (review.kind === "checking") {
+    box.append(el("h3", "", "Claude's check"), el("p", "rc-said rc-quiet", "Reading your answer…"));
+  } else if (review.kind === "done") {
+    const { grade, feedback } = review.verdict;
+    const said = el("p", "rc-said rc-feedback");
+    said.innerHTML = questionHtml(feedback);
+    box.append(el("h3", "", `Claude's check · ${GRADE_LABEL[grade].toLowerCase()}`), said);
+  } else {
+    box.append(
+      el("h3", "", "Claude's check"),
+      el("p", "rc-said rc-quiet", review.error),
+      row(
+        button("Try again", "rc-small", () => {
+          reviewAnswer(true);
+          render();
+        }),
+      ),
+    );
+  }
+  return box;
 }
 
 function finished(s: Session, deck: Deck): HTMLElement {

@@ -81,7 +81,7 @@ const EARLY_MS = 6 * 60 * 60 * 1000;
 
 /** Longest question kept, so a stray paste cannot bloat storage. */
 export const MAX_QUESTION = 2000;
-const MAX_ANSWER = 4000;
+export const MAX_ANSWER = 4000;
 
 /** A question as it will be stored: trimmed and capped. Empty means none. */
 export function cleanQuestion(text: string): string {

@@ -3,7 +3,7 @@
 Triangle Lab is a set of interactive geometry lessons drawn over the learner's webcam.
 The learner moves points with a mouse, a finger, or a hand held up to the camera, and steps through visual proofs.
 It is a static site: Vite builds a handful of HTML pages, and everything runs in the browser.
-The one exception is the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device; that Worker also serves the pages.
+The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking, which asks Claude through that Worker; the Worker also serves the pages.
 
 # Architecture Overview
 
@@ -168,15 +168,21 @@ The recall page lists every question by lesson and runs review sittings.
 A sitting asks each due question in turn: the learner answers from memory, in writing or not, then checks against their earlier answers and the lesson itself, and grades themselves missed, shaky or recalled.
 "Check in the lesson" opens the lesson in a new tab at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
 
+While the learner checks a written answer, Claude reads it too, once the browser has the sync key.
+The page sends the question, where it was asked and the answer to the Worker's `/check`, and shows the feedback that comes back with the answer, marking the grade Claude suggests; the learner still picks the grade.
+Claude's reading (a `Review`: checking, done or failed) is part of the sitting, tied to the card being checked: a reply that comes after the sitting has moved on is dropped, grading or deleting the card drops it, and it is kept across a reload, except one still under way, which is asked for again.
+A failed check is asked again only when the learner presses "Try again".
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
-| `session.ts` | A review sitting: ask, check, grade, one more try after a first miss; reading one back after a reload | yes |
+| `session.ts` | A review sitting: ask, check, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
+| `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
-| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page | no (browser injected) |
+| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, with the same key | no (browser injected) |
 | `capture.ts` | The pill and sheet on a lesson page | no |
 | `page.ts` | The recall page: overview, sittings, the sync key, saving to and loading from a file | no |
 
@@ -202,10 +208,10 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck` runs the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck` and `/check` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck` on to the Worker that `npm run preview` runs on port 8787.
+In development, Vite sends `/deck` and `/check` on to the Worker that `npm run preview` runs on port 8787.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
@@ -217,10 +223,19 @@ One Durable Object (`RecallDeck`) holds the deck, a row per question in its SQLi
 It reads the deck, merges, and writes the rows that changed in one synchronous transaction, and requests reach it one at a time, so two devices syncing at once cannot undo each other.
 The merge rule is the pages' own (`src/recall/deck.ts`, which has no DOM), so the Worker and the pages cannot disagree on it.
 
+`POST /check` takes a `CheckRequest` and answers with Claude's `Verdict`, a grade and feedback (`src/recall/check.ts`, shared with the page like the deck).
+It is guarded by the same key and rate limit, and also by a tighter one of its own (`CHECK_LIMITER`, 10 a minute), since each check is a paid call to Claude.
+The Worker calls the Claude API with the official SDK and its own `ANTHROPIC_API_KEY` secret, so the Claude key never reaches a browser; without that secret, checking answers 503 and the deck works as before.
+The call (`check.ts`) uses Claude Opus 5.5 at medium effort, with structured output to a schema of the verdict, and server-side fallbacks, so a request a safety classifier declines is run again on the model Anthropic recommends.
+The learner's text is put in tags the system prompt says are material to judge, not instructions.
+Whatever comes back is read with the same `readVerdict` the page uses, and a refusal, a cut-short reply or a failed call becomes a 502 saying why.
+`ANTHROPIC_BASE_URL` (a var in `wrangler.jsonc`) says where the Claude API is, so the Worker test can stand one in.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
-| `index.ts` | The fetch handler and the `RecallDeck` object | no |
+| `check.ts` | The request to Claude to check an answer, and the verdict or failure read from its reply | yes |
+| `index.ts` | The fetch handler, the call to Claude, and the `RecallDeck` object | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
 
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
@@ -253,6 +268,7 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `SavedDeck` (`src/recall/deck.ts`): the deck as stored, exported, and sent to and from the Worker.
 - `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
 - `Session` (`src/recall/session.ts`): a review sitting in progress.
+- `CheckRequest`, `Verdict`, `Review` (`src/recall/check.ts`): an answer sent to be checked, Claude's grade and feedback, and where a sitting stands on getting them.
 
 # Testing
 
@@ -272,13 +288,15 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
-- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings, links to a step, labels and the Enter key.
+- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
+- `src/recall/check.test.ts`: reading a check request, a verdict, and a reply from `/check`.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
-- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, and giving it the sync key.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: feedback and the suggested grade, nothing sent without a written answer or the key, trying again, and reloads.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
-- `worker/rules.test.ts`: the deck's routing, key check, rate limit, and size and clock checks.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, and two devices syncing through it.
+- `worker/rules.test.ts`: routing to the deck and to checking, key check, rate limit, size and clock checks, and checking off without a Claude key.
+- `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, and answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 

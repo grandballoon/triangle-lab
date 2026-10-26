@@ -230,6 +230,11 @@ textarea:focus,
 
 .rc-said.rc-quiet { color: rgba(233, 240, 247, 0.5); font-style: italic; }
 
+/* Typeset, so its markup's own whitespace is not kept. */
+.rc-said.rc-feedback { white-space: normal; }
+
+.rc-review .rc-row { margin-top: 8px; }
+
 .rc-source {
   display: inline-block;
   margin-top: 18px;
@@ -267,6 +272,11 @@ textarea:focus,
 .rc-grade.rc-missed { border-color: rgba(255, 107, 107, 0.45); }
 .rc-grade.rc-shaky { border-color: rgba(255, 212, 59, 0.45); }
 .rc-grade.rc-recalled { border-color: rgba(56, 217, 169, 0.55); }
+
+/* The grade Claude suggests: filled with its colour, and ringed. */
+.rc-grade.rc-missed.rc-suggested { background: rgba(255, 107, 107, 0.14); box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.7); }
+.rc-grade.rc-shaky.rc-suggested { background: rgba(255, 212, 59, 0.12); box-shadow: 0 0 0 1px rgba(255, 212, 59, 0.7); }
+.rc-grade.rc-recalled.rc-suggested { background: rgba(56, 217, 169, 0.14); box-shadow: 0 0 0 1px rgba(56, 217, 169, 0.8); }
 
 .rc-finished .rc-note + .rc-note { margin-top: 2px; }
 

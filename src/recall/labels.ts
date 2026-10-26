@@ -25,6 +25,11 @@ export function lessonLabel(slug: string): string {
   return chapter ? `${chapter.title} · ${lessonName(slug)}` : lessonName(slug);
 }
 
+/** "Triangles · Medians · Step 2: Find the centroid": where a question was asked. */
+export function placeLabel(place: Place): string {
+  return `${lessonLabel(place.lesson)} · ${stepLabel(place)}`;
+}
+
 /** Where to check an answer: the lesson, opened at the step it was asked. */
 export function sourceHref(place: Place): string | null {
   const lesson = lessons.find((l) => l.slug === place.lesson);

@@ -1,9 +1,10 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	// The whole site: the built pages from dist/, and the recall deck at /deck
-	// (worker/), which keeps questions noted on one device on all the others.
-	// Pages and deck share one origin, so the site's storage and the sync key
-	// are its own, and the pages call the deck without CORS.
+	// The whole site: the built pages from dist/, the recall deck at /deck
+	// (worker/), which keeps questions noted on one device on all the others,
+	// and /check, where Claude reads an answer given in a review. Pages and
+	// Worker share one origin, so the site's storage and the sync key are its
+	// own, and the pages call the Worker without CORS.
 	"name": "triangle-lab",
 	"main": "worker/index.ts",
 	"compatibility_date": "2026-10-19",
@@ -12,9 +13,9 @@
 	},
 	"assets": {
 		// Built by `npm run build`. Pages are served as they are, without
-		// running the Worker; only /deck runs it.
+		// running the Worker; only /deck and /check run it.
 		"directory": "./dist",
-		"run_worker_first": ["/deck"]
+		"run_worker_first": ["/deck", "/check"]
 	},
 	"durable_objects": {
 		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
@@ -23,10 +24,19 @@
 	// Requests per caller address, so the key cannot be guessed at speed. A
 	// device syncs a few times a minute at most. The namespace id only has
 	// to be unique within the Cloudflare account.
+	// Checks are counted again against a tighter limit, since each one is a
+	// paid call to Claude: a learner checks one answer at a time.
 	"ratelimits": [
-		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } }
-	]
-	// The RECALL_KEY secret, which every request to /deck must carry, is set
-	// with `npx wrangler secret put RECALL_KEY`, never written here. Locally
-	// it comes from .dev.vars.
+		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } },
+		{ "name": "CHECK_LIMITER", "namespace_id": "4208", "simple": { "limit": 10, "period": 60 } }
+	],
+	// Set with `npx wrangler secret put <NAME>`, never written here; locally
+	// they come from .dev.vars. A deploy fails while either is unset.
+	// RECALL_KEY: the key every request must carry.
+	// ANTHROPIC_API_KEY: the Claude API key /check calls Claude with.
+	"secrets": { "required": ["RECALL_KEY", "ANTHROPIC_API_KEY"] },
+	"vars": {
+		// Where the Claude API is. Tests point it at a stand-in.
+		"ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+	}
 }

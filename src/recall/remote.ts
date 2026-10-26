@@ -8,8 +8,12 @@
 // happen: the deck is still kept in the browser (store.ts), and goes with
 // the next sync that works.
 //
+// The same key lets the recall page have Claude check an answer, at /check
+// (check.ts), so that request is made here too.
+//
 // The rules are in sync.ts; this makes the requests and holds the state.
 
+import { readCheckReply, type CheckRequest, type Review } from "./check.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
 import { afterReply, hasNews, lastSynced, readReply, type SyncState } from "./sync.ts";
@@ -27,7 +31,7 @@ type Timer = ReturnType<typeof setTimeout>;
 
 /** What syncing needs from the browser, passed in so a test can stand in for it. */
 export interface SyncDeps {
-  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`. */
+  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`. */
   url: string;
   keys: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
   fetch: typeof fetch;
@@ -118,6 +122,22 @@ export class RecallSync {
     this.set({ kind: "no-key" });
   }
 
+  /**
+   * Whether answers can be sent to be checked: the browser has a key the
+   * Worker has not turned down.
+   */
+  canCheck(): boolean {
+    const key = this.key();
+    return key !== null && key !== this.refused;
+  }
+
+  /** Have Claude read an answer, through the Worker. */
+  async check(request: CheckRequest): Promise<Review> {
+    const key = this.key();
+    if (!key) return { kind: "failed", error: "This browser has no sync key." };
+    return readCheckReply(await this.post(key, "/check", request));
+  }
+
   /** Sync now, or straight after the sync under way. */
   sync(): Promise<void> {
     if (this.pending !== null) this.deps.clearTimeout(this.pending);
@@ -151,7 +171,7 @@ export class RecallSync {
     if (key === this.refused) return this.set({ kind: "refused" });
     this.set({ kind: "syncing", last: lastSynced(this.state) });
 
-    const reply = readReply(await this.send(key, this.store.get()));
+    const reply = readReply(await this.post(key, "/deck", saveDeck(this.store.get())));
     // The key was changed while this was under way; the sync for the new
     // one follows.
     if (key !== this.key()) return;
@@ -166,12 +186,12 @@ export class RecallSync {
     this.set(afterReply(reply, lastSynced(this.state), this.deps.now()));
   }
 
-  private async send(key: string, deck: Deck): Promise<{ status: number; body: unknown } | null> {
+  private async post(key: string, path: string, body: unknown): Promise<{ status: number; body: unknown } | null> {
     try {
-      const response = await this.deps.fetch(`${this.deps.url}/deck`, {
+      const response = await this.deps.fetch(`${this.deps.url}${path}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify(saveDeck(deck)),
+        body: JSON.stringify(body),
       });
       return { status: response.status, body: await response.json().catch(() => null) };
     } catch {
