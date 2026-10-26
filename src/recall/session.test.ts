@@ -115,6 +115,18 @@ describe("Claude reading the answer being checked", () => {
     expect(askReview(broke).review).toEqual({ kind: "checking" });
   });
 
+  it("is kept with the answer when the learner grades it missed or shaky", () => {
+    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", done);
+    expect(gradeCurrent(settled, deck, "shaky", T0).deck.cards[0].attempts).toEqual([
+      { at: T0, answer: "x", grade: "shaky", claude: { grade: "shaky", feedback: "Nearly." } },
+    ]);
+    expect(gradeCurrent(settled, deck, "recalled", T0).deck.cards[0].attempts).toEqual([
+      { at: T0, answer: "x", grade: "recalled" },
+    ]);
+    const broke = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", failed);
+    expect(gradeCurrent(broke, deck, "missed", T0).deck.cards[0].attempts[0].claude).toBeUndefined();
+  });
+
   it("goes with the card being checked when that card is deleted", () => {
     const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", done);
     expect(prune(settled, removeCard(deck, "a", T0)).review).toBeNull();

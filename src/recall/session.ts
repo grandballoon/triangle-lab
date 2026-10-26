@@ -95,7 +95,7 @@ export function gradeCurrent(
   if (id === undefined || session.phase !== "check") return { session, deck };
   const retry = grade === "missed" && !session.retried.includes(id);
   return {
-    deck: answerCard(deck, id, session.answer, grade, now),
+    deck: answerCard(deck, id, session.answer, grade, now, session.review?.kind === "done" ? session.review.verdict : null),
     session: {
       queue: retry ? [...rest, id] : rest,
       retried: retry ? [...session.retried, id] : session.retried,

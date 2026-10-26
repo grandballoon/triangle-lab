@@ -7,8 +7,8 @@
 // also trusts nothing without.
 
 import type Anthropic from "@anthropic-ai/sdk";
-import { readVerdict, type CheckRequest, type Verdict } from "../src/recall/check.ts";
-import { GRADES } from "../src/recall/deck.ts";
+import type { CheckRequest } from "../src/recall/check.ts";
+import { GRADES, readVerdict, type Verdict } from "../src/recall/deck.ts";
 import type { Refusal } from "./rules.ts";
 
 type Params = Anthropic.Beta.Messages.MessageCreateParamsNonStreaming;

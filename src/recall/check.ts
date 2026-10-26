@@ -5,10 +5,14 @@
 // what was missing. The learner still grades themselves: the suggestion only
 // marks one of the grade buttons.
 //
+// When the learner grades an answer missed or shaky, Claude's verdict is
+// kept with it in the deck (deck.ts `Attempt.claude`, where `Verdict` lives),
+// so the next try, and the question's history, can show what it said.
+//
 // Pure, and shared by the page and the Worker, so both read the request and
 // the verdict by the same rules.
 
-import { GRADES, MAX_ANSWER, MAX_QUESTION, type Grade } from "./deck.ts";
+import { MAX_ANSWER, MAX_QUESTION, readVerdict, type Verdict } from "./deck.ts";
 
 /** What the page sends to have an answer checked. */
 export interface CheckRequest {
@@ -19,13 +23,6 @@ export interface CheckRequest {
   answer: string;
 }
 
-/** Claude's reading of an answer. */
-export interface Verdict {
-  grade: Grade;
-  /** A few sentences to the learner, with `$…$` for mathematics. */
-  feedback: string;
-}
-
 /** Where a sitting stands on having the answer being checked read by Claude. */
 export type Review =
   | { kind: "checking" }
@@ -33,7 +30,6 @@ export type Review =
   | { kind: "failed"; error: string };
 
 const MAX_WHERE = 300;
-export const MAX_FEEDBACK = 2000;
 
 /** Largest request accepted, in characters of JSON: the three fields at their longest, escaped. */
 export const MAX_CHECK_BODY = 6 * (MAX_QUESTION + MAX_WHERE + MAX_ANSWER);
@@ -49,13 +45,6 @@ export function readCheckRequest(raw: unknown): CheckRequest | null {
     answer: answer.trim().slice(0, MAX_ANSWER),
   };
   return request.question && request.answer ? request : null;
-}
-
-/** Read a verdict, or null if `raw` is not one. */
-export function readVerdict(raw: unknown): Verdict | null {
-  if (!isObject(raw) || !GRADES.includes(raw.grade as Grade) || typeof raw.feedback !== "string") return null;
-  const feedback = raw.feedback.trim().slice(0, MAX_FEEDBACK);
-  return feedback ? { grade: raw.grade as Grade, feedback } : null;
 }
 
 /**

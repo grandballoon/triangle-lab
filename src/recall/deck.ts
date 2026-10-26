@@ -21,6 +21,18 @@ export interface Attempt {
   /** What the learner wrote from memory; may be empty if they only thought it. */
   answer: string;
   grade: Grade;
+  /**
+   * What Claude made of the answer (check.ts), kept when the learner graded
+   * it missed or shaky, so the next try can work from it.
+   */
+  claude?: Verdict;
+}
+
+/** Claude's reading of an answer: the grade it would give, and why. */
+export interface Verdict {
+  grade: Grade;
+  /** A few sentences to the learner, with `$…$` for mathematics. */
+  feedback: string;
 }
 
 /** Where a question was asked: a lesson and the step it had current. */
@@ -82,6 +94,7 @@ const EARLY_MS = 6 * 60 * 60 * 1000;
 /** Longest question kept, so a stray paste cannot bloat storage. */
 export const MAX_QUESTION = 2000;
 export const MAX_ANSWER = 4000;
+export const MAX_FEEDBACK = 2000;
 
 /** A question as it will be stored: trimmed and capped. Empty means none. */
 export function cleanQuestion(text: string): string {
@@ -138,11 +151,23 @@ export function dueAfter(box: number, now: number): number {
   return days === 0 ? now : now + days * DAY_MS - EARLY_MS;
 }
 
-/** Record an answer to a card and schedule its next asking. */
-export function answerCard(deck: Deck, id: string, answer: string, grade: Grade, now: number): Deck {
+/**
+ * Record an answer to a card and schedule its next asking. Claude's verdict
+ * on it, if there is one, is kept only with a grade of missed or shaky:
+ * there it says what to work on, and a recalled answer needs nothing more.
+ */
+export function answerCard(
+  deck: Deck,
+  id: string,
+  answer: string,
+  grade: Grade,
+  now: number,
+  claude: Verdict | null = null,
+): Deck {
   return mapCard(deck, id, (c) => {
     const box = nextBox(c.box, grade);
     const attempt: Attempt = { at: now, answer: answer.trim().slice(0, MAX_ANSWER), grade };
+    if (claude && grade !== "recalled") attempt.claude = claude;
     return { ...c, box, due: dueAfter(box, now), updated: now, attempts: [...c.attempts, attempt] };
   });
 }
@@ -285,7 +310,17 @@ function loadRemoval(raw: unknown): Removal | null {
 
 function loadAttempt(raw: unknown): Attempt | null {
   if (!isObject(raw) || !isTime(raw.at) || !GRADES.includes(raw.grade as Grade)) return null;
-  return { at: raw.at, answer: typeof raw.answer === "string" ? raw.answer : "", grade: raw.grade as Grade };
+  const attempt: Attempt = { at: raw.at, answer: typeof raw.answer === "string" ? raw.answer : "", grade: raw.grade as Grade };
+  const claude = readVerdict(raw.claude);
+  if (claude) attempt.claude = claude;
+  return attempt;
+}
+
+/** Read a verdict, or null if `raw` is not one. */
+export function readVerdict(raw: unknown): Verdict | null {
+  if (!isObject(raw) || !GRADES.includes(raw.grade as Grade) || typeof raw.feedback !== "string") return null;
+  const feedback = raw.feedback.trim().slice(0, MAX_FEEDBACK);
+  return feedback ? { grade: raw.grade as Grade, feedback } : null;
 }
 
 // --- Helpers ----------------------------------------------------------------

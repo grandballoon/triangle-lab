@@ -172,10 +172,12 @@ While the learner checks a written answer, Claude reads it too, once the browser
 The page sends the question, where it was asked and the answer to the Worker's `/check`, and shows the feedback that comes back with the answer, marking the grade Claude suggests; the learner still picks the grade.
 Claude's reading (a `Review`: checking, done or failed) is part of the sitting, tied to the card being checked: a reply that comes after the sitting has moved on is dropped, grading or deleting the card drops it, and it is kept across a reload, except one still under way, which is asked for again.
 A failed check is asked again only when the learner presses "Try again".
+When the learner grades the answer missed or shaky, Claude's `Verdict` is kept on the `Attempt` in the deck (`answerCard`), so it syncs and exports with the rest; a recalled answer keeps none.
+The next time the card is checked, the last attempt's verdict is shown under it, and the overview's History button lists a card's attempts, newest first, with their verdicts.
 
 | File | Role | Pure |
 | --- | --- | --- |
-| `deck.ts` | Cards, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
+| `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
@@ -223,7 +225,7 @@ One Durable Object (`RecallDeck`) holds the deck, a row per question in its SQLi
 It reads the deck, merges, and writes the rows that changed in one synchronous transaction, and requests reach it one at a time, so two devices syncing at once cannot undo each other.
 The merge rule is the pages' own (`src/recall/deck.ts`, which has no DOM), so the Worker and the pages cannot disagree on it.
 
-`POST /check` takes a `CheckRequest` and answers with Claude's `Verdict`, a grade and feedback (`src/recall/check.ts`, shared with the page like the deck).
+`POST /check` takes a `CheckRequest` and answers with Claude's `Verdict`, a grade and feedback (`src/recall/check.ts` and `deck.ts`, shared with the page like the rest of the deck).
 It is guarded by the same key and rate limit, and also by a tighter one of its own (`CHECK_LIMITER`, 10 a minute), since each check is a paid call to Claude.
 The Worker calls the Claude API with the official SDK and its own `ANTHROPIC_API_KEY` secret, so the Claude key never reaches a browser; without that secret, checking answers 503 and the deck works as before.
 The call (`check.ts`) uses Claude Opus 5.5 at medium effort, with structured output to a schema of the verdict, and server-side fallbacks, so a request a safety classifier declines is run again on the model Anthropic recommends.
@@ -265,10 +267,11 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `FigureIndex` (`src/lab/figure.ts`): the lines, arcs, angle marks, shapes and labels one frame drew, in screen pixels.
 - `Hold` (`src/lab/hold.ts`): whether the formula band is live, held through a drag, or settling after one.
 - `Card`, `Deck`, `Place`, `Attempt`, `Removal` (`src/recall/deck.ts`): a noted question, where it was asked, its answers, when it is next due, and a removed one.
+- `Verdict` (`src/recall/deck.ts`): Claude's grade and feedback on an answer, kept on an `Attempt` graded missed or shaky.
 - `SavedDeck` (`src/recall/deck.ts`): the deck as stored, exported, and sent to and from the Worker.
 - `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
 - `Session` (`src/recall/session.ts`): a review sitting in progress.
-- `CheckRequest`, `Verdict`, `Review` (`src/recall/check.ts`): an answer sent to be checked, Claude's grade and feedback, and where a sitting stands on getting them.
+- `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
 
 # Testing
 
@@ -292,7 +295,7 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/recall/check.test.ts`: reading a check request, a verdict, and a reply from `/check`.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
-- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: feedback and the suggested grade, nothing sent without a written answer or the key, trying again, and reloads.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: feedback and the suggested grade, feedback kept on a miss and shown on the next try and in the history, nothing sent without a written answer or the key, trying again, and reloads.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
 - `worker/rules.test.ts`: routing to the deck and to checking, key check, rate limit, size and clock checks, and checking off without a Claude key.
 - `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.

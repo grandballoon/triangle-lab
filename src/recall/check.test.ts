@@ -2,8 +2,8 @@
 // Worker read them, and what a reply from /check means.
 
 import { describe, expect, it } from "vitest";
-import { loadReview, MAX_FEEDBACK, readCheckReply, readCheckRequest, readVerdict } from "./check.ts";
-import { MAX_ANSWER } from "./deck.ts";
+import { loadReview, readCheckReply, readCheckRequest } from "./check.ts";
+import { MAX_ANSWER, MAX_FEEDBACK, readVerdict } from "./deck.ts";
 
 const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
 
