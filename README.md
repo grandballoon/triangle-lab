@@ -75,7 +75,27 @@ Answer each from memory first, writing it down or not, then check: your earlier 
 Grade yourself missed, shaky or recalled; a recalled question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days), and a missed one is asked again straight away.
 
 Questions are kept in the browser, like the gesture settings.
-The recall page can save them to a file and load them back, to move them to another browser or keep a copy.
+They can also be kept the same on every device you use, through a small Cloudflare Worker that holds them on the web (`worker/`).
+Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
+Changes made offline are kept in the browser and sent with the next sync that works, and a question removed on one device stays removed on the others.
+The recall page can still save them to a file and load them back, to keep a copy.
+
+### Setting up sync
+
+The Worker is configured in `wrangler.jsonc` and deployed separately from the site:
+
+```sh
+npx wrangler login
+npx wrangler secret put RECALL_KEY   # the sync key: any long random string, e.g. from `openssl rand -base64 24`
+npm run worker:deploy                # prints the Worker's address
+```
+
+Put that address in `.env.production` as `VITE_RECALL_SYNC_URL`, commit it, and the next published build syncs.
+The key itself is never committed: it lives in the Worker's secrets and in each browser you enter it in.
+`ALLOWED_ORIGINS` in `wrangler.jsonc` lists the pages that may call the Worker; add any other address the site is served from.
+
+Locally, `npm run worker` runs the Worker on `localhost:8787`, which `npm run dev` syncs with (`.env.development`).
+Its key comes from `.dev.vars`, which is gitignored; create it with a line such as `RECALL_KEY=local-dev-key`.
 
 ## Lessons
 
@@ -112,6 +132,7 @@ src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/recall/           Noting questions in a lesson and reviewing them later
+worker/               The Cloudflare Worker that syncs recall questions between devices
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements

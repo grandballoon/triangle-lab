@@ -32,10 +32,10 @@ const stored = (deck: Deck) => ({ "triangle-lab:recall": JSON.stringify(saveDeck
 
 describe("RecallStore", () => {
   it("starts from the stored deck, or an empty one", () => {
-    const deck = { cards: [card("a")] };
+    const deck = { cards: [card("a")], removed: [] };
     expect(new RecallStore(memory(stored(deck)), null).get()).toEqual(deck);
-    expect(new RecallStore(memory(), null).get()).toEqual({ cards: [] });
-    expect(new RecallStore(memory({ "triangle-lab:recall": "{not json" }), null).get()).toEqual({ cards: [] });
+    expect(new RecallStore(memory(), null).get()).toEqual({ cards: [], removed: [] });
+    expect(new RecallStore(memory({ "triangle-lab:recall": "{not json" }), null).get()).toEqual({ cards: [], removed: [] });
   });
 
   it("saves each change and tells its listeners", () => {
@@ -54,7 +54,7 @@ describe("RecallStore", () => {
     const theirs = new RecallStore(storage, null);
     theirs.update((d) => addCard(d, card("theirs")));
     mine.update((d) => addCard(d, card("mine")));
-    expect(new RecallStore(storage, null).get().cards.map((c) => c.id)).toEqual(["theirs", "mine"]);
+    expect(new RecallStore(storage, null).get().cards.map((c) => c.id)).toEqual(["mine", "theirs"]);
   });
 
   it("picks up a change made in another tab", () => {
@@ -63,7 +63,7 @@ describe("RecallStore", () => {
     const store = new RecallStore(storage, tab);
     const heard = vi.fn();
     store.subscribe(heard);
-    Object.assign(storage.data, stored({ cards: [card("elsewhere")] }));
+    Object.assign(storage.data, stored({ cards: [card("elsewhere")], removed: [] }));
     tab.fire("some-other-key");
     expect(heard).not.toHaveBeenCalled();
     tab.fire("triangle-lab:recall");

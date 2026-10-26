@@ -46,11 +46,22 @@ export interface Card extends Place {
   attempts: Attempt[];
 }
 
-export interface Deck {
-  cards: Card[];
+/**
+ * A card taken out of the deck, and when. It is kept so that merging with a
+ * copy made before the removal, such as another device's, does not bring
+ * the card back.
+ */
+export interface Removal {
+  id: string;
+  at: number;
 }
 
-export const EMPTY_DECK: Deck = { cards: [] };
+export interface Deck {
+  cards: Card[];
+  removed: Removal[];
+}
+
+export const EMPTY_DECK: Deck = { cards: [], removed: [] };
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -96,7 +107,7 @@ export function newCard(id: string, question: string, place: Place, now: number)
 }
 
 export function addCard(deck: Deck, card: Card): Deck {
-  return { cards: [...deck.cards.filter((c) => c.id !== card.id), card] };
+  return { ...deck, cards: [...deck.cards.filter((c) => c.id !== card.id), card] };
 }
 
 /** Reword a card's question. A blank rewording leaves it as it was. */
@@ -106,8 +117,12 @@ export function editCard(deck: Deck, id: string, question: string, now: number):
   return mapCard(deck, id, (c) => (c.question === text ? c : { ...c, question: text, updated: now }));
 }
 
-export function removeCard(deck: Deck, id: string): Deck {
-  return { cards: deck.cards.filter((c) => c.id !== id) };
+export function removeCard(deck: Deck, id: string, now: number): Deck {
+  if (!deck.cards.some((c) => c.id === id)) return deck;
+  return {
+    cards: deck.cards.filter((c) => c.id !== id),
+    removed: [...deck.removed.filter((r) => r.id !== id), { id, at: now }],
+  };
 }
 
 /** The box a card moves to after an answer graded `grade`. */
@@ -149,16 +164,69 @@ export function lessonCards(deck: Deck, lesson: string): Card[] {
 }
 
 /**
- * Two decks as one, as when importing a saved copy: every card from either,
- * and where both hold a card, the copy changed last.
+ * Two decks as one, as when importing a saved copy or syncing with another
+ * device. Each question is taken from whichever deck changed it last: the
+ * newer copy of a card, or its removal if that came later still.
+ *
+ * The order of the two decks never matters, and merging again changes
+ * nothing, so devices that swap decks in any order end up holding the same.
  */
 export function mergeDecks(ours: Deck, theirs: Deck): Deck {
-  const byId = new Map(ours.cards.map((c) => [c.id, c]));
-  for (const card of theirs.cards) {
-    const mine = byId.get(card.id);
-    if (!mine || card.updated > mine.updated) byId.set(card.id, card);
+  const latest = new Map<string, Entry>();
+  for (const entry of [...entries(ours), ...entries(theirs)]) {
+    const held = latest.get(entry.id);
+    if (!held || later(entry, held)) latest.set(entry.id, entry);
   }
-  return { cards: [...byId.values()].sort((a, b) => a.created - b.created) };
+  const cards: Card[] = [];
+  const removed: Removal[] = [];
+  for (const entry of latest.values()) {
+    if (entry.card) cards.push(entry.card);
+    else removed.push({ id: entry.id, at: entry.at });
+  }
+  return { cards: cards.sort(byCreated), removed: removed.sort((a, b) => a.at - b.at || compare(a.id, b.id)) };
+}
+
+/** Whether `a` and `b` hold the same questions, in the same states. */
+export function sameDeck(a: Deck, b: Deck): boolean {
+  const keys = (d: Deck): string => entries(d).map(entryKey).sort().join("\n");
+  return keys(a) === keys(b);
+}
+
+/** The questions whose state in `after` is not their state in `before`. */
+export function changedSince(before: Deck, after: Deck): Deck {
+  const held = new Set(entries(before).map(entryKey));
+  const fresh = (e: Entry): boolean => !held.has(entryKey(e));
+  return {
+    cards: after.cards.filter((card) => fresh({ id: card.id, at: card.updated, card })),
+    removed: after.removed.filter((r) => fresh({ ...r, card: null })),
+  };
+}
+
+/** One question's state in a deck: a card, or the time it was removed. */
+interface Entry {
+  id: string;
+  at: number;
+  card: Card | null;
+}
+
+function entries(deck: Deck): Entry[] {
+  return [
+    ...deck.cards.map((card) => ({ id: card.id, at: card.updated, card })),
+    ...deck.removed.map(({ id, at }) => ({ id, at, card: null })),
+  ];
+}
+
+const entryKey = (e: Entry): string => (e.card ? JSON.stringify(e.card) : `${e.id} removed ${e.at}`);
+
+/**
+ * Whether `a` is the later state of a question than `b`. Ties go to a
+ * removal, then to the larger copy as text, so the choice is the same
+ * whichever deck each came from.
+ */
+function later(a: Entry, b: Entry): boolean {
+  if (a.at !== b.at) return a.at > b.at;
+  if (!a.card || !b.card) return !a.card && !!b.card;
+  return JSON.stringify(a.card) > JSON.stringify(b.card);
 }
 
 // --- Stored form ------------------------------------------------------------
@@ -168,10 +236,12 @@ export interface SavedDeck {
   kind: "triangle-lab/recall";
   version: 1;
   cards: Card[];
+  /** Added after the first release; a deck saved before it has none. */
+  removed: Removal[];
 }
 
 export function saveDeck(deck: Deck): SavedDeck {
-  return { kind: "triangle-lab/recall", version: 1, cards: deck.cards };
+  return { kind: "triangle-lab/recall", version: 1, cards: deck.cards, removed: deck.removed };
 }
 
 /**
@@ -182,7 +252,10 @@ export function saveDeck(deck: Deck): SavedDeck {
 export function loadDeck(raw: unknown): Deck | null {
   if (!isObject(raw) || raw.kind !== "triangle-lab/recall" || !Array.isArray(raw.cards)) return null;
   const cards = raw.cards.map(loadCard).filter((c): c is Card => c !== null);
-  return { cards: [...new Map(cards.map((c) => [c.id, c])).values()] };
+  const removed = Array.isArray(raw.removed) ? raw.removed.map(loadRemoval).filter((r) => r !== null) : [];
+  // A deck read back is merged with nothing, so it is in the shape a merge
+  // makes: one state per question, the last one.
+  return mergeDecks(EMPTY_DECK, { cards, removed });
 }
 
 function loadCard(raw: unknown): Card | null {
@@ -205,6 +278,11 @@ function loadCard(raw: unknown): Card | null {
   };
 }
 
+function loadRemoval(raw: unknown): Removal | null {
+  if (!isObject(raw) || typeof raw.id !== "string" || !raw.id || !isTime(raw.at)) return null;
+  return { id: raw.id, at: raw.at };
+}
+
 function loadAttempt(raw: unknown): Attempt | null {
   if (!isObject(raw) || !isTime(raw.at) || !GRADES.includes(raw.grade as Grade)) return null;
   return { at: raw.at, answer: typeof raw.answer === "string" ? raw.answer : "", grade: raw.grade as Grade };
@@ -213,10 +291,14 @@ function loadAttempt(raw: unknown): Attempt | null {
 // --- Helpers ----------------------------------------------------------------
 
 function mapCard(deck: Deck, id: string, fn: (c: Card) => Card): Deck {
-  return { cards: deck.cards.map((c) => (c.id === id ? fn(c) : c)) };
+  return { ...deck, cards: deck.cards.map((c) => (c.id === id ? fn(c) : c)) };
 }
 
 const byDue = (a: Card, b: Card): number => a.due - b.due || a.created - b.created;
+
+const byCreated = (a: Card, b: Card): number => a.created - b.created || compare(a.id, b.id);
+
+const compare = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
 

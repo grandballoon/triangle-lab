@@ -8,7 +8,7 @@ import { currentCard, gradeCurrent, loadSitting, progress, prune, reveal, startS
 const T0 = 1_800_000_000_000;
 const here = { lesson: "medians", step: 0, stepTitle: "Draw the medians" };
 const card = (id: string): Card => newCard(id, `Question ${id}?`, here, T0)!;
-const deck: Deck = { cards: [card("a"), card("b")] };
+const deck: Deck = { cards: [card("a"), card("b")], removed: [] };
 
 describe("a sitting", () => {
   it("asks the cards in order, answering, checking and grading each", () => {
@@ -52,14 +52,14 @@ describe("a sitting", () => {
 
   it("drops a card deleted mid-sitting, and the answer being checked with it", () => {
     const s = reveal(startSession(deck.cards), "half written");
-    const without = removeCard(deck, "a");
+    const without = removeCard(deck, "a", T0);
     expect(prune(s, without)).toMatchObject({ queue: ["b"], phase: "ask", answer: "" });
     expect(prune(s, deck)).toBe(s);
   });
 
   it("keeps the answer being checked when another card goes", () => {
     const s = reveal(startSession(deck.cards), "kept");
-    expect(prune(s, removeCard(deck, "b"))).toMatchObject({ queue: ["a"], phase: "check", answer: "kept" });
+    expect(prune(s, removeCard(deck, "b", T0))).toMatchObject({ queue: ["a"], phase: "check", answer: "kept" });
   });
 });
 

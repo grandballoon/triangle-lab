@@ -168,6 +168,7 @@ describe("the sheet", () => {
   it("follows the lesson when the page swaps it in place", () => {
     const { capture, pill } = mount();
     store.update((d) => ({
+      ...d,
       cards: [
         ...d.cards,
         { id: "x", question: "Q?", lesson: "altitudes", step: 0, stepTitle: "", created: 0, updated: 0, box: 0, due: 0, attempts: [] },

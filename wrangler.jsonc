@@ -1,0 +1,24 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	// The recall deck's home on the web (worker/), so questions noted on one
+	// device reach the others. The lessons themselves stay on GitHub Pages;
+	// this serves only the deck, to the origins below.
+	"name": "triangle-lab-recall",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-10-19",
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		// Pages that may call the Worker: the published site, and the Vite dev
+		// and preview servers.
+		"ALLOWED_ORIGINS": "https://grandballoon.github.io http://localhost:5173 http://localhost:4173"
+	},
+	"durable_objects": {
+		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["RecallDeck"] }]
+	// The RECALL_KEY secret, which every request must carry, is set with
+	// `npx wrangler secret put RECALL_KEY`, never written here. Locally it
+	// comes from .dev.vars.
+}
