@@ -104,6 +104,7 @@ It also limits each caller's address to 60 requests a minute, so a key cannot be
 
 Locally, the key comes from `.dev.vars`, which is gitignored; create it with `echo "RECALL_KEY=$(openssl rand -base64 24)" > .dev.vars`.
 `npm run dev` sends the deck's requests on to the Worker on `localhost:8787`, so to sync while developing, run `npm run preview` in a second terminal.
+Every page on the dev server is given the key from `.dev.vars`, so nothing needs entering there.
 
 ### Setting up answer checking
 
@@ -115,7 +116,32 @@ npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.c
 
 It checks only for a caller with the sync key, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
 Without the key, checking is off and the recall page says why.
-Locally, add `ANTHROPIC_API_KEY=…` to `.dev.vars`.
+
+Locally, the Worker checks with the `ANTHROPIC_API_KEY` in `.dev.vars`, beside the sync key (see "Trying answer checking locally").
+
+### Trying answer checking locally
+
+Once, give the local Worker both its keys in `.dev.vars`, which is gitignored and so never committed:
+
+```sh
+echo "RECALL_KEY=$(openssl rand -base64 24)" >> .dev.vars   # skip if it has one
+echo "ANTHROPIC_API_KEY=sk-ant-…" >> .dev.vars              # a key from platform.claude.com, kept for every run
+```
+
+Then run these in two terminals:
+
+```sh
+npm run preview  # the Worker on localhost:8787
+```
+
+```sh
+npm run dev
+```
+
+Open <http://localhost:5173/recall.html> (or the port Vite prints): the page already holds the local sync key, and a written answer is read by Claude while you check it.
+Every page on the dev server is given the sync key from `.dev.vars` before its own scripts run, every time it loads, so forgetting the key on the recall page lasts until a reload.
+A change to `.dev.vars` reaches the pages on their next load, and the Worker when `npm run preview` is started again.
+Each check is a paid call on that Claude key.
 
 ## Deploying
 

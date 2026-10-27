@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { uiFeedback } from "./tools/feedback-plugin.ts";
+import { devSyncKey } from "./tools/sync-key-plugin.ts";
 
 // The hand-tracking WASM runtime is fetched from a CDN at run time and must
 // match the installed library exactly, so its version is read from the
@@ -19,8 +20,9 @@ const mediapipe = JSON.parse(
 // wrangler.jsonc, which also holds the recall deck at /deck and checks
 // answers with Claude at /check.
 export default defineConfig({
-  // Dev only: Alt-click any element to leave a comment in ui-feedback.md.
-  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md"))],
+  // Dev only: Alt-click any element to leave a comment in ui-feedback.md;
+  // and every page holds the local Worker's sync key, from .dev.vars.
+  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md")), devSyncKey(resolve(__dirname, ".dev.vars"))],
   define: {
     __MEDIAPIPE_VERSION__: JSON.stringify(mediapipe.version),
   },

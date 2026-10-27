@@ -218,7 +218,7 @@ The whole site is one Cloudflare Worker.
 The built pages (`dist/`) are its static assets, served without running any code; only `/deck` and `/check` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck` and `/check` on to the Worker that `npm run preview` runs on port 8787.
+In development, Vite sends `/deck` and `/check` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
@@ -307,6 +307,7 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, and answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
+- `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
 
