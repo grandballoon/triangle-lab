@@ -72,16 +72,20 @@ Press the question pill in the top bar, or `Q`, write the question and press Ent
 It is saved with the lesson and the step you were on.
 
 The recall page (linked from the menu, `recall.html`) asks your questions back once they are due.
-Answer each from memory first, writing it down or not, then check: your earlier answers are shown, and "Check in the lesson" opens the lesson at the step the question came from.
-Grade yourself missed, shaky or recalled; a recalled question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days), and a missed one is asked again straight away.
+Answer each from memory first, writing it down or not, then check: your last answer is there to unfold, and "Check in the lesson" opens the lesson at the step the question came from.
+Your answer stays in the same box, open to correct, until you have it right.
+Then say how it went: got it right first time, fixed it once corrected, or still struggling.
+Got right, a question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days); fixed, a little sooner than last time, and never before tomorrow; still struggling, in your next review.
 
-On a device with the sync key, a written answer is also read by Claude while you check it.
-Claude says in a sentence or two what was right and what was missing, and marks the grade it would give; the grade is still yours to pick.
-An answer given in your head is not sent.
+On a device with the sync key, a written answer is also read by Claude as you check it.
+Claude comments on it as a reviewer does on a document: the words it has something to say about are highlighted in your answer, with each comment beside them on a wide screen, or under the answer on a narrow one, and it says in a sentence or two what was right and what was missing.
+Correct the answer in place, and a comment whose words you have changed is marked as dealt with; press Check again (or Enter) to have Claude read it as it now stands.
+Once Claude reads it as right, it marks the outcome that fits, got it right or fixed it, but the choice is still yours.
+An answer given in your head is not sent unless you write it down.
 
-When you grade an answer missed or shaky, what Claude said is kept with it.
-The next time the question comes up, it is shown under your last answer, so you can work from it.
-Each question on the recall page has a History button listing every answer you gave, newest first, with Claude's feedback where it was kept.
+When an answer was not right first time, what Claude said of it is kept with it.
+The next time the question comes up, it is there with your last answer, so you can work from it.
+Each question on the recall page has a History button listing every answer you gave, newest first, with Claude's comments where they were kept.
 It syncs and is saved to a file with the rest of your questions.
 
 Questions are kept in the browser, like the gesture settings.

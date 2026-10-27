@@ -22,11 +22,31 @@ async function open(cards: Card[]): Promise<HTMLElement> {
   return reload();
 }
 
+/**
+ * What the page last loaded listens to on the window and the document. A
+ * reload takes it off, as closing the tab would, so a page from an earlier
+ * load cannot hear keys or storage events meant for this one.
+ */
+const listening: (() => void)[] = [];
+
 /** Load the page again, as a browser does to a tab it set aside, storage and all. */
 async function reload(): Promise<HTMLElement> {
+  for (const off of listening.splice(0)) off();
   document.body.innerHTML = `<main id="recall"></main>`;
   vi.resetModules();
-  await import("./page.ts");
+  const targets = [window, document] as EventTarget[];
+  const adds = targets.map((target) => target.addEventListener);
+  targets.forEach((target, i) => {
+    target.addEventListener = (type: string, fn: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions) => {
+      listening.push(() => target.removeEventListener(type, fn, options));
+      adds[i].call(target, type, fn, options);
+    };
+  });
+  try {
+    await import("./page.ts");
+  } finally {
+    targets.forEach((target, i) => (target.addEventListener = adds[i]));
+  }
   return document.getElementById("recall")!;
 }
 
@@ -68,7 +88,7 @@ describe("the recall page", () => {
     expect(metas[1]).toContain("in 3 days");
   });
 
-  it("asks the due questions back: answer, check against the lesson, grade", async () => {
+  it("asks the due questions back: answer, check against the lesson, say how it went", async () => {
     const root = await open([card("a", "Where do the medians meet?"), card("b", "What is a median?")]);
     buttonNamed(root, "Start review").click();
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 1 of 2");
@@ -81,7 +101,14 @@ describe("the recall page", () => {
     answer.dispatchEvent(new Event("input"));
     press(answer, "Enter");
 
-    expect(root.querySelector(".rc-said")!.textContent).toBe("At the centroid");
+    // The same box, kept open to correct.
+    expect(root.querySelector<HTMLTextAreaElement>(".rc-answer")!.value).toBe("At the centroid");
+    expect(root.querySelector(".rc-grades")).not.toBeNull();
+    expect([...root.querySelectorAll(".rc-grade-name")].map((b) => b.textContent)).toEqual([
+      "Still struggling",
+      "Fixed it",
+      "Got it right",
+    ]);
     const source = root.querySelector<HTMLAnchorElement>(".rc-source")!;
     expect(source.getAttribute("href")).toBe("medians.html#step-2");
     expect(source.target).toBe("_blank");
@@ -92,25 +119,30 @@ describe("the recall page", () => {
     expect(stored()[0]).toMatchObject({ box: 1, attempts: [{ answer: "At the centroid", grade: "recalled" }] });
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 2 of 2");
 
-    // Answered in the head, and missed: asked once more at the end.
+    // Answered in the head, and still a struggle: left for the next review, not asked again in this one.
     buttonNamed(root, "Check").click();
-    expect(root.querySelector(".rc-said.rc-quiet")).not.toBeNull();
-    buttonNamed(root, "Missed it").click();
-    expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 3 of 3");
-    expect(root.querySelector(".rc-asked")!.textContent).toBe("What is a median?");
-    buttonNamed(root, "Check").click();
-    expect([...root.querySelectorAll(".rc-yours h3")].map((h) => h.textContent)).toEqual([
-      "Your answer",
-      "Last time · missed it",
-    ]);
-    buttonNamed(root, "Shaky").click();
+    expect(root.querySelector<HTMLTextAreaElement>(".rc-answer")!.placeholder).toContain("Answered in your head");
+    buttonNamed(root, "Still struggling").click();
 
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
-    expect(root.querySelector(".rc-finished")!.textContent).toContain("1 recalled · 1 shaky · 1 missed");
-    expect(stored()[1].attempts.map((a: { grade: string }) => a.grade)).toEqual(["missed", "shaky"]);
+    expect(root.querySelector(".rc-finished")!.textContent).toContain("1 recalled · 0 shaky · 1 missed");
+    expect(stored()[1].attempts.map((a: { grade: string }) => a.grade)).toEqual(["missed"]);
 
     buttonNamed(root, "Back to your questions").click();
-    expect(root.querySelector(".rc-lead")!.textContent).toBe("You're up to date.");
+    expect(root.querySelector(".rc-lead")!.textContent).toBe("1 due now");
+  });
+
+  it("shows the last answer folded away while checking", async () => {
+    const root = await open([
+      card("a", "Where do the medians meet?", { attempts: [{ at: now - DAY_MS, answer: "At the incentre", grade: "missed" }] }),
+    ]);
+    buttonNamed(root, "Start review").click();
+    expect(root.querySelector(".rc-last")).toBeNull();
+    buttonNamed(root, "Check").click();
+    const last = root.querySelector<HTMLDetailsElement>(".rc-last")!;
+    expect(last.open).toBe(false);
+    expect(last.querySelector("summary")!.textContent).toBe("Last time · missed it");
+    expect(last.querySelector(".rc-said")!.textContent).toBe("At the incentre");
   });
 
   it("rewords a question, and deletes one on a second press", async () => {
@@ -135,8 +167,8 @@ describe("the recall page", () => {
     let root = await open([card("a", "First?"), card("b", "Second?")]);
     buttonNamed(root, "Start review").click();
     buttonNamed(root, "Check").click();
-    buttonNamed(root, "Recalled it").click();
-    const answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
+    buttonNamed(root, "Got it right").click();
+    let answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
     answer.value = "half an answer";
     answer.dispatchEvent(new Event("input"));
 
@@ -144,8 +176,16 @@ describe("the recall page", () => {
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 2 of 2");
     expect(root.querySelector<HTMLTextAreaElement>(".rc-answer")!.value).toBe("half an answer");
 
+    // Corrected while checking, and kept so across a reload.
     buttonNamed(root, "Check").click();
-    buttonNamed(root, "Shaky").click();
+    answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
+    answer.value = "a whole answer";
+    answer.dispatchEvent(new Event("input"));
+    root = await reload();
+    expect(root.querySelector<HTMLTextAreaElement>(".rc-answer")!.value).toBe("a whole answer");
+    expect(root.querySelector(".rc-grades")).not.toBeNull();
+    buttonNamed(root, "Fixed it").click();
+    expect(stored()[1].attempts).toMatchObject([{ answer: "a whole answer", grade: "shaky" }]);
     buttonNamed(root, "Back to your questions").click();
     root = await reload();
     expect(root.querySelector(".rc-summary")).not.toBeNull();
@@ -160,8 +200,9 @@ describe("the recall page", () => {
     answer.dispatchEvent(enter);
     expect(enter.defaultPrevented).toBe(false);
     expect(root.querySelector(".rc-answer")).toBe(answer);
+    expect(root.querySelector(".rc-grades")).toBeNull();
     buttonNamed(root, "Check").click();
-    expect(root.querySelector(".rc-answer")).toBeNull();
+    expect(root.querySelector(".rc-grades")).not.toBeNull();
   });
 });
 
@@ -292,113 +333,189 @@ describe("Claude checking an answer", () => {
     buttonNamed(root, "Check").click();
   }
 
-  const review = (root: HTMLElement) => root.querySelector(".rc-review");
+  const review = (root: HTMLElement) => root.querySelector(".rc-overall");
   const suggested = (root: HTMLElement) => [...root.querySelectorAll(".rc-suggested .rc-grade-name")].map((b) => b.textContent);
+  const field = (root: HTMLElement) => root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
+  /** The words highlighted in the answer. */
+  const marked = (root: HTMLElement) => [...root.querySelectorAll(".rc-marks mark")].map((m) => m.textContent);
+  /** The remarks in the margin, in order, and whether each is on words since changed. */
+  const remarks = (root: HTMLElement) =>
+    [...root.querySelectorAll<HTMLElement>(".rc-margin .rc-remark:not(.rc-overall)")].map((r) => ({
+      quote: r.querySelector(".rc-remark-quote")!.textContent,
+      gone: r.classList.contains("rc-gone"),
+    }));
 
-  it("reads a written answer, says what it makes of it and marks the grade it suggests", async () => {
-    const checks = worker([{ grade: "shaky", feedback: "Right point, but say why: the medians meet at $G$." }]);
+  /** Correct the answer being checked to `text`, as typing does. */
+  function correct(root: HTMLElement, text: string): void {
+    field(root).value = text;
+    field(root).dispatchEvent(new Event("input"));
+  }
+
+  const wrong = {
+    grade: "missed",
+    feedback: "No: they meet at the centroid, $G$.",
+    remarks: [
+      { quote: "the incentre", note: "The centroid, $G$: the incentre is where the angle bisectors meet." },
+      { quote: "halfway", note: "Two thirds of the way from each vertex." },
+    ],
+  };
+
+  it("reads a written answer, highlighting the words each remark is on", async () => {
+    const checks = worker([wrong]);
     const root = await openSynced([card("a", "Where do the medians meet?")]);
-    answerWith(root, "In the middle");
+    answerWith(root, "At the incentre, halfway down each median");
     expect(review(root)!.textContent).toBe("Claude's checkReading your answer…");
-    expect(suggested(root)).toEqual([]);
 
     await settle();
     expect(checks).toEqual([
-      { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2: Find the centroid", answer: "In the middle" },
+      {
+        question: "Where do the medians meet?",
+        where: "Triangles · Medians · Step 2: Find the centroid",
+        answer: "At the incentre, halfway down each median",
+      },
     ]);
-    expect(review(root)!.querySelector("h3")!.textContent).toBe("Claude's check · shaky");
+    expect(review(root)!.querySelector("h3")!.textContent).toBe("Claude's check · missed it");
     expect(review(root)!.querySelector(".katex")).not.toBeNull();
-    expect(suggested(root)).toEqual(["Shaky"]);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+    expect(remarks(root)).toEqual([
+      { quote: "the incentre", gone: false },
+      { quote: "halfway", gone: false },
+    ]);
+    // Wrong, so nothing is suggested: the learner corrects it, or says they are struggling.
+    expect(suggested(root)).toEqual([]);
+  });
 
-    // The learner still grades, and may disagree.
-    buttonNamed(root, "Recalled it").click();
-    expect(stored()[0].attempts).toMatchObject([{ answer: "In the middle", grade: "recalled" }]);
+  it("corrects the answer in place until Claude reads it as right, then marks it fixed, kept as one answer", async () => {
+    const checks = worker([wrong, { grade: "recalled", feedback: "Yes: the centroid, two thirds along." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the incentre, halfway down each median");
+    await settle();
+    const again = () => buttonNamed(root, "Check again");
+    expect(again().disabled).toBe(true);
+
+    // Each remark follows its words, and is dealt with once they are changed.
+    correct(root, "At the centroid, halfway down each median");
+    expect(marked(root)).toEqual(["halfway"]);
+    expect(remarks(root)).toEqual([
+      { quote: "halfway", gone: false },
+      { quote: "the incentre", gone: true },
+    ]);
+    expect(review(root)!.textContent).toContain("You've changed your answer since.");
+    correct(root, "At the centroid, two thirds of the way down each median");
+    expect(marked(root)).toEqual([]);
+    expect(again().disabled).toBe(false);
+    expect(checks).toHaveLength(1);
+
+    press(field(root), "Enter");
+    expect(review(root)!.textContent).toBe("Claude's checkReading your answer…");
+    await settle();
+    expect(checks.map((c) => (c as { answer: string }).answer)).toEqual([
+      "At the incentre, halfway down each median",
+      "At the centroid, two thirds of the way down each median",
+    ]);
+    expect(remarks(root)).toEqual([]);
+    expect(suggested(root)).toEqual(["Fixed it"]);
+    expect(again().disabled).toBe(true);
+
+    buttonNamed(root, "Fixed it").click();
+    expect(stored()[0].attempts).toMatchObject([
+      { answer: "At the centroid, two thirds of the way down each median", grade: "shaky", claude: { grade: "recalled" } },
+    ]);
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
   });
 
-  it("keeps what Claude said with an answer graded shaky, shows it next time, and lists it in the history", async () => {
-    worker([
-      { grade: "missed", feedback: "No: they meet at the centroid, $G$." },
-      { grade: "shaky", feedback: "Closer: say it is two thirds of the way along each median." },
-    ]);
+  it("marks an answer Claude reads as right first time, though the learner may disagree", async () => {
+    worker([{ grade: "recalled", feedback: "Exactly." }]);
     const root = await openSynced([card("a", "Where do the medians meet?")]);
-    answerWith(root, "At the incentre");
+    answerWith(root, "At the centroid");
     await settle();
-    buttonNamed(root, "Missed it").click();
-
-    // Asked again at the end of the sitting: Claude's word on the miss comes back.
-    const answer = root.querySelector<HTMLTextAreaElement>(".rc-answer")!;
-    answer.value = "At the centroid";
-    answer.dispatchEvent(new Event("input"));
-    buttonNamed(root, "Check").click();
-    await settle();
-    expect([...root.querySelectorAll(".rc-yours h3")].map((h) => h.textContent)).toEqual([
-      "Your answer",
-      "Claude's check · shaky",
-      "Last time · missed it",
-      "Claude, last time · missed it",
-    ]);
-    buttonNamed(root, "Shaky").click();
-    expect(stored()[0].attempts).toMatchObject([
-      { answer: "At the incentre", grade: "missed", claude: { grade: "missed", feedback: "No: they meet at the centroid, $G$." } },
-      { answer: "At the centroid", grade: "shaky", claude: { grade: "shaky" } },
-    ]);
-
-    // The history, newest first, opened from the question.
-    buttonNamed(root, "Back to your questions").click();
-    expect(root.querySelector(".rc-history")).toBeNull();
-    buttonNamed(root, "History").click();
-    const entries = [...root.querySelectorAll(".rc-history > li")];
-    expect(entries.map((e) => e.querySelector(".rc-history-when")!.textContent!.split(" · ").at(-1))).toEqual([
-      "Shaky",
-      "Missed it",
-    ]);
-    expect(entries[1].textContent).toContain("At the incentre");
-    expect(entries[1].querySelector(".rc-yours h3")!.textContent).toBe("Claude · missed it");
-    expect(entries[1].querySelector(".katex")).not.toBeNull();
-    buttonNamed(root, "Hide history").click();
-    expect(root.querySelector(".rc-history")).toBeNull();
+    expect(suggested(root)).toEqual(["Got it right"]);
+    buttonNamed(root, "Still struggling").click();
+    expect(stored()[0].attempts).toMatchObject([{ answer: "At the centroid", grade: "missed", claude: { grade: "recalled" } }]);
   });
 
-  it("asks nothing for an answer given in the head, or without the sync key", async () => {
+  it("selects a remark's words in the answer when the remark is pressed", async () => {
+    worker([wrong]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the incentre, halfway down each median");
+    await settle();
+    root.querySelectorAll<HTMLElement>(".rc-margin .rc-remark")[2].click();
+    expect(document.activeElement).toBe(field(root));
+    expect([field(root).selectionStart, field(root).selectionEnd]).toEqual([17, 24]);
+    expect(root.querySelector(".rc-marks mark.rc-active")!.textContent).toBe("halfway");
+    expect(root.querySelector(".rc-margin .rc-remark.rc-active .rc-remark-quote")!.textContent).toBe("halfway");
+  });
+
+  it("shows what Claude said of the last answer, its words marked, folded away while checking and in the history", async () => {
+    worker([{ grade: "recalled", feedback: "Yes." }]);
+    const root = await openSynced([
+      card("a", "Where do the medians meet?", {
+        attempts: [{ at: now - DAY_MS, answer: "At the incentre, halfway down", grade: "missed", claude: wrong as never }],
+      }),
+    ]);
+    buttonNamed(root, "History").click();
+    const entry = root.querySelector(".rc-history > li")!;
+    expect([...entry.querySelectorAll(".rc-said mark")].map((m) => m.textContent)).toEqual(["the incentre", "halfway"]);
+    expect(entry.querySelectorAll(".rc-said-remarks li")).toHaveLength(2);
+    expect(entry.querySelector(".rc-yours h3")!.textContent).toBe("Claude · missed it");
+    expect(entry.querySelector(".katex")).not.toBeNull();
+    buttonNamed(root, "Hide history").click();
+
+    answerWith(root, "At the centroid");
+    const last = root.querySelector(".rc-last")!;
+    expect(last.querySelector("summary")!.textContent).toBe("Last time · missed it");
+    expect([...last.querySelectorAll(".rc-said mark")].map((m) => m.textContent)).toEqual(["the incentre", "halfway"]);
+  });
+
+  it("asks nothing for an answer given in the head until it is written, or without the sync key", async () => {
     const checks = worker([{ grade: "recalled", feedback: "Yes." }]);
     let root = await openSynced([card("a", "First?")]);
     answerWith(root, "");
     await settle();
     expect(review(root)).toBeNull();
+    expect(buttonNamed(root, "Check").disabled).toBe(true);
+    correct(root, "Written after all");
+    buttonNamed(root, "Check").click();
+    await settle();
+    expect(checks).toHaveLength(1);
 
     root = await open([card("a", "First?")]);
     answerWith(root, "Written down");
     await settle();
     expect(review(root)).toBeNull();
-    expect(checks).toEqual([]);
+    expect(buttonNamed(root, "Check")).toBeUndefined();
+    expect(checks).toHaveLength(1);
   });
 
   it("says why a check failed, and tries again when asked", async () => {
-    const checks = worker(["busy", { grade: "missed", feedback: "No: they meet at the centroid." }]);
+    const checks = worker(["busy", { grade: "recalled", feedback: "Yes: they meet at the centroid." }]);
     const root = await openSynced([card("a", "Where do the medians meet?")]);
-    answerWith(root, "At the incentre");
+    answerWith(root, "At the centroid");
     await settle();
     expect(review(root)!.textContent).toContain("Claude is busy. Try again in a minute.");
     expect(suggested(root)).toEqual([]);
 
-    buttonNamed(root, "Try again").click();
+    buttonNamed(root, "Check again").click();
     await settle();
     expect(review(root)!.textContent).toContain("they meet at the centroid");
-    expect(suggested(root)).toEqual(["Missed it"]);
+    // The failed reading was no reading: this one is the first.
+    expect(suggested(root)).toEqual(["Got it right"]);
     expect(checks).toHaveLength(2);
   });
 
-  it("keeps what Claude said across a reload, without asking again", async () => {
-    const checks = worker([{ grade: "recalled", feedback: "Exactly." }]);
+  it("keeps what Claude said, and the answer as corrected since, across a reload, without asking again", async () => {
+    const checks = worker([wrong]);
     let root = await openSynced([card("a", "Where do the medians meet?")]);
-    answerWith(root, "At the centroid");
+    answerWith(root, "At the incentre, halfway down each median");
     await settle();
+    correct(root, "At the centroid, halfway down each median");
 
     root = await reload();
     await settle();
-    expect(review(root)!.textContent).toContain("Exactly.");
-    expect(suggested(root)).toEqual(["Recalled it"]);
+    expect(field(root).value).toBe("At the centroid, halfway down each median");
+    expect(review(root)!.textContent).toContain("they meet at the centroid");
+    expect(marked(root)).toEqual(["halfway"]);
+    expect(buttonNamed(root, "Check again").disabled).toBe(false);
     expect(checks).toHaveLength(1);
   });
 
@@ -412,6 +529,20 @@ describe("Claude checking an answer", () => {
     expect(checks).toHaveLength(2);
   });
 
+  it("takes number keys typed in the answer as writing, and grades with them once out of it", async () => {
+    worker([{ grade: "recalled", feedback: "Exactly." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    await settle();
+    expect(document.activeElement).toBe(field(root));
+    press(field(root), "2");
+    expect(stored()[0].attempts).toEqual([]);
+    press(field(root), "Escape");
+    expect(document.activeElement).not.toBe(field(root));
+    press(document.body, "3");
+    expect(stored()[0].attempts).toMatchObject([{ grade: "recalled" }]);
+  });
+
   /** Type `text` into the open editor and save it with Enter. */
   function write(root: HTMLElement, text: string): void {
     const box = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!;
@@ -420,35 +551,6 @@ describe("Claude checking an answer", () => {
     box.dispatchEvent(new Event("input"));
     press(box, "Enter");
   }
-
-  it("rewords the answer once checked, and has Claude read it afresh", async () => {
-    const checks = worker([
-      { grade: "shaky", feedback: "Say where." },
-      { grade: "recalled", feedback: "Now complete." },
-    ]);
-    const root = await openSynced([card("a", "Where do the medians meet?")]);
-    answerWith(root, "Inside");
-    await settle();
-
-    buttonNamed(root, "Edit answer").click();
-    expect(root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!.value).toBe("Inside");
-    // Number keys typed there are writing, not grading.
-    press(root.querySelector(".rc-editor textarea")!, "2");
-    expect(stored()[0].attempts).toEqual([]);
-    write(root, "Inside, at the centroid, two thirds of the way down each median");
-    expect(root.querySelector(".rc-editor")).toBeNull();
-    expect(root.querySelector(".rc-said")!.textContent).toBe("Inside, at the centroid, two thirds of the way down each median");
-    expect(review(root)!.textContent).toBe("Claude's checkReading your answer…");
-
-    await settle();
-    expect(checks).toHaveLength(2);
-    expect(review(root)!.textContent).toContain("Now complete.");
-    expect(suggested(root)).toEqual(["Recalled it"]);
-    buttonNamed(root, "Recalled it").click();
-    expect(stored()[0].attempts).toMatchObject([
-      { answer: "Inside, at the centroid, two thirds of the way down each median", grade: "recalled" },
-    ]);
-  });
 
   it("rewords the question once checked, and has Claude read the answer against the new wording", async () => {
     const checks = worker(["never", { grade: "recalled", feedback: "Yes." }]);
@@ -499,7 +601,7 @@ describe("Claude checking an answer", () => {
     ]);
 
     // They wait for the next sitting rather than joining this one.
-    buttonNamed(root, "Shaky").click();
+    buttonNamed(root, "Fixed it").click();
     expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
     buttonNamed(root, "Back to your questions").click();
     expect(root.querySelector(".rc-lead")!.textContent).toBe("2 due now");
@@ -536,5 +638,19 @@ describe("Claude checking an answer", () => {
     expect(redrawn).not.toBe(box);
     expect(document.activeElement).toBe(redrawn);
     expect([redrawn.value, redrawn.selectionStart]).toEqual(["Why two to one?", 3]);
+  });
+
+  it("keeps the answer being corrected in focus, and its selection, when Claude's reply redraws the page", async () => {
+    worker(["never", { grade: "shaky", feedback: "Nearly." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    correct(root, "At the centroid, G");
+    buttonNamed(root, "Check again").click();
+    field(root).focus();
+    field(root).setSelectionRange(3, 6);
+    await settle();
+    expect(review(root)!.textContent).toContain("Nearly.");
+    expect(document.activeElement).toBe(field(root));
+    expect([field(root).selectionStart, field(root).selectionEnd]).toEqual([3, 6]);
   });
 });

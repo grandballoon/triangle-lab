@@ -165,25 +165,35 @@ A pill in the top bar, or the Q key, opens a sheet for the question (`capture.ts
 Keys typed into the sheet stop there, so they never reach a lesson's shortcuts.
 
 The recall page lists every question by lesson and runs review sittings.
-A sitting asks each due question in turn: the learner answers from memory, in writing or not, then checks against their earlier answers and the lesson itself, and grades themselves missed, shaky or recalled.
+A sitting asks each due question in turn: the learner answers from memory, in writing or not, then checks against their last answer and the lesson itself, correcting the answer in the same box until they have it right, and says how it went.
+There are three ways out of a card, which are the deck's three grades: right first time (recalled), right once corrected (shaky), or still struggling (missed), which leaves the card for the next sitting rather than asking it again in this one.
+The answer graded is the answer as corrected, so a card has one attempt for each sitting, not one for each try.
 "Check in the lesson" opens the lesson in a new tab at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
 
-While the learner checks a written answer, Claude reads it too, once the browser has the sync key.
-The page sends the question, where it was asked and the answer to the Worker's `/check`, and shows the feedback that comes back with the answer, marking the grade Claude suggests; the learner still picks the grade.
-Claude's reading (a `Review`: checking, done or failed) is part of the sitting, tied to the card being checked: a reply that comes after the sitting has moved on is dropped, grading or deleting the card drops it, and it is kept across a reload, except one still under way, which is asked for again.
-A failed check is asked again only when the learner presses "Try again".
-When the learner grades the answer missed or shaky, Claude's `Verdict` is kept on the `Attempt` in the deck (`answerCard`), so it syncs and exports with the rest; a recalled answer keeps none.
-The next time the card is checked, the last attempt's verdict is shown under it, and the overview's History button lists a card's attempts, newest first, with their verdicts.
+While the learner checks a written answer, Claude reads it too, once the browser has the sync key, and again each time they press Check again as they correct it.
+The page sends the question, where it was asked and the answer to the Worker's `/check`.
+What comes back is a `Verdict`: a grade, a few sentences of feedback, and remarks, each a note on words it quotes from the answer.
+The page shows the remarks as comments on a document (`remarks.ts`): the quoted words are highlighted in the answer, from a layer behind the text box that lays the same text out the same way, and the remarks are in a margin beside the answer, each by its words (`stack`), or under it on a narrower screen.
+As the learner corrects the answer the remarks are placed afresh against it (`placeRemarks`), so one whose words have been changed is shown as dealt with; a quote's spaces match any run of them, since Claude may not copy them exactly.
+The caret in a remark's words, or a press on the remark, picks it out in both places.
 
-While checking, the learner can reword the question (in the deck) or their answer (in the sitting), and Claude reads the answer afresh: the reading of the old wording is dropped (`reviseAnswer`, `dropReview`), and a reply still on its way for it is ignored, since `settleReview` takes only a reply to the question and answer as they now stand.
+Claude's reading (a `Review`: checking, done or failed) is part of the sitting, tied to the card being checked and to the answer as it was sent (`read`): editing the answer keeps it (`editAnswer`), and a reply is taken only if it is to the answer as last sent and the question as it now stands (`settleReview`).
+Grading or deleting the card drops it, and it is kept across a reload, except one still under way, which is asked for again.
+The outcome its readings point to (`suggestedGrade`) is marked once Claude reads the answer as it stands as right: right first time if its first reading (`first`) was right too, fixed if not; while the answer is wrong nothing is marked, since only the learner knows when they are struggling, and the learner still picks.
+Claude's `Verdict` is kept on the `Attempt` in the deck (`answerCard`) when the answer was not right first time and the reading is of the answer as graded, so it syncs and exports with the rest.
+The next time the card is checked, the last attempt is there to unfold, with its words marked, and the overview's History button lists a card's attempts, newest first, with their verdicts.
+
+While checking, the learner can reword the question (in the deck), and Claude reads the answer afresh against it: the reading of the old wording is dropped (`dropReview`), and a reply still on its way for it is ignored.
 They can also write new questions from the one being checked, so what Claude said can become questions of their own; each is saved at the same lesson step and waits for the next sitting rather than joining this one.
-What is being written (`Editor`) is kept with the sitting across a reload, and number keys typed into it are writing, not grades.
+What is being written (`Editor`) is kept with the sitting across a reload, and an editor just opened takes the focus.
+Number keys typed into the answer or an editor are writing, not grades; Escape leaves the answer, so they grade.
 
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
-| `session.ts` | A review sitting: ask, check, reword, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
+| `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
@@ -297,10 +307,12 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
 - `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
-- `src/recall/check.test.ts`: reading a check request, a verdict, and a reply from `/check`.
+- `src/recall/check.test.ts`: reading a check request, a verdict with its remarks, and a reply from `/check`.
+- `src/recall/remarks.test.ts`: remarks placed on their words and afresh as the answer changes, the runs to highlight, the remark under the caret, and the margin's stacking.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
-- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: feedback and the suggested grade, feedback kept on a miss and shown on the next try and in the history, nothing sent without a written answer or the key, trying again, and reloads.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads.
+Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
 - `worker/rules.test.ts`: routing to the deck and to checking, key check, rate limit, size and clock checks, and checking off without a Claude key.
 - `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.

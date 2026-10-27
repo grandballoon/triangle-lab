@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { loadReview, readCheckReply, readCheckRequest } from "./check.ts";
-import { MAX_ANSWER, MAX_FEEDBACK, readVerdict } from "./deck.ts";
+import { MAX_ANSWER, MAX_FEEDBACK, MAX_REMARKS, readVerdict } from "./deck.ts";
 
 const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
 
@@ -24,6 +24,27 @@ describe("readVerdict", () => {
   it("reads a grade and feedback", () => {
     expect(readVerdict({ grade: "shaky", feedback: " Close. " })).toEqual({ grade: "shaky", feedback: "Close." });
     expect(readVerdict({ grade: "recalled", feedback: "y".repeat(MAX_FEEDBACK + 1) })?.feedback).toHaveLength(MAX_FEEDBACK);
+  });
+
+  it("reads remarks on the answer's words, dropping any that are not one and keeping a quote as given", () => {
+    const remarks = [
+      { quote: " the incentre", note: " It is the centroid. " },
+      { quote: "  ", note: "On nothing." },
+      { quote: "x", note: "" },
+      "a remark",
+      { quote: "one third", note: "Two thirds, from the vertex." },
+    ];
+    expect(readVerdict({ grade: "missed", feedback: "No.", remarks })).toEqual({
+      grade: "missed",
+      feedback: "No.",
+      remarks: [
+        { quote: " the incentre", note: "It is the centroid." },
+        { quote: "one third", note: "Two thirds, from the vertex." },
+      ],
+    });
+    expect(readVerdict({ grade: "recalled", feedback: "Yes.", remarks: [] })).toEqual({ grade: "recalled", feedback: "Yes." });
+    const many = Array.from({ length: MAX_REMARKS + 3 }, (_, i) => ({ quote: `w${i}`, note: "n" }));
+    expect(readVerdict({ grade: "shaky", feedback: "So-so.", remarks: many })?.remarks).toHaveLength(MAX_REMARKS);
   });
 
   it("is not read without a known grade and some feedback", () => {

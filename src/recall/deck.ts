@@ -33,6 +33,19 @@ export interface Verdict {
   grade: Grade;
   /** A few sentences to the learner, with `$…$` for mathematics. */
   feedback: string;
+  /**
+   * Remarks on parts of the answer, as a reviewer comments on a document:
+   * each on the words of the answer it quotes. Absent when there are none.
+   */
+  remarks?: Remark[];
+}
+
+/** A remark on part of an answer. */
+export interface Remark {
+  /** Words copied from the answer, which the remark is on. */
+  quote: string;
+  /** One sentence to the learner, with `$…$` for mathematics. */
+  note: string;
 }
 
 /** Where a question was asked: a lesson and the step it had current. */
@@ -95,6 +108,8 @@ const EARLY_MS = 6 * 60 * 60 * 1000;
 export const MAX_QUESTION = 2000;
 export const MAX_ANSWER = 4000;
 export const MAX_FEEDBACK = 2000;
+/** Most remarks kept on one answer. */
+export const MAX_REMARKS = 12;
 
 /** A question as it will be stored: trimmed and capped. Empty means none. */
 export function cleanQuestion(text: string): string {
@@ -320,7 +335,16 @@ function loadAttempt(raw: unknown): Attempt | null {
 export function readVerdict(raw: unknown): Verdict | null {
   if (!isObject(raw) || !GRADES.includes(raw.grade as Grade) || typeof raw.feedback !== "string") return null;
   const feedback = raw.feedback.trim().slice(0, MAX_FEEDBACK);
-  return feedback ? { grade: raw.grade as Grade, feedback } : null;
+  if (!feedback) return null;
+  const remarks = (Array.isArray(raw.remarks) ? raw.remarks : []).flatMap(readRemark).slice(0, MAX_REMARKS);
+  return remarks.length > 0 ? { grade: raw.grade as Grade, feedback, remarks } : { grade: raw.grade as Grade, feedback };
+}
+
+/** A remark as one element of a list, or none if `raw` is not one. Its quote is kept as given, to be found in the answer. */
+function readRemark(raw: unknown): Remark[] {
+  if (!isObject(raw) || typeof raw.quote !== "string" || typeof raw.note !== "string") return [];
+  const note = raw.note.trim().slice(0, MAX_FEEDBACK);
+  return raw.quote.trim() && raw.quote.length <= MAX_ANSWER && note ? [{ quote: raw.quote, note }] : [];
 }
 
 // --- Helpers ----------------------------------------------------------------

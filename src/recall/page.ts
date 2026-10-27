@@ -4,21 +4,24 @@
 // Out of a sitting, the page lists the questions by lesson, with when each is
 // due, and lets the learner reword or delete them, or save and restore the
 // whole set as a file, and shows how syncing with the learner's other
-// devices stands, taking the sync key when it has none. In a sitting it asks one due question at a time: the
-// learner answers from memory, then checks (earlier answers, and a link that
-// opens the lesson at the step the question came from) and grades
-// themselves, which schedules the question's next asking. Once the browser
-// has the sync key, a written answer is also read by Claude while the learner
-// checks it (check.ts): its feedback is shown with the answer, and the grade
-// it suggests is marked, but the learner still picks the grade. On an answer
-// graded missed or shaky, the feedback is kept with it: the next time the
-// question is checked it is shown again, and each question's history lists
-// every answer with what Claude said.
+// devices stands, taking the sync key when it has none. In a sitting it asks
+// one due question at a time: the learner answers from memory, then checks
+// (their last answer, and a link that opens the lesson at the step the
+// question came from) and corrects the answer in place until it is right,
+// then says how it went: right first time, fixed, or still struggling, which
+// schedules the question's next asking. Once the browser has the sync key,
+// a written answer is also read by Claude as the learner checks it, and again
+// each time they ask as they correct it (check.ts): its remarks are on the
+// words they are about, as comments on a document (remarks.ts), and the
+// outcome its reading points to is marked, but the learner still picks it.
+// On an answer that was not right first time, Claude's reading is kept with
+// it: the next time the question is checked it is shown again, and each
+// question's history lists every answer with what Claude said.
 //
-// While checking, the learner can reword the question or their answer, which
-// has Claude read it afresh, and write new questions from the same step, so
-// what Claude said can become questions of their own; those wait for the
-// next sitting.
+// While checking, the learner can reword the question, which has Claude read
+// the answer afresh, and write new questions from the same step, so what
+// Claude said can become questions of their own; those wait for the next
+// sitting.
 //
 // The rules are pure (deck.ts, session.ts); this file holds the page's state,
 // renders it and does the I/O.
@@ -41,6 +44,8 @@ import {
   type Card,
   type Deck,
   type Grade,
+  type Remark,
+  type Verdict,
 } from "./deck.ts";
 import type { Review } from "./check.ts";
 import {
@@ -58,20 +63,23 @@ import {
   askReview,
   currentCard,
   dropReview,
+  editAnswer,
   gradeCurrent,
   loadSitting,
   progress,
   prune,
+  readAsItStands,
   reveal,
-  reviseAnswer,
   settleReview,
   startSession,
+  suggestedGrade,
   wantsReview,
   type Editor,
   type Session,
   type Sitting,
 } from "./session.ts";
 import { newId } from "./id.ts";
+import { placeRemarks, remarkAt, runsOf, stack } from "./remarks.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
 import { syncLabel } from "./sync.ts";
@@ -81,6 +89,16 @@ const GRADE_LABEL: Record<Grade, string> = {
   shaky: "Shaky",
   recalled: "Recalled it",
 };
+
+/** What each grade means once an answer has been checked and corrected: the learner's three ways out of a card. */
+const OUTCOME: Record<Grade, string> = {
+  missed: "Still struggling",
+  shaky: "Fixed it",
+  recalled: "Got it right",
+};
+
+/** When Claude's remarks go beside the answer rather than under it; page.css widens the page to match. */
+const SIDE_BY_SIDE = "(min-width: 1000px)";
 
 /** Where the sitting under way is kept for the tab (session.ts `Sitting`). */
 const SITTING_KEY = "triangle-lab:recall-sitting";
@@ -103,6 +121,12 @@ let editing: { id: string; text: string } | null = null;
 const historyOpen = new Set<string>();
 /** A line about the last export or import, and whether it went wrong. */
 let notice: { text: string; error: boolean } | null = null;
+/** Lays the margin of the answer on show out again, as when the window is resized. */
+let relayout: (() => void) | null = null;
+/** The height the learner dragged the answer box to for this card, kept over redraws; null to fit the answer. */
+let answerHeight: number | null = null;
+/** An editor was opened, or opened afresh, and takes the focus at the next render. */
+let editorOpened = false;
 
 store.subscribe((deck) => {
   if (session) {
@@ -122,6 +146,8 @@ sync.subscribe(() => {
   if (!session) root.querySelector(".rc-keep")?.replaceWith(keeping(store.get()));
 });
 
+window.addEventListener("resize", () => relayout?.());
+
 window.addEventListener("keydown", (e) => {
   if (!session || session.phase !== "check" || e.altKey || e.ctrlKey || e.metaKey || typing(e.target)) return;
   const grade = GRADES[Number(e.key) - 1];
@@ -132,7 +158,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 // A sitting kept while its answer was being read lost that request with the page.
-reviewAnswer();
+if (session && wantsReview(session)) reviewAnswer();
 render();
 
 // --- State changes ------------------------------------------------------------
@@ -146,25 +172,26 @@ function begin(cards: readonly Card[]): void {
   render();
 }
 
+/** Check: the answer, as written, is shown to be corrected, and read by Claude. */
 function check(): void {
   if (!session) return;
   session = reveal(session, draft);
-  reviewAnswer();
+  if (wantsReview(session)) reviewAnswer();
   render();
 }
 
 /**
- * Have Claude read the answer being checked, if it is waiting to be, or
- * again after a failure when `retry`. Nothing is asked without the sync key.
- * The caller renders; the reply renders when it comes.
+ * Have Claude read the answer being checked, as it now stands, unless it has
+ * already been, or is being. Nothing is asked without the sync key. The
+ * caller renders; the reply renders when it comes.
  */
-function reviewAnswer(retry = false): void {
-  if (!session || !sync.canCheck() || !(retry || wantsReview(session))) return;
+function reviewAnswer(): void {
+  if (!session || !sync.canCheck()) return;
   const card = currentCard(session, store.get());
   const asked = askReview(session);
   if (!card || asked === session) return;
   session = asked;
-  const { answer } = asked;
+  const answer = asked.answer;
   const { id, question } = card;
   void sync.check({ question, where: placeLabel(card), answer }).then((review) => {
     if (!session) return;
@@ -173,6 +200,12 @@ function reviewAnswer(retry = false): void {
     session = next;
     render();
   });
+}
+
+/** Have the answer read again as corrected. */
+function checkAgain(): void {
+  reviewAnswer();
+  render();
 }
 
 function gradeAnswer(grade: Grade): void {
@@ -192,13 +225,15 @@ function gradeAnswer(grade: Grade): void {
 /** Forget what was being written for the card checked, as the sitting moves off it. */
 function leaveCard(): void {
   editor = null;
+  answerHeight = null;
   written = { questions: [], kept: true };
 }
 
-/** Start rewording the question or the answer being checked, or writing a new question. */
+/** Start rewording the question being checked, or writing a new question. */
 function openEditor(kind: Editor["kind"], card: Card): void {
   if (!session) return;
-  editor = { kind, text: kind === "question" ? card.question : kind === "answer" ? session.answer : "" };
+  editor = { kind, text: kind === "question" ? card.question : "" };
+  editorOpened = true;
   render();
 }
 
@@ -208,20 +243,16 @@ function closeEditor(): void {
 }
 
 /**
- * Save what the editor holds. A reworded question or answer is read by
- * Claude afresh; a new question is added at the same lesson step, and the
- * editor stays open for another. A blank question is not saved.
+ * Save what the editor holds. A reworded question has Claude read the answer
+ * afresh; a new question is added at the same lesson step, and the editor
+ * stays open for another. A blank question is not saved.
  */
 function saveEditor(): void {
   const card = session && currentCard(session, store.get());
   if (!session || !editor || !card) return;
   const { kind, text } = editor;
-  if (kind === "answer") {
-    session = reviseAnswer(session, text);
-    editor = null;
-  } else if (!cleanQuestion(text)) {
-    return;
-  } else if (kind === "question") {
+  if (!cleanQuestion(text)) return;
+  if (kind === "question") {
     store.update((d) => editCard(d, card.id, text, Date.now()));
     if (currentCard(session, store.get())?.question !== card.question) session = dropReview(session);
     editor = null;
@@ -230,8 +261,9 @@ function saveEditor(): void {
     const saved = store.update((d) => addCard(d, fresh));
     written = { questions: [...written.questions, fresh.question], kept: written.kept && saved };
     editor = { kind: "new", text: "" };
+    editorOpened = true;
   }
-  reviewAnswer();
+  if (wantsReview(session)) reviewAnswer();
   render();
 }
 
@@ -246,15 +278,25 @@ function end(): void {
 function render(): void {
   keepSitting();
   const deck = store.get();
-  // A reply from Claude can redraw the sitting mid-sentence: the caret goes back where it was.
+  // A reply from Claude can redraw the sitting mid-sentence: the box being
+  // written in keeps the focus, and the selection goes back where it was.
   const before = document.activeElement;
-  const caret = before instanceof HTMLTextAreaElement && root.contains(before) ? before.selectionStart : null;
+  const was = before instanceof HTMLTextAreaElement && root.contains(before) ? before : null;
   root.replaceChildren(...(session ? sitting(session, deck) : overview(deck)));
-  const field = root.querySelector<HTMLTextAreaElement>(".rc-answer, .rc-editor textarea");
+  // An editor just opened takes it first; else the box written in before,
+  // any editor, or the answer while it is asked for. While it is checked, the
+  // answer is not focused unasked, so 1, 2 and 3 grade.
+  const editorBox = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea");
+  const opened = editorOpened ? editorBox : null;
+  editorOpened = false;
+  const same = opened ? null : was && root.querySelector<HTMLTextAreaElement>(`textarea.${was.classList[0]}`);
+  const field =
+    opened ?? same ?? editorBox ?? (session?.phase === "ask" ? root.querySelector<HTMLTextAreaElement>(".rc-answer") : null);
   if (field && document.activeElement !== field) {
     field.focus();
-    const at = Math.min(caret ?? field.value.length, field.value.length);
-    field.setSelectionRange(at, at);
+    const end = field.value.length;
+    const [from, to] = same && was ? [was.selectionStart, was.selectionEnd] : [end, end];
+    field.setSelectionRange(Math.min(from, end), Math.min(to, end));
   }
 }
 
@@ -376,9 +418,8 @@ function history(card: Card): HTMLElement {
       const entry = el("li");
       entry.append(
         el("p", "rc-history-when", `${answeredLabel(attempt.at)} · ${GRADE_LABEL[attempt.grade]}`),
-        saidAnswer(attempt.answer),
+        saidSheet(attempt.answer, attempt.claude),
       );
-      if (attempt.claude) entry.append(claudeSaid(attempt.claude.grade, attempt.claude.feedback, "Claude"));
       return entry;
     }),
   );
@@ -455,50 +496,35 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
     panel.append(question);
   }
 
-  if (s.phase === "ask") {
-    const answer = el("textarea", "rc-answer");
-    answer.rows = 4;
-    answer.placeholder = "Your answer, from memory. Writing it down is optional, but it makes the check honest.";
-    answer.setAttribute("aria-label", "Your answer");
-    answer.value = draft;
-    answer.addEventListener("input", () => {
-      draft = answer.value;
-      keepSitting();
-    });
-    answer.addEventListener("keydown", (e) => {
-      if (submitsOnEnter(e, touchFirst())) {
-        e.preventDefault();
-        check();
-      }
-    });
-    panel.append(answer, row(button("Check", "rc-primary", check), el("span", "rc-hint", "↵ check · ⇧↵ new line")));
-    return [top, panel];
+  if (s.phase === "check" && !editor) {
+    const actions = row(
+      button("Edit question", "rc-small", () => openEditor("question", card)),
+      button("New question", "rc-small", () => openEditor("new", card)),
+    );
+    actions.classList.add("rc-question-actions");
+    panel.append(actions);
   }
 
-  const yours = el("div", "rc-yours");
-  yours.append(el("h3", "", "Your answer"));
-  yours.append(editor?.kind === "answer" ? editorForm(editor, "Your answer") : saidAnswer(s.answer));
-  panel.append(yours);
-  if (s.review) panel.append(reviewed(s.review));
-
-  const last: Attempt | undefined = card.attempts.at(-1);
-  if (last) {
-    const before = el("div", "rc-yours");
-    before.append(el("h3", "", `Last time · ${GRADE_LABEL[last.grade].toLowerCase()}`), saidAnswer(last.answer));
-    panel.append(before);
-    if (last.claude) panel.append(claudeSaid(last.claude.grade, last.claude.feedback, "Claude, last time"));
-  }
+  const outcomes = el("div", "rc-grades");
+  const paintOutcomes = (): void => {
+    const suggested = session && suggestedGrade(session);
+    outcomes.querySelectorAll<HTMLButtonElement>(".rc-grade").forEach((b, i) => {
+      const g = GRADES[i];
+      b.classList.toggle("rc-suggested", g === suggested);
+      b.title = `${OUTCOME[g]} (${i + 1})${g === suggested ? ", as Claude's reading suggests" : ""}`;
+    });
+  };
+  panel.append(answerSheet(s, paintOutcomes));
+  if (s.phase === "ask") return [top, panel];
 
   if (editor?.kind === "new") panel.append(newQuestion(editor, card));
   else if (written.questions.length > 0) panel.append(writtenList());
-  if (!editor) {
-    panel.append(
-      row(
-        button("Edit question", "rc-small", () => openEditor("question", card)),
-        button(s.answer.trim() ? "Edit answer" : "Write an answer", "rc-small", () => openEditor("answer", card)),
-        button("New question", "rc-small", () => openEditor("new", card)),
-      ),
-    );
+
+  const last: Attempt | undefined = card.attempts.at(-1);
+  if (last) {
+    const before = el("details", "rc-last");
+    before.append(el("summary", "", `Last time · ${GRADE_LABEL[last.grade].toLowerCase()}`), saidSheet(last.answer, last.claude));
+    panel.append(before);
   }
 
   const href = sourceHref(card);
@@ -511,18 +537,199 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   }
 
   const now = Date.now();
-  const suggested = s.review?.kind === "done" ? s.review.verdict.grade : null;
-  const grades = el("div", "rc-grades");
-  grades.append(
-    ...GRADES.map((g, i) => {
-      const b = button("", `rc-grade rc-${g}${g === suggested ? " rc-suggested" : ""}`, () => gradeAnswer(g));
-      b.append(el("span", "rc-grade-name", GRADE_LABEL[g]), el("span", "rc-grade-when", gradeHint(card, g, now)));
-      b.title = `${GRADE_LABEL[g]} (${i + 1})${g === suggested ? ", as Claude suggests" : ""}`;
+  outcomes.append(
+    ...GRADES.map((g) => {
+      const b = button("", `rc-grade rc-${g}`, () => gradeAnswer(g));
+      b.append(el("span", "rc-grade-name", OUTCOME[g]), el("span", "rc-grade-when", gradeHint(card, g, now)));
       return b;
     }),
   );
-  panel.append(el("p", "rc-hint rc-grade-prompt", "How did it go? (1 · 2 · 3)"), grades);
+  paintOutcomes();
+  panel.append(el("p", "rc-hint rc-grade-prompt", "Once it's right, how did it go? (1 · 2 · 3)"), outcomes);
   return [top, panel];
+}
+
+/**
+ * The answer, in one box that stays open to correct. While it is checked, the
+ * words Claude remarked on are highlighted in it, as comments are in a
+ * document, and the remarks are beside it (`SIDE_BY_SIDE`), or under it on a
+ * narrower screen, each as near its words as it fits. Editing the answer
+ * places them afresh against it, so a remark on words since changed shows as
+ * dealt with. `onEdit` hears each change made while checking.
+ */
+function answerSheet(s: Session, onEdit: () => void): HTMLElement {
+  const checking = s.phase === "check";
+  const sheet = el("div", checking ? "rc-sheet rc-checking" : "rc-sheet");
+  const paper = el("div", "rc-paper");
+  const marks = el("div", "rc-marks");
+  marks.setAttribute("aria-hidden", "true");
+  const field = el("textarea", "rc-answer");
+  field.rows = 4;
+  field.setAttribute("aria-label", "Your answer");
+  field.value = checking ? s.answer : draft;
+  field.placeholder = checking
+    ? "Answered in your head. Write it here to check it."
+    : "Your answer, from memory. Writing it down is optional, but it makes the check honest.";
+  paper.append(marks, field);
+  const margin = el("aside", "rc-margin");
+  margin.setAttribute("aria-label", "Claude's check");
+  const canCheck = checking && sync.canCheck();
+  const again = button(s.review ? "Check again" : "Check", "rc-primary", checkAgain);
+  const controls = checking
+    ? canCheck
+      ? row(again, el("span", "rc-hint", "↵ check again · ⇧↵ new line · esc, then 1 · 2 · 3"))
+      : row(el("span", "rc-hint", "esc, then 1 · 2 · 3"))
+    : row(button("Check", "rc-primary", check), el("span", "rc-hint", "↵ check · ⇧↵ new line"));
+  const left = el("div", "rc-sheet-main");
+  left.append(paper, controls);
+  sheet.append(left, margin);
+
+  const remarks = s.review?.kind === "done" ? (s.review.verdict.remarks ?? []) : [];
+  let places = placeRemarks(field.value, remarks);
+
+  const showActive = (): void => {
+    const active = document.activeElement === field ? remarkAt(places, field.selectionStart) : null;
+    for (const node of sheet.querySelectorAll<HTMLElement>("[data-remark]")) {
+      node.classList.toggle("rc-active", Number(node.dataset.remark) === active);
+    }
+  };
+
+  const layout = (): void => {
+    const cards = [...margin.children] as HTMLElement[];
+    if (!window.matchMedia?.(SIDE_BY_SIDE).matches) {
+      for (const c of cards) c.style.top = "";
+      margin.style.height = "";
+      return;
+    }
+    // By the words as they are scrolled to, kept within the box.
+    const wanted = cards.map((c) => {
+      const words = c.dataset.remark === undefined ? null : marks.querySelector<HTMLElement>(`mark[data-remark="${c.dataset.remark}"]`);
+      return words ? Math.min(Math.max(words.offsetTop - marks.scrollTop, 0), paper.offsetHeight) : 0;
+    });
+    const tops = stack(wanted, cards.map((c) => c.offsetHeight), 10);
+    cards.forEach((c, i) => (c.style.top = `${tops[i]}px`));
+    margin.style.height = cards.length > 0 ? `${tops.at(-1)! + cards.at(-1)!.offsetHeight}px` : "";
+  };
+
+  const paint = (): void => {
+    const text = field.value;
+    places = placeRemarks(text, remarks);
+    marks.replaceChildren(
+      ...runsOf(text, places).map(({ text: words, remark }) => {
+        if (remark === null) return document.createTextNode(words);
+        const mark = el("mark", "", words);
+        mark.dataset.remark = String(remark);
+        return mark;
+      }),
+    );
+    const order = places
+      .map((place, i) => ({ place, i }))
+      .sort((a, b) => (a.place?.start ?? Infinity) - (b.place?.start ?? Infinity));
+    margin.replaceChildren(
+      ...(checking && s.review ? [overall(s.review, session ? !readAsItStands(session) : false)] : []),
+      ...order.map(({ place, i }) => remarkCard(remarks[i], i, place === null, () => {
+        if (!place) return;
+        field.focus();
+        field.setSelectionRange(place.start, place.end);
+        showActive();
+      })),
+    );
+    // Nothing new to read: an empty answer, or one read as it stands.
+    if (session) again.disabled = !text.trim() || (readAsItStands(session) && session.review?.kind !== "failed");
+    showActive();
+    fit();
+    requestAnimationFrame(() => {
+      fit();
+      layout();
+    });
+  };
+
+  // The box fits the answer up to most of the window, and scrolls past that;
+  // the learner can drag it to any height, which it keeps. The highlights
+  // behind it scroll with it, and leave room for its scroll bar, so its lines
+  // break where the box's do.
+  let fitted = 0;
+  const fit = (): void => {
+    if (!field.isConnected) return;
+    if (answerHeight !== null) field.style.height = `${answerHeight}px`;
+    else {
+      field.style.height = "auto";
+      const most = Math.max(window.innerHeight * 0.6, 110);
+      field.style.height = `${Math.min(field.scrollHeight + 2, most)}px`;
+    }
+    fitted = field.offsetHeight;
+    follow();
+  };
+  const follow = (): void => {
+    marks.style.paddingRight = `${13 + Math.max(field.offsetWidth - field.clientWidth - 2, 0)}px`;
+    marks.scrollTop = field.scrollTop;
+  };
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(() => {
+      if (!field.isConnected) return;
+      // Not the height fit() set: the learner dragged the box.
+      if (Math.abs(field.offsetHeight - fitted) > 1) answerHeight = fitted = field.offsetHeight;
+      follow();
+      layout();
+    }).observe(field);
+  }
+  field.addEventListener("scroll", () => {
+    follow();
+    layout();
+  });
+
+  field.addEventListener("input", () => {
+    if (!session) return;
+    if (session.phase === "ask") draft = field.value;
+    else {
+      session = editAnswer(session, field.value);
+      paint();
+      onEdit();
+    }
+    keepSitting();
+  });
+  field.addEventListener("keydown", (e) => {
+    if (checking && e.key === "Escape") field.blur();
+    else if (submitsOnEnter(e, touchFirst()) && (!checking || canCheck)) {
+      e.preventDefault();
+      if (checking) checkAgain();
+      else check();
+    }
+  });
+  for (const type of ["select", "click", "keyup", "focus", "blur"]) field.addEventListener(type, showActive);
+
+  relayout = layout;
+  paint();
+  return sheet;
+}
+
+/** Claude's reading as a whole: under way, its feedback, or why there is none; `stale` once the answer has changed since. */
+function overall(review: Review, stale: boolean): HTMLElement {
+  const box = el("div", "rc-remark rc-overall");
+  box.setAttribute("role", "status");
+  if (review.kind === "done") {
+    const said = el("p", "rc-said rc-feedback");
+    said.innerHTML = questionHtml(review.verdict.feedback);
+    box.append(el("h3", "", `Claude's check · ${GRADE_LABEL[review.verdict.grade].toLowerCase()}`), said);
+    if (stale) box.append(el("p", "rc-remark-note rc-quiet", "You've changed your answer since. Check it again to have it read as it stands."));
+  } else {
+    box.append(el("h3", "", "Claude's check"));
+    box.append(el("p", "rc-said rc-quiet", review.kind === "checking" ? "Reading your answer…" : review.error));
+  }
+  return box;
+}
+
+/** One remark, by its words; `gone` once they have been changed. */
+function remarkCard(remark: Remark, index: number, gone: boolean, show: () => void): HTMLElement {
+  const box = el("div", gone ? "rc-remark rc-gone" : "rc-remark");
+  box.dataset.remark = String(index);
+  const quote = el("p", "rc-remark-quote", remark.quote);
+  const note = el("p", "rc-remark-note");
+  note.innerHTML = questionHtml(remark.note);
+  box.append(quote, note);
+  if (gone) box.append(el("p", "rc-remark-done", "Changed"));
+  else box.addEventListener("click", show);
+  return box;
 }
 
 /** A text box for what the editor holds, with Save and Cancel; Enter saves and Escape cancels. */
@@ -577,26 +784,35 @@ function writtenList(): HTMLElement {
   return box;
 }
 
-/** Claude's reading of the answer: under way, its feedback, or why there is none. */
-function reviewed(review: Review): HTMLElement {
-  const { kind } = review;
-  const box = kind === "done" ? claudeSaid(review.verdict.grade, review.verdict.feedback, "Claude's check") : el("div", "rc-yours");
-  box.classList.add("rc-review");
-  box.setAttribute("role", "status");
-  if (kind === "checking") {
-    box.append(el("h3", "", "Claude's check"), el("p", "rc-said rc-quiet", "Reading your answer…"));
-  } else if (kind === "failed") {
-    box.append(
-      el("h3", "", "Claude's check"),
-      el("p", "rc-said rc-quiet", review.error),
-      row(
-        button("Try again", "rc-small", () => {
-          reviewAnswer(true);
-          render();
-        }),
-      ),
+/**
+ * An answer as it was given, with what Claude said of it if kept: the words
+ * it remarked on marked, and the remarks under it, then its feedback.
+ */
+function saidSheet(answer: string, verdict: Verdict | undefined): HTMLElement {
+  const box = el("div", "rc-said-sheet");
+  const remarks = verdict?.remarks ?? [];
+  const places = placeRemarks(answer, remarks);
+  const said = saidAnswer(answer);
+  if (answer.trim() && remarks.length > 0) {
+    said.replaceChildren(
+      ...runsOf(answer, places).map(({ text, remark }) => (remark === null ? document.createTextNode(text) : el("mark", "", text))),
     );
   }
+  box.append(said);
+  if (remarks.length > 0) {
+    const list = el("ul", "rc-said-remarks");
+    list.append(
+      ...remarks.map((r) => {
+        const item = el("li");
+        const note = el("span", "rc-remark-note");
+        note.innerHTML = questionHtml(r.note);
+        item.append(el("span", "rc-remark-quote", r.quote), note);
+        return item;
+      }),
+    );
+    box.append(list);
+  }
+  if (verdict) box.append(claudeSaid(verdict.grade, verdict.feedback, "Claude"));
   return box;
 }
 

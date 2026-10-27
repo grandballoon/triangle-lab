@@ -14,7 +14,7 @@ describe("checkParams", () => {
   it("asks for a verdict to a schema, about the learner's text in tags", () => {
     const params = checkParams(request);
     expect(params).toMatchObject({ model: MODEL, fallbacks: "default", betas: ["server-side-fallback-2026-07-01"] });
-    expect(params.output_config?.format?.schema).toMatchObject({ required: ["grade", "feedback"], additionalProperties: false });
+    expect(params.output_config?.format?.schema).toMatchObject({ required: ["grade", "feedback", "remarks"], additionalProperties: false });
     expect(params.messages).toEqual([
       {
         role: "user",
@@ -30,6 +30,12 @@ describe("verdictOf", () => {
     expect(verdictOf(message("end_turn", '{"grade":"recalled","feedback":"Yes: the centroid."}'))).toEqual({
       grade: "recalled",
       feedback: "Yes: the centroid.",
+    });
+    const remarked = '{"grade":"missed","feedback":"No.","remarks":[{"quote":"incentre","note":"The centroid."}]}';
+    expect(verdictOf(message("end_turn", remarked))).toEqual({
+      grade: "missed",
+      feedback: "No.",
+      remarks: [{ quote: "incentre", note: "The centroid." }],
     });
   });
 
