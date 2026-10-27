@@ -13,6 +13,14 @@ describe("readCheckRequest", () => {
     expect(readCheckRequest({ ...request, answer: `  ${"x".repeat(MAX_ANSWER + 5)} ` })?.answer).toHaveLength(MAX_ANSWER);
   });
 
+  it("reads the card asked, which finds its material, and leaves out one that makes no sense", () => {
+    const card = { id: "c1", lesson: "medians", step: 1 };
+    expect(readCheckRequest({ ...request, card })).toEqual({ ...request, card });
+    for (const bad of [{ ...card, id: "" }, { ...card, step: -1 }, { ...card, step: 1.5 }, { id: "c1" }, "c1"]) {
+      expect(readCheckRequest({ ...request, card: bad })).toEqual(request);
+    }
+  });
+
   it("is not read from anything else, nor with nothing to check", () => {
     for (const raw of [null, "answer", {}, { ...request, answer: 3 }, { ...request, where: undefined }, { ...request, answer: " " }, { ...request, question: "" }]) {
       expect(readCheckRequest(raw)).toBeNull();

@@ -147,7 +147,8 @@ function reviewAnswer(retry = false): void {
   if (!card || asked === session) return;
   session = asked;
   const { answer } = asked;
-  void sync.check({ question: card.question, where: placeLabel(card), answer }).then((review) => {
+  const asking = { id: card.id, lesson: card.lesson, step: card.step };
+  void sync.check({ question: card.question, where: placeLabel(card), answer, card: asking }).then((review) => {
     if (!session) return;
     const next = settleReview(session, card.id, answer, review);
     if (next === session) return;

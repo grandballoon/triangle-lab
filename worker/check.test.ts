@@ -23,6 +23,21 @@ describe("checkParams", () => {
       },
     ]);
   });
+
+  it("gives the key fact and the reference answer to grade against, where there are any", () => {
+    const params = checkParams(request, { fact: "The medians meet at the centroid.", reference: "At the centroid, $G$." });
+    expect(params.system).toContain("Grade against the reference answer");
+    expect(params.messages[0].content).toBe(
+      [
+        "<question>Where do the medians meet?</question>",
+        "<asked_in>Triangles · Medians · Step 2</asked_in>",
+        "<key_fact>The medians meet at the centroid.</key_fact>",
+        "<reference_answer>At the centroid, $G$.</reference_answer>",
+        "<answer>At the centroid</answer>",
+      ].join("\n"),
+    );
+    expect(checkParams(request, { fact: null, reference: "At $G$." }).messages[0].content).not.toContain("<key_fact>");
+  });
 });
 
 describe("verdictOf", () => {

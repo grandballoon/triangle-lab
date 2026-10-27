@@ -1,8 +1,10 @@
 // Claude reading a written answer in a review sitting, and saying how it
-// went. The recall page sends the question, where it was asked and the
-// answer to the site's Worker at /check (worker/check.ts), which asks Claude;
-// the reply is a suggested grade and a few sentences on what was right and
-// what was missing. The learner still grades themselves: the suggestion only
+// went. The recall page sends the question, where it was asked, the card it
+// is on and the answer to the site's Worker at /check (worker/check.ts),
+// which asks Claude to grade it against the card's reference answer and its
+// step's key fact (material.ts), writing either first if it is missing. The
+// reply is a suggested grade and a few sentences on what was right and what
+// was missing. The learner still grades themselves: the suggestion only
 // marks one of the grade buttons.
 //
 // When the learner grades an answer missed or shaky, Claude's verdict is
@@ -21,6 +23,12 @@ export interface CheckRequest {
   where: string;
   /** The learner's answer, as written; never empty. */
   answer: string;
+  /**
+   * The card asked, which finds its reference answer and its step's key
+   * fact. A page loaded before cards were sent has none, and its answer is
+   * graded without them.
+   */
+  card?: { id: string; lesson: string; step: number };
 }
 
 /** Where a sitting stands on having the answer being checked read by Claude. */
@@ -31,19 +39,24 @@ export type Review =
 
 const MAX_WHERE = 300;
 
-/** Largest request accepted, in characters of JSON: the three fields at their longest, escaped. */
-export const MAX_CHECK_BODY = 6 * (MAX_QUESTION + MAX_WHERE + MAX_ANSWER);
+/** Largest request accepted, in characters of JSON: the fields at their longest, escaped, and room for the card. */
+export const MAX_CHECK_BODY = 6 * (MAX_QUESTION + MAX_WHERE + MAX_ANSWER) + 1000;
 
 /** Read a check request, or null if `raw` is not one. Each field is trimmed and capped. */
 export function readCheckRequest(raw: unknown): CheckRequest | null {
   if (!isObject(raw)) return null;
   const { question, where, answer } = raw;
   if (typeof question !== "string" || typeof where !== "string" || typeof answer !== "string") return null;
-  const request = {
+  const request: CheckRequest = {
     question: question.trim().slice(0, MAX_QUESTION),
     where: where.trim().slice(0, MAX_WHERE),
     answer: answer.trim().slice(0, MAX_ANSWER),
   };
+  const card = raw.card;
+  if (isObject(card) && typeof card.id === "string" && card.id && typeof card.lesson === "string") {
+    const { step } = card;
+    if (typeof step === "number" && Number.isInteger(step) && step >= 0) request.card = { id: card.id, lesson: card.lesson, step };
+  }
   return request.question && request.answer ? request : null;
 }
 

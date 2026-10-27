@@ -304,7 +304,12 @@ describe("Claude checking an answer", () => {
 
     await settle();
     expect(checks).toEqual([
-      { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2: Find the centroid", answer: "In the middle" },
+      {
+        question: "Where do the medians meet?",
+        where: "Triangles · Medians · Step 2: Find the centroid",
+        answer: "In the middle",
+        card: { id: "a", lesson: "medians", step: 1 },
+      },
     ]);
     expect(review(root)!.querySelector("h3")!.textContent).toBe("Claude's check · shaky");
     expect(review(root)!.querySelector(".katex")).not.toBeNull();

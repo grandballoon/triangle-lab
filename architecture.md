@@ -3,7 +3,7 @@
 Triangle Lab is a set of interactive geometry lessons drawn over the learner's webcam.
 The learner moves points with a mouse, a finger, or a hand held up to the camera, and steps through visual proofs.
 It is a static site: Vite builds a handful of HTML pages, and everything runs in the browser.
-The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking, which asks Claude through that Worker; the Worker also serves the pages.
+The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, answer checking, which asks Claude through that Worker, and the answer key it checks against, which the Worker keeps and the admin page edits; the Worker also serves the pages.
 
 # Architecture Overview
 
@@ -169,7 +169,8 @@ A sitting asks each due question in turn: the learner answers from memory, in wr
 "Check in the lesson" opens the lesson in a new tab at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
 
 While the learner checks a written answer, Claude reads it too, once the browser has the sync key.
-The page sends the question, where it was asked and the answer to the Worker's `/check`, and shows the feedback that comes back with the answer, marking the grade Claude suggests; the learner still picks the grade.
+The page sends the question, where it was asked, the card's id, lesson and step, and the answer to the Worker's `/check`, and shows the feedback that comes back with the answer, marking the grade Claude suggests; the learner still picks the grade.
+Claude grades against the card's reference answer and its step's key fact (see "The answer key" below).
 Claude's reading (a `Review`: checking, done or failed) is part of the sitting, tied to the card being checked: a reply that comes after the sitting has moved on is dropped, grading or deleting the card drops it, and it is kept across a reload, except one still under way, which is asked for again.
 A failed check is asked again only when the learner presses "Try again".
 When the learner grades the answer missed or shaky, Claude's `Verdict` is kept on the `Attempt` in the deck (`answerCard`), so it syncs and exports with the rest; a recalled answer keeps none.
@@ -180,6 +181,7 @@ The next time the card is checked, the last attempt's verdict is shown under it,
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `material.ts` | The answer key: its pieces and their versions, when one is stale, the commands that change one, the default house style | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
@@ -207,15 +209,46 @@ A sitting under way is kept in the tab's `sessionStorage`, with the answer being
 
 Every change to the store is read-modify-write against storage, so two tabs cannot undo each other's questions; if storage refuses a write, the page keeps its deck for as long as it is open and says so.
 
+## The answer key (`src/recall/material.ts`, `src/admin`, `src/course`)
+
+What Claude grades a recall answer against is the course's own material, which the code calls the material and the pages the answer key.
+It has three kinds of piece: a key fact for each lesson step, the one idea the step teaches; a reference answer for each card, the answer the course would give to its question; and the house style Claude writes both in.
+It is course material, not the learner's: it lives apart from the deck, in the Worker, and is changed only with the admin key.
+
+Each piece is an `Item`: every version of its text, oldest first, the last one current, and the basis the current one was written for.
+A key fact's basis is its step's title and text, and a reference answer's is its card's question; when either has changed since, the piece is stale.
+A version records how it came to be: written by Claude, refined by Claude to an instruction (which is kept), edited by hand, or restored from an earlier version.
+Every change appends a version, written for the basis of the moment, and the fifty latest are kept.
+
+The Worker writes from the course catalogue (`src/course`): every lesson's chapter, name and steps as text.
+The Worker cannot load the lessons, which are built for the browser, so `course.test.ts` reads them, the standalone directions and every lab lesson built against a real `Scene`, and keeps `catalogue.generated.ts` as a file snapshot: the test fails while the file is out of date, and `npx vitest run src/course -u` writes it.
+When Claude writes a piece, it is given the whole lesson, so it writes in the course's terms; a reference answer is also given the step it was asked at, marked, and that step's key fact.
+
+Pieces are written when first needed.
+A check of a card whose reference answer or step's key fact is missing or stale writes both first, at the same time, and grades against them; one Claude fails to write is left out, or used as it stood, and the answer is graded all the same.
+If two checks write the same piece at once, the first to arrive is kept (`settle`).
+
+The admin page (`admin.html`) shows the material in three tabs: reference answers, by lesson; key facts, by chapter and lesson, each lesson closed until opened; and the house style.
+A piece can be written again, refined to an instruction, edited with a typeset preview, or restored from its history, and a lesson's missing and stale key facts can be written one after another.
+The page renders the whole of its state on every change, so it keeps each piece's draft, pending change and error by key, and gives back focus and the selection after each render; it typesets each text once and remembers it.
+
+| File | Role | Pure |
+| --- | --- | --- |
+| `course/course.ts` | The course as text, and finding a lesson or a step in it | yes |
+| `course/catalogue.generated.ts` | Every lesson's steps, written by `course.test.ts` | generated |
+| `admin/model.ts` | The answer key as rows, how each stands, the labels the page reads by, what the Worker's replies mean | yes |
+| `admin/client.ts` | The admin key in the browser, and the requests to `/material` | no (browser injected) |
+| `admin/page.ts` | The admin page | no |
+
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck` and `/check` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check` and `/material` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck` and `/check` on to the Worker that `npm run preview` runs on port 8787.
+In development, Vite sends `/deck`, `/check` and `/material` on to the Worker that `npm run preview` runs on port 8787.
 
-The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
+The deck is at `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
 The key is all that guards the deck, so the Worker refuses to serve with one under 32 characters, and a rate limit per caller address (`LIMITER`, 60 a minute) is checked before the key so it cannot be guessed at speed.
 A deck declared larger than 5 MB is refused before it is read.
@@ -231,13 +264,24 @@ The Worker calls the Claude API with the official SDK and its own `ANTHROPIC_API
 The call (`check.ts`) uses Claude Opus 5.5 at medium effort, with structured output to a schema of the verdict, and server-side fallbacks, so a request a safety classifier declines is run again on the model Anthropic recommends.
 The learner's text is put in tags the system prompt says are material to judge, not instructions.
 Whatever comes back is read with the same `readVerdict` the page uses, and a refusal, a cut-short reply or a failed call becomes a 502 saying why.
+Before grading, it finds the card's reference answer and its step's key fact in the material, writing any that are missing or stale (see "The answer key"), and gives both to Claude with the answer.
 `ANTHROPIC_BASE_URL` (a var in `wrangler.jsonc`) says where the Claude API is, so the Worker test can stand one in.
+
+`/material` is the admin page's: `GET` answers with every piece of the material and the deck's questions (a `MaterialView`), and `POST` takes a `Command` (write, refine, edit or restore one piece) and answers with the piece as it now is.
+It takes the `ADMIN_KEY` secret, not the deck's key, and is off until that is at least 32 characters, so a device that syncs cannot change what answers are graded against.
+Its `POST`s are counted against a limit of their own (`WRITE_LIMITER`, 30 a minute), since most call Claude.
+Claude writes a piece at high effort, with structured output to a schema holding only the text, from a brief for the kind of piece, the house style and the whole lesson (`worker/material.ts`).
+
+A second Durable Object (`Material`) holds the material, a row per piece keyed by `targetKey` (`fact:medians/1`, `reference:<card id>`, `style`).
+The Worker calls Claude outside it, then hands it the version to keep: `append` makes it current, and `settle` does too unless the piece became current meanwhile.
+A reference answer whose card has been removed is kept, unread, in case a merge brings the card back.
 
 | File | Role | Pure |
 | --- | --- | --- |
-| `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
-| `check.ts` | The request to Claude to check an answer, and the verdict or failure read from its reply | yes |
-| `index.ts` | The fetch handler, the call to Claude, and the `RecallDeck` object | no |
+| `rules.ts` | Which request it is, whether the caller holds the key it needs, the rate limits, size and clock checks | yes |
+| `check.ts` | The request to Claude to check an answer against the material, and the verdict or failure read from its reply | yes |
+| `material.ts` | The requests to Claude to write or refine a key fact or a reference answer, and the text or failure read from its reply | yes |
+| `index.ts` | The fetch handler, the calls to Claude, and the `RecallDeck` and `Material` objects | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
 
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
@@ -272,6 +316,8 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
 - `Session` (`src/recall/session.ts`): a review sitting in progress.
 - `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
+- `Item`, `Version`, `Target`, `Command`, `MaterialView` (`src/recall/material.ts`): a piece of the answer key and its versions, which piece, a change to one, and the material as the admin page reads it.
+- `CourseLesson`, `CourseStep` (`src/course/course.ts`): a lesson and its steps as text.
 
 # Testing
 
@@ -293,13 +339,18 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
 - `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
 - `src/recall/check.test.ts`: reading a check request, a verdict, and a reply from `/check`.
+- `src/recall/material.test.ts`: where each piece of the answer key is kept, when it is stale, the versions commands make, and reading commands and the Worker's view.
+- `src/course/course.test.ts`: the course catalogue read from the lessons, kept as a file snapshot.
+- `src/admin/model.test.ts`: the answer key as rows, tallies and labels, and the Worker's replies.
+- `src/admin/page.test.ts`: the admin page driven against a stand-in Worker: the admin key, writing, refining, editing and restoring reference answers, keeping a draft across a render, a lesson's key facts written one after another, and the house style.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
 - `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: feedback and the suggested grade, feedback kept on a miss and shown on the next try and in the history, nothing sent without a written answer or the key, trying again, and reloads.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
-- `worker/rules.test.ts`: routing to the deck and to checking, key check, rate limit, size and clock checks, and checking off without a Claude key.
-- `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, and answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit.
+- `worker/rules.test.ts`: routing to the deck, to checking and to the material, which key each takes, rate limits, size and clock checks, and checking off without a Claude key.
+- `worker/check.test.ts`: the request to Claude, with and without the material, and reading its verdict, a refusal or a failed call.
+- `worker/material.test.ts`: the requests to write and refine a key fact or a reference answer, and reading the text written.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, and, through a stand-in Claude API, answers checked (the Worker's key and request, refusals, the check rate limit, and the material written at a card's first check and graded against) and the admin page's reading and changing of the material.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 

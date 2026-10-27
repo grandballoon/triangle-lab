@@ -1,8 +1,9 @@
 // The site's Worker running for real, in the local Workers runtime, from
 // wrangler.jsonc: pages served from its assets, the recall deck's HTTP
 // contract, the deck surviving the object being evicted, two devices
-// syncing through it from the pages' own sync code, and answers checked by a
-// stand-in for the Claude API.
+// syncing through it from the pages' own sync code, answers checked by a
+// stand-in for the Claude API against the material it writes for them, and
+// the admin page's reading and changing of that material.
 
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
@@ -12,12 +13,15 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { courseLesson } from "../src/course/course.ts";
 import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, type Deck } from "../src/recall/deck.ts";
+import { DEFAULT_STYLE, type Item, type MaterialView } from "../src/recall/material.ts";
 import { RecallSync, SYNC_KEY_STORAGE } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
 
 const KEY = "a-test-key-long-enough-to-be-served";
+const ADMIN_KEY = "a-test-admin-key-long-enough-to-serve";
 const CLAUDE_KEY = "a-test-claude-key";
 const ROOT = resolve(__dirname, "..");
 const T0 = 1_700_000_000_000;
@@ -33,13 +37,27 @@ let base: string;
  */
 let dir: string;
 
-/** What the stand-in Claude API was asked, with its headers, and how it answers next. */
+type Asked = { headers: Record<string, string | string[] | undefined>; body: Record<string, unknown> };
+
+/**
+ * What the stand-in Claude API was asked, with its headers, and how it
+ * answers next: `reply` to a check, and `written` to a request to write.
+ */
 const claude = {
-  asked: [] as { headers: Record<string, string | string[] | undefined>; body: Record<string, unknown> }[],
+  asked: [] as Asked[],
   status: 200,
   reply: { grade: "recalled", feedback: "Yes: the centroid." } as unknown,
+  written: "The three medians meet at the centroid." as string | ((asked: Asked) => string),
   stop: "end_turn",
 };
+
+/** Whether a request to the stand-in was to write material, not to check an answer. */
+const writes = (asked: Asked): boolean =>
+  JSON.stringify((asked.body.output_config as { format: { schema: unknown } }).format.schema).includes('"required":["text"]');
+
+/** What the stand-in was asked, as text: the system prompt and the message. */
+const said = (asked: Asked): string => `${asked.body.system}\n${JSON.stringify(asked.body.messages)}`;
+
 let claudeServer: Server;
 
 beforeAll(async () => {
@@ -47,7 +65,8 @@ beforeAll(async () => {
     let text = "";
     req.on("data", (chunk) => (text += chunk));
     req.on("end", () => {
-      claude.asked.push({ headers: req.headers, body: JSON.parse(text) });
+      const asked = { headers: req.headers, body: JSON.parse(text) };
+      claude.asked.push(asked);
       res.writeHead(claude.status, { "Content-Type": "application/json" });
       if (claude.status !== 200) {
         res.end(JSON.stringify({ type: "error", error: { type: "authentication_error", message: "invalid API key" } }));
@@ -59,7 +78,16 @@ beforeAll(async () => {
           type: "message",
           role: "assistant",
           model: "claude-opus-5-5",
-          content: [{ type: "text", text: JSON.stringify(claude.reply) }],
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                writes(asked)
+                  ? { text: typeof claude.written === "string" ? claude.written : claude.written(asked) }
+                  : claude.reply,
+              ),
+            },
+          ],
           stop_reason: claude.stop,
           stop_sequence: null,
           usage: { input_tokens: 1, output_tokens: 1 },
@@ -76,7 +104,7 @@ beforeAll(async () => {
   await writeFile(join(assets, "index.html"), "<title>Lessons</title>");
   await writeFile(join(assets, "recall.html"), "<title>Recall</title>");
   // The secrets wrangler.jsonc requires, as the developer's own .dev.vars gives them.
-  await writeFile(join(dir, ".dev.vars"), `RECALL_KEY=${KEY}\nANTHROPIC_API_KEY=${CLAUDE_KEY}\n`);
+  await writeFile(join(dir, ".dev.vars"), `RECALL_KEY=${KEY}\nADMIN_KEY=${ADMIN_KEY}\nANTHROPIC_API_KEY=${CLAUDE_KEY}\n`);
   // The real configuration, with only the assets and where Claude is swapped in.
   const path = join(ROOT, "wrangler.jsonc");
   const { config, error } = ts.parseConfigFileTextToJson(path, await readFile(path, "utf8"));
@@ -98,7 +126,13 @@ beforeAll(async () => {
 }, 60_000);
 
 beforeEach(async () => {
-  Object.assign(claude, { asked: [], status: 200, reply: { grade: "recalled", feedback: "Yes: the centroid." }, stop: "end_turn" });
+  Object.assign(claude, {
+    asked: [],
+    status: 200,
+    reply: { grade: "recalled", feedback: "Yes: the centroid." },
+    written: "The three medians meet at the centroid.",
+    stop: "end_turn",
+  });
   await harness.reset();
   base = (await harness.listen()).url.href.replace(/\/$/, "");
 });
@@ -228,6 +262,146 @@ describe("checking an answer", () => {
     expect(statuses.slice(0, 10).every((s) => s === 200)).toBe(true);
     expect(statuses.at(-1)).toBe(429);
     expect(claude.asked.length).toBeLessThanOrEqual(11);
+  });
+});
+
+describe("checking an answer against the material", () => {
+  const medians = courseLesson("medians")!;
+  const asked = { id: "a", lesson: "medians", step: 1 };
+  const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At G", card: asked };
+  const check = (body: unknown = request) => call("POST", body, {}, "/check");
+  const admin = (method: string, body?: unknown) => call(method, body, { Authorization: `Bearer ${ADMIN_KEY}` }, "/material");
+  const items = async () => ((await (await admin("GET")).json()) as MaterialView).items;
+
+  it("writes the card's reference answer and its step's key fact at its first check, and grades against them", async () => {
+    claude.written = (a) => (said(a).includes("Write the key fact") ? "The medians meet at the centroid." : "At the centroid, $G$.");
+    expect((await check()).status).toBe(200);
+    expect(claude.asked.map(writes)).toEqual([true, true, false]);
+    const [fact, reference] = claude.asked.slice(0, 2).map(said);
+    expect(fact).toContain(`Write the key fact for step 2, \\"${medians.steps[1].title}\\"`);
+    expect(reference).toContain("Where do the medians meet?");
+    expect(said(claude.asked[2])).toContain("<key_fact>The medians meet at the centroid.</key_fact>");
+    expect(said(claude.asked[2])).toContain("<reference_answer>At the centroid, $G$.</reference_answer>");
+
+    const held = await items();
+    expect(held["fact:medians/1"].versions).toEqual([{ text: "The medians meet at the centroid.", at: expect.any(Number), origin: "written" }]);
+    expect(held["reference:a"]).toMatchObject({ basis: "Where do the medians meet?", versions: [{ text: "At the centroid, $G$." }] });
+  });
+
+  it("writes nothing again for the next check, and only the reference answer once the question is reworded", async () => {
+    await check();
+    claude.asked = [];
+    await check();
+    expect(claude.asked.map(writes)).toEqual([false]);
+
+    claude.asked = [];
+    await check({ ...request, question: "Where do all three medians cross?" });
+    expect(claude.asked.map(writes)).toEqual([true, false]);
+    expect(said(claude.asked[0])).toContain("<key_fact>");
+    expect((await items())["reference:a"].versions).toHaveLength(2);
+  });
+
+  it("still grades the answer when the material cannot be written", async () => {
+    claude.written = "";
+    const response = await check();
+    expect(response.status).toBe(200);
+    expect(claude.asked.map(writes)).toEqual([true, true, false]);
+    expect(said(claude.asked[2])).not.toContain("<reference_answer>");
+    expect(await items()).toEqual({});
+  });
+
+  it("writes no key fact for a step the course no longer has", async () => {
+    await check({ ...request, card: { ...asked, lesson: "gone" } });
+    expect(claude.asked.map(writes)).toEqual([true, false]);
+    expect(Object.keys(await items())).toEqual(["reference:a"]);
+  });
+});
+
+describe("the material, from the admin page", () => {
+  const medians = courseLesson("medians")!;
+  const admin = (method: string, body?: unknown, key = ADMIN_KEY) =>
+    call(method, body, { Authorization: `Bearer ${key}` }, "/material");
+  const command = async (body: unknown): Promise<Item> => {
+    const response = await admin("POST", body);
+    expect(response.status).toBe(200);
+    return response.json();
+  };
+  const fact = { kind: "fact", lesson: "medians", step: 1 };
+
+  it("answers with the material and the deck's questions, to the admin key only", async () => {
+    await call("POST", saveDeck({ cards: [card("a")], removed: [] }));
+    expect(await (await admin("GET")).json()).toEqual({
+      items: {},
+      cards: [{ id: "a", question: "Question a?", lesson: "medians", step: 0, stepTitle: "" }],
+    });
+    expect((await admin("GET", undefined, KEY)).status).toBe(401);
+    expect((await call("GET", undefined, { Authorization: `Bearer ${ADMIN_KEY}` })).status).toBe(401);
+  });
+
+  it("writes a key fact from its lesson, refines it, takes an edit, and restores an old version", async () => {
+    claude.written = "The medians meet at a point.";
+    const written = await command({ kind: "write", target: fact });
+    expect(written.basis).toBe(`${medians.steps[1].title}\n${medians.steps[1].text}`);
+    expect(said(claude.asked[0])).toContain(medians.steps[0].text.slice(0, 20));
+    expect(claude.asked[0].body.system).toContain(DEFAULT_STYLE.slice(0, 40));
+
+    claude.written = "The medians meet at the centroid, $G$.";
+    const refined = await command({ kind: "refine", target: fact, instruction: "Name the point." });
+    expect(said(claude.asked[1])).toContain("<current_version>\\nThe medians meet at a point.\\n</current_version>");
+    expect(said(claude.asked[1])).toContain("Name the point.");
+    expect(refined.versions.at(-1)).toMatchObject({ origin: "refined", instruction: "Name the point." });
+
+    const edited = await command({ kind: "edit", target: fact, text: "Mine." });
+    expect(edited.versions.at(-1)).toMatchObject({ text: "Mine.", origin: "edited" });
+    const first = edited.versions[0];
+    const restored = await command({ kind: "restore", target: fact, at: first.at });
+    expect(restored.versions.map((v) => v.origin)).toEqual(["written", "refined", "edited", "restored"]);
+    expect(restored.versions.at(-1)).toMatchObject({ text: first.text, from: first.at });
+    expect(claude.asked).toHaveLength(2);
+  });
+
+  it("writes a reference answer for a question in the deck, from its step's key fact", async () => {
+    await call("POST", saveDeck({ cards: [newCard("q", "Why two to one?", { lesson: "medians", step: 1, stepTitle: "" }, T0)!], removed: [] }));
+    await command({ kind: "edit", target: fact, text: "The centroid cuts each median $2:1$." });
+    claude.written = "Because the centroid is two thirds of the way down each median.";
+    const reference = await command({ kind: "write", target: { kind: "reference", card: "q" } });
+    expect(reference.basis).toBe("Why two to one?");
+    expect(said(claude.asked[0])).toContain("<key_fact>\\nThe centroid cuts each median $2:1$.\\n</key_fact>");
+    expect(said(claude.asked[0])).toContain('asked_here=\\"true\\"');
+  });
+
+  it("writes in the house style once it is edited", async () => {
+    await command({ kind: "edit", target: { kind: "style" }, text: "Answer in one sentence." });
+    await command({ kind: "write", target: fact });
+    expect(claude.asked[0].body.system).toContain("<house_style>\nAnswer in one sentence.\n</house_style>");
+  });
+
+  it("refuses what it cannot do, without asking Claude", async () => {
+    const refusals = [
+      [{ kind: "write", target: { kind: "fact", lesson: "medians", step: 99 } }, 404],
+      [{ kind: "write", target: { kind: "reference", card: "nowhere" } }, 404],
+      [{ kind: "refine", target: fact, instruction: "Shorter." }, 404],
+      [{ kind: "restore", target: fact, at: 5 }, 404],
+      [{ kind: "write", target: { kind: "style" } }, 400],
+      ["{not json", 400],
+    ] as const;
+    for (const [body, status] of refusals) expect((await admin("POST", body)).status).toBe(status);
+    expect(claude.asked).toEqual([]);
+  });
+
+  it("says why when Claude cannot write it", async () => {
+    claude.stop = "refusal";
+    const response = await admin("POST", { kind: "write", target: fact });
+    expect(response.status).toBe(502);
+    expect((await response.json()).error).toContain("declined");
+    expect((await (await admin("GET")).json()).items).toEqual({});
+  });
+
+  it("takes at most 30 changes a minute from one caller", async () => {
+    const statuses: number[] = [];
+    for (let i = 0; i < 32; i++) statuses.push((await admin("POST", { kind: "edit", target: fact, text: `v${i}` })).status);
+    expect(statuses.slice(0, 30).every((s) => s === 200)).toBe(true);
+    expect(statuses.at(-1)).toBe(429);
   });
 });
 

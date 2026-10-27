@@ -84,6 +84,17 @@ The next time the question comes up, it is shown under your last answer, so you 
 Each question on the recall page has a History button listing every answer you gave, newest first, with Claude's feedback where it was kept.
 It syncs and is saved to a file with the rest of your questions.
 
+### The answer key
+
+Claude grades each answer against the course's own material, its answer key: a reference answer for each of your questions, and a key fact for each lesson step, the one idea the step teaches.
+Both are written by Claude the first time a question is checked, from the whole lesson the question was asked in, and a reference answer is written again once its question is reworded.
+
+The admin page (`/admin`, `admin.html`) shows the answer key, and is where you improve it.
+Each reference answer and key fact can be written again, refined by an instruction to Claude ("Say why, in one more sentence"), edited by hand with a typeset preview, or restored from its history of versions.
+A key fact written before its step's text changed, or a reference answer written for an earlier wording of its question, is marked stale.
+The house style, on its own tab, is what Claude follows whenever it writes or refines either; editing it changes what is written from then on.
+The page takes the admin key, not the sync key, so a device that syncs cannot change what answers are graded against.
+
 Questions are kept in the browser, like the gesture settings.
 They can also be kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
 Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
@@ -114,18 +125,31 @@ npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.c
 ```
 
 It checks only for a caller with the sync key, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
+A question's first check makes two more calls, at the same time, to write its reference answer and its step's key fact, so it takes longer than the checks after it.
 Without the key, checking is off and the recall page says why.
 Locally, add `ANTHROPIC_API_KEY=…` to `.dev.vars`.
 
+### Setting up the answer key
+
+The admin page takes a key of its own, made and kept like the sync key:
+
+```sh
+npx wrangler secret put ADMIN_KEY   # paste the output of `openssl rand -base64 24`
+```
+
+Enter it once on the admin page in each browser you edit from.
+The page is off until the key is at least 32 characters, and takes at most 30 changes a minute from one address, since most are paid calls to Claude.
+Locally, add `ADMIN_KEY=…` to `.dev.vars`.
+
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with answer checking at `/check`.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with answer checking at `/check` and the answer key at `/material`.
 Giving the site an origin of its own keeps its browser storage, and the sync key in it, away from any other site.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
-A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set.
+A deploy fails until all three of the Worker's secrets, `RECALL_KEY`, `ADMIN_KEY` and `ANTHROPIC_API_KEY`, are set.
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ## Lessons
@@ -156,6 +180,7 @@ In a lab lesson, pointing at a symbol in a formula highlights what it stands for
 index.html            Lesson menu
 lab.html              Hosts every lab lesson, chosen by ?lesson=<slug>
 recall.html           Asks back the questions noted in the lessons
+admin.html            The answer key recall answers are graded against
 <slug>.html           One page per standalone lesson (the original triangle set)
 src/lessons.ts        The reading order — the single source of truth
 src/chapters/         The lesson entries, one file per chapter
@@ -163,7 +188,9 @@ src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/recall/           Noting questions in a lesson and reviewing them later
-worker/               The Cloudflare Worker: serves the site, syncs recall questions between devices, and has Claude check answers
+src/admin/            The admin page: the answer key, written by Claude and improved by hand
+src/course/           Every lesson's steps as text, generated from the lessons
+worker/               The Cloudflare Worker: serves the site, syncs recall questions between devices, has Claude check answers, and keeps the answer key
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
@@ -181,6 +208,9 @@ The menu (`src/index.ts`) and the pager (`src/pager.ts`) both render from that o
 2. Add an entry with `lab: true` to the chapter's file in `src/chapters/`.
 
 That is all: the menu card, the pager links and the page appear on their own, and `npm test` exercises the new lesson automatically.
+
+`npm test` then fails until the course catalogue is written again: run `npx vitest run src/course -u`.
+The catalogue (`src/course/catalogue.generated.ts`) is every lesson's steps as text, which the Worker writes key facts and reference answers from, so the same goes for any change to a lesson's step titles or text.
 `src/lab/lessons/triangle-angle-sum.ts` is a good model for a stepped proof, and `src/lab/lessons/box-diagonal.ts` for a 3D figure with sliders.
 
 A lesson can also return `uses`, its real-world applications, shown after the steps.
@@ -195,6 +225,7 @@ And it can set pictures on the figure with `g.sprite(src, at)`.
 2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and then `src/page.ts`, with a `#stage` rule that fills the box `page.ts` publishes as `--stage-left`, `--stage-top`, `--stage-width` and `--stage-height` (copy one of the existing pages).
 3. Write its numbered directions in `src/directions.ts`.
 4. Register the slug in `vite.config.ts`.
+5. Write the course catalogue again: `npx vitest run src/course -u`.
 
 A standalone lesson with live numbers calls `formulaBand()` from `src/chrome.ts` once at start-up and passes it fresh rows each frame; its rows are best built in `src/readouts.ts`, where they can be tested.
 A lesson that changes with the steps reads `currentStep()` from the same module, as `src/pythagoras.ts` does.

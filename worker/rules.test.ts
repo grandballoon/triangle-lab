@@ -4,10 +4,21 @@
 import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
-import { CLOCK_SLACK_MS, datedAhead, decide, keyMatches, MAX_BODY, MIN_KEY, type Asked } from "./rules.ts";
+import {
+  CLOCK_SLACK_MS,
+  datedAhead,
+  decide,
+  keyMatches,
+  limitOf,
+  MAX_BODY,
+  MAX_COMMAND_BODY,
+  MIN_KEY,
+  type Asked,
+} from "./rules.ts";
 
 const KEY = "k".repeat(MIN_KEY);
-const settings = { key: KEY, claude: true };
+const ADMIN = "a".repeat(MIN_KEY);
+const settings = { key: KEY, admin: ADMIN, claude: true };
 const asked = (patch: Partial<Asked>): Asked => ({
   method: "GET",
   path: "/deck",
@@ -75,6 +86,51 @@ describe("decide, for an answer to check", () => {
     expect(decide(check({}), off)).toMatchObject({ status: 503, error: expect.stringContaining("ANTHROPIC_API_KEY") });
     expect(decide(check({ authorization: null }), off)).toMatchObject({ status: 401 });
     expect(decide(asked({}), off)).toEqual({ kind: "read" });
+  });
+});
+
+describe("decide, for the recall material", () => {
+  const material = (patch: Partial<Asked>) => asked({ path: "/material", authorization: `Bearer ${ADMIN}`, ...patch });
+
+  it("reads the material, or takes a command to change it, for a caller with the admin key", () => {
+    expect(decide(material({}), settings)).toEqual({ kind: "material" });
+    expect(decide(material({ method: "POST" }), settings)).toEqual({ kind: "command" });
+  });
+
+  it("takes only the admin key, never the deck's, nor the admin key for the deck", () => {
+    expect(decide(material({ authorization: `Bearer ${KEY}` }), settings)).toMatchObject({
+      status: 401,
+      error: "That key is not the admin key.",
+    });
+    expect(decide(asked({ authorization: `Bearer ${ADMIN}` }), settings)).toMatchObject({ status: 401 });
+    expect(decide(asked({ path: "/check", method: "POST", authorization: `Bearer ${ADMIN}` }), settings)).toMatchObject({
+      status: 401,
+    });
+  });
+
+  it("is off while the admin key is unset or short enough to guess, and the deck still works", () => {
+    for (const admin of ["", "a".repeat(MIN_KEY - 1)]) {
+      expect(decide(material({ authorization: `Bearer ${admin}` }), { ...settings, admin })).toMatchObject({
+        status: 503,
+        error: expect.stringContaining("ADMIN_KEY"),
+      });
+      expect(decide(asked({}), { ...settings, admin })).toEqual({ kind: "read" });
+    }
+  });
+
+  it("guards the material as it guards the deck", () => {
+    expect(decide(material({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(material({ method: "POST", length: MAX_COMMAND_BODY + 1 }), settings)).toMatchObject({ status: 413 });
+    expect(decide(material({ method: "PUT" }), settings)).toMatchObject({ status: 405 });
+  });
+});
+
+describe("limitOf", () => {
+  it("counts checks and commands to the material against tighter limits, since they may call Claude", () => {
+    expect(limitOf("POST", "/check")).toBe("check");
+    expect(limitOf("POST", "/material")).toBe("write");
+    expect(limitOf("GET", "/material")).toBeNull();
+    expect(limitOf("POST", "/deck")).toBeNull();
   });
 });
 

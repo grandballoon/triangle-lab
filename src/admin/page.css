@@ -1,0 +1,215 @@
+/* The admin page (admin.html, page.ts). It builds on the recall page's
+   stylesheet (ground, type, buttons, text boxes, history lists) and adds
+   its tabs and the pieces of the answer key, in a wider reading column. */
+
+.rc-page.ad-page { max-width: 820px; }
+
+#admin { margin-top: 32px; }
+
+/* --- Tabs ------------------------------------------------------------------------ */
+
+.ad-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ad-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 550;
+  color: rgba(233, 240, 247, 0.65);
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.ad-tab:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+
+.ad-tab[aria-current="page"] { color: #06110d; background: #38d9a9; }
+
+.ad-tab:focus-visible,
+.ad-lesson-head:focus-visible,
+.ad-where a:focus-visible {
+  outline: 2px solid #38d9a9;
+  outline-offset: 2px;
+}
+
+/* How many pieces on a tab are stale, in the stale mark's colour. */
+.ad-count {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: #ffd43b;
+  background: rgba(255, 212, 59, 0.14);
+}
+
+.ad-tab[aria-current="page"] .ad-count { color: #06110d; background: rgba(6, 17, 13, 0.16); }
+
+.ad-intro { margin-top: 20px; }
+
+.ad-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 18px;
+}
+
+.ad-toolbar .rc-note { margin-top: 0; }
+
+.ad-toolbar .rc-button[aria-pressed="true"] { color: #38d9a9; border-color: rgba(56, 217, 169, 0.6); }
+
+/* --- A piece of the answer key ---------------------------------------------------- */
+
+.ad-items { list-style: none; margin-top: 12px; }
+
+.ad-items > li + li { margin-top: 12px; }
+
+.ad-item {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Not written yet, or written for something since changed: marked down the left. */
+.ad-item[data-standing="missing"] { box-shadow: inset 3px 0 0 rgba(233, 240, 247, 0.22); }
+
+.ad-item[data-standing="stale"] { box-shadow: inset 3px 0 0 #ffd43b; }
+
+.ad-question { font-size: 17px; font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; }
+
+.ad-where { margin-top: 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.03em; color: #38d9a9; }
+
+.ad-where a { color: inherit; text-decoration: none; }
+
+.ad-where a:hover { text-decoration: underline; }
+
+/* What the piece is written from: the step's text, or the key fact. Quiet, beside the piece. */
+.ad-aside {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(233, 240, 247, 0.55);
+  overflow-wrap: anywhere;
+}
+
+.ad-aside-label {
+  margin-right: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.4);
+}
+
+.ad-text {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.ad-text.ad-empty { color: rgba(233, 240, 247, 0.45); font-style: italic; }
+
+.ad-version { margin-top: 6px; font-size: 12.5px; color: rgba(233, 240, 247, 0.4); }
+
+.ad-stale { margin-top: 6px; font-size: 13px; font-weight: 600; color: #ffd43b; }
+
+.ad-busy { margin-top: 12px; font-size: 14px; color: #38d9a9; }
+
+.ad-item > .rc-row { margin-top: 12px; }
+
+.ad-draft { margin-top: 14px; }
+
+.ad-draft .rc-row { margin-top: 10px; }
+
+.ad-preview-label {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.4);
+}
+
+.ad-preview { margin-top: 4px; font-size: 16px; line-height: 1.55; overflow-wrap: anywhere; }
+
+.ad-history { margin-top: 14px; }
+
+.ad-history .rc-row { margin-top: 6px; }
+
+/* --- Key facts, lesson by lesson ---------------------------------------------------- */
+
+.ad-lessons { list-style: none; margin-top: 10px; }
+
+.ad-lesson { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+
+.ad-lesson-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 13px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ad-lesson-name { font-size: 16px; font-weight: 600; }
+
+.ad-lesson-name::before {
+  content: "▸";
+  display: inline-block;
+  width: 1.2em;
+  color: rgba(233, 240, 247, 0.4);
+  transition: transform 0.12s ease;
+}
+
+.ad-lesson-head[aria-expanded="true"] .ad-lesson-name::before { transform: rotate(90deg); }
+
+.ad-lesson-head:hover .ad-lesson-name { color: #38d9a9; }
+
+.ad-lesson-tally {
+  flex: none;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(233, 240, 247, 0.45);
+}
+
+.ad-lesson-body { padding: 0 0 18px; }
+
+.ad-lesson-body > .rc-row { margin-top: 0; }
+
+/* --- The house style -------------------------------------------------------------- */
+
+.ad-intro + .ad-item { margin-top: 18px; }
+
+.ad-style { font-size: 15px; line-height: 1.55; }
+
+@media (max-width: 600px) {
+  .ad-item { padding: 14px; }
+  .ad-tab { padding: 0 11px; font-size: 14px; }
+  .ad-lesson-head { flex-direction: column; gap: 2px; }
+  .ad-lesson-tally { padding-left: 1.2em; }
+}

@@ -13,11 +13,12 @@ const mediapipe = JSON.parse(
 // One project, several pages. The root index.html is the lesson menu; each
 // standalone lesson is its own HTML entry point; lab.html hosts every lab
 // lesson (src/lab/lessons), loading each one on demand; recall.html asks back
-// the questions noted in the lessons (src/recall).
+// the questions noted in the lessons (src/recall); admin.html edits the
+// answer key those questions' answers are graded against (src/admin).
 //
 // The built site is served from the root of its own origin by the Worker in
-// wrangler.jsonc, which also holds the recall deck at /deck and checks
-// answers with Claude at /check.
+// wrangler.jsonc, which also holds the recall deck at /deck, checks answers
+// with Claude at /check, and keeps the answer key at /material.
 export default defineConfig({
   // Dev only: Alt-click any element to leave a comment in ui-feedback.md.
   plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md"))],
@@ -29,9 +30,14 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
-    // The recall deck and answer checking, from the Worker run by `npm run
-    // preview` beside the dev server, so both work in development as on the site.
-    proxy: { "/deck": "http://localhost:8787", "/check": "http://localhost:8787" },
+    // The recall deck, answer checking and the answer key, from the Worker
+    // run by `npm run preview` beside the dev server, so they work in
+    // development as on the site.
+    proxy: {
+      "/deck": "http://localhost:8787",
+      "/check": "http://localhost:8787",
+      "/material": "http://localhost:8787",
+    },
   },
   build: {
     rollupOptions: {
@@ -39,6 +45,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.html"),
         lab: resolve(__dirname, "lab.html"),
         recall: resolve(__dirname, "recall.html"),
+        admin: resolve(__dirname, "admin.html"),
         angles: resolve(__dirname, "angles.html"),
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),
