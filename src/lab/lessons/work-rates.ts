@@ -101,5 +101,20 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "Mowing with a friend",
+        text: "You can mow the lawn in 60 minutes and a friend can in 90. Together you mow $\\tfrac{1}{60} + \\tfrac{1}{90} = \\tfrac{1}{36}$ of it a minute, so it takes 36 minutes.",
+      },
+      {
+        title: "A rain barrel with a leak",
+        text: "A downpipe fills a rain barrel in 2 hours, but a loose tap at the bottom would empty it in 6. Rates still add, with the leak's counted against: $\\tfrac12 - \\tfrac16 = \\tfrac13$ of the barrel an hour, so it fills in 3 hours.",
+      },
+      {
+        title: "Sharing a print job",
+        text: "One printer takes 30 minutes for a big job and an older one takes 45. Splitting the job between them, they finish in $\\frac{30 \\cdot 45}{30 + 45} = 18$ minutes.",
+      },
+    ],
   };
 });

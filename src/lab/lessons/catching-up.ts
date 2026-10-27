@@ -131,6 +131,14 @@ export default lesson((s) => {
 
     uses: [
       {
+        title: "Catching up on a bike",
+        text: "A friend sets off walking to the park at 5 km/h, and you leave 20 minutes later on a bike at 15 km/h. Setting the distances equal, $5t = 15\\left(t - \\tfrac13\\right)$, gives $t = \\tfrac12$ hour: you catch them 2.5 km from home, ten minutes after you set off.",
+      },
+      {
+        title: "Meeting on the road",
+        text: "Two friends 30 km apart cycle toward each other at 12 and 18 km/h. Their distances add up to the gap, $12t + 18t = 30$, so they meet after 1 hour, 12 km from the slower rider's house: not halfway, because the faster one covers more.",
+      },
+      {
         title: "Arrival estimates",
         text: "A navigation app predicts when you will reach someone driving ahead of you, or meet someone coming the other way, by setting two distance equations equal and solving for the time.",
       },

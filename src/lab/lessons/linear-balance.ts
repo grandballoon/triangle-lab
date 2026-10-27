@@ -167,12 +167,20 @@ export default lesson((s) => {
 
     uses: [
       {
-        title: "Break-even points",
-        text: "A phone plan costing 20 dollars a month plus 2 a gigabyte, against one costing 35 plus 0.50 a gigabyte: solving $2x + 20 = 0.5x + 35$ finds the usage at which they cost the same, and the graph shows which is cheaper on either side of it.",
+        title: "Trim round a planter",
+        text: "You have 120 cm of trim to run round the rim of a planter. A square planter of side $s$ uses $4s$ of it, so $4s = 120$ and $s = 30$ cm. A round one of diameter $d$ uses $\\pi d$, so $d = 120 \\div \\pi \\approx 38.2$ cm: for the same trim, the round planter can be wider across.",
       },
       {
-        title: "Converting a reading",
-        text: "A thermometer reads in °F and you need °C. Solving $F = \\tfrac95 C + 32$ for $C$ uses exactly these moves: subtract $32$, then divide by $\\tfrac95$.",
+        title: "Which phone plan is cheaper?",
+        text: "One plan costs 20 a month plus 2 for each gigabyte; another costs 35 a month plus 0.50 a gigabyte. Setting the two bills equal, $2x + 20 = 0.5x + 35$, gives $x = 10$: under 10 GB a month the first plan is cheaper, over it the second.",
+      },
+      {
+        title: "Equal shelves from one board",
+        text: "A 90 cm board is to be cut into three equal shelves, and each of the two saw cuts turns 0.3 cm of wood to dust. So $3x + 0.6 = 90$, and each shelf is $x = 29.8$ cm. Marking off 30 cm for each would leave the last one short.",
+      },
+      {
+        title: "Oven temperatures",
+        text: "A recipe gives the oven in °F and your oven reads °C. Solving $F = \\tfrac95 C + 32$ for $C$ takes this lesson's two moves: subtract 32 from both sides, then divide both by $\\tfrac95$. For 350 °F that is about 177 °C.",
       },
     ],
   };

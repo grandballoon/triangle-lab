@@ -112,5 +112,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "Two years of interest",
+        text: "Savings of 1000 grew to 1210 in two years at a steady yearly rate $r$. Each year multiplies them by $1 + r$, so $1000(1 + r)^2 = 1210$. Calling $z = 1 + r$ gives $z^2 = 1.21$, so $z = 1.1$ or $-1.1$; only the positive one makes sense, and the rate is 10%.",
+      },
+      {
+        title: "Moving a plant from its grow light",
+        text: "A lamp's light falls off with the square of the distance $d$: write $z = d^2$, and the light goes as $\\tfrac{1}{z}$. A seedling 30 cm below that gets four times too much light needs $z$ four times bigger, $z = 3600$, so $d = \\pm 60$: move it to 60 cm, the negative distance discarded.",
+      },
+    ],
   };
 });

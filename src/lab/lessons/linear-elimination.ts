@@ -166,5 +166,20 @@ export default lesson((s) => {
       );
       return rows;
     },
+
+    uses: [
+      {
+        title: "Two receipts",
+        text: "Three coffees and two muffins cost 16; one coffee and two muffins cost 9. Subtract the second receipt from the first and the muffins cancel: two coffees cost 7. So a coffee is 3.50, and putting that back in, a muffin is 2.75.",
+      },
+      {
+        title: "A fix from two bearings",
+        text: "A sailor takes compass bearings on a lighthouse and a church spire and draws a line on the chart through each, along its bearing. The boat is on both lines, so it is where they cross. Landmarks in nearly the same direction give nearly parallel lines and a poor fix, so navigators pick ones far apart in bearing.",
+      },
+      {
+        title: "A receipt that tells you nothing new",
+        text: "Suppose the second receipt had been six coffees and four muffins for 32: the first one doubled. Eliminating then leaves $0 = 0$. Endless pairs of prices fit both, and only a genuinely different purchase can pin them down.",
+      },
+    ],
   };
 });

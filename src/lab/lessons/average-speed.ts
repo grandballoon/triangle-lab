@@ -110,5 +110,20 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "A hilly commute",
+        text: "You cycle 6 km to work uphill at 10 km/h and home downhill at 30 km/h. That is 36 minutes there and 12 back: 12 km in 48 minutes, an average of 15 km/h, not the 20 you might guess.",
+      },
+      {
+        title: "You cannot make it up on the way back",
+        text: "Drive the first half of a trip at 30 mph, hoping to average 60 for the whole thing. By halfway you have already used all the time a 60 mph trip would take, so no speed on the second half, however fast, brings the average up to 60.",
+      },
+      {
+        title: "Timing a hike",
+        text: "On a 6 km trail, the climb at 2 km/h takes 3 hours and the descent at 6 km/h takes 1. Plan for the true average of 3 km/h, 4 hours in all, not 4 km/h and 3 hours.",
+      },
+    ],
   };
 });

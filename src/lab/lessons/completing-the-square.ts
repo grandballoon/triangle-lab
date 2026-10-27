@@ -135,5 +135,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "The biggest bed for your edging",
+        text: "With 20 m of edging, a rectangular bed $x$ m long is $10 - x$ wide, so its area is $10x - x^2 = 25 - (x - 5)^2$. That is 25 minus something never negative, so the area is largest, 25 m², when $x = 5$: a square.",
+      },
+      {
+        title: "The top of a throw",
+        text: "A ball tossed upward has height $h = -16t^2 + 32t + 5$ feet. Completing the square gives $h = 21 - 16(t - 1)^2$, so it peaks after 1 second, 21 feet up, without drawing a graph.",
+      },
+    ],
   };
 });

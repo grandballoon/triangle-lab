@@ -118,6 +118,10 @@ export default lesson((s) => {
 
     uses: [
       {
+        title: "How deep is the well?",
+        text: "Drop a pebble down a well and count 2 seconds to the splash. Ignoring the moment the sound takes to come back up, it fell $16t^2 = 16 \\cdot 2^2 = 64$ feet. For a well you know is 100 feet deep, you solve $16t^2 = 100$ instead: the splash comes after 2.5 seconds.",
+      },
+      {
         title: "Anything thrown or dropped",
         text: "A ball's height, a fountain's jet and a diver's path all carry the same $-16t^2$ (in feet) or $-4.9t^2$ (in metres). Asking when they reach a given height is always a quadratic equation.",
       },

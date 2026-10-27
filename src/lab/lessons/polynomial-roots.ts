@@ -96,5 +96,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "An open box from a sheet of card",
+        text: "Cut an $x$ cm square from each corner of a 30 by 20 cm sheet and fold up the sides: the box holds $V = x(30 - 2x)(20 - 2x)$ cm³. This cubic's roots, 0, 10 and 15, are where there is no box at all, so only cuts between 0 and 10 cm make one, and the biggest box lies between those roots.",
+      },
+      {
+        title: "Smooth curves in design",
+        text: "Fonts, car bodies and the paths in drawing software are built from cubic curves, because a cubic can bend one way and then the other. Boatbuilders fairing a hull bend a thin, flexible strip of wood through marked points, and it settles into much the same shape: a chain of cubic pieces.",
+      },
+    ],
   };
 });

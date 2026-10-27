@@ -190,5 +190,16 @@ export default lesson((s) => {
         { label: "Second equation", tex: check(l2), tone: "good" },
       ];
     },
+
+    uses: [
+      {
+        title: "Boards for a raised bed",
+        text: "You want a rectangular raised bed whose long sides are 40 cm longer than its short ones, from 240 cm of board in all. So $\\ell = s + 40$ and $2\\ell + 2s = 240$. Substituting the first into the second gives $2(s + 40) + 2s = 240$: the short sides are 40 cm and the long ones 80 cm.",
+      },
+      {
+        title: "Mixing potting soil",
+        text: "A houseplant wants soil that is 30% perlite, and you have bags that are 50% and 20% perlite. For 10 litres, $x + y = 10$ and $0.5x + 0.2y = 3$. Putting $x = 10 - y$ into the second gives $5 - 0.3y = 3$: about 6.7 litres from the 20% bag and 3.3 from the 50% one.",
+      },
+    ],
   };
 });

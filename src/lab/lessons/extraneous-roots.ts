@@ -99,5 +99,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "A ladder against a wall",
+        text: "A 5 m ladder leans on a wall with its foot $x$ m out, so its top is $\\sqrt{25 - x^2}$ m up. For the top to be 1 m higher than the foot is far out, $\\sqrt{25 - x^2} = x + 1$. Squaring gives $x^2 + x - 12 = 0$, so $x = 3$ or $x = -4$. Only 3 checks: the foot is 3 m out and the top 4 m up.",
+      },
+      {
+        title: "Splitting a gift",
+        text: "Friends split a 60-dollar gift evenly, and if two more had joined, each would pay 5 dollars less: $\\tfrac{60}{n} - \\tfrac{60}{n + 2} = 5$. Clearing the fractions gives $n^2 + 2n - 24 = 0$, so $n = 4$ or $n = -6$. Checking against the situation throws out $-6$: four friends shared it.",
+      },
+    ],
   };
 });

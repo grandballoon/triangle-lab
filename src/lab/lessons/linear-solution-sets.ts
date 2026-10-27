@@ -171,5 +171,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "Making change",
+        text: "How many ways can you pay 50 cents in nickels and dimes? With $x$ nickels and $y$ dimes, $5x + 10y = 50$. The answers (10, 0), (8, 1), (6, 2), (4, 3), (2, 4) and (0, 5) lie on one straight line, because each dime you add replaces exactly two nickels.",
+      },
+      {
+        title: "Edging for a garden bed",
+        text: "With 12 m of edging for a rectangular bed, the length and width must satisfy $2x + 2y = 12$: 5 by 1, 4 by 2 and 3 by 3 all use it up, and they line up. Ask instead for a bed of area 8 m², $xy = 8$, and the shapes that work (8 by 1, 4 by 2, 2 by 4…) curve away instead.",
+      },
+    ],
   };
 });

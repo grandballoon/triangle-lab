@@ -137,5 +137,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "A diagonal brace for a gate",
+        text: "A gate is to be 0.6 m wider than it is tall, and the diagonal brace you have is 2 m long. Pythagoras gives $h^2 + (h + 0.6)^2 = 4$, or $2h^2 + 1.2h - 3.64 = 0$, which does not factor nicely. The formula gives $h \\approx 1.08$: the gate is about 1.08 m tall and 1.68 m wide.",
+      },
+      {
+        title: "Will the ball get that high?",
+        text: "A ball kicked upward at 10 m/s from 1 m up has height $-4.9t^2 + 10t + 1$ metres. Does it ever reach 3 m, the top of a fence? Setting the height to 3 gives $-4.9t^2 + 10t - 2 = 0$, with discriminant $100 - 4(4.9)(2) = 60.8 > 0$: yes, without working out when.",
+      },
+    ],
   };
 });

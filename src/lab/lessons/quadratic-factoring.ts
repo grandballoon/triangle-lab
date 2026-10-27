@@ -33,6 +33,9 @@ function texFactors(r: number, s: number): string {
   return s === 0 ? `${factor(s)}${factor(r)}` : `${factor(r)}${factor(s)}`;
 }
 
+/** The same for a canvas label: "(x − 1)(x − 2)". */
+const factorText = (r: number, s: number): string => texFactors(r, s).replace(/-/g, "−").replace("^2", "²");
+
 /** Which of the three special shapes a pair of roots makes, if any. */
 function shape(r: number, s: number): Readout | null {
   if (r === s) return { label: "Perfect square: one double root", tex: texFactors(r, s), tone: "good" };
@@ -119,8 +122,16 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    uses: [
+      {
+        title: "A frame for a picture",
+        text: "A 20 by 30 cm print goes in a frame with a border $w$ wide all round, and the whole frame should cover 1200 cm² of wall. Then $(20 + 2w)(30 + 2w) = 1200$, which tidies up to $w^2 + 25w - 150 = 0$ and factors as $(w + 30)(w - 5) = 0$. A border of $-30$ cm makes no sense, so it is 5 cm.",
+      },
+      {
+        title: "Chairs in rows",
+        text: "48 chairs are to be set out in rows, each row two chairs longer than there are rows. With $r$ rows, $r(r + 2) = 48$, so $r^2 + 2r - 48 = (r + 8)(r - 6) = 0$: 6 rows of 8.",
+      },
+    ],
   };
 });
-
-/** The same for a canvas label: "(x − 1)(x − 2)". */
-const factorText = (r: number, s: number): string => texFactors(r, s).replace(/-/g, "−").replace("^2", "²");
