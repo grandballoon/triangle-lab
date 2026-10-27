@@ -411,4 +411,130 @@ describe("Claude checking an answer", () => {
     expect(review(root)!.textContent).toContain("Exactly.");
     expect(checks).toHaveLength(2);
   });
+
+  /** Type `text` into the open editor and save it with Enter. */
+  function write(root: HTMLElement, text: string): void {
+    const box = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!;
+    expect(document.activeElement).toBe(box);
+    box.value = text;
+    box.dispatchEvent(new Event("input"));
+    press(box, "Enter");
+  }
+
+  it("rewords the answer once checked, and has Claude read it afresh", async () => {
+    const checks = worker([
+      { grade: "shaky", feedback: "Say where." },
+      { grade: "recalled", feedback: "Now complete." },
+    ]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "Inside");
+    await settle();
+
+    buttonNamed(root, "Edit answer").click();
+    expect(root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!.value).toBe("Inside");
+    // Number keys typed there are writing, not grading.
+    press(root.querySelector(".rc-editor textarea")!, "2");
+    expect(stored()[0].attempts).toEqual([]);
+    write(root, "Inside, at the centroid, two thirds of the way down each median");
+    expect(root.querySelector(".rc-editor")).toBeNull();
+    expect(root.querySelector(".rc-said")!.textContent).toBe("Inside, at the centroid, two thirds of the way down each median");
+    expect(review(root)!.textContent).toBe("Claude's checkReading your answer…");
+
+    await settle();
+    expect(checks).toHaveLength(2);
+    expect(review(root)!.textContent).toContain("Now complete.");
+    expect(suggested(root)).toEqual(["Recalled it"]);
+    buttonNamed(root, "Recalled it").click();
+    expect(stored()[0].attempts).toMatchObject([
+      { answer: "Inside, at the centroid, two thirds of the way down each median", grade: "recalled" },
+    ]);
+  });
+
+  it("rewords the question once checked, and has Claude read the answer against the new wording", async () => {
+    const checks = worker(["never", { grade: "recalled", feedback: "Yes." }]);
+    const root = await openSynced([card("a", "Where?")]);
+    answerWith(root, "At the centroid");
+
+    buttonNamed(root, "Edit question").click();
+    write(root, "Where do the medians meet?");
+    expect(root.querySelector(".rc-asked")!.textContent).toBe("Where do the medians meet?");
+    expect(stored()[0].question).toBe("Where do the medians meet?");
+
+    await settle();
+    expect(checks.map((c) => (c as { question: string }).question)).toEqual(["Where?", "Where do the medians meet?"]);
+    expect(review(root)!.textContent).toContain("Yes.");
+
+    // A blank wording is not saved, and Escape leaves the question as it was.
+    buttonNamed(root, "Edit question").click();
+    write(root, "  ");
+    expect(root.querySelector(".rc-editor")).not.toBeNull();
+    press(root.querySelector(".rc-editor textarea")!, "Escape");
+    expect(root.querySelector(".rc-asked")!.textContent).toBe("Where do the medians meet?");
+    expect(checks).toHaveLength(2);
+  });
+
+  it("writes new questions from Claude's feedback, at the same step, for the next review", async () => {
+    worker([{ grade: "shaky", feedback: "Why two to one?" }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    await settle();
+
+    buttonNamed(root, "New question").click();
+    expect(root.querySelector(".rc-new h3")!.textContent).toBe("New question · Step 2: Find the centroid");
+    // Claude's feedback stays in view while writing.
+    expect(review(root)!.textContent).toContain("Why two to one?");
+    write(root, "Why does the centroid cut each median two to one?");
+    write(root, "What is the centroid's distance from a side?");
+    expect([...root.querySelectorAll(".rc-written li")].map((li) => li.textContent)).toEqual([
+      "Why does the centroid cut each median two to one?",
+      "What is the centroid's distance from a side?",
+    ]);
+    buttonNamed(root, "Done").click();
+    expect(root.querySelector(".rc-written")!.textContent).toContain("2 new questions");
+
+    const fresh = stored().filter((c) => c.id !== "a");
+    expect(fresh).toMatchObject([
+      { question: "Why does the centroid cut each median two to one?", lesson: "medians", step: 1, stepTitle: "Find the centroid", box: 0 },
+      { question: "What is the centroid's distance from a side?", lesson: "medians", step: 1 },
+    ]);
+
+    // They wait for the next sitting rather than joining this one.
+    buttonNamed(root, "Shaky").click();
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
+    buttonNamed(root, "Back to your questions").click();
+    expect(root.querySelector(".rc-lead")!.textContent).toBe("2 due now");
+  });
+
+  it("keeps a question being written across a reload", async () => {
+    worker([{ grade: "shaky", feedback: "Nearly." }]);
+    let root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    await settle();
+    buttonNamed(root, "New question").click();
+    const box = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!;
+    box.value = "Half a thou";
+    box.dispatchEvent(new Event("input"));
+
+    root = await reload();
+    await settle();
+    expect(root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!.value).toBe("Half a thou");
+    expect(review(root)!.textContent).toContain("Nearly.");
+  });
+
+  it("keeps the caret where it was when Claude's reply redraws the page", async () => {
+    worker([{ grade: "shaky", feedback: "Nearly." }]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    answerWith(root, "At the centroid");
+    buttonNamed(root, "New question").click();
+    const box = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!;
+    box.value = "Why two to one?";
+    box.dispatchEvent(new Event("input"));
+    box.setSelectionRange(3, 3);
+
+    await settle();
+    const redrawn = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea")!;
+    expect(redrawn).not.toBe(box);
+    expect(document.activeElement).toBe(redrawn);
+    expect([redrawn.value, redrawn.selectionStart]).toEqual(["Why two to one?", 3]);
+  });
 });

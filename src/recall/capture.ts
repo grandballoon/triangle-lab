@@ -10,6 +10,7 @@
 
 import "./capture.css";
 import { addCard, dueCards, lessonCards, newCard, removeCard, type Place } from "./deck.ts";
+import { newId } from "./id.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { questionHtml, stepLabel, lessonName } from "./labels.ts";
 import { openRecall } from "./remote.ts";
@@ -228,11 +229,4 @@ function removeButton(remove: () => void): HTMLButtonElement {
 function editable(target: EventTarget | null): boolean {
   const el = target as HTMLElement | null;
   return !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName ?? ""));
-}
-
-/** A unique id. randomUUID needs a secure context, which a LAN address lacks. */
-export function newId(): string {
-  return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-    ? crypto.randomUUID()
-    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }

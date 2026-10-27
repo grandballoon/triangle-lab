@@ -175,16 +175,21 @@ A failed check is asked again only when the learner presses "Try again".
 When the learner grades the answer missed or shaky, Claude's `Verdict` is kept on the `Attempt` in the deck (`answerCard`), so it syncs and exports with the rest; a recalled answer keeps none.
 The next time the card is checked, the last attempt's verdict is shown under it, and the overview's History button lists a card's attempts, newest first, with their verdicts.
 
+While checking, the learner can reword the question (in the deck) or their answer (in the sitting), and Claude reads the answer afresh: the reading of the old wording is dropped (`reviseAnswer`, `dropReview`), and a reply still on its way for it is ignored, since `settleReview` takes only a reply to the question and answer as they now stand.
+They can also write new questions from the one being checked, so what Claude said can become questions of their own; each is saved at the same lesson step and waits for the next sitting rather than joining this one.
+What is being written (`Editor`) is kept with the sitting across a reload, and number keys typed into it are writing, not grades.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
-| `session.ts` | A review sitting: ask, check, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
+| `session.ts` | A review sitting: ask, check, reword, grade, one more try after a first miss, Claude's reading of the answer; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
 | `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, with the same key | no (browser injected) |
+| `id.ts` | New card ids | no |
 | `capture.ts` | The pill and sheet on a lesson page | no |
 | `page.ts` | The recall page: overview, sittings, the sync key, saving to and loading from a file | no |
 

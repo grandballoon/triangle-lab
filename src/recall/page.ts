@@ -15,17 +15,25 @@
 // question is checked it is shown again, and each question's history lists
 // every answer with what Claude said.
 //
+// While checking, the learner can reword the question or their answer, which
+// has Claude read it afresh, and write new questions from the same step, so
+// what Claude said can become questions of their own; those wait for the
+// next sitting.
+//
 // The rules are pure (deck.ts, session.ts); this file holds the page's state,
 // renders it and does the I/O.
 
 import "katex/dist/katex.min.css";
 import "./page.css";
 import {
+  addCard,
+  cleanQuestion,
   dueCards,
   editCard,
   GRADES,
   loadDeck,
   mergeDecks,
+  newCard,
   nextDue,
   removeCard,
   saveDeck,
@@ -49,17 +57,21 @@ import {
 import {
   askReview,
   currentCard,
+  dropReview,
   gradeCurrent,
   loadSitting,
   progress,
   prune,
   reveal,
+  reviseAnswer,
   settleReview,
   startSession,
   wantsReview,
+  type Editor,
   type Session,
   type Sitting,
 } from "./session.ts";
+import { newId } from "./id.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
 import { syncLabel } from "./sync.ts";
@@ -81,6 +93,10 @@ const kept = readSitting();
 let session: Session | null = kept ? prune(kept.session, store.get()) : null;
 /** What the learner has written for the question being asked. */
 let draft = kept?.draft ?? "";
+/** What is being written while the answer is checked: a rewording, or a new question. */
+let editor: Editor | null = session?.phase === "check" ? (kept?.editor ?? null) : null;
+/** Questions written while checking the answer on show, and whether the browser kept them all. */
+let written: { questions: string[]; kept: boolean } = { questions: [], kept: true };
 /** The question being reworded on the overview, and its new wording so far. */
 let editing: { id: string; text: string } | null = null;
 /** Questions whose history of answers is open on the overview. */
@@ -95,6 +111,7 @@ store.subscribe((deck) => {
     const next = prune(session, deck);
     if (next === session) return;
     session = next;
+    if (session.phase !== "check") leaveCard();
   }
   render();
 });
@@ -106,7 +123,7 @@ sync.subscribe(() => {
 });
 
 window.addEventListener("keydown", (e) => {
-  if (!session || session.phase !== "check" || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (!session || session.phase !== "check" || e.altKey || e.ctrlKey || e.metaKey || typing(e.target)) return;
   const grade = GRADES[Number(e.key) - 1];
   if (grade) {
     e.preventDefault();
@@ -124,6 +141,7 @@ function begin(cards: readonly Card[]): void {
   session = startSession(cards);
   draft = "";
   editing = null;
+  leaveCard();
   notice = null;
   render();
 }
@@ -147,9 +165,10 @@ function reviewAnswer(retry = false): void {
   if (!card || asked === session) return;
   session = asked;
   const { answer } = asked;
-  void sync.check({ question: card.question, where: placeLabel(card), answer }).then((review) => {
+  const { id, question } = card;
+  void sync.check({ question, where: placeLabel(card), answer }).then((review) => {
     if (!session) return;
-    const next = settleReview(session, card.id, answer, review);
+    const next = settleReview(session, store.get(), { id, question, answer }, review);
     if (next === session) return;
     session = next;
     render();
@@ -166,6 +185,53 @@ function gradeAnswer(grade: Grade): void {
   });
   session = next;
   draft = "";
+  leaveCard();
+  render();
+}
+
+/** Forget what was being written for the card checked, as the sitting moves off it. */
+function leaveCard(): void {
+  editor = null;
+  written = { questions: [], kept: true };
+}
+
+/** Start rewording the question or the answer being checked, or writing a new question. */
+function openEditor(kind: Editor["kind"], card: Card): void {
+  if (!session) return;
+  editor = { kind, text: kind === "question" ? card.question : kind === "answer" ? session.answer : "" };
+  render();
+}
+
+function closeEditor(): void {
+  editor = null;
+  render();
+}
+
+/**
+ * Save what the editor holds. A reworded question or answer is read by
+ * Claude afresh; a new question is added at the same lesson step, and the
+ * editor stays open for another. A blank question is not saved.
+ */
+function saveEditor(): void {
+  const card = session && currentCard(session, store.get());
+  if (!session || !editor || !card) return;
+  const { kind, text } = editor;
+  if (kind === "answer") {
+    session = reviseAnswer(session, text);
+    editor = null;
+  } else if (!cleanQuestion(text)) {
+    return;
+  } else if (kind === "question") {
+    store.update((d) => editCard(d, card.id, text, Date.now()));
+    if (currentCard(session, store.get())?.question !== card.question) session = dropReview(session);
+    editor = null;
+  } else {
+    const fresh = newCard(newId(), text, card, Date.now())!;
+    const saved = store.update((d) => addCard(d, fresh));
+    written = { questions: [...written.questions, fresh.question], kept: written.kept && saved };
+    editor = { kind: "new", text: "" };
+  }
+  reviewAnswer();
   render();
 }
 
@@ -180,11 +246,15 @@ function end(): void {
 function render(): void {
   keepSitting();
   const deck = store.get();
+  // A reply from Claude can redraw the sitting mid-sentence: the caret goes back where it was.
+  const before = document.activeElement;
+  const caret = before instanceof HTMLTextAreaElement && root.contains(before) ? before.selectionStart : null;
   root.replaceChildren(...(session ? sitting(session, deck) : overview(deck)));
-  const answer = root.querySelector<HTMLTextAreaElement>(".rc-answer");
-  if (answer && document.activeElement !== answer) {
-    answer.focus();
-    answer.setSelectionRange(answer.value.length, answer.value.length);
+  const field = root.querySelector<HTMLTextAreaElement>(".rc-answer, .rc-editor textarea");
+  if (field && document.activeElement !== field) {
+    field.focus();
+    const at = Math.min(caret ?? field.value.length, field.value.length);
+    field.setSelectionRange(at, at);
   }
 }
 
@@ -376,9 +446,14 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   if (!card) return [top, finished(s, deck)];
 
   const panel = el("section", "rc-ask");
-  const question = el("div", "rc-asked");
-  question.innerHTML = questionHtml(card.question);
-  panel.append(el("p", "rc-from", placeLabel(card)), question);
+  panel.append(el("p", "rc-from", placeLabel(card)));
+  if (s.phase === "check" && editor?.kind === "question") {
+    panel.append(editorForm(editor, "Question", "rc-asked-edit"));
+  } else {
+    const question = el("div", "rc-asked");
+    question.innerHTML = questionHtml(card.question);
+    panel.append(question);
+  }
 
   if (s.phase === "ask") {
     const answer = el("textarea", "rc-answer");
@@ -402,7 +477,7 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
 
   const yours = el("div", "rc-yours");
   yours.append(el("h3", "", "Your answer"));
-  yours.append(saidAnswer(s.answer));
+  yours.append(editor?.kind === "answer" ? editorForm(editor, "Your answer") : saidAnswer(s.answer));
   panel.append(yours);
   if (s.review) panel.append(reviewed(s.review));
 
@@ -412,6 +487,18 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
     before.append(el("h3", "", `Last time · ${GRADE_LABEL[last.grade].toLowerCase()}`), saidAnswer(last.answer));
     panel.append(before);
     if (last.claude) panel.append(claudeSaid(last.claude.grade, last.claude.feedback, "Claude, last time"));
+  }
+
+  if (editor?.kind === "new") panel.append(newQuestion(editor, card));
+  else if (written.questions.length > 0) panel.append(writtenList());
+  if (!editor) {
+    panel.append(
+      row(
+        button("Edit question", "rc-small", () => openEditor("question", card)),
+        button(s.answer.trim() ? "Edit answer" : "Write an answer", "rc-small", () => openEditor("answer", card)),
+        button("New question", "rc-small", () => openEditor("new", card)),
+      ),
+    );
   }
 
   const href = sourceHref(card);
@@ -436,6 +523,58 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   );
   panel.append(el("p", "rc-hint rc-grade-prompt", "How did it go? (1 · 2 · 3)"), grades);
   return [top, panel];
+}
+
+/** A text box for what the editor holds, with Save and Cancel; Enter saves and Escape cancels. */
+function editorForm(e: Editor, label: string, cls = ""): HTMLElement {
+  const form = el("div", cls ? `rc-editor ${cls}` : "rc-editor");
+  const box = el("textarea", "rc-edit");
+  box.rows = 3;
+  box.value = e.text;
+  box.setAttribute("aria-label", label);
+  if (e.kind === "new") box.placeholder = "Another question to answer from memory later";
+  box.addEventListener("input", () => {
+    e.text = box.value;
+    keepSitting();
+  });
+  box.addEventListener("keydown", (k) => {
+    if (k.key === "Escape") closeEditor();
+    else if (submitsOnEnter(k, touchFirst())) {
+      k.preventDefault();
+      saveEditor();
+    }
+  });
+  form.append(box, row(button("Save", "rc-primary", saveEditor), button(e.kind === "new" ? "Done" : "Cancel", "", closeEditor)));
+  return form;
+}
+
+/** Writing a new question from the one being checked, saved at the same lesson step. */
+function newQuestion(e: Editor, card: Card): HTMLElement {
+  const section = el("div", "rc-yours rc-new");
+  section.append(el("h3", "", `New question · ${stepLabel(card)}`), editorForm(e, "New question"));
+  if (written.questions.length > 0) section.append(writtenList());
+  return section;
+}
+
+/** The questions written while checking this answer, which wait for the next sitting. */
+function writtenList(): HTMLElement {
+  const box = el("div", "rc-written");
+  const list = el("ol");
+  list.setAttribute("aria-label", "Questions written");
+  list.append(
+    ...written.questions.map((q) => {
+      const item = el("li");
+      item.innerHTML = questionHtml(q);
+      return item;
+    }),
+  );
+  const count = written.questions.length;
+  box.append(
+    el("p", "rc-note", `${count} new question${count === 1 ? "" : "s"}, asked from your next review:`),
+    list,
+  );
+  if (!written.kept) box.append(el("p", "rc-notice rc-error", "This browser won't keep them after the page closes."));
+  return box;
 }
 
 /** Claude's reading of the answer: under way, its feedback, or why there is none. */
@@ -545,7 +684,7 @@ function readSitting(): Sitting | null {
 /** Keep the sitting under way for the tab, or forget it once it has ended. */
 function keepSitting(): void {
   try {
-    if (session) sessionStorage.setItem(SITTING_KEY, JSON.stringify({ session, draft } satisfies Sitting));
+    if (session) sessionStorage.setItem(SITTING_KEY, JSON.stringify({ session, draft, editor } satisfies Sitting));
     else sessionStorage.removeItem(SITTING_KEY);
   } catch {
     // Storage blocked: a reload starts from the overview, as before.
@@ -582,6 +721,11 @@ function confirmButton(text: string, act: () => void): HTMLButtonElement {
     b.textContent = text;
   });
   return b;
+}
+
+/** Whether a key went to a text box, where it is typing rather than a shortcut. */
+function typing(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 }
 
 function row(...children: HTMLElement[]): HTMLElement {

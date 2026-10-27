@@ -257,6 +257,18 @@ textarea:focus,
 
 .rc-review .rc-row { margin-top: 8px; }
 
+/* Rewording the question or the answer, or writing a new question, while checking. */
+.rc-editor { margin-top: 6px; }
+.rc-editor .rc-row { margin-top: 8px; }
+.rc-asked-edit { margin: 10px 0 20px; }
+.rc-asked-edit textarea { font-size: 18px; }
+
+/* The questions written while checking, quiet under the box that wrote them. */
+.rc-written { margin-top: 14px; }
+.rc-written ol { margin: 6px 0 0; padding-left: 20px; }
+.rc-written li { font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.rc-written li + li { margin-top: 4px; }
+
 .rc-source {
   display: inline-block;
   margin-top: 18px;

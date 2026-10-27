@@ -8,7 +8,8 @@
 //
 // A written answer can also be read by Claude while the learner checks it
 // (check.ts): the review rides along with the card being checked, and is
-// dropped as soon as that card is graded or gone.
+// dropped as soon as that card is graded or gone, or its question or answer
+// is reworded, which has it read afresh.
 
 import { loadReview, type Review } from "./check.ts";
 import { answerCard, GRADES, type Card, type Deck, type Grade } from "./deck.ts";
@@ -57,6 +58,23 @@ export function reveal(session: Session, answer: string): Session {
 }
 
 /**
+ * Reword the answer being checked. A changed answer is read by Claude
+ * afresh: the reading of the old one is dropped.
+ */
+export function reviseAnswer(session: Session, answer: string): Session {
+  if (session.phase !== "check" || answer === session.answer) return session;
+  return { ...session, answer, review: null };
+}
+
+/**
+ * Drop Claude's reading of the answer being checked, as when its question
+ * has been reworded, so it is read afresh against the new wording.
+ */
+export function dropReview(session: Session): Session {
+  return session.phase === "check" && session.review !== null ? { ...session, review: null } : session;
+}
+
+/**
  * Whether the answer being checked is waiting to be read by Claude: it is
  * written, and Claude has not been asked yet. A check that failed is asked
  * again only when the learner says so (`askReview`).
@@ -72,12 +90,22 @@ export function askReview(session: Session): Session {
   return { ...session, review: { kind: "checking" } };
 }
 
+/** What Claude was asked to read: a card's question, as worded then, and an answer to it. */
+export interface Asked {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 /**
- * Take in Claude's reading of `id`'s answer `answer`. It is dropped if the
- * sitting has moved on since it was asked for.
+ * Take in Claude's reading of the answer `asked`. It is dropped if the
+ * sitting has moved on since it was asked for, or the question or the answer
+ * has been reworded.
  */
-export function settleReview(session: Session, id: string, answer: string, review: Review): Session {
-  const current = session.queue[0] === id && session.phase === "check" && session.answer === answer;
+export function settleReview(session: Session, deck: Deck, asked: Asked, review: Review): Session {
+  const card = currentCard(session, deck);
+  const current =
+    session.phase === "check" && session.answer === asked.answer && card?.id === asked.id && card.question === asked.question;
   return current && session.review?.kind === "checking" ? { ...session, review } : session;
 }
 
@@ -127,7 +155,20 @@ export function prune(session: Session, deck: Deck): Session {
 export interface Sitting {
   session: Session;
   draft: string;
+  /** What is being written while the answer is checked, if anything. */
+  editor: Editor | null;
 }
+
+/**
+ * Writing done while an answer is checked: rewording its question or the
+ * answer, or a new question from the same step, as from Claude's feedback.
+ */
+export interface Editor {
+  kind: "question" | "answer" | "new";
+  text: string;
+}
+
+const EDITOR_KINDS: readonly Editor["kind"][] = ["question", "answer", "new"];
 
 /** Read a kept sitting back, or null if `raw` is not one. */
 export function loadSitting(raw: unknown): Sitting | null {
@@ -149,7 +190,14 @@ export function loadSitting(raw: unknown): Sitting | null {
       review: phase === "check" ? loadReview(review) : null,
     },
     draft: raw.draft,
+    // Kept only while checking, and absent from a sitting kept before there were editors.
+    editor: phase === "check" ? loadEditor(raw.editor) : null,
   };
+}
+
+function loadEditor(raw: unknown): Editor | null {
+  if (!isObject(raw) || !EDITOR_KINDS.includes(raw.kind as Editor["kind"]) || typeof raw.text !== "string") return null;
+  return { kind: raw.kind as Editor["kind"], text: raw.text };
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;

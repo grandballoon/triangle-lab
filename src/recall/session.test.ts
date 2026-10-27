@@ -3,15 +3,17 @@
 
 import { describe, expect, it } from "vitest";
 import type { Review } from "./check.ts";
-import { dueAfter, newCard, removeCard, type Card, type Deck } from "./deck.ts";
+import { dueAfter, editCard, newCard, removeCard, type Card, type Deck } from "./deck.ts";
 import {
   askReview,
   currentCard,
+  dropReview,
   gradeCurrent,
   loadSitting,
   progress,
   prune,
   reveal,
+  reviseAnswer,
   settleReview,
   startSession,
   wantsReview,
@@ -21,6 +23,8 @@ const T0 = 1_800_000_000_000;
 const here = { lesson: "medians", step: 0, stepTitle: "Draw the medians" };
 const card = (id: string): Card => newCard(id, `Question ${id}?`, here, T0)!;
 const deck: Deck = { cards: [card("a"), card("b")], removed: [] };
+/** What Claude is asked to read: an answer to card `id`'s question as first worded. */
+const of = (id: string, answer: string) => ({ id, question: `Question ${id}?`, answer });
 
 describe("a sitting", () => {
   it("asks the cards in order, answering, checking and grading each", () => {
@@ -93,42 +97,63 @@ describe("Claude reading the answer being checked", () => {
 
   it("takes in the reply for the answer asked about", () => {
     const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
-    const settled = settleReview(asked, "a", "At the centroid", done);
+    const settled = settleReview(asked, deck, of("a", "At the centroid"), done);
     expect(settled.review).toEqual(done);
     expect(askReview(settled)).toBe(settled);
   });
 
   it("drops a reply that comes after the sitting has moved on", () => {
     const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
-    expect(settleReview(asked, "b", "At the centroid", done)).toBe(asked);
-    expect(settleReview(asked, "a", "Something else", done)).toBe(asked);
+    expect(settleReview(asked, deck, of("b", "At the centroid"), done)).toBe(asked);
+    expect(settleReview(asked, deck, of("a", "Something else"), done)).toBe(asked);
     const { session: next } = gradeCurrent(asked, deck, "recalled", T0);
     expect(next.review).toBeNull();
-    expect(settleReview(next, "a", "At the centroid", done)).toBe(next);
+    expect(settleReview(next, deck, of("a", "At the centroid"), done)).toBe(next);
   });
 
   it("is asked for again after a failure only when the learner says so", () => {
     const asked = askReview(reveal(startSession(deck.cards), "At the centroid"));
-    const broke = settleReview(asked, "a", "At the centroid", failed);
+    const broke = settleReview(asked, deck, of("a", "At the centroid"), failed);
     expect(broke.review).toEqual(failed);
     expect(wantsReview(broke)).toBe(false);
     expect(askReview(broke).review).toEqual({ kind: "checking" });
   });
 
   it("is kept with the answer when the learner grades it missed or shaky", () => {
-    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", done);
+    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), deck, of("a", "x"), done);
     expect(gradeCurrent(settled, deck, "shaky", T0).deck.cards[0].attempts).toEqual([
       { at: T0, answer: "x", grade: "shaky", claude: { grade: "shaky", feedback: "Nearly." } },
     ]);
     expect(gradeCurrent(settled, deck, "recalled", T0).deck.cards[0].attempts).toEqual([
       { at: T0, answer: "x", grade: "recalled" },
     ]);
-    const broke = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", failed);
+    const broke = settleReview(askReview(reveal(startSession(deck.cards), "x")), deck, of("a", "x"), failed);
     expect(gradeCurrent(broke, deck, "missed", T0).deck.cards[0].attempts[0].claude).toBeUndefined();
   });
 
+  it("is read afresh when the answer is reworded, and not when it is left as it was", () => {
+    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), deck, of("a", "x"), done);
+    expect(reviseAnswer(settled, "x")).toBe(settled);
+    const revised = reviseAnswer(settled, "x, because y");
+    expect(revised).toMatchObject({ answer: "x, because y", review: null });
+    expect(wantsReview(revised)).toBe(true);
+    expect(wantsReview(reviseAnswer(settled, ""))).toBe(false);
+    expect(reviseAnswer(startSession(deck.cards), "too soon").answer).toBe("");
+  });
+
+  it("is read afresh when the question is reworded, dropping a reply to the old wording", () => {
+    const asked = askReview(reveal(startSession(deck.cards), "x"));
+    const settled = settleReview(asked, deck, of("a", "x"), done);
+    expect(dropReview(settled).review).toBeNull();
+    expect(dropReview(startSession(deck.cards))).toEqual(startSession(deck.cards));
+
+    const reworded = editCard(deck, "a", "Where exactly?", T0 + 1);
+    expect(settleReview(asked, reworded, of("a", "x"), done)).toBe(asked);
+    expect(settleReview(asked, reworded, { id: "a", question: "Where exactly?", answer: "x" }, done).review).toEqual(done);
+  });
+
   it("goes with the card being checked when that card is deleted", () => {
-    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), "a", "x", done);
+    const settled = settleReview(askReview(reveal(startSession(deck.cards), "x")), deck, of("a", "x"), done);
     expect(prune(settled, removeCard(deck, "a", T0)).review).toBeNull();
     expect(prune(settled, removeCard(deck, "b", T0)).review).toEqual(done);
   });
@@ -147,8 +172,18 @@ describe("a sitting kept across a reload", () => {
 
   it("reads back as it was kept", () => {
     const { session } = gradeCurrent(reveal(startSession(deck.cards), "x"), deck, "missed", T0);
-    const kept = { session: reveal(session, "half"), draft: "half" };
+    const kept = { session: reveal(session, "half"), draft: "half", editor: { kind: "new" as const, text: "Why?" } };
     expect(loadSitting(JSON.parse(JSON.stringify(kept)))).toEqual(kept);
+  });
+
+  it("keeps what was being written only while checking, and reads a sitting kept before there was any", () => {
+    const editor = { kind: "answer", text: "half" };
+    const asking = { session: startSession(deck.cards), draft: "", editor };
+    expect(loadSitting(JSON.parse(JSON.stringify(asking)))?.editor).toBeNull();
+    const checking = { session: reveal(startSession(deck.cards), "x"), draft: "" };
+    expect(loadSitting(JSON.parse(JSON.stringify(checking)))?.editor).toBeNull();
+    expect(loadSitting({ ...checking, editor: { kind: "poem", text: "" } })?.editor).toBeNull();
+    expect(loadSitting({ ...checking, editor })?.editor).toEqual(editor);
   });
 
   it("is not read from anything else", () => {
