@@ -15,9 +15,11 @@ import { areas } from "./chapters/areas.ts";
 import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
 import { coordinates } from "./chapters/coordinates.ts";
+import { linear } from "./chapters/linear.ts";
 import { polygons } from "./chapters/polygons.ts";
 import { potpourri } from "./chapters/potpourri.ts";
 import { power } from "./chapters/power.ts";
+import { quadratic } from "./chapters/quadratic.ts";
 import { quadrilaterals } from "./chapters/quadrilaterals.ts";
 import { solids } from "./chapters/solids.ts";
 import { transformations } from "./chapters/transformations.ts";
@@ -181,6 +183,37 @@ export const chapters: Chapter[] = [
       "Centroid as vertex average",
     ],
     lessons: coordinates,
+  },
+  {
+    title: "Linear Equations",
+    blurb: "Balancing, substituting and eliminating until one number is left.",
+    axioms: [
+      "Same operation on both sides",
+      "Linear means degree one",
+      "Substitution",
+      "Elimination",
+      "Rate × time = distance",
+      "Average speed over a round trip",
+      "Work rates add",
+    ],
+    lessons: linear,
+  },
+  {
+    title: "Quadratic Equations",
+    blurb: "Factoring, completing the square, and the formula that always works.",
+    axioms: [
+      "Motion under gravity",
+      "Zero-product property",
+      "Sum and product of roots",
+      "Completing the square",
+      "Quadratic formula",
+      "Discriminant",
+      "Conjugate roots",
+      "Extraneous roots",
+      "Substitution into a quadratic",
+      "Polynomial factor theorem",
+    ],
+    lessons: quadratic,
   },
   {
     title: "Power of a Point",

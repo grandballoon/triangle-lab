@@ -504,10 +504,21 @@ export class Draw {
     this.indexing = true;
   }
 
-  /** The x and y axes through `origin`, numbered every `every` units. */
-  axes(o: { origin?: Vec; every?: number; color?: string; alpha?: number } = {}): void {
+  /**
+   * The x and y axes through `origin`, numbered every `every` stage units.
+   * `units` is what one stage unit along each axis stands for (1 by default),
+   * so a graph of, say, height in feet can be numbered in feet; `positive`
+   * keeps only the half of each axis on the positive side of the origin.
+   */
+  axes(
+    o: { origin?: Vec; every?: number; units?: Vec; positive?: boolean; color?: string; alpha?: number } = {},
+  ): void {
     const origin = o.origin ?? { x: 0, y: 0 };
-    const { xmin, xmax, ymin, ymax } = this.bounds;
+    const units = o.units ?? { x: 1, y: 1 };
+    const bounds = this.bounds;
+    const xmin = o.positive ? origin.x : bounds.xmin;
+    const ymin = o.positive ? origin.y : bounds.ymin;
+    const { xmax, ymax } = bounds;
     const style: Stroke = { color: o.color ?? C.dim, width: 2, alpha: o.alpha };
     this.indexing = false;
     this.segment({ x: xmin, y: origin.y }, { x: xmax, y: origin.y }, style);
@@ -515,10 +526,10 @@ export class Draw {
     const every = o.every ?? 1;
     const text: LabelOptions = { color: o.color ?? C.dim, size: 12, alpha: o.alpha };
     for (let x = Math.ceil((xmin - origin.x) / every) * every; x + origin.x <= xmax; x += every) {
-      if (x !== 0) this.label({ x: x + origin.x, y: origin.y }, tick(x), { ...text, dy: -13 });
+      if (x !== 0) this.label({ x: x + origin.x, y: origin.y }, tick(x * units.x), { ...text, dy: -13 });
     }
     for (let y = Math.ceil((ymin - origin.y) / every) * every; y + origin.y <= ymax; y += every) {
-      if (y !== 0) this.label({ x: origin.x, y: y + origin.y }, tick(y), { ...text, dx: -13 });
+      if (y !== 0) this.label({ x: origin.x, y: y + origin.y }, tick(y * units.y), { ...text, dx: -13 });
     }
     this.indexing = true;
   }

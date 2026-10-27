@@ -75,3 +75,26 @@ describe("sprite", () => {
     expect(log).toEqual([]);
   });
 });
+
+describe("axes", () => {
+  const numbers = (log: [string, unknown][]) =>
+    log.filter(([k]) => k === "fillText").map(([, args]) => (args as unknown[])[0] as string);
+
+  it("numbers each axis in the units one stage unit stands for", () => {
+    const { ctx, log } = recorder();
+    new Draw(ctx, VIEW, "#38d9a9").axes({ units: { x: 0.5, y: 20 } });
+    const text = numbers(log);
+    expect(text).toContain("0.5");
+    expect(text).toContain("−1.5");
+    expect(text).toContain("60");
+    expect(text).toContain("−100");
+  });
+
+  it("keeps only the positive halves when asked", () => {
+    const { ctx, log } = recorder();
+    new Draw(ctx, VIEW, "#38d9a9").axes({ origin: { x: -4, y: -3 }, positive: true });
+    const text = numbers(log);
+    expect(text).toContain("1");
+    expect(text.some((t) => t.startsWith("−"))).toBe(false);
+  });
+});

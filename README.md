@@ -160,7 +160,7 @@ The first deploy prints the site's address, `triangle-lab.<your subdomain>.worke
 
 ## Lessons
 
-116 lessons in twelve chapters, read in order.
+130 lessons in fourteen chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
 Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
 In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
@@ -175,6 +175,8 @@ In a lab lesson, pointing at a symbol in a formula highlights what it stands for
 | Angle Chasing (3) | A Chain of Equal Links · Square Meets Triangle · Trisected Corners |
 | Areas (9) | Scale Factor Squared · The Midpoint Triangle · Same Base, Same Altitude · Six Equal Pieces · Areas Between Diagonals · Octagon From a Square · The Crescent and the Triangle · Four Leaves in a Square · Leaves Between Circles |
 | Coordinates (9) | Two Addresses for a Point · Rise over Run · The Equation of a Line · Parallel and Perpendicular Slopes · The Distance Formula · Midpoints and Fractions of the Way · The Equation of a Circle · Where a Line Meets a Circle · The Centroid by Coordinates |
+| Linear Equations (7) | Keep It Balanced · What Makes It Linear · Substitution · Elimination · Rate Times Time · The Average Speed Trap · Working Together |
+| Quadratic Equations (7) | Why Squares Appear · Roots From Factors · Completing the Square · The Quadratic Formula · Squaring Adds Answers · Hidden Quadratics · Beyond Quadratics |
 | Power of a Point (6) | Crossing Chords · Tangent and Secant · Two Equal Tangents · The Power of a Point · Tangents to the Incircle · Four Sides Round a Circle |
 | Three Dimensions (11) | Lines and Planes · Slicing a Sphere · Inside a Cube · The Diagonal of a Box · The Painted Cube · Unrolling a Can · Pyramids · Unrolling a Cone · Volume of a Tetrahedron · Volume of an Octahedron · The Five Regular Solids |
 | Transformations (8) | Slide by an Arrow · Turn About a Point · Flip Over a Mirror · Through a Point · Stretch and Squeeze · Grow From a Centre · What Survives? · Symmetries of a Polygon |
@@ -198,7 +200,8 @@ src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
 tools/                Vite plugins used by the dev server
-specs/                Design notes for the original triangle lessons
+specs/                Design notes for the original triangle lessons, and the open
+                      question of how to draw an equation (equations-display.md)
 architecture.md       How the pieces fit and where the boundaries are
 ```
 
