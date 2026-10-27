@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { captionScale, centreY, fitText, grabRadius, nearest } from "./fit.ts";
+import { captionScale, centreY, fitText, grabRadius, nearest, shareBox } from "./fit.ts";
 
 describe("grabRadius", () => {
   it("keeps a lesson's own radius for a mouse", () => {
@@ -52,6 +52,22 @@ describe("centreY", () => {
 
   it("splits the difference when the figure cannot clear both", () => {
     expect(centreY(300, 64, 100, 100)).toBe(132);
+  });
+});
+
+describe("shareBox", () => {
+  it("puts the figures side by side on a canvas wider than tall", () => {
+    expect(shareBox({ x: 0, y: 64, w: 1000, h: 600 }, 0.5)).toEqual([
+      { x: 0, y: 64, w: 500, h: 600 },
+      { x: 500, y: 64, w: 500, h: 600 },
+    ]);
+  });
+
+  it("puts one above the other on a canvas taller than wide", () => {
+    expect(shareBox({ x: 0, y: 64, w: 375, h: 418 }, 0.5)).toEqual([
+      { x: 0, y: 64, w: 375, h: 209 },
+      { x: 0, y: 273, w: 375, h: 209 },
+    ]);
   });
 });
 

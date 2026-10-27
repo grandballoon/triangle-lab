@@ -4,9 +4,9 @@
 // knob on each acute vertex and a square built outward on every side, each
 // labeled with its live area. The formula band below keeps a² + b² = c²
 // running with the real numbers.
-// Then, from the step that scrubs the proof, the triangle moves left to make
-// room for the proof on the right; on a canvas taller than wide there is no
-// room beside it, so the triangle fades out and the proof takes its place.
+// Then, from the step that scrubs the proof, the triangle moves aside to make
+// room for the proof: left of it on a canvas wider than tall, above it on one
+// taller than wide, so both are always in view together.
 // A single big square of side a + b holds
 // four congruent copies of the triangle; a scrub knob slides them — by pure
 // translation — between two packings. At one end the leftover space is
@@ -18,7 +18,7 @@
 // helpers and this file's own little vector helpers are involved.
 
 import { currentStep, formulaBand } from "./chrome.ts";
-import { fillFitted, grabRadius, nearest } from "./fit.ts";
+import { type Box, fillFitted, grabRadius, nearest, shareBox } from "./fit.ts";
 import { capturePointer, releasePointer } from "./pointer.ts";
 import { pythagorasReadouts } from "./readouts.ts";
 import { startWebcam } from "./webcam.ts";
@@ -48,7 +48,7 @@ const PULSE_LIFE = 0.6;
 const SNAP_T = 0.06; // scrub snaps flush to its ends inside this margin
 const PROOF_STEP = 2; // "Scrub the proof" in directions.ts: the proof appears from here on
 const REVEAL_SECONDS = 0.6; // how long the triangle takes to make room for it
-const TRIANGLE_SHARE = 0.52; // of the width, once the proof sits beside the triangle
+const TRIANGLE_SHARE = 0.52; // of the canvas's longer side, once the proof shares it
 // The proof's labels round its box, in screen px: "a" and "b" over it, the
 // rail under it and the caption under the rail.
 const OVER_BOX = 18;
@@ -67,7 +67,7 @@ let scrub = 0; // 0 = two squares (a² + b²), 1 = tilted square (c²)
 let atEnd: 0 | 1 | -1 = 0; // which scrub end we're resting at (for the pulse)
 let drag: "A" | "B" | "scrub" | null = null;
 let pulses: Pulse[] = [];
-let reveal = 0; // 0 = the triangle alone, 1 = the proof beside it (or instead of it); eases between
+let reveal = 0; // 0 = the triangle alone, 1 = the proof sharing the canvas with it; eases between
 
 const video = document.getElementById("cam") as HTMLVideoElement;
 const canvas = document.getElementById("stage") as HTMLCanvasElement;
@@ -95,9 +95,10 @@ function rgba(hex: string, alpha: number): string {
 // so dragging a knob never rescales the world under the pointer.
 //
 // The triangle has two places: centred across the whole canvas while it is
-// alone, and in the left band once the proof shares the screen. Between them
-// it follows `reveal`. A canvas taller than wide has no room for both, so
-// there the triangle stays put and the proof takes the whole canvas.
+// alone, and in its own band once the proof shares the screen. Between them
+// it follows `reveal`. The canvas splits along its longer side: the triangle
+// on the left and the proof on the right when it is wider than tall, the
+// triangle above and the proof below when it is taller than wide.
 
 interface Place {
   unit: number; // px per unit
@@ -112,19 +113,11 @@ let unitR = 1; // px per unit, right (proof) figure
 let proofCenter: Vec = { x: 0, y: 0 }; // screen center of the proof square
 let proofW = 0; // the width the proof has, for its caption
 let track = { x0: 0, x1: 0, y: 0 }; // the scrub rail
-let shared = true; // whether the proof shares the canvas with the triangle
-
-interface Band {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 /** Where the triangle and its squares sit, centred in `band`. Extents in
  *  units: x ∈ [−a, a+b] (left square … hyp square), y ∈ [−(a+b), b] — with
  *  both legs at LEG_MAX that's 3·max wide and tall. */
-function place(band: Band): Place {
+function place(band: Box): Place {
   const unit = Math.min(band.w / (3 * LEG_MAX + 0.9), band.h / (3 * LEG_MAX + 1.1));
   return {
     unit,
@@ -137,7 +130,7 @@ function place(band: Band): Place {
 
 /** The proof square (side up to 2·LEG_MAX) in `band`, with its rail and
  *  caption below, all kept inside it. */
-function placeProof(band: Band): void {
+function placeProof(band: Box): void {
   unitR = Math.min(
     (band.w * 0.86) / (2 * LEG_MAX),
     (band.h * 0.74) / (2 * LEG_MAX),
@@ -153,7 +146,7 @@ function placeProof(band: Band): void {
   track = { x0: proofCenter.x - railHalf, x1: proofCenter.x + railHalf, y: proofCenter.y + box + RAIL_GAP };
 }
 
-/** Put the triangle part of the way from alone to beside the proof. */
+/** Put the triangle part of the way from alone to sharing with the proof. */
 function settle(): void {
   const t = ease(reveal);
   unitL = alone.unit + (beside.unit - alone.unit) * t;
@@ -173,22 +166,13 @@ function layout(): void {
   canvas.height = Math.round(H * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const area: Band = { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN };
-  shared = W >= H;
+  const area: Box = { x: 0, y: TOP_MARGIN, w: W, h: H - TOP_MARGIN };
   alone = place(area);
-  if (shared) {
-    const split = W * TRIANGLE_SHARE;
-    beside = place({ ...area, w: split });
-    placeProof({ ...area, x: split, w: W - split });
-  } else {
-    beside = alone;
-    placeProof(area);
-  }
+  const [ownBand, proofBand] = shareBox(area, TRIANGLE_SHARE);
+  beside = place(ownBand);
+  placeProof(proofBand);
   settle();
 }
-
-/** How visible the triangle is: always, unless the proof has taken its place. */
-const triangleAlpha = (): number => (shared ? 1 : 1 - ease(reveal));
 
 // --- the main triangle (unit coords, C at the origin, y down) --------------
 
@@ -250,10 +234,10 @@ function scrubKnobPos(): Vec {
 
 canvas.addEventListener("pointerdown", (e) => {
   const p = pointer(e);
-  const candidates: { name: "A" | "B" | "scrub"; at: Vec }[] = [];
-  if (triangleAlpha() > 0.5) {
-    candidates.push({ name: "A", at: toScreenL(vertexA()) }, { name: "B", at: toScreenL(vertexB()) });
-  }
+  const candidates: { name: "A" | "B" | "scrub"; at: Vec }[] = [
+    { name: "A", at: toScreenL(vertexA()) },
+    { name: "B", at: toScreenL(vertexB()) },
+  ];
   if (reveal > 0.5) candidates.push({ name: "scrub", at: scrubKnobPos() });
   const hit = nearest(
     p,
@@ -556,13 +540,7 @@ function drawPulse(p: Pulse): void {
 
 function render(): void {
   ctx.clearRect(0, 0, W, H);
-  const alpha = triangleAlpha();
-  if (alpha > 0) {
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    renderTriangle();
-    ctx.restore();
-  }
+  renderTriangle();
   if (reveal > 0) renderProof();
   for (const p of pulses) drawPulse(p);
 }
@@ -577,7 +555,7 @@ function frame(now: number): void {
   if (reveal !== target) {
     const step = dt / REVEAL_SECONDS;
     reveal = target > reveal ? Math.min(target, reveal + step) : Math.max(target, reveal - step);
-    if ((reveal < 0.5 && drag === "scrub") || (triangleAlpha() <= 0.5 && (drag === "A" || drag === "B"))) {
+    if (reveal < 0.5 && drag === "scrub") {
       drag = null;
       canvas.classList.remove("grabbing");
     }

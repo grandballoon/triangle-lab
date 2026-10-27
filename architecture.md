@@ -66,7 +66,7 @@ Those rows are built by pure functions in `src/readouts.ts`, and pages showing s
 The band is used by perimeter, the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
 Each standalone figure sizes itself for anything from a phone to a desktop.
 `src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
-On a canvas taller than wide, `pythagoras.ts` shows its proof in place of the triangle rather than beside it.
+On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show and, optionally, the real-world uses of its idea.

@@ -168,7 +168,7 @@ export const directions: Record<string, Step[]> = {
     },
     {
       title: "Scrub the proof",
-      text: "A proof joins the triangle, beside it or, on a narrow screen, in its place. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
+      text: "A proof joins the triangle, beside it or, on a narrow screen, below it. Slide its knob along the rail, and the same four triangles move around inside one square of side $a + b$.",
     },
     {
       title: "Why it is true",

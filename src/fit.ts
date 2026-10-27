@@ -1,6 +1,6 @@
 // Keeping the standalone figures usable on a small touch screen: how near a
-// finger must come to grab a knob, how far fixed-size captions shrink, and
-// where a captioned figure sits. Pure, except `fillFitted`, which measures
+// finger must come to grab a knob, how far fixed-size captions shrink,
+// where a captioned figure sits, and how two figures share a canvas. Pure, except `fillFitted`, which measures
 // and draws with a canvas.
 
 export interface Vec {
@@ -45,6 +45,33 @@ export function centreY(h: number, top: number, reach: number, below: number): n
   const lo = top + reach;
   const hi = h - below - reach;
   return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, h / 2));
+}
+
+export interface Box {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Two figures sharing `area`: it is cut across its longer side, so they sit
+ * side by side on a canvas wider than tall and one above the other on one
+ * taller than wide, and `share` of that side goes to the first.
+ */
+export function shareBox(area: Box, share: number): [Box, Box] {
+  if (area.w >= area.h) {
+    const w = area.w * share;
+    return [
+      { ...area, w },
+      { ...area, x: area.x + w, w: area.w - w },
+    ];
+  }
+  const h = area.h * share;
+  return [
+    { ...area, h },
+    { ...area, y: area.y + h, h: area.h - h },
+  ];
 }
 
 export interface FittedText {
