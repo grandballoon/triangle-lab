@@ -71,6 +71,7 @@ import {
   readAsItStands,
   reveal,
   settleReview,
+  skipCurrent,
   startSession,
   suggestedGrade,
   wantsReview,
@@ -217,6 +218,15 @@ function gradeAnswer(grade: Grade): void {
     return result.deck;
   });
   session = next;
+  draft = "";
+  leaveCard();
+  render();
+}
+
+/** Move on from the card on show without answering it; its place in the deck is untouched. */
+function skip(): void {
+  if (!session) return;
+  session = skipCurrent(session);
   draft = "";
   leaveCard();
   render();
@@ -480,10 +490,12 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
   const card = currentCard(s, deck);
   const { done, total } = progress(s);
   const top = el("div", "rc-sitting-top");
-  top.append(
-    el("span", "rc-progress", card ? `Question ${done + 1} of ${total}` : "Review done"),
-    button(card ? "End review" : "Back to your questions", "rc-small", end),
-  );
+  top.append(el("span", "rc-progress", card ? `Question ${done + 1} of ${total}` : "Review done"));
+  if (card) {
+    const pass = button("Skip", "rc-small", skip);
+    pass.title = "Skip this question for now. It stays due as it was.";
+    top.append(row(pass, button("End review", "rc-small", end)));
+  } else top.append(button("Back to your questions", "rc-small", end));
   if (!card) return [top, finished(s, deck)];
 
   const panel = el("section", "rc-ask");
@@ -834,6 +846,7 @@ function finished(s: Session, deck: Deck): HTMLElement {
   const panel = el("section", "rc-ask rc-finished");
   const { recalled, shaky, missed } = s.tally;
   const counts = [`${recalled} recalled`, `${shaky} shaky`, `${missed} missed`];
+  if (s.skipped > 0) counts.push(`${s.skipped} skipped`);
   const now = Date.now();
   const later = nextDue(deck, now);
   const due = dueCards(deck, now).length;

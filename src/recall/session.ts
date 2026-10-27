@@ -5,7 +5,9 @@
 // step the question came from, and correct their answer in place until they
 // have it right, then say how it went, which is recorded on the card (deck.ts)
 // and decides when it is asked again: right first time (recalled), right once
-// corrected (shaky), or still struggling (missed).
+// corrected (shaky), or still struggling (missed). A card can also be skipped,
+// which leaves it out of this sitting and the deck as it was, so it is still
+// due as before.
 //
 // A written answer can also be read by Claude while the learner checks it
 // (check.ts), and read again whenever they ask, as they correct it. The
@@ -25,6 +27,8 @@ export interface Session {
   answer: string;
   /** Answers graded so far this sitting, by grade. */
   tally: Record<Grade, number>;
+  /** Cards skipped so far this sitting, left in the deck as they were. */
+  skipped: number;
   /** Claude's latest reading of the answer being checked, once asked for. */
   review: Review | null;
   /** The answer as Claude was last asked to read it; the review is of this. */
@@ -39,6 +43,7 @@ export function startSession(cards: readonly Card[]): Session {
     phase: "ask",
     answer: "",
     tally: { missed: 0, shaky: 0, recalled: 0 },
+    skipped: 0,
     review: null,
     read: null,
     first: null,
@@ -51,9 +56,9 @@ export function currentCard(session: Session, deck: Deck): Card | null {
   return id === undefined ? null : (deck.cards.find((c) => c.id === id) ?? null);
 }
 
-/** How many answers this sitting has graded, and how many it will in all. */
+/** How many cards this sitting has graded or skipped, and how many it will in all. */
 export function progress(session: Session): { done: number; total: number } {
-  const done = session.tally.missed + session.tally.shaky + session.tally.recalled;
+  const done = session.tally.missed + session.tally.shaky + session.tally.recalled + session.skipped;
   return { done, total: done + session.queue.length };
 }
 
@@ -156,11 +161,22 @@ export function gradeCurrent(
       phase: "ask",
       answer: "",
       tally: { ...session.tally, [grade]: session.tally[grade] + 1 },
+      skipped: session.skipped,
       review: null,
       read: null,
       first: null,
     },
   };
+}
+
+/**
+ * Skip the card being asked or checked: move on without recording anything
+ * on it, so the deck is untouched and the card stays due as it was.
+ */
+export function skipCurrent(session: Session): Session {
+  const [id, ...rest] = session.queue;
+  if (id === undefined) return session;
+  return { ...session, queue: rest, phase: "ask", answer: "", skipped: session.skipped + 1, review: null, read: null, first: null };
 }
 
 /** Drop cards no longer in the deck, as when one is deleted in another tab. */
@@ -202,7 +218,7 @@ const EDITOR_KINDS: readonly Editor["kind"][] = ["question", "new"];
 /** Read a kept sitting back, or null if `raw` is not one. */
 export function loadSitting(raw: unknown): Sitting | null {
   if (!isObject(raw) || typeof raw.draft !== "string" || !isObject(raw.session)) return null;
-  const { queue, phase, answer, tally, review, read, first } = raw.session;
+  const { queue, phase, answer, tally, skipped, review, read, first } = raw.session;
   if (!isIds(queue) || (phase !== "ask" && phase !== "check") || typeof answer !== "string") return null;
   if (!isObject(tally) || !GRADES.every((g) => Number.isInteger(tally[g]) && (tally[g] as number) >= 0)) return null;
   const counts = tally as Record<Grade, number>;
@@ -212,6 +228,8 @@ export function loadSitting(raw: unknown): Sitting | null {
       phase,
       answer,
       tally: { missed: counts.missed, shaky: counts.shaky, recalled: counts.recalled },
+      // Absent from a sitting kept before cards could be skipped.
+      skipped: Number.isInteger(skipped) && (skipped as number) >= 0 ? (skipped as number) : 0,
       // Kept only while checking: a review is of the answer being checked.
       // One kept before readings were tied to what was sent is of the answer as kept.
       ...readBack(phase === "check" ? loadReview(review) : null, read, answer),

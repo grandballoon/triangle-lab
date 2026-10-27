@@ -17,6 +17,7 @@ import {
   readAsItStands,
   reveal,
   settleReview,
+  skipCurrent,
   startSession,
   suggestedGrade,
   wantsReview,
@@ -47,6 +48,18 @@ describe("a sitting", () => {
     });
     expect(currentCard(graded.session, graded.deck)?.id).toBe("b");
     expect(progress(graded.session)).toEqual({ done: 1, total: 2 });
+  });
+
+  it("skips a card, asked or checked, without touching it in the deck", () => {
+    let s = startSession(deck.cards);
+    s = skipCurrent(reveal(s, "Not sure"));
+    expect(s).toMatchObject({ queue: ["b"], phase: "ask", answer: "", skipped: 1, review: null });
+    expect(progress(s)).toEqual({ done: 1, total: 2 });
+
+    s = skipCurrent(s);
+    expect(currentCard(s, deck)).toBeNull();
+    expect(s.tally).toEqual({ missed: 0, shaky: 0, recalled: 0 });
+    expect(skipCurrent(s)).toBe(s);
   });
 
   it("does not grade a card before it is checked", () => {
@@ -258,6 +271,15 @@ describe("a sitting kept across a reload", () => {
     const { read: _r, first: _f, ...before } = corrected;
     expect(keep({ ...before, retried: [] })).toMatchObject({ review: done, read: "x, y", first: null });
     expect(keep({ ...corrected, first: "great" })?.first).toBeNull();
+  });
+
+  it("keeps how many cards were skipped, and reads a sitting kept before there was skipping", () => {
+    const skipped = skipCurrent(startSession(deck.cards));
+    const keep = (session: object) => loadSitting(JSON.parse(JSON.stringify({ session, draft: "" })))?.session;
+    expect(keep(skipped)?.skipped).toBe(1);
+    const { skipped: _s, ...before } = skipped;
+    expect(keep(before)?.skipped).toBe(0);
+    expect(keep({ ...skipped, skipped: -2 })?.skipped).toBe(0);
   });
 
   it("is not read from anything else", () => {

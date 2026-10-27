@@ -209,6 +209,8 @@ textarea:focus,
   margin-bottom: 14px;
 }
 
+.rc-sitting-top .rc-row { margin-top: 0; gap: 8px; }
+
 .rc-progress {
   font-size: 14px;
   font-variant-numeric: tabular-nums;

@@ -88,6 +88,22 @@ describe("the recall page", () => {
     expect(metas[1]).toContain("in 3 days");
   });
 
+  it("skips a question, asked or checked, leaving it due as it was", async () => {
+    const root = await open([card("a", "Where do the medians meet?"), card("b", "What is a median?")]);
+    const before = stored();
+    buttonNamed(root, "Start review").click();
+    buttonNamed(root, "Skip").click();
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 2 of 2");
+    expect(root.querySelector(".rc-asked")!.textContent).toBe("What is a median?");
+
+    buttonNamed(root, "Check").click();
+    buttonNamed(root, "Skip").click();
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Review done");
+    expect(root.querySelector(".rc-finished")!.textContent).toContain("0 recalled · 0 shaky · 0 missed · 2 skipped");
+    expect(root.querySelector(".rc-finished")!.textContent).toContain("2 still due.");
+    expect(stored()).toEqual(before);
+  });
+
   it("asks the due questions back: answer, check against the lesson, say how it went", async () => {
     const root = await open([card("a", "Where do the medians meet?"), card("b", "What is a median?")]);
     buttonNamed(root, "Start review").click();
