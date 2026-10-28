@@ -1,0 +1,1603 @@
+{
+  "about": "Written by the /syllabus skill in Claude Code (.claude/skills/syllabus/SKILL.md). Do not edit by hand: run /syllabus.",
+  "lessons": {
+    "circle-parts": {
+      "source": "672799647c3d",
+      "teaches": [
+        "A radius is a segment from the centre to the circle; a diameter is a chord through the centre, two radii end to end.",
+        "A chord is a segment joining two points of the circle; a secant is a line crossing the circle twice.",
+        "A tangent is a line that touches the circle at exactly one point.",
+        "An arc is a piece of the circle; two points split it into a minor and a major arc.",
+        "A sector is the region between two radii and their arc; a circular segment is the region between a chord and its arc."
+      ],
+      "builds_on": []
+    },
+    "circle-pi": {
+      "source": "207dc60b9829",
+      "teaches": [
+        "The circumference of every circle is the same number of diameters long, and that number is $\\pi \\approx 3.14$.",
+        "$C = \\pi d = 2\\pi r$."
+      ],
+      "builds_on": [
+        "circle-parts"
+      ]
+    },
+    "circle-area": {
+      "source": "939cb2705b71",
+      "teaches": [
+        "Cutting a disc into wedges and laying them alternately up and down approaches a rectangle $\\pi r$ by $r$.",
+        "The area of a circle is $A = \\pi r^2$.",
+        "Of all shapes with a given perimeter, the circle encloses the most area; it holds $\\frac{4}{\\pi} \\approx 1.27$ times as much as a square with the same perimeter."
+      ],
+      "builds_on": [
+        "circle-pi"
+      ]
+    },
+    "tangent-circles": {
+      "source": "36876ffade63",
+      "teaches": [
+        "When two circles touch externally, the point of contact lies on the line of centres and $d = r_A + r_B$.",
+        "When one circle touches another from inside, $d = |r_A - r_B|$.",
+        "For three mutually externally tangent circles, each side of the triangle of centres is the sum of two radii.",
+        "Then $r_A = \\tfrac12(AB + AC - BC)$."
+      ],
+      "builds_on": [
+        "circle-parts"
+      ]
+    },
+    "angle-kinds": {
+      "source": "71bbc3800bbb",
+      "teaches": [
+        "An angle measures the fraction of a full turn a ray has swept.",
+        "Angles are named acute, right ($90^\\circ$), obtuse, straight ($180^\\circ$) or reflex.",
+        "A full turn is $360^\\circ$ or $2\\pi$ radians; to convert degrees to radians multiply by $\\frac{2\\pi}{360^\\circ}$.",
+        "A degree splits into $60$ minutes and a minute into $60$ seconds, so $20.5^\\circ = 20^\\circ\\,30'$."
+      ],
+      "builds_on": []
+    },
+    "hand-protractor": {
+      "source": "33958a2946b3",
+      "teaches": [
+        "The angle between two rays from a common vertex is measured in degrees.",
+        "An angle is acute below $90^\\circ$, right at $90^\\circ$ and obtuse between $90^\\circ$ and $180^\\circ$."
+      ],
+      "builds_on": [
+        "angle-kinds"
+      ]
+    },
+    "angle-pairs": {
+      "source": "065bd4a364b0",
+      "teaches": [
+        "Two angles side by side along a straight line are supplementary: $\\alpha + \\beta = 180^\\circ$.",
+        "Two angles are complementary when they add to $90^\\circ$.",
+        "Where two lines cross, the vertical (opposite) angles are equal, because each is $180^\\circ$ minus the same neighbour."
+      ],
+      "builds_on": [
+        "angle-kinds"
+      ]
+    },
+    "parallel-transversal": {
+      "source": "8b9c4a732f5c",
+      "teaches": [
+        "When a transversal crosses two parallel lines, corresponding angles are equal.",
+        "Alternate interior angles are equal.",
+        "Same-side interior angles add to $180^\\circ$.",
+        "Conversely, if a transversal makes equal corresponding or alternate interior angles, or supplementary same-side angles, the two lines are parallel."
+      ],
+      "builds_on": [
+        "angle-pairs"
+      ]
+    },
+    "triangle-angle-sum": {
+      "source": "caf0e4b80634",
+      "teaches": [
+        "The angles of any triangle add to $180^\\circ$: $\\alpha + \\beta + \\gamma = 180^\\circ$.",
+        "Proof: draw the parallel to $AB$ through $C$; alternate interior angles carry $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
+      ],
+      "builds_on": [
+        "parallel-transversal"
+      ]
+    },
+    "exterior-angle": {
+      "source": "d7b913373f9d",
+      "teaches": [
+        "An exterior angle of a triangle is formed by extending one side past a vertex.",
+        "An exterior angle equals the sum of the two interior angles far from it: $\\delta = \\alpha + \\beta$.",
+        "The three exterior angles of a triangle, one at each vertex, add to $360^\\circ$."
+      ],
+      "builds_on": [
+        "triangle-angle-sum"
+      ]
+    },
+    "arcs-sectors": {
+      "source": "e0e0c19c9c1d",
+      "teaches": [
+        "The measure of an arc is its central angle $\\theta$, independent of the radius.",
+        "Arc length is $r\\theta$ with $\\theta$ in radians; at one radian the arc is as long as the radius.",
+        "Sector area is $\\frac{\\theta}{2\\pi} \\cdot \\pi r^2 = \\tfrac12 r^2\\theta$.",
+        "A circular segment's area is the sector minus triangle $AOB$, or plus the triangle when the arc is more than a half turn."
+      ],
+      "builds_on": [
+        "circle-area",
+        "angle-kinds"
+      ]
+    },
+    "inscribed-angle": {
+      "source": "4c3c1d27432d",
+      "teaches": [
+        "An inscribed angle is half the central angle standing on the same arc: $\\angle AOB = 2\\angle APB$.",
+        "Proof: the diameter through $P$ makes two isosceles triangles of radii, whose exterior angles at $O$ are $2\\alpha$ and $2\\beta$; add or subtract depending on which side the diameter falls.",
+        "All inscribed angles standing on the same arc from the same side are equal."
+      ],
+      "builds_on": [
+        "exterior-angle",
+        "arcs-sectors"
+      ]
+    },
+    "thales": {
+      "source": "9c6d47889f12",
+      "teaches": [
+        "An angle inscribed in a semicircle is a right angle: if $AB$ is a diameter, $\\angle APB = 90^\\circ$.",
+        "Conversely, the hypotenuse of a right triangle is a diameter of its circumcircle, so its midpoint is equally far from all three vertices."
+      ],
+      "builds_on": [
+        "inscribed-angle"
+      ]
+    },
+    "chords-angle": {
+      "source": "6c728525d7cc",
+      "teaches": [
+        "When two chords cross inside a circle, the angle between them is half the sum of the arcs cut off by that angle and its vertical angle.",
+        "$\\angle AEC = \\tfrac12(\\text{arc } AC + \\text{arc } BD)$, proved by joining $AD$ and using inscribed angles and the exterior angle of triangle $AED$."
+      ],
+      "builds_on": [
+        "inscribed-angle"
+      ]
+    },
+    "secants-angle": {
+      "source": "31456695aa90",
+      "teaches": [
+        "The angle between two secants from an outside point is half the far arc minus half the near arc: $\\angle P = \\tfrac12(\\text{arc } BD - \\text{arc } AC)$.",
+        "Proof: join $BC$; the exterior angle $\\angle BCD$ of triangle $PBC$ equals $\\angle P + \\angle PBC$, and both are inscribed angles.",
+        "The same rule holds when one or both secants become tangents."
+      ],
+      "builds_on": [
+        "inscribed-angle"
+      ]
+    },
+    "tangent-chord": {
+      "source": "928c89da69e3",
+      "teaches": [
+        "A tangent is perpendicular to the radius at the point of tangency: $OT \\perp TS$.",
+        "The angle between a tangent and a chord through the point of tangency is half the arc it cuts off.",
+        "So the tangent–chord angle equals any inscribed angle standing on that arc from the other side.",
+        "On the other side of the chord the tangent makes the supplement, half the arc on that side."
+      ],
+      "builds_on": [
+        "thales",
+        "circle-parts"
+      ]
+    },
+    "angles": {
+      "source": "3e3d0d41fdee",
+      "teaches": [
+        "A triangle is acute when all three angles are less than $90^\\circ$.",
+        "A triangle is right when one angle is exactly $90^\\circ$.",
+        "A triangle is obtuse when one angle is greater than $90^\\circ$.",
+        "A triangle can have at most one obtuse angle."
+      ],
+      "builds_on": [
+        "angle-kinds",
+        "triangle-angle-sum"
+      ]
+    },
+    "equilateral": {
+      "source": "1bf813612673",
+      "teaches": [
+        "An equilateral triangle has three equal sides, at any size.",
+        "Each angle of an equilateral triangle is $60^\\circ$, because the three equal angles share $180^\\circ$."
+      ],
+      "builds_on": [
+        "triangle-angle-sum"
+      ]
+    },
+    "isosceles": {
+      "source": "dca7d0518cc2",
+      "teaches": [
+        "An isosceles triangle has two equal sides, the legs, on either side of the apex; the third side is the base.",
+        "In an isosceles triangle the two base angles are equal."
+      ],
+      "builds_on": []
+    },
+    "scalene": {
+      "source": "69d83f177cbd",
+      "teaches": [
+        "A scalene triangle has no two sides equal.",
+        "In any triangle each side faces an angle, and the longest side faces the largest angle."
+      ],
+      "builds_on": [
+        "isosceles"
+      ]
+    },
+    "perimeter": {
+      "source": "a64ae0e535eb",
+      "teaches": [
+        "The perimeter of a triangle is the sum of its sides, $p = a + b + c$.",
+        "The semiperimeter is half the perimeter, $s = \\frac{p}{2}$."
+      ],
+      "builds_on": []
+    },
+    "medians": {
+      "source": "b3dac4d1fada",
+      "teaches": [
+        "A median joins a vertex to the midpoint of the opposite side.",
+        "The three medians of a triangle meet at a single point, the centroid $G$."
+      ],
+      "builds_on": []
+    },
+    "bisectors": {
+      "source": "95c6efd9e566",
+      "teaches": [
+        "An angle bisector of a triangle runs from a vertex to the opposite side and splits the angle at that vertex into two equal angles."
+      ],
+      "builds_on": []
+    },
+    "incircle": {
+      "source": "bbcef15388d7",
+      "teaches": [
+        "Every point on the bisector of an angle is equally far from the angle's two sides, and every point equally far from both sides lies on the bisector.",
+        "The three angle bisectors of a triangle meet at a single point $I$, the incenter.",
+        "The incenter $I$ is the same distance $r$ from all three sides.",
+        "The circle with centre $I$ and radius $r$ touches all three sides, each at the foot of the perpendicular from $I$: the incircle."
+      ],
+      "builds_on": [
+        "bisectors"
+      ]
+    },
+    "circumcircle": {
+      "source": "6f05d967c239",
+      "teaches": [
+        "Every point $P$ on the perpendicular bisector of $AB$ has $PA = PB$, and every point with $PA = PB$ lies on it.",
+        "The perpendicular bisectors of the three sides of a triangle meet at a single point $O$, the circumcenter.",
+        "The circle with centre $O$ and radius $R = OA = OB = OC$ passes through all three vertices: the circumcircle.",
+        "$O$ lies inside an acute triangle, on the hypotenuse of a right triangle, and outside an obtuse triangle.",
+        "In a right triangle $O$ is the midpoint of the hypotenuse, so the median to the hypotenuse equals $R = \\tfrac{c}{2}$."
+      ],
+      "builds_on": [
+        "circle-parts",
+        "angles",
+        "medians"
+      ]
+    },
+    "altitudes": {
+      "source": "6a80871a6683",
+      "teaches": [
+        "An altitude $h$ runs from a vertex perpendicular to the line through the opposite side.",
+        "In an obtuse triangle the altitudes from the two acute vertices land on the extensions of the opposite sides, outside the triangle.",
+        "The three altitudes meet at a single point, the orthocenter $H$.",
+        "$H$ is inside an acute triangle, at the right-angle vertex of a right triangle, and outside an obtuse triangle."
+      ],
+      "builds_on": [
+        "angles"
+      ]
+    },
+    "inequality": {
+      "source": "094029cda935",
+      "teaches": [
+        "In any triangle each side is less than the sum of the other two: $a + b > c$, $b + c > a$ and $c + a > b$.",
+        "When one side exactly equals the sum of the other two, the triangle collapses into a straight line."
+      ],
+      "builds_on": []
+    },
+    "pythagoras": {
+      "source": "a83e769a577f",
+      "teaches": [
+        "In a right triangle with legs $a$ and $b$ and hypotenuse $c$, $a^2 + b^2 = c^2$.",
+        "Proof: four copies of the triangle inside a square of side $a + b$ leave either the squares $a^2$ and $b^2$ or the one square $c^2$ uncovered, so $a^2 + b^2 = c^2$."
+      ],
+      "builds_on": [
+        "angles"
+      ]
+    },
+    "pythagoras-square": {
+      "source": "cd3c1bc5b23d",
+      "teaches": [
+        "The two acute angles of a right triangle add up to $90^\\circ$.",
+        "Four copies of a right triangle fit inside the square on its hypotenuse, leaving a square hole of side $|a - b|$.",
+        "So $c^2 = 4 \\cdot \\tfrac12 ab + (a - b)^2 = a^2 + b^2$, a second proof of the Pythagorean theorem.",
+        "The distance between two points is the hypotenuse $\\sqrt{a^2 + b^2}$ of the right triangle whose legs are their horizontal and vertical separations."
+      ],
+      "builds_on": [
+        "pythagoras",
+        "triangle-angle-sum"
+      ]
+    },
+    "pythagoras-converse": {
+      "source": "37b818402a2f",
+      "teaches": [
+        "With an altitude $h$ from $A$ meeting line $BC$ at $D$ and $CD = x$, $c^2 = a^2 + b^2 \\pm 2ax$.",
+        "If the angle at $C$ is obtuse then $c^2 > a^2 + b^2$; if it is acute then $c^2 < a^2 + b^2$.",
+        "Converse of Pythagoras: if the sides of a triangle satisfy $a^2 + b^2 = c^2$, the angle opposite $c$ is a right angle."
+      ],
+      "builds_on": [
+        "pythagoras",
+        "altitudes"
+      ]
+    },
+    "pythagorean-triples": {
+      "source": "27ffc596f617",
+      "teaches": [
+        "A Pythagorean triple is three whole numbers $(a, b, c)$ with $a^2 + b^2 = c^2$; usually $c = \\sqrt{a^2 + b^2}$ is not whole.",
+        "Triples worth knowing: $(3, 4, 5)$, $(5, 12, 13)$, $(8, 15, 17)$ and $(7, 24, 25)$.",
+        "Multiplying every side of a right triangle by $n$ gives another right triangle, since $(na)^2 + (nb)^2 = (nc)^2$."
+      ],
+      "builds_on": [
+        "pythagoras"
+      ]
+    },
+    "congruence": {
+      "source": "3cd8a65fe153",
+      "teaches": [
+        "SSS: three sides fix a single triangle, up to its mirror image.",
+        "SAS: two sides and the angle between them fix a single triangle.",
+        "ASA: two angles and the side between them fix a single triangle.",
+        "SSA is not a congruence test: two sides and an angle not between them can give two different triangles."
+      ],
+      "builds_on": []
+    },
+    "right-congruence": {
+      "source": "9d6ea3e282b2",
+      "teaches": [
+        "AAS: two angles and a side not between them fix a triangle, since the third angle is $180^\\circ$ minus the other two, which reduces it to ASA.",
+        "LL: two right triangles with equal legs are congruent, by SAS with the right angle between the legs.",
+        "SA: two right triangles with one equal side and one equal acute angle are congruent, since the last angle is $90^\\circ - \\beta$ and ASA applies.",
+        "HL: two right triangles with equal hypotenuses and one equal leg are congruent, since the other leg is $\\sqrt{c^2 - a^2}$; this case of SSA works only because of the right angle."
+      ],
+      "builds_on": [
+        "congruence",
+        "triangle-angle-sum",
+        "pythagoras"
+      ]
+    },
+    "isosceles-base-angles": {
+      "source": "df09739917c4",
+      "teaches": [
+        "If $AB = AC$, the base angles are equal: $\\angle B = \\angle C$ (the altitude from $A$ gives two right triangles congruent by HL).",
+        "Conversely, if $\\angle B = \\angle C$, then $AB = AC$ (the same two right triangles are congruent by SA).",
+        "In a triangle, equal sides and equal base angles always come together."
+      ],
+      "builds_on": [
+        "right-congruence"
+      ]
+    },
+    "chord-bisector": {
+      "source": "848b4e7a6201",
+      "teaches": [
+        "The radius through the midpoint of a chord is perpendicular to the chord (triangles $OMA$ and $OMB$ are congruent by SSS).",
+        "A radius perpendicular to a chord bisects it (triangles $OMA$ and $OMB$ are congruent by HL).",
+        "Equal chords subtend equal central angles, and so cut off equal arcs."
+      ],
+      "builds_on": [
+        "congruence",
+        "right-congruence",
+        "circle-parts"
+      ]
+    },
+    "similar": {
+      "source": "435615c5b1e1",
+      "teaches": [
+        "Right triangles sharing an acute angle $\\theta$ have the same angles $90^\\circ$, $\\theta$, $90^\\circ - \\theta$, and so are similar.",
+        "In similar triangles, the ratios of corresponding sides are equal, whatever the size.",
+        "The ratios $\\frac{\\text{opp}}{\\text{hyp}}$, $\\frac{\\text{adj}}{\\text{hyp}}$ and $\\frac{\\text{opp}}{\\text{adj}}$ of a right triangle depend on the angle $\\theta$ alone."
+      ],
+      "builds_on": [
+        "triangle-angle-sum"
+      ]
+    },
+    "similarity-tests": {
+      "source": "fdc193ad775c",
+      "teaches": [
+        "AA: two triangles with two pairs of equal angles are similar, and all three side ratios agree.",
+        "A line parallel to one side of a triangle cuts off a smaller triangle similar to it.",
+        "SAS similarity: two pairs of sides in the same ratio with the included angle equal make the triangles similar; for $\\triangle ADE$ in $\\triangle ABC$, $\\tfrac{AD}{AB} = \\tfrac{AE}{AC}$ exactly when $DE \\parallel BC$.",
+        "SSS similarity: three pairs of sides in one ratio $k$ force equal angles.",
+        "Midsegment theorem: the segment joining the midpoints of two sides is parallel to the third side and half as long, $DE = \\tfrac12 BC$."
+      ],
+      "builds_on": [
+        "similar",
+        "parallel-transversal"
+      ]
+    },
+    "altitude-on-hypotenuse": {
+      "source": "f1202ec7ed9e",
+      "teaches": [
+        "The altitude to the hypotenuse of a right triangle splits it into two right triangles, each similar to the whole: $\\triangle ACD \\sim \\triangle CBD \\sim \\triangle ABC$ by AA.",
+        "Geometric mean theorem: the altitude $h$ and the hypotenuse segments $p$, $q$ satisfy $h^2 = pq$.",
+        "Each leg is the geometric mean of the hypotenuse and its adjacent segment: $b^2 = cp$ and $a^2 = cq$.",
+        "Adding $a^2 = cq$ and $b^2 = cp$ gives a proof of $a^2 + b^2 = c^2$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "altitudes"
+      ]
+    },
+    "angle-bisector-theorem": {
+      "source": "d853475ef42f",
+      "teaches": [
+        "Angle bisector theorem: if $AX$ bisects angle $A$ of triangle $ABC$ with $X$ on $BC$, then $\\dfrac{BX}{XC} = \\dfrac{AB}{AC}$.",
+        "Proof: the line through $B$ parallel to $AC$ meets the extended bisector at $E$; alternate angles make $ABE$ isosceles with $BE = AB$, and $\\triangle AXC \\sim \\triangle EXB$ by AA.",
+        "To find a ratio of lengths, draw a parallel to create similar triangles."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "isosceles-base-angles",
+        "parallel-transversal",
+        "bisectors"
+      ]
+    },
+    "trig": {
+      "source": "a48986cdfb7e",
+      "teaches": [
+        "In a right triangle, $\\sin = \\frac{\\text{opp}}{\\text{hyp}}$, $\\cos = \\frac{\\text{adj}}{\\text{hyp}}$, $\\tan = \\frac{\\text{opp}}{\\text{adj}}$.",
+        "Their reciprocals are $\\csc = \\frac{1}{\\sin}$, $\\sec = \\frac{1}{\\cos}$ and $\\cot = \\frac{1}{\\tan}$.",
+        "For the two acute angles of a right triangle, $A + B = 90^\\circ$ and $\\sin A = \\cos B$, since opposite and adjacent swap.",
+        "$\\sin^2 + \\cos^2 = \\frac{a^2 + b^2}{c^2} = 1$, by the Pythagorean theorem."
+      ],
+      "builds_on": [
+        "similar",
+        "pythagoras"
+      ]
+    },
+    "fortyfive": {
+      "source": "3429f2e4c43d",
+      "teaches": [
+        "The diagonal of a square bisects its right angles, giving a $45^\\circ$-$45^\\circ$-$90^\\circ$ triangle with equal legs.",
+        "A $45^\\circ$-$45^\\circ$-$90^\\circ$ triangle with legs $a$ has hypotenuse $a\\sqrt{2}$.",
+        "$\\sin 45^\\circ = \\cos 45^\\circ = \\frac{\\sqrt{2}}{2}$ and $\\tan 45^\\circ = 1$, whatever the size."
+      ],
+      "builds_on": [
+        "trig",
+        "pythagoras"
+      ]
+    },
+    "thirtysixty": {
+      "source": "be07972b19e5",
+      "teaches": [
+        "The altitude of an equilateral triangle splits it into two congruent $30^\\circ$-$60^\\circ$-$90^\\circ$ triangles.",
+        "A $30^\\circ$-$60^\\circ$-$90^\\circ$ triangle has sides in the ratio $1 : \\sqrt{3} : 2$.",
+        "The hypotenuse is twice the side opposite $30^\\circ$.",
+        "So $\\sin 30^\\circ = \\cos 60^\\circ = \\frac12$ and $\\sin 60^\\circ = \\cos 30^\\circ = \\frac{\\sqrt3}{2}$."
+      ],
+      "builds_on": [
+        "trig",
+        "pythagoras",
+        "equilateral"
+      ]
+    },
+    "table": {
+      "source": "0412935f16b9",
+      "teaches": [
+        "With hypotenuse $1$, the opposite leg is $\\sin\\theta$ and the adjacent leg is $\\cos\\theta$.",
+        "The exact values of all six ratios at $0^\\circ$, $30^\\circ$, $45^\\circ$, $60^\\circ$ and $90^\\circ$.",
+        "$\\sin 0^\\circ = 0$ and $\\cos 90^\\circ = 0$, while $\\tan 90^\\circ$ is undefined because it would divide by zero."
+      ],
+      "builds_on": [
+        "fortyfive",
+        "thirtysixty"
+      ]
+    },
+    "trig-identities": {
+      "source": "ef157b5d5990",
+      "teaches": [
+        "With hypotenuse $1$, the legs are $\\sin A$ and $\\cos A$.",
+        "Cofunction identities: $\\sin(90^\\circ - A) = \\cos A$ and $\\cos(90^\\circ - A) = \\sin A$; likewise $\\tan$ pairs with $\\cot$ and $\\sec$ with $\\csc$.",
+        "Pythagorean identity: $\\sin^2 A + \\cos^2 A = 1$.",
+        "Dividing by $\\cos^2 A$ gives $\\tan^2 A + 1 = \\sec^2 A$.",
+        "Dividing by $\\sin^2 A$ gives $1 + \\cot^2 A = \\csc^2 A$."
+      ],
+      "builds_on": [
+        "trig",
+        "pythagoras"
+      ]
+    },
+    "area-base-height": {
+      "source": "080ea9ee7125",
+      "teaches": [
+        "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
+        "A right triangle is half a rectangle, so its area is half the product of its legs.",
+        "The proof splits the triangle by the altitude into two right triangles whose areas add (foot inside the base) or subtract (foot on the extension).",
+        "Any side can serve as the base; all three base-height products give the same area."
+      ],
+      "builds_on": [
+        "altitudes"
+      ]
+    },
+    "area-sine": {
+      "source": "cf20701c37f9",
+      "teaches": [
+        "The area of a triangle is $\\frac12 ab \\sin C$, where $C$ is the angle between sides $a$ and $b$.",
+        "The altitude onto $a$ is $h = b \\sin C$.",
+        "An angle and its supplement have the same sine, $\\sin(180^\\circ - C) = \\sin C$, so the formula holds for obtuse $C$ too.",
+        "An equilateral triangle of side $s$ has area $\\frac{\\sqrt3}{4}s^2$."
+      ],
+      "builds_on": [
+        "area-base-height",
+        "trig",
+        "thirtysixty"
+      ]
+    },
+    "area-inradius": {
+      "source": "722362946f6b",
+      "teaches": [
+        "The area of a triangle equals $rs$, its inradius times its semiperimeter.",
+        "Proof: the incentre $I$ is at distance $r$ from every side, since a radius meets its tangent at a right angle, so joining $I$ to the vertices gives three triangles of areas $\\frac12 ra$, $\\frac12 rb$, $\\frac12 rc$.",
+        "Rearranged, the inradius is $r = \\text{Area}/s$."
+      ],
+      "builds_on": [
+        "incircle",
+        "area-base-height",
+        "perimeter"
+      ]
+    },
+    "right-angle-tests": {
+      "source": "b96b8ff4346f",
+      "teaches": [
+        "A right angle can only lie opposite the longest side.",
+        "A triangle is right-angled exactly when its two smaller angles are complementary, adding to $90^\\circ$.",
+        "With $c$ the longest side: $a^2 + b^2 = c^2$ for a right triangle, $a^2 + b^2 > c^2$ for an acute one, and $a^2 + b^2 < c^2$ for an obtuse one.",
+        "A triangle is right-angled exactly when the median to its longest side is half that side.",
+        "The third vertex lies on the circle with the longest side as diameter exactly when its angle is right; outside the circle the angle is acute, inside it is obtuse."
+      ],
+      "builds_on": [
+        "triangle-angle-sum",
+        "pythagoras-converse",
+        "isosceles-base-angles",
+        "thales"
+      ]
+    },
+    "parallel-trick": {
+      "source": "bf2632292173",
+      "teaches": [
+        "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
+        "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
+        "In general, with $AE : EB = 1 : m$ and $CD : DB = 1 : n$, $\\dfrac{AF}{FD} = \\dfrac{n+1}{m}$ and $\\dfrac{EF}{FC} = \\dfrac{n}{m+1}$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "congruence",
+        "parallel-transversal"
+      ]
+    },
+    "quad-angle-sum": {
+      "source": "4182897e5dba",
+      "teaches": [
+        "The four angles of any quadrilateral sum to $360^\\circ$.",
+        "Proof: a diagonal cuts the quadrilateral into two triangles, each with angle sum $180^\\circ$.",
+        "This holds for a concave quadrilateral too, with a reflex angle above $180^\\circ$, cutting along the diagonal from the reflex corner."
+      ],
+      "builds_on": [
+        "triangle-angle-sum"
+      ]
+    },
+    "trapezoid-median": {
+      "source": "20f1f8fdf5ab",
+      "teaches": [
+        "The median of a trapezoid joins the midpoints of its legs.",
+        "The median is parallel to the two bases.",
+        "The median's length is the average of the bases: $XY = \\tfrac12(AB + DC)$.",
+        "The area of a trapezoid is its median times its height: $XY \\cdot h$."
+      ],
+      "builds_on": [
+        "similarity-tests"
+      ]
+    },
+    "isosceles-trapezoid": {
+      "source": "64b093856693",
+      "teaches": [
+        "In a trapezoid, equal legs, equal base angles and equal diagonals each imply the other two.",
+        "Equal legs: the altitudes $AX = BY$ give congruent right triangles $AXD \\cong BYC$ (HL), so $\\angle D = \\angle C$ and $\\angle A = \\angle B$.",
+        "Equal legs give equal diagonals $AC = BD$, via congruent right triangles $AXC \\cong BYD$ (LL).",
+        "Conversely, equal diagonals or equal base angles force equal legs."
+      ],
+      "builds_on": [
+        "right-congruence",
+        "parallel-transversal"
+      ]
+    },
+    "parallelogram": {
+      "source": "9165660d11e2",
+      "teaches": [
+        "A parallelogram is a quadrilateral whose opposite sides are parallel.",
+        "A diagonal splits it into two congruent triangles (ASA), so opposite sides are equal and opposite angles are equal.",
+        "Consecutive angles are supplementary: $\\angle A + \\angle B = 180^\\circ$.",
+        "The diagonals of a parallelogram bisect each other."
+      ],
+      "builds_on": [
+        "parallel-transversal",
+        "congruence"
+      ]
+    },
+    "parallelogram-area": {
+      "source": "b1a40ec74882",
+      "teaches": [
+        "The area of a parallelogram is base times height: $bh$.",
+        "Sliding the top side along its line, with base and height fixed, does not change the area.",
+        "With sides $a$, $b$ and angle $B$ between them, $h = a\\sin B$ and the area is $ab\\sin B$.",
+        "With diagonals $d_1$, $d_2$ crossing at angle $\\theta$, the area is $\\tfrac12 d_1 d_2 \\sin\\theta$."
+      ],
+      "builds_on": [
+        "parallelogram",
+        "area-sine"
+      ]
+    },
+    "rhombus": {
+      "source": "0bdb995eed24",
+      "teaches": [
+        "A rhombus is a quadrilateral with four equal sides.",
+        "Every rhombus is a parallelogram, so its diagonals bisect each other.",
+        "The diagonals of a rhombus are perpendicular.",
+        "The area of a rhombus is $\\tfrac12 d_1 d_2$.",
+        "Its side satisfies $s^2 = (\\tfrac12 d_1)^2 + (\\tfrac12 d_2)^2$."
+      ],
+      "builds_on": [
+        "parallelogram",
+        "congruence",
+        "pythagoras"
+      ]
+    },
+    "rectangle-square": {
+      "source": "dd5a6b085077",
+      "teaches": [
+        "A rectangle is a parallelogram with four right angles; its diagonals are equal: $AC = BD = \\sqrt{l^2 + w^2}$.",
+        "A square is both a rectangle and a rhombus: its diagonals are equal, bisect each other and are perpendicular.",
+        "The diagonal of a square of side $s$ is $s\\sqrt2$.",
+        "Joining the midpoints of a square's sides in order gives a square."
+      ],
+      "builds_on": [
+        "rhombus",
+        "right-congruence",
+        "pythagoras",
+        "fortyfive"
+      ]
+    },
+    "quad-converses": {
+      "source": "a0229cd657bb",
+      "teaches": [
+        "A quadrilateral whose diagonals bisect each other is a parallelogram.",
+        "If the diagonals bisect each other and are perpendicular, it is a rhombus.",
+        "If the diagonals bisect each other and are equal, it is a rectangle; all three conditions together give a square.",
+        "Perpendicular diagonals alone do not make a rhombus, but the area is still $\\tfrac12 d_1 d_2$."
+      ],
+      "builds_on": [
+        "rhombus",
+        "rectangle-square",
+        "congruence",
+        "isosceles-base-angles",
+        "area-base-height"
+      ]
+    },
+    "varignon": {
+      "source": "7ef21b25abee",
+      "teaches": [
+        "Varignon's theorem: the midpoints of the sides of any quadrilateral form a parallelogram.",
+        "Each side of the midpoint parallelogram is parallel to a diagonal of the quadrilateral and half as long.",
+        "The angle of the midpoint parallelogram equals the angle between the diagonals, so perpendicular diagonals give a rectangle.",
+        "The midpoint parallelogram has half the area of the quadrilateral."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "parallelogram",
+        "area-scaling"
+      ]
+    },
+    "polygon-diagonals": {
+      "source": "922a9529477d",
+      "teaches": [
+        "From each vertex of an $n$-gon, $n - 3$ diagonals go out.",
+        "An $n$-gon has $\\tfrac{n(n-3)}{2}$ diagonals: $n(n-3)$ counts each diagonal twice, once from each end."
+      ],
+      "builds_on": []
+    },
+    "polygon-interior-sum": {
+      "source": "9454183feb0c",
+      "teaches": [
+        "The $n - 3$ diagonals from one vertex cut a convex $n$-gon into $n - 2$ triangles.",
+        "The interior angles of an $n$-gon sum to $180^\\circ(n - 2)$, depending only on the number of sides."
+      ],
+      "builds_on": [
+        "triangle-angle-sum",
+        "polygon-diagonals"
+      ]
+    },
+    "polygon-exterior-sum": {
+      "source": "30484782cf53",
+      "teaches": [
+        "An exterior angle of a polygon is the turn from one side to the next; it and the interior angle add to $180^\\circ$.",
+        "The exterior angles of any convex polygon sum to $360^\\circ$, whatever $n$ is.",
+        "Proof: $180^\\circ n - 180^\\circ(n - 2) = 360^\\circ$; equivalently, shrinking the polygon to a point gathers the exterior angles into one full turn."
+      ],
+      "builds_on": [
+        "polygon-interior-sum"
+      ]
+    },
+    "regular-polygon": {
+      "source": "4ae658c8e1a2",
+      "teaches": [
+        "In a regular $n$-gon each interior angle is $\\tfrac{180^\\circ(n-2)}{n}$ and each exterior angle is $\\tfrac{360^\\circ}{n}$.",
+        "A regular polygon has a centre $O$ at distance $R$ (the circumradius) from every vertex and $r$ (the apothem) from every side, meeting each side at its midpoint at a right angle.",
+        "Radii and apothems cut it into $2n$ congruent right triangles with angle $\\theta = \\tfrac{180^\\circ}{n}$ at $O$.",
+        "With side $l$: $\\tan\\theta = \\tfrac{l/2}{r}$ and $\\sin\\theta = \\tfrac{l/2}{R}$.",
+        "The area of a regular polygon is half the perimeter times the apothem: $\\tfrac12 (nl) r$."
+      ],
+      "builds_on": [
+        "polygon-exterior-sum",
+        "trig",
+        "area-base-height"
+      ]
+    },
+    "regular-hexagon": {
+      "source": "63c8f3e57a21",
+      "teaches": [
+        "A regular hexagon splits into six equilateral triangles from its centre, so its circumradius equals its side: $R = s$.",
+        "The area of a regular hexagon is $\\tfrac{3\\sqrt3}{2}s^2$.",
+        "The long diagonal joining opposite vertices is $2s$.",
+        "The short diagonal is $s\\sqrt3$.",
+        "Joining every other vertex gives an equilateral triangle."
+      ],
+      "builds_on": [
+        "regular-polygon",
+        "isosceles-base-angles",
+        "area-sine",
+        "thirtysixty",
+        "congruence"
+      ]
+    },
+    "chase-isosceles-chain": {
+      "source": "444004c6daed",
+      "teaches": [
+        "Angle chasing: alternate between isosceles base angles and the exterior angle theorem, building angles $b$, $2b$, $3b$ along a chain of equal segments.",
+        "With four equal links $BQ = QP = PA = AC$ and $BA = BC$, the angle at $B$ is $\\tfrac{180^\\circ}{7}$."
+      ],
+      "builds_on": [
+        "isosceles-base-angles",
+        "exterior-angle",
+        "triangle-angle-sum"
+      ]
+    },
+    "chase-square-triangle": {
+      "source": "b223719d6369",
+      "teaches": [
+        "With an equilateral triangle $ABE$ on side $AB$ of square $ABCD$, $AE = AD$, so triangle $AED$ is isosceles.",
+        "Triangle outside the square: $\\angle EAD = 150^\\circ$, $\\angle AED = 15^\\circ$, $\\angle BED = 45^\\circ$.",
+        "Triangle inside the square: $\\angle EAD = 30^\\circ$, $\\angle AED = 75^\\circ$, $\\angle BED = 135^\\circ$."
+      ],
+      "builds_on": [
+        "equilateral",
+        "isosceles-base-angles",
+        "triangle-angle-sum"
+      ]
+    },
+    "chase-trisectors": {
+      "source": "c4cc79e08da6",
+      "teaches": [
+        "In quadrilateral $ABCD$, $\\angle A + \\angle D = 360^\\circ - \\angle B - \\angle C$, even when $\\angle A$ and $\\angle D$ separately are unknown.",
+        "With $\\angle A = 3x$ and $\\angle D = 3y$ trisected, the trisectors meet at angles $\\angle AED = 180^\\circ - (x + y)$ and $\\angle AFD = 180^\\circ - 2(x + y)$, fixed by $\\angle B$ and $\\angle C$ alone."
+      ],
+      "builds_on": [
+        "quad-angle-sum",
+        "triangle-angle-sum"
+      ]
+    },
+    "area-scaling": {
+      "source": "8b7a3bc4dbd8",
+      "teaches": [
+        "In a similar copy with ratio $k$, every length is multiplied by $k$, including altitudes and radii.",
+        "Area multiplies two lengths, so scaling by $k$ multiplies area by $k^2$."
+      ],
+      "builds_on": [
+        "similar",
+        "area-base-height",
+        "circle-area"
+      ]
+    },
+    "medial-triangle": {
+      "source": "d13ac1f8320c",
+      "teaches": [
+        "The medial triangle $DEF$ joins the midpoints of the sides of $ABC$.",
+        "Each side of $DEF$ is half the parallel side of $ABC$, so $DEF \\sim ABC$ with $k = \\tfrac12$.",
+        "$[DEF] = \\tfrac14 [ABC]$.",
+        "The midpoints cut $ABC$ into four congruent triangles."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "area-scaling"
+      ]
+    },
+    "same-base-altitude": {
+      "source": "991154442124",
+      "teaches": [
+        "Triangles with the same altitude have areas in the ratio of their bases: $[ABD] : [ADC] = BD : DC$.",
+        "Moving a vertex along a line parallel to the base does not change a triangle's area.",
+        "Triangles on the same base have areas in the ratio of their altitudes."
+      ],
+      "builds_on": [
+        "area-base-height"
+      ]
+    },
+    "median-six-areas": {
+      "source": "8de0bfc08f16",
+      "teaches": [
+        "A median splits a triangle into two triangles of equal area.",
+        "The three medians cut a triangle into six triangles of equal area, each $\\tfrac16 [ABC]$.",
+        "Proof: $GD = \\tfrac13 AD$ at the centroid, so $[GCD] = \\tfrac13 [ACD] = \\tfrac16 [ABC]$."
+      ],
+      "builds_on": [
+        "same-base-altitude",
+        "medians"
+      ]
+    },
+    "trapezoid-diagonal-areas": {
+      "source": "219d65c6160c",
+      "teaches": [
+        "The diagonals of trapezoid $ABCD$ ($AB \\parallel DC$) make triangles $ABE \\sim CDE$ by AA.",
+        "With $k = CD/AB$, $[CDE] = k^2\\,[ABE]$.",
+        "The two side triangles have equal areas: $[AED] = [BEC]$.",
+        "If diagonal $AC$ passes through the midpoint of diagonal $BD$, it splits the quadrilateral into two equal areas: $[ACB] = [ACD]$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "area-scaling",
+        "same-base-altitude",
+        "right-congruence"
+      ]
+    },
+    "octagon-from-square": {
+      "source": "b6c3b8d49778",
+      "teaches": [
+        "Area by subtraction: an awkward region is a simple shape with simple pieces removed, as a ring has area $\\pi R^2 - \\pi r^2$.",
+        "A regular octagon of side $s$ fits in a square of side $s(1 + \\sqrt2)$ with four isosceles right corner triangles of legs $s/\\sqrt2$.",
+        "The area of a regular octagon of side $s$ is $2(1+\\sqrt2)\\,s^2$."
+      ],
+      "builds_on": [
+        "circle-area",
+        "regular-polygon",
+        "fortyfive"
+      ]
+    },
+    "lune": {
+      "source": "eb3960d21016",
+      "teaches": [
+        "Hippocrates' lune: the crescent between a semicircle on the hypotenuse of an isosceles right triangle and a quarter circle centred at the right angle has area equal to the triangle.",
+        "Crescent $= T + S - Q$, and the semicircle $S$ equals the quarter circle $Q$, both $\\tfrac14\\pi a^2$, so the crescent's area is $\\tfrac12 a^2$ with no $\\pi$."
+      ],
+      "builds_on": [
+        "circle-area",
+        "fortyfive"
+      ]
+    },
+    "clover-leaves": {
+      "source": "7073c995c955",
+      "teaches": [
+        "Inclusion–exclusion: when pieces overlap, their total area counts the overlaps twice; subtract the region covered once to leave the overlaps.",
+        "Four inward semicircles on the sides of a square of side $s$ make four leaves of total area $\\left(\\frac{\\pi}{2} - 1\\right)s^2$."
+      ],
+      "builds_on": [
+        "circle-area"
+      ]
+    },
+    "circle-leaves": {
+      "source": "2b5f69eaa296",
+      "teaches": [
+        "A circular segment has area sector minus triangle.",
+        "A $60^\\circ$ segment of radius $r$ has area $\\tfrac16 \\pi r^2 - \\frac{\\sqrt3}{4} r^2$.",
+        "Three circles of radius $r$ centred on a circle of radius $r$ make three leaves of total area $\\left(\\pi - \\frac{3\\sqrt3}{2}\\right) r^2$, six segments."
+      ],
+      "builds_on": [
+        "arcs-sectors",
+        "equilateral",
+        "area-sine"
+      ]
+    },
+    "coordinate-plane": {
+      "source": "57f392cc69a1",
+      "teaches": [
+        "A point has a Cartesian address $(x, y)$ and a polar address $(r, \\theta)$: distance from the origin and angle from the positive $x$-axis.",
+        "The axes cut the plane into four quadrants, numbered counter-clockwise from the upper right; the signs of $x$ and $y$ say which one a point is in.",
+        "$x = $ constant is a vertical line and $y = $ constant a horizontal one; $r = $ constant is a circle about the origin and $\\theta = $ constant a ray.",
+        "$x = r\\cos\\theta$, $y = r\\sin\\theta$ and $r = \\sqrt{x^2 + y^2}$."
+      ],
+      "builds_on": [
+        "pythagoras",
+        "trig"
+      ]
+    },
+    "slope": {
+      "source": "081d8fff6b48",
+      "teaches": [
+        "The slope of a line is rise over run, $m = \\frac{\\text{rise}}{\\text{run}}$, and measures its steepness.",
+        "A line rising to the right has positive slope, a falling one negative slope, a horizontal one slope $0$, and a vertical line has undefined slope.",
+        "Any two points on a line give the same slope, because their rise–run triangles are similar."
+      ],
+      "builds_on": [
+        "coordinate-plane",
+        "similar"
+      ]
+    },
+    "line-equation": {
+      "source": "ad9fc23f002f",
+      "teaches": [
+        "A line with slope $m$ and $y$-intercept $b$ has equation $y = mx + b$.",
+        "The $y$-intercept is found by setting $x = 0$, the $x$-intercept by solving $0 = mx + b$; a horizontal line has no $x$-intercept.",
+        "Standard form writes a line as $Ax + By = C$ with whole numbers and $A \\ge 0$; its slope is $-A/B$.",
+        "Through two points, $m$ is their rise over run and $b = y - mx$ from either point."
+      ],
+      "builds_on": [
+        "slope"
+      ]
+    },
+    "parallel-perpendicular-slopes": {
+      "source": "56f988010fa9",
+      "teaches": [
+        "Parallel lines have equal slopes, $m_1 = m_2$.",
+        "Turning a line a quarter turn changes slope $\\frac{a}{b}$ to $\\frac{b}{-a}$.",
+        "Two lines with slopes are perpendicular exactly when $m_1 m_2 = -1$.",
+        "A horizontal and a vertical line are perpendicular, but the product rule does not apply since the vertical slope does not exist."
+      ],
+      "builds_on": [
+        "slope"
+      ]
+    },
+    "distance-formula": {
+      "source": "4a18659fed01",
+      "teaches": [
+        "The segment $AB$ is the hypotenuse of a right triangle with legs $x_2 - x_1$ and $y_2 - y_1$.",
+        "By Pythagoras, $d^2 = (x_2 - x_1)^2 + (y_2 - y_1)^2$, so $d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$.",
+        "The order of the points does not matter, since squaring removes the signs."
+      ],
+      "builds_on": [
+        "coordinate-plane",
+        "pythagoras"
+      ]
+    },
+    "midpoint-formula": {
+      "source": "0f20e68ef8a3",
+      "teaches": [
+        "The midpoint of $AB$ is the average of the endpoints: $M = \\left(\\frac{x_1 + x_2}{2}, \\frac{y_1 + y_2}{2}\\right)$.",
+        "The point a fraction $t$ of the way from $A$ to $B$ is $(x_1 + t(x_2 - x_1),\\ y_1 + t(y_2 - y_1))$.",
+        "These follow from similar right triangles along $AB$, congruent at the midpoint."
+      ],
+      "builds_on": [
+        "coordinate-plane",
+        "similar",
+        "congruence"
+      ]
+    },
+    "circle-equation": {
+      "source": "02654c8daa1e",
+      "teaches": [
+        "A circle is every point at distance $R$ from its centre $(p, q)$.",
+        "Its equation is $(x - p)^2 + (y - q)^2 = R^2$; the left side is less than $R^2$ inside, equal on, and greater outside the circle.",
+        "Expanded, it reads $x^2 + y^2 + Ax + By + C = 0$ with $A = -2p$, $B = -2q$, $C = p^2 + q^2 - R^2$.",
+        "Completing the square recovers the centre $(-\\tfrac A2, -\\tfrac B2)$ and $R^2 = \\tfrac{A^2}{4} + \\tfrac{B^2}{4} - C$."
+      ],
+      "builds_on": [
+        "distance-formula"
+      ]
+    },
+    "line-circle-intersection": {
+      "source": "252470f9dac8",
+      "teaches": [
+        "A line and a circle meet in $2$, $1$ or $0$ points; meeting in exactly one means the line is tangent.",
+        "Substituting the line's equation into the circle's leaves a quadratic in one variable.",
+        "Its discriminant $D = b^2 - 4ac$ counts the meeting points: two if $D > 0$, one if $D = 0$, none if $D < 0$.",
+        "Two distinct lines share one point or none (if parallel); two circles share $0$, $1$ or $2$ points, since subtracting their equations leaves a line."
+      ],
+      "builds_on": [
+        "line-equation",
+        "circle-equation",
+        "quadratic-formula"
+      ]
+    },
+    "centroid-coordinates": {
+      "source": "9a4a6e47540a",
+      "teaches": [
+        "The three medians of a triangle meet at one point, the centroid $G$, shown by intersecting their line equations.",
+        "The centroid is the average of the three vertices: $G = \\left(\\frac{x_A + x_B + x_C}{3}, \\frac{y_A + y_B + y_C}{3}\\right)$.",
+        "$G$ divides each median two to one from the vertex: $AG = 2\\,GD$.",
+        "Placing a triangle conveniently on the axes loses no generality, because moving the axes changes points and their averages by the same rule."
+      ],
+      "builds_on": [
+        "medians",
+        "midpoint-formula",
+        "line-equation"
+      ]
+    },
+    "linear-balance": {
+      "source": "b16467620006",
+      "teaches": [
+        "A solution of $ax + b = cx + d$ is an $x$ where the two sides are equal: where their lines cross.",
+        "Adding, subtracting, or dividing both sides by the same nonzero amount keeps the solutions unchanged.",
+        "Gathering $x$ terms and dividing gives $x = \\frac{d - b}{a - c}$.",
+        "Check a solution by substituting it into the original equation.",
+        "If $a = c$ there is no solution unless $d = b$, when every $x$ works."
+      ],
+      "builds_on": [
+        "line-equation"
+      ]
+    },
+    "linear-solution-sets": {
+      "source": "6db08f43fd6b",
+      "teaches": [
+        "A linear equation in two unknowns, such as $x + y = 3$, has infinitely many solutions, which together form a straight line.",
+        "Solving for $y$ gives exactly one $y$ for each $x$, changing at a steady rate.",
+        "The degree of a term is the sum of its variables' powers; an equation is linear when it has degree $1$.",
+        "Only linear equations have solution sets that are lines; $xy = 4$ or $x^2 + y = 4$ give curves."
+      ],
+      "builds_on": [
+        "linear-balance"
+      ]
+    },
+    "linear-substitution": {
+      "source": "136c1ddb10f5",
+      "teaches": [
+        "A solution of a system of two equations lies on both lines, so it is where they cross.",
+        "Substitution: solve one equation for one variable, substitute into the other, solve the resulting one-unknown equation, then go back for the other variable.",
+        "Check the pair in both original equations.",
+        "If the lines are parallel, substitution ends in a false statement like $0 = 3$ and there is no solution."
+      ],
+      "builds_on": [
+        "linear-balance",
+        "linear-solution-sets"
+      ]
+    },
+    "linear-elimination": {
+      "source": "751bfe3b7a1f",
+      "teaches": [
+        "Multiplying an equation by a nonzero number does not change its solutions.",
+        "A sum of multiples of two equations is satisfied by any common solution, so its line passes through the crossing.",
+        "Elimination: scale the equations so one variable's coefficients cancel when added, solve for the other, then substitute back.",
+        "If elimination leaves $0 = $ a nonzero number the system has no solution (parallel lines); if it leaves $0 = 0$ the equations describe the same line and have infinitely many solutions."
+      ],
+      "builds_on": [
+        "linear-balance",
+        "linear-solution-sets"
+      ]
+    },
+    "catching-up": {
+      "source": "3dc03fe7cb35",
+      "teaches": [
+        "At a steady rate, distance $=$ rate $\\times$ time, $d = rt$: a straight line on a distance–time graph whose slope is the speed.",
+        "A start delayed by $h$ gives $d = r_2(t - h)$.",
+        "Two movers meet when their distances are equal; $r_1 t = r_2(t - h)$ gives $t = \\frac{r_2 h}{r_2 - r_1}$.",
+        "Equal speeds give parallel lines and no meeting; check that an answer makes sense, such as rejecting a negative time."
+      ],
+      "builds_on": [
+        "linear-balance",
+        "slope"
+      ]
+    },
+    "average-speed": {
+      "source": "6739f1dccf43",
+      "teaches": [
+        "Average speed is total distance divided by total time: the slope of the chord from start to finish.",
+        "Over equal distances at two speeds, the average speed is not the average of the speeds; the slower speed weighs more because more time is spent at it.",
+        "For equal distances there and back, the average speed is $\\frac{2}{1/r_1 + 1/r_2}$, independent of the distance."
+      ],
+      "builds_on": [
+        "catching-up"
+      ]
+    },
+    "work-rates": {
+      "source": "e432fe2ad1c5",
+      "teaches": [
+        "A job done alone in $a$ hours has rate $\\frac{1}{a}$ of the job per hour.",
+        "Rates of working together add: $\\frac{1}{a} + \\frac{1}{b}$.",
+        "Together the job takes $t = \\frac{1}{1/a + 1/b} = \\frac{ab}{a + b}$.",
+        "A missing rate is a difference: $\\frac{1}{b} = \\frac{1}{t} - \\frac{1}{a}$; this is rate $\\times$ time $=$ distance with work in place of distance."
+      ],
+      "builds_on": [
+        "catching-up"
+      ]
+    },
+    "quadratic-falling-rock": {
+      "source": "92a6d2b3a06d",
+      "teaches": [
+        "At a steady speed, height is linear in time: $h = H - vt$.",
+        "Under gravity, height in feet is $h = H - vt - 16t^2$, a curve.",
+        "Finding when it lands means solving $16t^2 + vt - H = 0$, an equation of degree two that the linear moves cannot solve."
+      ],
+      "builds_on": [
+        "linear-balance"
+      ]
+    },
+    "quadratic-factoring": {
+      "source": "0f07f42711fb",
+      "teaches": [
+        "Zero-product property: a product is zero only when one of its factors is zero, so $a(x - r)(x - s) = 0$ exactly when $x = r$ or $x = s$.",
+        "$(x - r)(x - s) = x^2 - (r + s)x + rs$: the $x$ coefficient is minus the sum of the roots, the constant their product.",
+        "To factor $x^2 + bx + c$, find two numbers with sum $-b$ and product $c$; positive $c$ means the roots share a sign.",
+        "Special shapes: a root at $0$ gives a factor $x$; $x^2 - r^2 = (x - r)(x + r)$; a double root gives a perfect square $(x - r)^2$, whose graph only touches the axis."
+      ],
+      "builds_on": []
+    },
+    "completing-the-square": {
+      "source": "f959c74d6195",
+      "teaches": [
+        "$x^2 + bx + \\left(\\frac{b}{2}\\right)^2 = \\left(x + \\frac{b}{2}\\right)^2$: to complete the square, halve the $x$ coefficient and square it.",
+        "To solve $x^2 + bx = k$, add $\\left(\\frac{b}{2}\\right)^2$ to both sides and take a square root: $x = -\\frac{b}{2} \\pm \\sqrt{k + \\left(\\frac{b}{2}\\right)^2}$.",
+        "With a leading coefficient $a$, divide by $a$ first."
+      ],
+      "builds_on": [
+        "linear-balance"
+      ]
+    },
+    "quadratic-formula": {
+      "source": "f5a753aa8423",
+      "teaches": [
+        "Every parabola $y = ax^2 + bx + c$ is symmetric about $x = -\\frac{b}{2a}$, so its roots sit equally either side of that line.",
+        "Completing the square gives the quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$.",
+        "The discriminant $D = b^2 - 4ac$ decides: two real roots if $D > 0$, a double root if $D = 0$, no real roots if $D < 0$.",
+        "With $D < 0$ the roots are complex conjugates $-\\frac{b}{2a} \\pm i\\frac{\\sqrt{-D}}{2a}$; with whole-number coefficients an irrational root $p + \\sqrt{q}$ comes paired with $p - \\sqrt{q}$.",
+        "Sum and product of roots: $r + s = -\\frac{b}{a}$ and $rs = \\frac{c}{a}$."
+      ],
+      "builds_on": [
+        "completing-the-square",
+        "quadratic-factoring"
+      ]
+    },
+    "extraneous-roots": {
+      "source": "6cecba4f9966",
+      "teaches": [
+        "Squaring both sides of $\\sqrt{x + p} = x + q$ gives a quadratic, $x + p = (x + q)^2$.",
+        "Squaring can introduce extraneous roots: solutions of the squared equation that fail the original, since it cannot tell $\\sqrt{x + p}$ from $-\\sqrt{x + p}$.",
+        "Always check every root in the original equation; $\\sqrt{\\ }$ means the positive root.",
+        "Multiplying through by an expression in $x$ can also add roots: discard any that make that expression zero."
+      ],
+      "builds_on": [
+        "quadratic-formula"
+      ]
+    },
+    "hidden-quadratics": {
+      "source": "d7ce349079bc",
+      "teaches": [
+        "An equation in an expression and its square, such as $x^4 + Bx^2 + C = 0$, becomes a quadratic $z^2 + Bz + C = 0$ by substituting $z = x^2$.",
+        "Solve for $z$, then undo the substitution: a positive $z$ gives $x = \\pm\\sqrt{z}$, $z = 0$ gives $x = 0$, and a negative $z$ gives only complex $x = \\pm i\\sqrt{-z}$.",
+        "Other disguises work the same way, such as $z = 2^n$ in $2^{2n} - 6 \\cdot 2^n + 8 = 0$; discard values of $z$ the substitution cannot take.",
+        "The trick fails if an extra term, such as $x$ in $x^4 + x^2 + x$, is not a power of the substituted expression."
+      ],
+      "builds_on": [
+        "quadratic-formula"
+      ]
+    },
+    "polynomial-roots": {
+      "source": "102388e4d0c2",
+      "teaches": [
+        "A polynomial with roots $r_1, r_2, \\ldots$ is the product $(x - r_1)(x - r_2)\\cdots$, zero exactly at its roots.",
+        "At a simple root the graph changes sign; at a double root it touches the axis and turns away.",
+        "A cubic is $x^3 - (r_1 + r_2 + r_3)x^2 + (r_1r_2 + r_1r_3 + r_2r_3)x - r_1r_2r_3$: the coefficients hold the roots' sums and products with alternating signs.",
+        "A polynomial has as many roots as its degree; those not on the axis are complex, in conjugate pairs, so a cubic always has at least one real root."
+      ],
+      "builds_on": [
+        "quadratic-factoring",
+        "quadratic-formula"
+      ]
+    },
+    "power-chords": {
+      "source": "d728653fc61a",
+      "teaches": [
+        "When two chords $AB$ and $CD$ cross at $E$ inside a circle, $AE \\cdot EB = CE \\cdot ED$.",
+        "Proof: triangles $EAC$ and $EDB$ have equal vertical angles at $E$ and equal inscribed angles on the same arc, so $\\triangle EAC \\sim \\triangle EDB$.",
+        "The equal ratios $\\dfrac{AE}{DE} = \\dfrac{CE}{BE}$ cross-multiply into the equal products."
+      ],
+      "builds_on": [
+        "angle-pairs",
+        "inscribed-angle",
+        "similarity-tests"
+      ]
+    },
+    "power-secants": {
+      "source": "f270ff07d244",
+      "teaches": [
+        "From an outside point $P$, with tangent $PT$ and a secant meeting the circle at $A$ and $B$: $PT^2 = PA \\cdot PB$.",
+        "Proof: $\\triangle PTA \\sim \\triangle PBT$, since they share the angle at $P$ and the tangent–chord angle $\\angle PTA$ equals the inscribed angle $\\angle PBT$ on arc $TA$.",
+        "Any two secants from $P$ therefore give equal products: $PA \\cdot PB = PC \\cdot PD$."
+      ],
+      "builds_on": [
+        "tangent-chord",
+        "similarity-tests"
+      ]
+    },
+    "two-tangents": {
+      "source": "866d10b1355f",
+      "teaches": [
+        "The two tangent segments from a point $P$ outside a circle are equal: $PS = PT$.",
+        "The line $PO$ to the centre bisects the angle between the two tangents.",
+        "Proof: the radii $OS$ and $OT$ meet the tangents at right angles, so right triangles $POS$ and $POT$ share hypotenuse $PO$ and have equal legs, and are congruent (HL).",
+        "Equivalently, each tangent squared equals the power $d^2 - r^2$, where $d = PO$."
+      ],
+      "builds_on": [
+        "circle-parts",
+        "right-congruence",
+        "power-secants"
+      ]
+    },
+    "power-of-a-point": {
+      "source": "3a08ca4d65f6",
+      "teaches": [
+        "For a point $P$ and any line through it meeting the circle at $A$ and $B$, the product $PA \\cdot PB$ is the same for every line: the power of the point.",
+        "With $d = OP$ and radius $r$, the power is $PA \\cdot PB = |d^2 - r^2|$, read off the line through the centre.",
+        "Outside the circle the tangent gives $PT^2 = d^2 - r^2$; inside, the chord perpendicular to $OP$ is halved at $P$ and its half $h$ has $h^2 = r^2 - d^2$.",
+        "On the circle the power is zero."
+      ],
+      "builds_on": [
+        "power-chords",
+        "power-secants",
+        "chord-bisector"
+      ]
+    },
+    "incircle-tangent-lengths": {
+      "source": "52fe592c562a",
+      "teaches": [
+        "The incircle cuts the sides into tangent lengths that pair up by corner: $x$ at $A$, $y$ at $B$, $z$ at $C$, with $a = y + z$, $b = z + x$, $c = x + y$.",
+        "The semiperimeter is $s = x + y + z$.",
+        "Each tangent length is $s$ minus the opposite side: $x = s - a$, $y = s - b$, $z = s - c$.",
+        "In a right triangle with the right angle at $C$, the inradius is $r = s - c = \\tfrac12(a + b - c)$."
+      ],
+      "builds_on": [
+        "incircle",
+        "perimeter",
+        "two-tangents"
+      ]
+    },
+    "tangential-quadrilateral": {
+      "source": "28dde96f8ddf",
+      "teaches": [
+        "In a quadrilateral with an inscribed circle, the sums of opposite sides are equal: $AB + CD = BC + DA$.",
+        "Proof: each corner sends two equal tangents $w, x, y, z$ to the circle, and each pair of opposite sides is made of one tangent from every corner, $w + x + y + z$."
+      ],
+      "builds_on": [
+        "two-tangents"
+      ]
+    },
+    "lines-and-planes": {
+      "source": "73f9b3ff543e",
+      "teaches": [
+        "A line can lie in a plane, pierce it at exactly one point, or never meet it, when it is parallel to the plane.",
+        "A line is perpendicular to a plane only if it is perpendicular to every line of the plane through its foot; one right angle is not enough.",
+        "The distance from a point $P$ to a plane is the perpendicular segment $PH$; any slanted segment $PF$ is the hypotenuse of right triangle $PHF$ and so is longer.",
+        "Two lines in space are parallel if they point the same way; lines that point different ways and never meet are skew."
+      ],
+      "builds_on": [
+        "pythagoras"
+      ]
+    },
+    "sphere": {
+      "source": "74c05401ee80",
+      "teaches": [
+        "A plane cuts a sphere in a circle; when the plane passes through the centre the cut is a great circle.",
+        "The segment from the sphere's centre $O$ to the centre $B$ of the cut is perpendicular to the plane (by SSS congruent triangles $OBA$ and $OBC$).",
+        "A plane at distance $d$ from the centre of a sphere of radius $r$ cuts a circle of radius $\\sqrt{r^2 - d^2}$."
+      ],
+      "builds_on": [
+        "congruence",
+        "pythagoras",
+        "lines-and-planes"
+      ]
+    },
+    "cube": {
+      "source": "97e4f43b3a50",
+      "teaches": [
+        "A cube of edge $s$ has surface area $6s^2$ and volume $s^3$.",
+        "The face diagonal of a cube is $s\\sqrt2$.",
+        "The space diagonal of a cube is $s\\sqrt3$, from right triangle $ACG$ with $AG^2 = 2s^2 + s^2$.",
+        "The three face diagonals joining the corners next to one corner form an equilateral triangle of side $s\\sqrt2$.",
+        "The midpoints of the three edges at a corner form an equilateral triangle of side $\\tfrac{s\\sqrt2}{2}$."
+      ],
+      "builds_on": [
+        "pythagoras",
+        "lines-and-planes",
+        "equilateral"
+      ]
+    },
+    "box-diagonal": {
+      "source": "31d658478a22",
+      "teaches": [
+        "The floor diagonal of an $l \\times w \\times h$ box satisfies $AC^2 = l^2 + w^2$.",
+        "A vertical edge is perpendicular to every line in the floor through its foot, so $ACG$ is a right triangle.",
+        "The space diagonal of a box is $\\sqrt{l^2 + w^2 + h^2}$, by Pythagoras twice."
+      ],
+      "builds_on": [
+        "cube"
+      ]
+    },
+    "painted-cube": {
+      "source": "44d91f9ae763",
+      "teaches": [
+        "A painted cube of edge $n$ cut into $n^3$ unit blocks has $8$ blocks with three painted faces (the corners).",
+        "It has $12(n - 2)$ blocks with two painted faces (along the edges) and $6(n - 2)^2$ with one (inside the faces).",
+        "It has $(n - 2)^3$ unpainted blocks inside, and the four counts add up to $n^3$."
+      ],
+      "builds_on": [
+        "cube"
+      ]
+    },
+    "prism-cylinder": {
+      "source": "bfc5d7f72376",
+      "teaches": [
+        "The volume of a prism or cylinder is base area times height: $V = Bh$.",
+        "The lateral surface of a right prism unrolls into one rectangle, so its area is $ph$: perimeter times height.",
+        "A cylinder's wall unrolls into a $2\\pi r$ by $h$ rectangle, so its lateral area is $2\\pi rh$; add two discs for the total surface.",
+        "The shortest path over a curved wall is a straight line on the unrolled rectangle; from a top point to the opposite bottom point it is $\\sqrt{h^2 + (\\pi r)^2}$."
+      ],
+      "builds_on": [
+        "circle-pi",
+        "circle-area",
+        "pythagoras"
+      ]
+    },
+    "pyramid": {
+      "source": "58c24d4e56c6",
+      "teaches": [
+        "In a regular pyramid the base is a regular polygon and the apex lies directly above its centre, so the side faces are congruent triangles.",
+        "Every pyramid has volume $V = \\tfrac13 Bh$, a third of the prism on the same base with the same height.",
+        "A cube splits into three congruent pyramids with base $c^2$ and height $c$, each of volume $\\tfrac13 c^3$.",
+        "The slant height $l = PM$ is the altitude of a side face, with $PM^2 = PO^2 + OM^2$.",
+        "The lateral area of a regular pyramid is $\\tfrac12 pl$, with $p$ the base perimeter."
+      ],
+      "builds_on": [
+        "prism-cylinder",
+        "regular-polygon",
+        "lines-and-planes",
+        "pythagoras"
+      ]
+    },
+    "cone": {
+      "source": "edaa9843fdc7",
+      "teaches": [
+        "A cone has volume $V = \\tfrac13 \\pi r^2 h$, a third of the cylinder around it.",
+        "The slant height $l$ of a right circular cone satisfies $r^2 + h^2 = l^2$.",
+        "The lateral surface unrolls into a sector of radius $l$ whose arc has length $2\\pi r$, the fraction $\\tfrac{r}{l}$ of the full circle.",
+        "The lateral area of a cone is $\\pi r l$ and its total surface area is $\\pi r l + \\pi r^2$."
+      ],
+      "builds_on": [
+        "pyramid",
+        "arcs-sectors",
+        "circle-area"
+      ]
+    },
+    "tetrahedron-volume": {
+      "source": "c4a956ac2926",
+      "teaches": [
+        "A regular tetrahedron is a pyramid whose four faces are equilateral triangles of side $s$.",
+        "Its altitude lands on the centroid $G$ of the base, since $GA = GB = GC$ by congruent right triangles.",
+        "$AG = \\tfrac23 \\cdot \\tfrac{\\sqrt3}{2}s = \\tfrac{\\sqrt3}{3}s$, so the height is $DG = \\tfrac{\\sqrt6}{3}s$.",
+        "The volume of a regular tetrahedron is $V = \\tfrac{\\sqrt2}{12}s^3$."
+      ],
+      "builds_on": [
+        "pyramid",
+        "medians",
+        "thirtysixty",
+        "right-congruence"
+      ]
+    },
+    "octahedron-volume": {
+      "source": "353e417711cd",
+      "teaches": [
+        "A regular octahedron has eight equilateral faces, four meeting at each corner.",
+        "Its middle square of side $s$ splits it into two congruent square pyramids.",
+        "Each pyramid has height $PO = \\tfrac{\\sqrt2}{2}s$, equal to half the square's diagonal.",
+        "The volume of a regular octahedron is $V = \\tfrac{\\sqrt2}{3}s^3$."
+      ],
+      "builds_on": [
+        "pyramid",
+        "fortyfive"
+      ]
+    },
+    "platonic-solids": {
+      "source": "44d615b38caa",
+      "teaches": [
+        "A regular polyhedron has every face the same regular polygon and every corner alike; there are exactly five.",
+        "With $p$-sided faces and $q$ faces at each corner, $E = \\tfrac{pF}{2}$ and $V = \\tfrac{pF}{q}$.",
+        "Euler's formula $V - E + F = 2$ holds for every convex polyhedron.",
+        "The face angles at a corner must total less than $360^\\circ$, which allows only 3, 4 or 5 triangles, 3 squares, or 3 pentagons."
+      ],
+      "builds_on": [
+        "polygon-interior-sum"
+      ]
+    },
+    "translation": {
+      "source": "26db0c68dd7e",
+      "teaches": [
+        "A translation moves every point by the same arrow: $(x, y) \\to (x + a, y + b)$.",
+        "Since $AA'$ and $BB'$ are equal and parallel, $ABB'A'$ is a parallelogram, so each image side is equal and parallel to its original.",
+        "The image is congruent and has the same orientation.",
+        "A translation other than the zero slide fixes no point."
+      ],
+      "builds_on": [
+        "coordinate-plane",
+        "parallelogram",
+        "congruence"
+      ]
+    },
+    "rotation": {
+      "source": "a7b66bd80d2f",
+      "teaches": [
+        "A rotation about $O$ through $\\theta$ keeps each point's distance from $O$ and turns it through $\\theta$: $OB = OB'$ and $\\angle BOB' = \\theta$; only $O$ is fixed.",
+        "The image is congruent, and a line and its image cross at the angle of rotation $\\theta$.",
+        "A rotation sends collinear points to collinear points, proved with SAS congruent triangles sharing the vertex $O$."
+      ],
+      "builds_on": [
+        "congruence"
+      ]
+    },
+    "reflection": {
+      "source": "46c32d3a4f8e",
+      "teaches": [
+        "In a reflection the mirror line is the perpendicular bisector of the segment joining each point to its image; points on the mirror are fixed.",
+        "A reflection keeps lengths, so the image is congruent, but it reverses orientation.",
+        "A line and its image meet on the mirror and make equal angles with it."
+      ],
+      "builds_on": [
+        "right-congruence"
+      ]
+    },
+    "point-reflection": {
+      "source": "cc354a3722bf",
+      "teaches": [
+        "Reflection in a point $O$ sends each point through $O$ to the same distance on the other side, so $O$ is the midpoint of every segment $AA'$.",
+        "In coordinates, $A' = O + (O - A) = 2O - A$.",
+        "Reflection in a point is the same map as a half-turn ($180^\\circ$ rotation) about it."
+      ],
+      "builds_on": [
+        "midpoint-formula",
+        "rotation"
+      ]
+    },
+    "distortion": {
+      "source": "1f6143ea4aba",
+      "teaches": [
+        "A distortion (one-way stretch) multiplies every point's distance from a fixed line by $k$ and leaves the other coordinate unchanged.",
+        "It sends lines to lines but changes angles, so the image is generally not similar; a circle becomes an ellipse.",
+        "A distortion with factor $k$ multiplies every area by $k$, since each thin strip along the stretch has its length multiplied by $k$."
+      ],
+      "builds_on": [
+        "similar"
+      ]
+    },
+    "dilation": {
+      "source": "52b6f34c9ce5",
+      "teaches": [
+        "A dilation with centre $O$ and factor $k$ sends $A$ to $A'$ on line $OA$ with $OA' = |k| \\cdot OA$, on $A$'s side when $k > 0$ and the opposite side when $k < 0$.",
+        "Lines through matching points all pass through the centre $O$.",
+        "By SAS similarity $\\triangle OAB \\sim \\triangle OA'B'$, so $A'B' = |k| \\cdot AB$ and $A'B' \\parallel AB$.",
+        "The image is similar to the original and its area is multiplied by $k^2$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "parallel-transversal",
+        "area-scaling"
+      ]
+    },
+    "what-is-preserved": {
+      "source": "19a8d7ddcd8a",
+      "teaches": [
+        "Translations, rotations and reflections are rigid motions: they keep lengths, angles and area, so the image is congruent.",
+        "Of the rigid motions, only a reflection reverses orientation.",
+        "A dilation changes lengths and area but keeps angles, so the image is similar.",
+        "A distortion keeps neither lengths nor angles, but like all five transformations it sends straight lines to straight lines."
+      ],
+      "builds_on": [
+        "translation",
+        "rotation",
+        "reflection",
+        "distortion",
+        "dilation"
+      ]
+    },
+    "polygon-symmetry": {
+      "source": "e37797558d23",
+      "teaches": [
+        "A regular $n$-gon has $n$ rotational symmetries, the multiples of $360^\\circ / n$, counting the turn of $0^\\circ$.",
+        "A regular $n$-gon has $n$ mirror lines, each through a corner or the midpoint of a side.",
+        "A regular $n$-gon has point symmetry (a half-turn symmetry) exactly when $n$ is even."
+      ],
+      "builds_on": [
+        "regular-polygon",
+        "rotation",
+        "reflection",
+        "point-reflection"
+      ]
+    },
+    "shortest-path-reflection": {
+      "source": "8302aba4cdac",
+      "teaches": [
+        "To find the shortest path from $A$ to a line and on to $B$ (same side), reflect $B$ in the line to $B'$; then $PB = PB'$ for every $P$ on the line.",
+        "By the triangle inequality $AP + PB' \\ge AB'$, so the best point $P^*$ is where segment $AB'$ crosses the line, and the shortest trip has length $AB'$.",
+        "The shortest path meets the line at equal angles, like light off a mirror."
+      ],
+      "builds_on": [
+        "reflection",
+        "inequality",
+        "angle-pairs"
+      ]
+    },
+    "belt-pulleys": {
+      "source": "2de730a96c56",
+      "teaches": [
+        "The radii to the ends of a common tangent are both perpendicular to it, hence parallel.",
+        "For two circles with radii $R$, $r$ and centres $d$ apart, the common tangent length is $t = \\sqrt{d^2 - (R - r)^2}$ for an open belt and $t = \\sqrt{d^2 - (R + r)^2}$ for a crossed belt.",
+        "With $\\cos\\alpha = O_1H / d$, the open belt hugs $2\\pi - 2\\alpha$ of the big wheel and $2\\alpha$ of the small one; the crossed belt hugs $2\\pi - 2\\alpha$ of each.",
+        "An arc of angle $\\theta$ radians on radius $\\rho$ has length $\\rho\\theta$, so the belt length is two tangents plus two arcs."
+      ],
+      "builds_on": [
+        "circle-parts",
+        "pythagoras",
+        "trig",
+        "arcs-sectors"
+      ]
+    },
+    "incenter-arc-midpoint": {
+      "source": "5f912d2d6041",
+      "teaches": [
+        "The bisector of angle $A$ meets the circumcircle again at $D$, the midpoint of arc $BC$, so $DB = DC$.",
+        "Equal inscribed angles cut off equal arcs, and equal arcs have equal chords.",
+        "With incentre $I$, $\\angle DBI = \\angle BID = \\alpha + \\beta$, so triangle $DBI$ is isosceles.",
+        "$DB = DI = DC$, so the circle centred at $D$ passes through $B$, $I$ and $C$."
+      ],
+      "builds_on": [
+        "bisectors",
+        "circumcircle",
+        "inscribed-angle",
+        "exterior-angle",
+        "isosceles-base-angles"
+      ]
+    },
+    "lens-area": {
+      "source": "7c0920ae85ed",
+      "teaches": [
+        "The common chord of two overlapping circles cuts their lens into two circular segments.",
+        "A circular segment is a sector minus a triangle: with central angle $\\theta$ in radians, its area is $\\tfrac12 R^2(\\theta - \\sin\\theta)$.",
+        "The lens area is $\\tfrac12 R_1^2(\\theta_1 - \\sin\\theta_1) + \\tfrac12 R_2^2(\\theta_2 - \\sin\\theta_2)$."
+      ],
+      "builds_on": [
+        "arcs-sectors",
+        "area-sine"
+      ]
+    },
+    "paper-fold": {
+      "source": "25533adb9f90",
+      "teaches": [
+        "A fold is a reflection in the crease, so the crease that takes $A$ to $A'$ is the perpendicular bisector of $AA'$.",
+        "A fold keeps lengths and angles, so the flap is congruent to the region it came from and $EA = EA'$, $FA = FA'$.",
+        "Folding the corner of a sheet of width $w$ onto the far side at distance $t$ from corner $B$: $x^2 = (w - x)^2 + t^2$, so $x = \\frac{w^2 + t^2}{2w}$."
+      ],
+      "builds_on": [
+        "reflection",
+        "pythagoras"
+      ]
+    },
+    "viviani": {
+      "source": "4a829392d3a9",
+      "teaches": [
+        "Viviani's theorem: from any point inside an equilateral triangle, the perpendicular distances to the three sides add up to the altitude: $d_1 + d_2 + d_3 = h$.",
+        "Proof: joining the point to the vertices makes three triangles on bases $s$, so $\\tfrac12 s d_1 + \\tfrac12 s d_2 + \\tfrac12 s d_3 = \\tfrac12 s h$.",
+        "An equilateral triangle of side $s$ has altitude $h = \\tfrac{\\sqrt3}{2}s$ and area $\\tfrac{\\sqrt3}{4}s^2$."
+      ],
+      "builds_on": [
+        "area-base-height",
+        "thirtysixty"
+      ]
+    },
+    "crossed-ladders": {
+      "source": "5c1f55b5ea9d",
+      "teaches": [
+        "Crossed ladders: lines from the tops of posts of heights $x$ and $y$ to the foot of the other cross at height $z$ with $\\dfrac1x + \\dfrac1y = \\dfrac1z$.",
+        "Proof: two pairs of similar right triangles give $\\dfrac{z}{x} = \\dfrac{n}{m + n}$ and $\\dfrac{z}{y} = \\dfrac{m}{m + n}$, which add to $1$.",
+        "The crossing height does not depend on the distance between the posts."
+      ],
+      "builds_on": [
+        "similarity-tests"
+      ]
+    }
+  }
+}

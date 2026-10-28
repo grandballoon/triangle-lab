@@ -2,7 +2,7 @@
 
 import type Anthropic from "@anthropic-ai/sdk";
 import { describe, expect, it } from "vitest";
-import { checkParams, claudeFailed, MODEL, verdictOf } from "./check.ts";
+import { checkParams, claudeFailed, MODEL, usageLine, verdictOf } from "./check.ts";
 
 const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
 
@@ -44,6 +44,26 @@ describe("verdictOf", () => {
     expect(verdictOf(message("max_tokens", '{"grade":'))).toMatchObject({ error: expect.stringContaining("cut short") });
     expect(verdictOf(message("end_turn", "not json"))).toMatchObject({ error: expect.stringContaining("unreadable") });
     expect(verdictOf(message("end_turn", '{"grade":"great","feedback":"!"}'))).toMatchObject({ status: 502 });
+  });
+});
+
+describe("usageLine", () => {
+  it("says which route used how many tokens, cached and not, on which model and effort", () => {
+    const reply = {
+      model: "claude-opus-5-5",
+      stop_reason: "end_turn",
+      usage: { input_tokens: 3000, cache_creation_input_tokens: 0, cache_read_input_tokens: 20000, output_tokens: 6000 },
+    } as never;
+    expect(usageLine("associate", "medium", reply)).toEqual({
+      claude_usage: "associate",
+      model: "claude-opus-5-5",
+      effort: "medium",
+      stop: "end_turn",
+      input: 3000,
+      cache_write: 0,
+      cache_read: 20000,
+      output: 6000,
+    });
   });
 });
 

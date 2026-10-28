@@ -4,39 +4,38 @@
 //
 // Claude is given the course, chapter by chapter and lesson by lesson in
 // reading order, so it can say which lesson teaches a point the learner got
-// wrong, and which lessons are the shortest step from what they know. Its
-// reply is structured output, with lessons named by slug from an enum, and
-// is still read with readReading, which the page also trusts nothing without.
+// wrong, and which lessons are the shortest step from what they know. Where
+// the syllabus describes a lesson (src/recall/syllabus.ts, written locally by
+// the /syllabus skill), Claude is told what it teaches and what it builds on,
+// and which lessons are within reach of those the learner has noted
+// questions in, so it need not work the course out from names. Its reply is
+// structured output, with lessons named by slug from an enum, and is still
+// read with readReading, which the page also trusts nothing without.
 
 import type Anthropic from "@anthropic-ai/sdk";
-import { chapters, lessons } from "../src/lessons.ts";
-import { MAX_NEXT, readReading, type AssociateRequest, type Reading } from "../src/recall/associate.ts";
+import { lessons } from "../src/lessons.ts";
+import type { AssociateRequest } from "../src/recall/associate.ts";
+import { MAX_NEXT, readReading, type Reading } from "../src/recall/deck.ts";
+import { course, readSyllabus, withinReach, type Syllabus } from "../src/recall/syllabus.ts";
+import saved from "../src/recall/syllabus.json";
 import { MODEL } from "./check.ts";
 import type { Refusal } from "./rules.ts";
 
 type Params = Anthropic.Beta.Messages.MessageCreateParamsNonStreaming;
 type Message = Anthropic.Beta.Messages.BetaMessage;
 
-/** The course as Claude is told it: each chapter with the results it teaches, then its lessons, by slug. */
-export function syllabus(): string {
-  return chapters
-    .map((chapter) => {
-      const head = `## ${chapter.title}: ${chapter.blurb}\nResults taught: ${chapter.axioms.join("; ")}.`;
-      const list = chapter.lessons.map((l) => `- ${l.slug}: ${l.name} (${l.part}). ${l.desc}`);
-      return [head, ...list].join("\n");
-    })
-    .join("\n\n");
-}
+const SYLLABUS: Syllabus = readSyllabus(saved);
 
-const SYSTEM = `You read a learner's free association in an interactive mathematics course, mostly geometry, with some algebra. The learner has written down, from memory, everything they can recall of what they have covered so far, in as much detail as they can: definitions, theorems, proofs, formulas, how ideas connect. They wrote it for themselves, so expect shorthand, informal wording and plain-text mathematics.
+/** The system prompt, with the course as `described`. */
+const system = (described: Syllabus): string => `You read a learner's free association in an interactive mathematics course, mostly geometry, with some algebra. The learner has written down, from memory, everything they can recall of what they have covered so far, in as much detail as they can: definitions, theorems, proofs, formulas, how ideas connect. They wrote it for themselves, so expect shorthand, informal wording and plain-text mathematics.
 
-Here is the course, in reading order, chapter by chapter. Each lesson is listed by its slug, then its name, its place in the chapter and what the learner does in it.
+Here is the course, in reading order, chapter by chapter. Each lesson is listed by its slug, then its name, its place in the chapter and what the learner does in it. Where it is known, each lesson also says what it teaches, and which lessons it builds on directly: the lessons whose content it needs.
 
 <course>
-${syllabus()}
+${course(described)}
 </course>
 
-You are also told which lessons the learner has noted questions in while working through them, a sign they have taken those lessons; they may have taken others too.
+You are also told which lessons the learner has noted questions in while working through them, a sign they have taken those lessons; they may have taken others too. Where the course says what lessons build on, you are told too which lessons are within reach of the noted ones: every lesson they build on is noted.
 
 Do three things.
 
@@ -44,7 +43,7 @@ First, mark up the writing as a reviewer comments on a document, so the learner 
 
 Second, write feedback to the learner, as "you", in two to five short sentences: what they clearly know well, which parts of what they seem to have covered are thin or missing, and the most important correction, if any. Do not summarise the remarks one by one.
 
-Third, choose the shortest next steps: one to ${MAX_NEXT} lessons, nearest first, that the learner has not yet shown they know, and that build most directly on what they do know, so each extends the range of their understanding by the smallest step. Prefer a lesson whose groundwork the writing shows they have, over one further along in the reading order. A lesson whose content the writing gets badly wrong may be a next step too, if going back to it is the shortest way forward. For each, say why in one or two sentences to the learner, naming what they know that it builds on.
+Third, choose the shortest next steps: one to ${MAX_NEXT} lessons, nearest first, that the learner has not yet shown they know, and that build most directly on what they do know, so each extends the range of their understanding by the smallest step. Judge what they know from what the writing states correctly, held against what each lesson teaches, not from the noted lessons alone. Prefer a lesson every one of whose "builds on" lessons the writing shows they know, over one further along in the reading order; the lessons within reach are a starting point, not a limit, since the writing may show more than the noted lessons. A lesson whose content the writing gets badly wrong may be a next step too, if going back to it is the shortest way forward. For each, say why in one or two sentences to the learner, naming what they know that it builds on.
 
 Judge the mathematics, not the writing. Write mathematics in LaTeX between single dollar signs, as in $a^2 + b^2 = c^2$, and never use a dollar sign otherwise, in the feedback, the notes and the reasons alike.
 
@@ -84,18 +83,25 @@ const READING_SCHEMA = {
   additionalProperties: false,
 };
 
-/** The request to Claude to read `request`. */
-export function associateParams(request: AssociateRequest): Params {
+/** The request to Claude to read `request`, with the course as `described`: by default, the syllabus as committed. */
+export function associateParams(request: AssociateRequest, described: Syllabus = SYLLABUS): Params {
   const noted = request.noted.length > 0 ? request.noted.join("\n") : "none yet";
-  const text = [`<noted_lessons>\n${noted}\n</noted_lessons>`, `<writing>\n${request.text}\n</writing>`].join("\n");
+  const reach = withinReach(described, new Set(request.noted));
+  const text = [
+    `<noted_lessons>\n${noted}\n</noted_lessons>`,
+    ...(reach.length > 0 ? [`<within_reach>\n${reach.join("\n")}\n</within_reach>`] : []),
+    `<writing>\n${request.text}\n</writing>`,
+  ].join("\n");
   return {
     model: MODEL,
     max_tokens: 20000,
     // The course is the same in every request, and a learner reads, corrects
     // and asks again within minutes, so it is cached.
-    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
+    system: [{ type: "text", text: system(described), cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: text }],
-    output_config: { effort: "high", format: { type: "json_schema", schema: READING_SCHEMA } },
+    // What each lesson teaches and builds on is worked out ahead, in the
+    // syllabus, so the reading itself needs no more than medium effort.
+    output_config: { effort: "medium", format: { type: "json_schema", schema: READING_SCHEMA } },
     // Should a safety classifier decline the request, it is run again on the
     // model Anthropic recommends for that kind of decline.
     betas: ["server-side-fallback-2026-07-01"],

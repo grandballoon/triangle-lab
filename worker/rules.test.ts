@@ -124,6 +124,13 @@ describe("datedAhead", () => {
     expect(datedAhead(removeCard(deck(card("a", T0)), "a", T0 + 365 * 24 * CLOCK_SLACK_MS), T0)).toBe(true);
   });
 
+  it("checks when the free association last changed too", () => {
+    const now = 1_000_000;
+    const deck = (updated: number): Deck => ({ cards: [], removed: [], writing: { text: "Hi", read: null, updated } });
+    expect(datedAhead(deck(now + CLOCK_SLACK_MS), now)).toBe(false);
+    expect(datedAhead(deck(now + CLOCK_SLACK_MS + 1), now)).toBe(true);
+  });
+
   it("ignores when a card is next due, which is ahead by design", () => {
     expect(datedAhead(deck({ ...card("a", T0), due: T0 + 35 * 24 * CLOCK_SLACK_MS }), T0)).toBe(false);
   });

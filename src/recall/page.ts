@@ -42,30 +42,33 @@ import {
   editCard,
   GRADES,
   loadDeck,
+  MAX_WRITING,
   mergeDecks,
   newCard,
   nextDue,
   removeCard,
   saveDeck,
+  setWriting,
   type Attempt,
   type Card,
   type Deck,
   type Grade,
+  type Note,
   type Verdict,
+  type Writing,
 } from "./deck.ts";
 import { hrefOf, lessons, type Lesson } from "../lessons.ts";
 import {
   askReading,
   EMPTY_ASSOCIATION,
   editWriting,
-  loadAssociation,
-  MAX_WRITING,
+  fromWriting,
   notedLessons,
   readAsWritten,
   settleReading,
-  wantsReading,
+  readLocalAssociation,
+  toWriting,
   type Association,
-  type Note,
   type ReadingState,
 } from "./associate.ts";
 import type { Review } from "./check.ts";
@@ -125,10 +128,13 @@ const SIDE_BY_SIDE = "(min-width: 1000px)";
 /** Where the sitting under way is kept for the tab (session.ts `Sitting`). */
 const SITTING_KEY = "triangle-lab:recall-sitting";
 
-/** Where the free association is kept in the browser, between visits. */
-const ASSOCIATION_KEY = "triangle-lab:recall-association";
+/** Where an earlier version of the page kept the free association, in this browser alone; moved into the deck on load. */
+const LOCAL_ASSOCIATION_KEY = "triangle-lab:recall-association";
 
-/** Where the tab notes that it is on the free association, so a reload comes back to it. */
+/**
+ * Where the tab notes that it is on the free association, so a reload comes
+ * back to it: "reading" while Claude is reading it, so a reload asks again.
+ */
 const ASSOCIATING_KEY = "triangle-lab:recall-associating";
 
 const { store, sync } = openRecall();
@@ -137,10 +143,14 @@ const kept = readSitting();
 
 /** The sitting under way, or null on the overview or the free association. */
 let session: Session | null = kept ? prune(kept.session, store.get()) : null;
+const tab = session ? null : readAssociating();
 /** Whether the free association is on show, rather than the overview. */
-let associating = !session && readAssociating();
+let associating = tab !== null;
+moveLocalAssociation();
 /** The free association, as written and read so far. */
-let association: Association = readAssociation();
+let association: Association = fromWriting(store.get().writing);
+/** The free association as last kept in the deck from this page, or taken from it. */
+let heard: Writing | undefined = store.get().writing;
 /** The free association was just opened, and its box takes the focus at the next render. */
 let writingOpened = false;
 /** What the learner has written for the question being asked. */
@@ -163,6 +173,16 @@ let answerHeight: number | null = null;
 let editorOpened = false;
 
 store.subscribe((deck) => {
+  // Another device's free association, newer than this one's, has been
+  // merged in, or another tab's.
+  if (JSON.stringify(deck.writing ?? null) !== JSON.stringify(heard ?? null)) {
+    heard = deck.writing;
+    association = fromWriting(deck.writing);
+    if (associating) {
+      render();
+      return;
+    }
+  }
   // The free association does not show the deck; redrawing it would only
   // disturb the writing.
   if (associating) return;
@@ -197,7 +217,7 @@ window.addEventListener("keydown", (e) => {
 // A sitting kept while its answer was being read lost that request with the page.
 if (session && wantsReview(session)) reviewAnswer();
 // So did writing being read.
-if (associating && wantsReading(association)) readWriting();
+if (tab === "reading") readWriting();
 render();
 
 // --- State changes ------------------------------------------------------------
@@ -1160,38 +1180,42 @@ function readSitting(): Sitting | null {
   }
 }
 
-/** The free association kept in this browser, or the empty one. */
-function readAssociation(): Association {
+/** Move the free association an earlier version of the page kept in this browser alone into the deck, unless the deck has one. */
+function moveLocalAssociation(): void {
   try {
-    const text = localStorage.getItem(ASSOCIATION_KEY);
-    return text ? loadAssociation(JSON.parse(text)) : EMPTY_ASSOCIATION;
+    const text = localStorage.getItem(LOCAL_ASSOCIATION_KEY);
+    if (text === null) return;
+    const writing = readLocalAssociation(JSON.parse(text), Date.now());
+    if (writing) store.update((d) => (d.writing ? d : setWriting(d, writing)));
+    localStorage.removeItem(LOCAL_ASSOCIATION_KEY);
   } catch {
-    return EMPTY_ASSOCIATION;
+    // Storage blocked or the text unreadable: nothing to move.
   }
 }
 
-/** Keep the free association in this browser. */
+/** Keep the free association in the deck, which syncs it, unless nothing kept has changed. */
 function keepAssociation(): void {
-  try {
-    localStorage.setItem(ASSOCIATION_KEY, JSON.stringify(association));
-  } catch {
-    // Storage blocked: the writing lasts as long as the page.
-  }
+  store.update((d) => {
+    const next = setWriting(d, toWriting(association, d.writing, Date.now()));
+    heard = next.writing;
+    return next;
+  });
 }
 
-/** Whether this tab was on the free association when it was last loaded. */
-function readAssociating(): boolean {
+/** What this tab was on when it was last loaded: the free association ("on"), being read ("reading"), or not (null). */
+function readAssociating(): "on" | "reading" | null {
   try {
-    return sessionStorage.getItem(ASSOCIATING_KEY) === "true";
+    const kept = sessionStorage.getItem(ASSOCIATING_KEY);
+    return kept === "reading" || kept === "on" ? kept : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 /** Keep the sitting under way for the tab, or forget it once it has ended, and whether the tab is on the free association. */
 function keepSitting(): void {
   try {
-    if (associating) sessionStorage.setItem(ASSOCIATING_KEY, "true");
+    if (associating) sessionStorage.setItem(ASSOCIATING_KEY, association.state?.kind === "reading" ? "reading" : "on");
     else sessionStorage.removeItem(ASSOCIATING_KEY);
     if (session) sessionStorage.setItem(SITTING_KEY, JSON.stringify({ session, draft, editor } satisfies Sitting));
     else sessionStorage.removeItem(SITTING_KEY);

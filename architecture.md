@@ -195,14 +195,20 @@ The remarks are shown and placed afresh as the writing is corrected exactly as o
 The next steps are listed under the writing, each opening its lesson in a new tab so the writing stays.
 As in a sitting, a reading is of the writing as it was sent (`sent`): editing keeps it, Read again asks afresh, and a reply is taken only if it is to the writing as last sent (`settleReading`).
 The writing runs to many lines, so Enter is always a new line there, and Command- or Control-Enter has it read (`submitsOnModEnter`).
-The writing and Claude's reading are kept in `localStorage`, not the deck, so they wait in this browser between visits until the learner starts afresh; whether the tab is on the free association is kept for it, so a reload comes back to it, and a reading under way when the page went is asked for again.
+The writing and Claude's last reading of it are kept in the deck (`Writing` in `deck.ts`), so they sync to every device and wait between visits until the learner starts afresh.
+A merge keeps whichever copy changed last; starting afresh is kept as empty writing with its own time, so an older copy elsewhere cannot bring the writing back, and a deck without one (as from a page that predates it) undoes nothing.
+Whether a reading is under way, or failed, belongs to the page that asked and is not kept: while it is, the last reading kept stays (`toWriting`).
+The page keeps the deck's copy as it writes, and takes in another device's or tab's newer copy when it arrives (`fromWriting`), replacing what is shown; edits on two devices before either syncs keep only the later.
+Writing kept by the first version of the page, in `localStorage` alone, is moved into the deck on load (`readLocalAssociation`).
+Whether the tab is on the free association is kept for it, so a reload comes back to it, and a reading under way when the page went is asked for again.
 
 | File | Role | Pure |
 | --- | --- | --- |
-| `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
+| `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
-| `associate.ts` | Having Claude read a free association: the request and reading as page and Worker read them, what a reply means, the writing as it is read and corrected, and reading it back | yes |
+| `associate.ts` | Having Claude read a free association: the request as page and Worker read it, what a reply means, the writing as it is read and corrected, and as it is kept in the deck | yes |
+| `syllabus.ts`, `syllabus.json` | What each lesson teaches and builds on, written by the `/syllabus` skill or the deploy's API refresh; reading it, what is wrong with it or stale, which lessons are within reach of those known, and the course as Claude is told it | yes (the JSON generated) |
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen, and in the free association, where only Command- or Control-Enter has it read | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
@@ -224,6 +230,7 @@ So the merge's result does not depend on the order decks meet in, and merging ag
 The deck lives in the browser, and also on the web at `/deck`, through the site's Worker (`worker/`), so it is the same on every device.
 Every page that holds the deck (the menu, the lessons, the recall page) opens it through `openRecall`, which starts syncing once the browser has been given the key.
 A sync sends the whole deck and merges the Worker's reply into the store: when the page opens, shortly after a change, when the tab is shown or hidden, when the browser comes back online, and every few minutes while on show.
+A change to the free association alone, which comes with every key pressed, is sent once the writing pauses for ten seconds rather than a second and a half after each key, and never puts off a change to the questions (`sendWhen` in `sync.ts`).
 Taking a reply in is not itself a change to send, since `hasNews` compares the deck with the Worker's copy as last heard.
 While syncing cannot happen, nothing is lost: the deck is still in `localStorage`, and goes with the next sync that works.
 A key the Worker turns down is not tried again until a key is given again.
@@ -246,7 +253,7 @@ The key is all that guards the deck, so the Worker refuses to serve with one und
 A deck declared larger than 5 MB is refused before it is read.
 A merge takes the latest change, so a change dated far ahead would win every merge until that time came; the Worker refuses any dated more than an hour ahead of its clock, which leaves room only for a device's clock being a little off.
 
-One Durable Object (`RecallDeck`) holds the deck, a row per question in its SQLite storage: a card, or the time it was removed.
+One Durable Object (`RecallDeck`) holds the deck, a row per question in its SQLite storage: a card, or the time it was removed; and the free association in a table of its own, of at most one row.
 It reads the deck, merges, and writes the rows that changed in one synchronous transaction, and requests reach it one at a time, so two devices syncing at once cannot undo each other.
 The merge rule is the pages' own (`src/recall/deck.ts`, which has no DOM), so the Worker and the pages cannot disagree on it.
 
@@ -260,17 +267,39 @@ Whatever comes back is read with the same `readVerdict` the page uses, and a ref
 
 `POST /associate` takes an `AssociateRequest` and answers with Claude's `Reading` (`src/recall/associate.ts`, shared with the page).
 It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a size limit of its own; the paths that call Claude are listed once, in `CLAUDE_PATHS` (`rules.ts`).
-The call (`associate.ts`) gives Claude the course as its system prompt (`syllabus`): every chapter with the results it teaches, and every lesson by slug, name, place and what the learner does in it, built from `src/lessons.ts`, so it never falls out of step with the course.
+The call (`associate.ts`) gives Claude the course as its system prompt (`course`): every chapter with the results it teaches, and every lesson by slug, name, place and what the learner does in it, built from `src/lessons.ts`, so it never falls out of step with the course.
+Where the syllabus describes a lesson, the prompt also says what it teaches and which lessons it builds on, and the request names the lessons within reach of those noted (`withinReach`).
 That prompt is the same in every request, so it is cached, since a learner reads, corrects and asks again within minutes.
-It uses Claude Opus 5.5 at high effort, since the writing is long and the next steps want thought, with structured output whose lessons are an enum of the course's slugs, and the same fallbacks; the reply is read with the page's own `readReading`, which drops any lesson not in the course.
+Every call to Claude logs one JSON line of what it used (`usageLine`): the route, model, effort, and tokens uncached, written to and read from the cache, and out; filtering the Worker's logs on `claude_usage` shows what checks and readings cost, and whether the cache is being read.
+It uses Claude Opus 5.5 at medium effort, since what each lesson teaches and builds on is worked out ahead in the syllabus, with structured output whose lessons are an enum of the course's slugs, and the same fallbacks; the reply is read with the page's own `readReading`, which drops any lesson not in the course.
 
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
-| `check.ts` | The request to Claude to check an answer, and the verdict or failure read from its reply | yes |
-| `associate.ts` | The course as Claude is told it, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
-| `index.ts` | The fetch handler, the calls to Claude, and the `RecallDeck` object | no |
+| `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
+| `associate.ts` | The course as Claude is told it, with the syllabus, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
+| `index.ts` | The fetch handler, the calls to Claude with their token usage logged, and the `RecallDeck` object | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
+
+## The syllabus (`src/recall/syllabus.json`, `/syllabus`)
+
+To pick next steps well, Claude needs to know what each lesson teaches and what it needs first, which lesson names alone do not say.
+The syllabus says it: for each lesson, a few statements of what it establishes and the lessons it builds on directly, written from the lesson's source by one guide (`tools/syllabus-guide.md`).
+The file is generated: it is changed only through `tools/syllabus.ts`, never by hand.
+
+Each entry is stamped with a hash of its lesson's teaching text: its name, place and description, and the `title` and `text` strings of its steps and uses (`teachingText`), with a standalone page's own directions.
+A change to how a lesson draws or moves leaves its entry as it was; a change to what it says makes it stale.
+Keeping it current needs no one to remember anything, in two layers:
+
+- A test fails while any lesson is undescribed or stale (`tools/syllabus.test.ts`), naming them.
+  Lessons are written in Claude Code, which fixes failing tests, and the project's `/syllabus` skill (`.claude/skills/syllabus/SKILL.md`) is how: Claude Code reads the lessons' source and writes their entries, at no Claude API cost.
+- `npm run deploy` first runs `node tools/syllabus.ts refresh`, which describes whatever is still stale through the Claude API (`tools/syllabus-claude.ts`), with the key from the environment or `.dev.vars`, so nothing stale is deployed.
+  Every request in a run shares one cached system prompt, the guide and the course, so a lesson costs a few cents.
+  Without a key, the deploy stops and says to run `/syllabus`.
+  The refreshed file is then committed with the rest.
+
+`tools/syllabus.ts` also lists what is stale (`status`), stamps entries Claude Code wrote (`stamp`), and checks the file (`check`): no unknown lessons, none building on itself, no circles.
+The Worker reads the file when it is built, so a change reaches Claude with the next deploy.
 
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
 
@@ -304,8 +333,9 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
 - `Session` (`src/recall/session.ts`): a review sitting in progress.
 - `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
-- `AssociateRequest`, `Reading`, `Note`, `NextStep` (`src/recall/associate.ts`): a free association sent to be read, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
-- `Association`, `ReadingState` (`src/recall/associate.ts`): the free association as written, and where it stands on getting Claude's reading.
+- `Writing`, `Reading`, `Note`, `NextStep` (`src/recall/deck.ts`): the free association as kept in the deck, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
+- `AssociateRequest`, `Association`, `ReadingState` (`src/recall/associate.ts`): a free association sent to be read, the one on show as written, and where it stands on getting Claude's reading.
+- `Syllabus`, `Entry` (`src/recall/syllabus.ts`): what each lesson teaches and builds on, stamped with a hash of the source it was written from.
 
 # Testing
 
@@ -325,19 +355,22 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
-- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
+- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, the free association merged and kept, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
 - `src/recall/check.test.ts`: reading a check request, a verdict with its remarks, and a reply from `/check`.
-- `src/recall/associate.test.ts`: the lessons noted in, reading a free association request, a reading with its remarks and next steps, a reply from `/associate`, the writing read, corrected and read again, and kept in the browser.
+- `src/recall/associate.test.ts`: the lessons noted in, reading a free association request, a reading with its remarks and next steps, a reply from `/associate`, the writing read, corrected and read again, and kept in the deck.
+- `src/recall/syllabus.test.ts`: reading and saving the syllabus, what is wrong with one, what is stale, and the lessons within reach.
+- `tools/syllabus.test.ts`: every lesson's source found and its teaching text hashed, and the syllabus as committed sound and describing every lesson as it now stands.
+- `tools/syllabus-claude.test.ts`: the request to the Claude API to describe a lesson, and reading its reply.
 - `src/recall/remarks.test.ts`: remarks placed on their words and afresh as the answer changes, the runs to highlight, the remark under the caret, and the margin's stacking.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
 - `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
-- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
+- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline and a refused key.
 - `worker/rules.test.ts`: routing to the deck, to checking and to free association, key check, rate limit, size and clock checks, and checking and reading off without a Claude key.
-- `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.
-- `worker/associate.test.ts`: the course as Claude is told it, the request to read a free association, and reading its reply or a refusal.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, and free associations read through it.
+- `worker/check.test.ts`: the request to Claude, reading its verdict, a refusal or a failed call, and the usage line logged for each call.
+- `worker/associate.test.ts`: the course as Claude is told it, with what the syllabus says and the lessons within reach, the request to read a free association, and reading its reply or a refusal.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, and free associations read through it.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.

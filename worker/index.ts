@@ -6,7 +6,7 @@
 // this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
-// storage. It merges each deck sent to it with the one it holds, using the
+// storage, and the free association in a table of its own. It merges each deck sent to it with the one it holds, using the
 // same rule the pages do (mergeDecks), so a device can send its whole deck at
 // any time, in any order with the others, and nothing is lost. Requests reach
 // the object one at a time, so two devices syncing at once cannot undo each
@@ -23,13 +23,14 @@ import {
   EMPTY_DECK,
   loadDeck,
   mergeDecks,
+  readWriting,
   saveDeck,
   type Card,
   type Deck,
   type SavedDeck,
 } from "../src/recall/deck.ts";
 import { associateParams, readingOf } from "./associate.ts";
-import { checkParams, claudeFailed, verdictOf } from "./check.ts";
+import { checkParams, claudeFailed, usageLine, verdictOf } from "./check.ts";
 import { associateTooLarge, CLAUDE_PATHS, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
 
 /** There is one learner, so one deck. */
@@ -80,7 +81,7 @@ export default {
         if (text.length > MAX_CHECK_BODY) return reply(checkTooLarge.status, { error: checkTooLarge.error });
         const asked = readCheckRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is not an answer to check." });
-        const verdict = await askClaude(env, (client) => client.beta.messages.create(checkParams(asked)).then(verdictOf));
+        const verdict = await askClaude(env, "check", checkParams(asked), verdictOf);
         return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
       }
       case "associate": {
@@ -88,18 +89,29 @@ export default {
         if (text.length > MAX_ASSOCIATE_BODY) return reply(associateTooLarge.status, { error: associateTooLarge.error });
         const asked = readAssociateRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is nothing to read." });
-        const reading = await askClaude(env, (client) => client.beta.messages.create(associateParams(asked)).then(readingOf));
+        const reading = await askClaude(env, "associate", associateParams(asked), readingOf);
         return "kind" in reading ? reply(reading.status, { error: reading.error }) : reply(200, reading);
       }
     }
   },
 } satisfies ExportedHandler<Env>;
 
-/** Call Claude with the Worker's key, turning a failed call into a refusal saying why. */
-async function askClaude<T>(env: Env, call: (client: Anthropic) => Promise<T | Refusal>): Promise<T | Refusal> {
+/**
+ * Call Claude with the Worker's key and read its reply with `read`, turning
+ * a failed call into a refusal saying why. Each reply's token usage is
+ * logged, for the Worker's logs to say what readings cost (usageLine).
+ */
+async function askClaude<T>(
+  env: Env,
+  route: string,
+  params: Anthropic.Beta.Messages.MessageCreateParamsNonStreaming,
+  read: (message: Anthropic.Beta.Messages.BetaMessage) => T | Refusal,
+): Promise<T | Refusal> {
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
   try {
-    return await call(client);
+    const message = await client.beta.messages.create(params);
+    console.log(JSON.stringify(usageLine(route, params.output_config?.effort ?? null, message)));
+    return read(message);
   } catch (error) {
     if (error instanceof Anthropic.APIError) {
       console.error("Calling Claude failed:", error.status, error.message);
@@ -117,6 +129,8 @@ export class RecallDeck extends DurableObject<Env> {
     ctx.storage.sql.exec(
       "CREATE TABLE IF NOT EXISTS questions (id TEXT PRIMARY KEY, at INTEGER NOT NULL, card TEXT)",
     );
+    // At most one row: the free association (deck.ts Writing), once written.
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS writing (id INTEGER PRIMARY KEY CHECK (id = 0), body TEXT NOT NULL)");
   }
 
   read(): SavedDeck {
@@ -132,6 +146,9 @@ export class RecallDeck extends DurableObject<Env> {
       const put = "INSERT OR REPLACE INTO questions (id, at, card) VALUES (?, ?, ?)";
       for (const card of changed.cards) this.ctx.storage.sql.exec(put, card.id, card.updated, JSON.stringify(card));
       for (const { id, at } of changed.removed) this.ctx.storage.sql.exec(put, id, at, null);
+      if (changed.writing) {
+        this.ctx.storage.sql.exec("INSERT OR REPLACE INTO writing (id, body) VALUES (0, ?)", JSON.stringify(changed.writing));
+      }
       return saveDeck(merged);
     });
   }
@@ -142,7 +159,9 @@ export class RecallDeck extends DurableObject<Env> {
       .toArray();
     const cards: Card[] = rows.flatMap((r) => (r.card ? [JSON.parse(r.card) as Card] : []));
     const removed = rows.filter((r) => r.card === null).map(({ id, at }) => ({ id, at }));
-    return mergeDecks(EMPTY_DECK, { cards, removed });
+    const [kept] = this.ctx.storage.sql.exec<{ body: string }>("SELECT body FROM writing").toArray();
+    const writing = kept ? readWriting(JSON.parse(kept.body)) : null;
+    return mergeDecks(EMPTY_DECK, writing ? { cards, removed, writing } : { cards, removed });
   }
 }
 

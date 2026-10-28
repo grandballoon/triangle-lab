@@ -855,6 +855,32 @@ describe("free associating", () => {
     expect(root.querySelector(".rc-associate-key")!.textContent).toContain("sync key");
   });
 
+  it("shows the free association as another device last left it, once it arrives", async () => {
+    worker([]);
+    const root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, "Mine, older");
+    const deck = JSON.parse(localStorage.getItem(KEY)!);
+    const theirs = { text: writing, read: { text: writing, reading: read }, updated: Date.now() + 60_000 };
+    localStorage.setItem(KEY, JSON.stringify({ ...deck, writing: theirs }));
+    window.dispatchEvent(new StorageEvent("storage", { key: KEY }));
+    expect(field(root).value).toBe(writing);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+  });
+
+  it("moves writing kept in this browser alone, by an earlier page, into the questions it syncs with", async () => {
+    worker([]);
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem("triangle-lab:recall-association", JSON.stringify({ text: writing, state: { kind: "done", reading: read }, sent: writing }));
+    const root = await reload();
+    expect(localStorage.getItem("triangle-lab:recall-association")).toBeNull();
+    expect(JSON.parse(localStorage.getItem(KEY)!).writing).toMatchObject({ text: writing, read: { text: writing } });
+    buttonNamed(root, "Free associate").click();
+    expect(field(root).value).toBe(writing);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+  });
+
   it("starts afresh on a second press, forgetting the writing and the reading", async () => {
     worker([read]);
     let root = await openSynced([]);

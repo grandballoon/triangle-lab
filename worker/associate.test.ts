@@ -4,26 +4,42 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { describe, expect, it } from "vitest";
 import { lessons } from "../src/lessons.ts";
 import { MODEL } from "./check.ts";
-import { associateParams, readingOf, syllabus } from "./associate.ts";
+import { course } from "../src/recall/syllabus.ts";
+import { associateParams, readingOf } from "./associate.ts";
 
 const request = { text: "Medians meet at the incentre.", noted: ["medians", "pythagoras"] };
+
+/** A syllabus describing three lessons: the centroid's two follow on from the medians. */
+const described = {
+  medians: { source: "h", teaches: ["Medians meet at the centroid $G$."], builds_on: [] },
+  bisectors: { source: "h", teaches: ["Angle bisectors meet at the incentre."], builds_on: ["medians"] },
+  incircle: { source: "h", teaches: ["The incentre is the centre of the incircle."], builds_on: ["bisectors"] },
+};
 
 /** A reply from Claude, with only what readingOf reads filled in. */
 const message = (stop_reason: string, text: string): Anthropic.Beta.Messages.BetaMessage =>
   ({ stop_reason, content: [{ type: "thinking", thinking: "" }, { type: "text", text }] }) as never;
 
-describe("syllabus", () => {
+describe("course", () => {
   it("lists every lesson in the course by slug, with its chapter's results", () => {
-    const text = syllabus();
+    const text = course({});
     for (const lesson of lessons) expect(text).toContain(`- ${lesson.slug}: ${lesson.name} (`);
     expect(text).toContain("## Triangles");
     expect(text).toContain("Results taught: Classification by sides and angles; Centroid;");
+    expect(text).not.toContain("Teaches:");
+  });
+
+  it("says what each lesson the syllabus describes teaches and builds on", () => {
+    const text = course(described);
+    expect(text).toContain("- medians: Medians (Parts · Two). ");
+    expect(text).toContain("  Teaches: Medians meet at the centroid $G$.\n  Builds on: nothing.");
+    expect(text).toContain("  Teaches: Angle bisectors meet at the incentre.\n  Builds on: medians.");
   });
 });
 
 describe("associateParams", () => {
   it("asks for a reading to a schema, naming lessons only by their slugs, about the learner's writing in tags", () => {
-    const params = associateParams(request);
+    const params = associateParams(request, {});
     expect(params).toMatchObject({ model: MODEL, fallbacks: "default", betas: ["server-side-fallback-2026-07-01"] });
     const schema = params.output_config?.format?.schema as Record<string, any>;
     expect(schema).toMatchObject({ required: ["remarks", "feedback", "next"], additionalProperties: false });
@@ -39,13 +55,20 @@ describe("associateParams", () => {
   });
 
   it("gives Claude the course, cached, as the system prompt", () => {
-    const [system] = associateParams(request).system as Anthropic.Beta.Messages.BetaTextBlockParam[];
-    expect(system.text).toContain(syllabus());
+    const [system] = associateParams(request, described).system as Anthropic.Beta.Messages.BetaTextBlockParam[];
+    expect(system.text).toContain(course(described));
     expect(system.cache_control).toEqual({ type: "ephemeral" });
   });
 
+  it("names the lessons within reach of those noted, when the syllabus says what they build on", () => {
+    const [message] = associateParams({ ...request, noted: ["medians"] }, described).messages;
+    expect(message.content).toBe(
+      "<noted_lessons>\nmedians\n</noted_lessons>\n<within_reach>\nbisectors\n</within_reach>\n<writing>\nMedians meet at the incentre.\n</writing>",
+    );
+  });
+
   it("says when no lessons have questions noted in them", () => {
-    expect(JSON.stringify(associateParams({ ...request, noted: [] }).messages)).toContain("<noted_lessons>\\nnone yet\\n</noted_lessons>");
+    expect(JSON.stringify(associateParams({ ...request, noted: [] }, {}).messages)).toContain("<noted_lessons>\\nnone yet\\n</noted_lessons>");
   });
 });
 

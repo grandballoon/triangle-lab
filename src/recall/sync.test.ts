@@ -2,8 +2,8 @@
 // to send, and how each state reads.
 
 import { describe, expect, it } from "vitest";
-import { editCard, newCard, removeCard, saveDeck, type Deck } from "./deck.ts";
-import { afterReply, hasNews, readReply, syncLabel } from "./sync.ts";
+import { editCard, newCard, removeCard, saveDeck, setWriting, type Deck } from "./deck.ts";
+import { afterReply, hasNews, readReply, sendWhen, syncLabel } from "./sync.ts";
 
 const T0 = 1_800_000_000_000;
 const MIN = 60_000;
@@ -46,6 +46,17 @@ describe("hasNews", () => {
     expect(hasNews(removeCard(deck, "a", T0 + 1), deck)).toBe(true);
     // An older copy than the Worker's is nothing new.
     expect(hasNews(deck, editCard(deck, "a", "Why?", T0 + 1))).toBe(false);
+  });
+});
+
+describe("sendWhen", () => {
+  it("sends questions soon, the free association alone once it pauses, and nothing that is not news", () => {
+    const writing = { text: "Hi", read: null, updated: T0 + 1 };
+    expect(sendWhen(deck, deck)).toBeNull();
+    expect(sendWhen(editCard(deck, "a", "Why?", T0 + 1), deck)).toBe("soon");
+    expect(sendWhen(setWriting(deck, writing), deck)).toBe("later");
+    expect(sendWhen(setWriting(editCard(deck, "a", "Why?", T0 + 1), writing), deck)).toBe("soon");
+    expect(sendWhen(setWriting(deck, writing), null)).toBe("soon");
   });
 });
 

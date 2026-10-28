@@ -89,6 +89,26 @@ export function verdictOf(message: Message): Verdict | Refusal {
   }
 }
 
+/**
+ * What a call to Claude used, for the Worker's logs: which route made it,
+ * at what effort, on which model (a fallback may have served it), and its
+ * tokens, uncached, written to and read from the cache, and out. Filtering
+ * the logs on `claude_usage` gives what each reading cost.
+ */
+export function usageLine(route: string, effort: string | null, message: Message) {
+  const { usage } = message;
+  return {
+    claude_usage: route,
+    model: message.model,
+    effort,
+    stop: message.stop_reason,
+    input: usage.input_tokens,
+    cache_write: usage.cache_creation_input_tokens ?? 0,
+    cache_read: usage.cache_read_input_tokens ?? 0,
+    output: usage.output_tokens,
+  };
+}
+
 /** The refusal for a call to Claude that failed with HTTP `status`, or never got an answer. */
 export function claudeFailed(status: number | undefined): Refusal {
   if (status === 401 || status === 403) return failed("The Worker's ANTHROPIC_API_KEY was turned down.");

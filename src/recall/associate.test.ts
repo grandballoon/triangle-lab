@@ -1,27 +1,23 @@
 // Free association: the request and Claude's reading as the page and the
-// Worker read them, what a reply from /associate means, and the writing as it
-// is read, corrected and read again.
+// Worker read them, what a reply from /associate means, the writing as it is
+// read, corrected and read again, and kept in the deck.
 
 import { describe, expect, it } from "vitest";
 import {
   askReading,
   EMPTY_ASSOCIATION,
   editWriting,
-  loadAssociation,
-  MAX_NEXT,
-  MAX_NOTES,
-  MAX_WRITING,
+  fromWriting,
   notedLessons,
   readAsWritten,
   readAssociateReply,
   readAssociateRequest,
-  readReading,
+  readLocalAssociation,
   settleReading,
-  wantsReading,
+  toWriting,
   type Association,
-  type Reading,
 } from "./associate.ts";
-import { EMPTY_DECK, newCard, type Deck } from "./deck.ts";
+import { EMPTY_DECK, MAX_NEXT, MAX_NOTES, MAX_WRITING, newCard, readReading, type Deck, type Reading, type Writing } from "./deck.ts";
 
 const reading: Reading = {
   feedback: "You know the centres well; similarity is thin.",
@@ -91,7 +87,7 @@ describe("readReading", () => {
     expect(read.feedback).toBe("Good.");
     expect(read.remarks).toHaveLength(MAX_NOTES);
     expect(read.remarks[0]).toEqual({ quote: "q0", note: "n" });
-    expect(read.next.map((s) => s.lesson)).toEqual(["medians", "bisectors", "incircle"].slice(0, MAX_NEXT));
+    expect(read.next.map((step) => step.lesson)).toEqual(["medians", "bisectors", "incircle"].slice(0, MAX_NEXT));
     expect(read.next[0].why).toBe("First.");
   });
 
@@ -153,21 +149,38 @@ describe("the writing, read and corrected", () => {
   });
 });
 
-describe("loadAssociation", () => {
-  it("keeps the writing and a finished reading", () => {
-    const kept: Association = { text: "Hi", state: { kind: "done", reading }, sent: "Hi" };
-    expect(loadAssociation(JSON.parse(JSON.stringify(kept)))).toEqual(kept);
-    expect(wantsReading(kept)).toBe(false);
+describe("the writing as kept in the deck", () => {
+  const kept: Writing = { text: "Medians meet at the incentre.", read: { text: "Medians meet at the incentre.", reading }, updated: 100 };
+
+  it("is shown as kept: the writing, and Claude's last reading of the writing it read", () => {
+    expect(fromWriting(kept)).toEqual({ text: kept.text, state: { kind: "done", reading }, sent: kept.text });
+    expect(fromWriting({ ...kept, read: null })).toEqual({ text: kept.text, state: null, sent: null });
+    expect(fromWriting(undefined)).toBe(EMPTY_ASSOCIATION);
   });
 
-  it("drops a reading under way, so the page asks again", () => {
-    const loaded = loadAssociation({ text: "Hi", state: { kind: "reading" }, sent: "Hi" });
-    expect(loaded).toEqual({ text: "Hi", state: null, sent: "Hi" });
-    expect(wantsReading(loaded)).toBe(true);
+  it("is kept unchanged while nothing kept has changed, so it is not sent again", () => {
+    expect(toWriting(fromWriting(kept), kept, 500)).toBe(kept);
+    // A reading under way, or one that failed, is not kept: the last one stays.
+    const asked = askReading(editWriting(fromWriting(kept), "Medians meet at the centroid."));
+    expect(toWriting(asked, kept, 500)).toEqual({ text: "Medians meet at the centroid.", read: kept.read, updated: 500 });
+    const failed: Association = { ...fromWriting(kept), state: { kind: "failed", error: "busy" } };
+    expect(toWriting(failed, kept, 500)).toBe(kept);
   });
 
-  it("starts empty from anything else", () => {
-    for (const raw of [null, "x", {}, { text: 3 }]) expect(loadAssociation(raw)).toEqual(EMPTY_ASSOCIATION);
-    expect(wantsReading(EMPTY_ASSOCIATION)).toBe(false);
+  it("keeps a new reading with the writing it read, dated after the copy kept even when this clock is behind", () => {
+    const done = settleReading(askReading(editWriting(fromWriting(kept), "At G.")), "At G.", { kind: "done", reading });
+    expect(toWriting(done, kept, 50)).toEqual({ text: "At G.", read: { text: "At G.", reading }, updated: 101 });
+  });
+
+  it("keeps starting afresh as empty writing, so it wins over older copies, but keeps nothing before anything is written", () => {
+    expect(toWriting(EMPTY_ASSOCIATION, kept, 500)).toEqual({ text: "", read: null, updated: 500 });
+    expect(toWriting(EMPTY_ASSOCIATION, undefined, 500)).toBeUndefined();
+  });
+
+  it("moves in the writing an earlier page kept in the browser alone, dated now", () => {
+    const local = { text: "Hi", state: { kind: "done", reading }, sent: "Hi" };
+    expect(readLocalAssociation(local, 7)).toEqual({ text: "Hi", read: { text: "Hi", reading }, updated: 7 });
+    expect(readLocalAssociation({ text: "Hi", state: { kind: "reading" }, sent: "Hi" }, 7)).toEqual({ text: "Hi", read: null, updated: 7 });
+    for (const raw of [null, {}, { text: "", state: null, sent: null }]) expect(readLocalAssociation(raw, 7)).toBeNull();
   });
 });

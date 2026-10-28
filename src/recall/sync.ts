@@ -68,6 +68,17 @@ export function hasNews(deck: Deck, server: Deck | null): boolean {
   return !sameDeck(mergeDecks(server, deck), server);
 }
 
+/**
+ * How soon to send what `deck` holds that the Worker's copy lacks: "soon"
+ * for questions, "later" when only the free association has changed, since
+ * it changes with every key pressed, and null for nothing new.
+ */
+export function sendWhen(deck: Deck, server: Deck | null): "soon" | "later" | null {
+  if (!hasNews(deck, server)) return null;
+  const writingOnly = server !== null && !hasNews({ ...deck, writing: server.writing }, server);
+  return writingOnly ? "later" : "soon";
+}
+
 /** The sentence the recall page shows for `state`. */
 export function syncLabel(state: SyncState, now: number): string {
   const since = (last: number | null): string => (last === null ? "" : ` Last synced ${ago(last, now)}.`);

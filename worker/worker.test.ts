@@ -12,7 +12,7 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, type Deck } from "../src/recall/deck.ts";
+import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setWriting, type Deck } from "../src/recall/deck.ts";
 import { RecallSync, SYNC_KEY_STORAGE } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
@@ -313,5 +313,24 @@ describe("two devices syncing through the Worker", () => {
     expect(ids(phone.store.get())).toEqual(["b", "c"]);
     expect(phone.store.get().cards[0].question).toBe("Asked on the phone?");
     expect(laptop.sync.get()).toMatchObject({ kind: "synced" });
+  });
+
+  it("ends with the free association last changed on either, kept when the object is evicted", async () => {
+    const phone = device();
+    const laptop = device();
+    const reading = { feedback: "Good.", remarks: [], next: [{ lesson: "bisectors", why: "Next." }] };
+    phone.store.update((d) => setWriting(d, { text: "Medians", read: { text: "Medians", reading }, updated: T0 + 1 }));
+    await phone.sync.sync();
+    await laptop.sync.sync();
+    expect(laptop.store.get().writing).toEqual(phone.store.get().writing);
+
+    laptop.store.update((d) => setWriting(d, { text: "Medians meet at G", read: null, updated: T0 + 2 }));
+    phone.store.update((d) => addCard(d, card("p", T0 + 3)));
+    await laptop.sync.sync();
+    await harness.getWorker().evictDurableObject("RecallDeck", { name: "deck" });
+    await phone.sync.sync();
+
+    expect(phone.store.get().writing).toEqual({ text: "Medians meet at G", read: null, updated: T0 + 2 });
+    expect(ids(phone.store.get())).toEqual(["p"]);
   });
 });

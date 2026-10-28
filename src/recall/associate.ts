@@ -10,18 +10,15 @@
 // in a sitting, the learner can correct the writing in place and have it read
 // again; a reading is of the writing as it was sent.
 //
+// The writing and Claude's last reading are kept in the deck (deck.ts
+// `Writing`), so they sync to every device; whether a reading is under way,
+// or failed, belongs to the page that asked, and is not kept.
+//
 // Pure, and shared by the page and the Worker, so both read the request and
 // the reading by the same rules.
 
 import { lessons } from "../lessons.ts";
-import { MAX_FEEDBACK, type Deck, type Remark } from "./deck.ts";
-
-/** Longest writing sent: pages of it, but not a stray paste of a book. */
-export const MAX_WRITING = 20_000;
-/** Most remarks kept on one reading: a long piece of writing has many lines. */
-export const MAX_NOTES = 40;
-/** Most lessons suggested as next steps. */
-export const MAX_NEXT = 3;
+import { MAX_WRITING, readReading, type Deck, type Reading, type Writing } from "./deck.ts";
 
 /** What the page sends to have a free association read. */
 export interface AssociateRequest {
@@ -31,36 +28,13 @@ export interface AssociateRequest {
   noted: string[];
 }
 
-/** A remark on the writing, with the lesson that teaches the point where there is one. */
-export interface Note extends Remark {
-  /** The slug of the lesson to look at, if any. */
-  lesson?: string;
-}
-
-/** A lesson to take next, and why it is a short step from what the learner knows. */
-export interface NextStep {
-  lesson: string;
-  /** One or two sentences to the learner, with `$…$` for mathematics. */
-  why: string;
-}
-
-/** Claude's reading of a free association. */
-export interface Reading {
-  /** A few sentences to the learner on what they know and where it is thin. */
-  feedback: string;
-  /** What is wrong, on the words of the writing it quotes. */
-  remarks: Note[];
-  /** The shortest next steps, nearest first. */
-  next: NextStep[];
-}
-
 /** Where the page stands on having the writing read by Claude. */
 export type ReadingState =
   | { kind: "reading" }
   | { kind: "done"; reading: Reading }
   | { kind: "failed"; error: string };
 
-/** The free association being written, kept in the browser between visits. */
+/** The free association on show, as written and read so far. */
 export interface Association {
   text: string;
   /** Claude's latest reading, once asked for. */
@@ -88,32 +62,6 @@ export function readAssociateRequest(raw: unknown): AssociateRequest | null {
   const text = raw.text.trim().slice(0, MAX_WRITING);
   const noted = [...new Set(raw.noted.filter((s): s is string => typeof s === "string" && SLUGS.has(s)))];
   return text ? { text, noted } : null;
-}
-
-/** Read Claude's reading, or null if `raw` is not one. Remarks and steps that are not one, or name no lesson in the course, are dropped. */
-export function readReading(raw: unknown): Reading | null {
-  if (!isObject(raw) || typeof raw.feedback !== "string") return null;
-  const feedback = raw.feedback.trim().slice(0, MAX_FEEDBACK);
-  if (!feedback) return null;
-  const remarks = (Array.isArray(raw.remarks) ? raw.remarks : []).flatMap(readNote).slice(0, MAX_NOTES);
-  const next = (Array.isArray(raw.next) ? raw.next : []).flatMap(readStep);
-  const once = next.filter((s, i) => next.findIndex((t) => t.lesson === s.lesson) === i).slice(0, MAX_NEXT);
-  return { feedback, remarks, next: once };
-}
-
-function readNote(raw: unknown): Note[] {
-  if (!isObject(raw) || typeof raw.quote !== "string" || typeof raw.note !== "string") return [];
-  const note = raw.note.trim().slice(0, MAX_FEEDBACK);
-  if (!raw.quote.trim() || raw.quote.length > MAX_WRITING || !note) return [];
-  return typeof raw.lesson === "string" && SLUGS.has(raw.lesson)
-    ? [{ quote: raw.quote, note, lesson: raw.lesson }]
-    : [{ quote: raw.quote, note }];
-}
-
-function readStep(raw: unknown): NextStep[] {
-  if (!isObject(raw) || typeof raw.lesson !== "string" || !SLUGS.has(raw.lesson) || typeof raw.why !== "string") return [];
-  const why = raw.why.trim().slice(0, MAX_FEEDBACK);
-  return why ? [{ lesson: raw.lesson, why }] : [];
 }
 
 /**
@@ -160,29 +108,40 @@ export function readAsWritten(a: Association): boolean {
   return a.state !== null && a.sent === a.text;
 }
 
-/** Whether the writing was sent to be read and no reading is held, as after a reload that came while Claude was reading. */
-export function wantsReading(a: Association): boolean {
-  return a.sent !== null && a.state === null && a.text.trim() !== "";
+// --- Kept in the deck ------------------------------------------------------------
+
+/** The association as kept in the deck, as when the page opens or another device's copy arrives. */
+export function fromWriting(writing: Writing | undefined): Association {
+  if (!writing) return EMPTY_ASSOCIATION;
+  const { text, read } = writing;
+  return read ? { text, state: { kind: "done", reading: read.reading }, sent: read.text } : { text, state: null, sent: null };
 }
 
 /**
- * Read an association kept in the browser, or the empty one. A reading still
- * under way is dropped: its request went with the page, so the page asks again.
+ * The writing to keep in the deck for `a`, given the copy `kept` there now:
+ * `kept` itself if nothing that is kept has changed, else a copy dated `now`,
+ * or just after `kept` if this device's clock is behind it, so the change
+ * wins the merge. While a reading is under way, or failed, the last one kept
+ * stays. Nothing is kept before anything is written.
  */
-export function loadAssociation(raw: unknown): Association {
-  if (!isObject(raw) || typeof raw.text !== "string") return EMPTY_ASSOCIATION;
-  const sent = typeof raw.sent === "string" ? raw.sent : null;
-  return { text: raw.text.slice(0, MAX_WRITING), state: sent === null ? null : loadState(raw.state), sent };
+export function toWriting(a: Association, kept: Writing | undefined, now: number): Writing | undefined {
+  const { state, sent } = a;
+  const read =
+    state?.kind === "done" && sent !== null ? { text: sent, reading: state.reading } : state === null ? null : (kept?.read ?? null);
+  if (!kept && !a.text && !read) return undefined;
+  if (kept && kept.text === a.text && JSON.stringify(kept.read) === JSON.stringify(read)) return kept;
+  return { text: a.text, read, updated: kept ? Math.max(now, kept.updated + 1) : now };
 }
 
-function loadState(raw: unknown): ReadingState | null {
-  if (!isObject(raw)) return null;
-  if (raw.kind === "done") {
-    const reading = readReading(raw.reading);
-    return reading ? { kind: "done", reading } : null;
-  }
-  if (raw.kind === "failed" && typeof raw.error === "string") return { kind: "failed", error: raw.error };
-  return null;
+/**
+ * The writing kept by an earlier version of the page, in the browser alone
+ * rather than the deck, dated `now` so it is synced; null if there is none.
+ */
+export function readLocalAssociation(raw: unknown, now: number): Writing | null {
+  if (!isObject(raw) || typeof raw.text !== "string") return null;
+  const reading = isObject(raw.state) && raw.state.kind === "done" ? readReading(raw.state.reading) : null;
+  const read = reading && typeof raw.sent === "string" ? { text: raw.sent, reading } : null;
+  return raw.text || read ? { text: raw.text.slice(0, MAX_WRITING), read, updated: now } : null;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;

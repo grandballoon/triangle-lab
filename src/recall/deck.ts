@@ -6,9 +6,15 @@
 // between tabs, capture.ts adds to it from a lesson page, and the recall page
 // (page.ts) reviews it.
 //
+// The deck also holds the learner's free association (associate.ts), so it
+// too is the same on every device: one piece of writing, and Claude's last
+// reading of it, of which a merge keeps the newer copy.
+//
 // Scheduling is a Leitner system. Each card sits in a box; recalling it moves
 // it up a box and further out, a shaky answer moves it down one, and a miss
 // sends it back to the start, due again at once.
+
+import { lessons } from "../lessons.ts";
 
 /** How an answer went, as the learner judged it after checking. */
 export type Grade = "missed" | "shaky" | "recalled";
@@ -48,6 +54,39 @@ export interface Remark {
   note: string;
 }
 
+/** A remark on a free association, with the lesson that teaches the point where there is one. */
+export interface Note extends Remark {
+  /** The slug of the lesson to look at, if any. */
+  lesson?: string;
+}
+
+/** A lesson to take next, and why it is a short step from what the learner knows. */
+export interface NextStep {
+  lesson: string;
+  /** One or two sentences to the learner, with `$…$` for mathematics. */
+  why: string;
+}
+
+/** Claude's reading of a free association (associate.ts). */
+export interface Reading {
+  /** A few sentences to the learner on what they know and where it is thin. */
+  feedback: string;
+  /** What is wrong, on the words of the writing it quotes. */
+  remarks: Note[];
+  /** The shortest next steps, nearest first. */
+  next: NextStep[];
+}
+
+/** The free association as kept in the deck, so every device holds the same. */
+export interface Writing {
+  /** What the learner has written; empty once they start afresh. */
+  text: string;
+  /** Claude's last reading, and the writing as it read it; null before any. */
+  read: { text: string; reading: Reading } | null;
+  /** Its last change, so the newer of two copies wins a merge. */
+  updated: number;
+}
+
 /** Where a question was asked: a lesson and the step it had current. */
 export interface Place {
   /** The lesson's slug (lessons.ts). */
@@ -84,6 +123,8 @@ export interface Removal {
 export interface Deck {
   cards: Card[];
   removed: Removal[];
+  /** The free association, once one has been written; absent says nothing, so never undoes another device's. */
+  writing?: Writing;
 }
 
 export const EMPTY_DECK: Deck = { cards: [], removed: [] };
@@ -110,6 +151,12 @@ export const MAX_ANSWER = 4000;
 export const MAX_FEEDBACK = 2000;
 /** Most remarks kept on one answer. */
 export const MAX_REMARKS = 12;
+/** Longest free association kept: pages of writing, but not a stray paste of a book. */
+export const MAX_WRITING = 20_000;
+/** Most remarks kept on one reading: a long piece of writing has many lines. */
+export const MAX_NOTES = 40;
+/** Most lessons suggested as next steps. */
+export const MAX_NEXT = 3;
 
 /** A question as it will be stored: trimmed and capped. Empty means none. */
 export function cleanQuestion(text: string): string {
@@ -134,6 +181,11 @@ export function newCard(id: string, question: string, place: Place, now: number)
   };
 }
 
+/** Keep `writing` as the free association, or leave the deck as it is for none, or the same. */
+export function setWriting(deck: Deck, writing: Writing | undefined): Deck {
+  return !writing || writing === deck.writing ? deck : { ...deck, writing };
+}
+
 export function addCard(deck: Deck, card: Card): Deck {
   return { ...deck, cards: [...deck.cards.filter((c) => c.id !== card.id), card] };
 }
@@ -148,6 +200,7 @@ export function editCard(deck: Deck, id: string, question: string, now: number):
 export function removeCard(deck: Deck, id: string, now: number): Deck {
   if (!deck.cards.some((c) => c.id === id)) return deck;
   return {
+    ...deck,
     cards: deck.cards.filter((c) => c.id !== id),
     removed: [...deck.removed.filter((r) => r.id !== id), { id, at: now }],
   };
@@ -208,6 +261,8 @@ export function lessonCards(deck: Deck, lesson: string): Card[] {
  * device. Each question is taken from whichever deck changed it last: the
  * newer copy of a card, or its removal if that came later still.
  *
+ * The free association is taken from whichever changed it last.
+ *
  * The order of the two decks never matters, and merging again changes
  * nothing, so devices that swap decks in any order end up holding the same.
  */
@@ -223,23 +278,34 @@ export function mergeDecks(ours: Deck, theirs: Deck): Deck {
     if (entry.card) cards.push(entry.card);
     else removed.push({ id: entry.id, at: entry.at });
   }
-  return { cards: cards.sort(byCreated), removed: removed.sort((a, b) => a.at - b.at || compare(a.id, b.id)) };
+  const merged: Deck = { cards: cards.sort(byCreated), removed: removed.sort((a, b) => a.at - b.at || compare(a.id, b.id)) };
+  const writing = laterWriting(ours.writing, theirs.writing);
+  return writing ? { ...merged, writing } : merged;
 }
 
-/** Whether `a` and `b` hold the same questions, in the same states. */
+/** The later of two copies of the free association. Ties go to the larger copy as text, so the choice is the same whichever deck each came from. */
+function laterWriting(a: Writing | undefined, b: Writing | undefined): Writing | undefined {
+  if (!a || !b) return a ?? b;
+  if (a.updated !== b.updated) return a.updated > b.updated ? a : b;
+  return JSON.stringify(a) >= JSON.stringify(b) ? a : b;
+}
+
+/** Whether `a` and `b` hold the same questions, in the same states, and the same free association. */
 export function sameDeck(a: Deck, b: Deck): boolean {
   const keys = (d: Deck): string => entries(d).map(entryKey).sort().join("\n");
-  return keys(a) === keys(b);
+  return keys(a) === keys(b) && JSON.stringify(a.writing ?? null) === JSON.stringify(b.writing ?? null);
 }
 
-/** The questions whose state in `after` is not their state in `before`. */
+/** The questions whose state in `after` is not their state in `before`, and the free association if it changed. */
 export function changedSince(before: Deck, after: Deck): Deck {
   const held = new Set(entries(before).map(entryKey));
   const fresh = (e: Entry): boolean => !held.has(entryKey(e));
-  return {
+  const changed: Deck = {
     cards: after.cards.filter((card) => fresh({ id: card.id, at: card.updated, card })),
     removed: after.removed.filter((r) => fresh({ ...r, card: null })),
   };
+  const writing = after.writing && JSON.stringify(after.writing) !== JSON.stringify(before.writing ?? null) ? after.writing : undefined;
+  return writing ? { ...changed, writing } : changed;
 }
 
 /** One question's state in a deck: a card, or the time it was removed. */
@@ -278,10 +344,13 @@ export interface SavedDeck {
   cards: Card[];
   /** Added after the first release; a deck saved before it has none. */
   removed: Removal[];
+  /** Added later still; absent until a free association is written, and dropped unread by a page from before it. */
+  writing?: Writing;
 }
 
 export function saveDeck(deck: Deck): SavedDeck {
-  return { kind: "triangle-lab/recall", version: 1, cards: deck.cards, removed: deck.removed };
+  const saved: SavedDeck = { kind: "triangle-lab/recall", version: 1, cards: deck.cards, removed: deck.removed };
+  return deck.writing ? { ...saved, writing: deck.writing } : saved;
 }
 
 /**
@@ -293,10 +362,51 @@ export function loadDeck(raw: unknown): Deck | null {
   if (!isObject(raw) || raw.kind !== "triangle-lab/recall" || !Array.isArray(raw.cards)) return null;
   const cards = raw.cards.map(loadCard).filter((c): c is Card => c !== null);
   const removed = Array.isArray(raw.removed) ? raw.removed.map(loadRemoval).filter((r) => r !== null) : [];
+  const writing = readWriting(raw.writing);
   // A deck read back is merged with nothing, so it is in the shape a merge
   // makes: one state per question, the last one.
-  return mergeDecks(EMPTY_DECK, { cards, removed });
+  return mergeDecks(EMPTY_DECK, writing ? { cards, removed, writing } : { cards, removed });
 }
+
+/** Read a free association kept in a deck, or null if `raw` is not one. A reading that is not one is dropped. */
+export function readWriting(raw: unknown): Writing | null {
+  if (!isObject(raw) || typeof raw.text !== "string" || !isTime(raw.updated)) return null;
+  const read = isObject(raw.read) && typeof raw.read.text === "string" ? raw.read : null;
+  const reading = read ? readReading(read.reading) : null;
+  return {
+    text: raw.text.slice(0, MAX_WRITING),
+    read: read && reading ? { text: String(read.text).slice(0, MAX_WRITING), reading } : null,
+    updated: raw.updated,
+  };
+}
+
+/** Read Claude's reading of a free association, or null if `raw` is not one. Remarks and steps that are not one, or name no lesson in the course, are dropped. */
+export function readReading(raw: unknown): Reading | null {
+  if (!isObject(raw) || typeof raw.feedback !== "string") return null;
+  const feedback = raw.feedback.trim().slice(0, MAX_FEEDBACK);
+  if (!feedback) return null;
+  const remarks = (Array.isArray(raw.remarks) ? raw.remarks : []).flatMap(readNote).slice(0, MAX_NOTES);
+  const next = (Array.isArray(raw.next) ? raw.next : []).flatMap(readStep);
+  const once = next.filter((s, i) => next.findIndex((t) => t.lesson === s.lesson) === i).slice(0, MAX_NEXT);
+  return { feedback, remarks, next: once };
+}
+
+function readNote(raw: unknown): Note[] {
+  if (!isObject(raw) || typeof raw.quote !== "string" || typeof raw.note !== "string") return [];
+  const note = raw.note.trim().slice(0, MAX_FEEDBACK);
+  if (!raw.quote.trim() || raw.quote.length > MAX_WRITING || !note) return [];
+  return typeof raw.lesson === "string" && SLUGS.has(raw.lesson)
+    ? [{ quote: raw.quote, note, lesson: raw.lesson }]
+    : [{ quote: raw.quote, note }];
+}
+
+function readStep(raw: unknown): NextStep[] {
+  if (!isObject(raw) || typeof raw.lesson !== "string" || !SLUGS.has(raw.lesson) || typeof raw.why !== "string") return [];
+  const why = raw.why.trim().slice(0, MAX_FEEDBACK);
+  return why ? [{ lesson: raw.lesson, why }] : [];
+}
+
+const SLUGS: ReadonlySet<string> = new Set(lessons.map((l) => l.slug));
 
 function loadCard(raw: unknown): Card | null {
   if (!isObject(raw)) return null;

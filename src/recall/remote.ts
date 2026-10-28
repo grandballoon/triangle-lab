@@ -18,13 +18,20 @@ import { readAssociateReply, type AssociateRequest, type ReadingState } from "./
 import { readCheckReply, type CheckRequest, type Review } from "./check.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
-import { afterReply, hasNews, lastSynced, readReply, type SyncState } from "./sync.ts";
+import { afterReply, hasNews, lastSynced, readReply, sendWhen, type SyncState } from "./sync.ts";
 
 /** Where this browser keeps the sync key it was given. */
 export const SYNC_KEY_STORAGE = "triangle-lab:recall-sync-key";
 
 /** How long after a change to wait for the next before sending them. */
 export const SETTLE_MS = 1500;
+
+/**
+ * The same for a change to the free association alone, which comes with
+ * every key pressed: it is sent once the writing pauses, or the tab is
+ * hidden, rather than every second and a half while it goes on.
+ */
+export const WRITING_SETTLE_MS = 10_000;
 
 /** How often to sync while the tab is on show, to hear other devices' changes. */
 export const EVERY_MS = 5 * 60 * 1000;
@@ -56,6 +63,8 @@ export class RecallSync {
   /** A sync was asked for while one was running, so another follows it. */
   private again = false;
   private pending: Timer | null = null;
+  /** Whether the sync waiting to be sent is for questions, which a change to the writing does not put off. */
+  private pendingSoon = false;
   /** A key given while storage was blocked, kept for as long as the page is open. */
   private memoryKey: string | null = null;
   /** A key the Worker turned down, not tried again until it is given again. */
@@ -72,7 +81,8 @@ export class RecallSync {
   /** Sync now, and from here on whenever there is cause. */
   start(): void {
     this.store.subscribe((deck) => {
-      if (hasNews(deck, this.server)) this.soon();
+      const when = sendWhen(deck, this.server);
+      if (when) this.soon(when);
     });
     const events = this.deps.events;
     events?.addEventListener("online", () => void this.sync());
@@ -151,6 +161,7 @@ export class RecallSync {
   sync(): Promise<void> {
     if (this.pending !== null) this.deps.clearTimeout(this.pending);
     this.pending = null;
+    this.pendingSoon = false;
     if (this.running) {
       this.again = true;
       return this.running;
@@ -165,13 +176,16 @@ export class RecallSync {
     return this.running;
   }
 
-  /** Sync once changes have settled. */
-  private soon(): void {
+  /** Sync once changes have settled: questions soon, writing once it pauses. */
+  private soon(when: "soon" | "later"): void {
+    if (when === "later" && this.pendingSoon) return;
     if (this.pending !== null) this.deps.clearTimeout(this.pending);
+    this.pendingSoon = when === "soon";
     this.pending = this.deps.setTimeout(() => {
       this.pending = null;
+      this.pendingSoon = false;
       void this.sync();
-    }, SETTLE_MS);
+    }, when === "soon" ? SETTLE_MS : WRITING_SETTLE_MS);
   }
 
   private async once(): Promise<void> {

@@ -11,17 +11,9 @@
 import { readFile } from "node:fs/promises";
 import type { Plugin } from "vite";
 import { SYNC_KEY_STORAGE } from "../src/recall/remote.ts";
+import { devVar } from "./dev-vars.ts";
 
-/** The value `name` is given in `text`, a .dev.vars file, or null if none. */
-export function devVar(text: string, name: string): string | null {
-  for (const line of text.split(/\r?\n/)) {
-    const match = /^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*?)\s*$/.exec(line);
-    if (!match || match[1] !== name) continue;
-    const quoted = /^(["'])(.*)\1$/.exec(match[2]);
-    return quoted ? quoted[2] : match[2];
-  }
-  return null;
-}
+export { devVar };
 
 /** A script that keeps `key` as this browser's sync key. */
 export function keyScript(key: string): string {

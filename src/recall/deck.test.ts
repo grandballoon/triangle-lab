@@ -1,5 +1,6 @@
 // The recall deck's rules: making, rewording and removing cards, the Leitner
-// schedule, and reading a stored or imported deck back.
+// schedule, the free association kept with the cards, and reading a stored
+// or imported deck back.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -18,10 +19,12 @@ import {
   newCard,
   nextBox,
   nextDue,
+  setWriting,
   removeCard,
   sameDeck,
   saveDeck,
   type Card,
+  type Writing,
   type Deck,
 } from "./deck.ts";
 
@@ -272,5 +275,54 @@ describe("the stored form", () => {
       { at: T0, answer: "", grade: "shaky" },
       { at: T0 + 1, answer: "y", grade: "missed", claude: { grade: "missed", feedback: "No." } },
     ]);
+  });
+});
+
+describe("the free association in the deck", () => {
+  const reading = { feedback: "Good.", remarks: [], next: [] };
+  const written = (text: string, updated: number): Writing => ({ text, read: null, updated });
+
+  it("is kept, and left as it is for none or the same", () => {
+    const w = written("Hi", T0);
+    const deck = setWriting(deckOf(card("a")), w);
+    expect(deck.writing).toBe(w);
+    expect(setWriting(deck, undefined)).toBe(deck);
+    expect(setWriting(deck, w)).toBe(deck);
+    expect(removeCard(deck, "a", T0 + 1).writing).toBe(w);
+  });
+
+  it("merges as the copy changed last, a deck without one undoing nothing, in any order", () => {
+    const base = deckOf(card("a"));
+    const older = setWriting(base, written("Older", T0 + 1));
+    const newer = setWriting(base, written("", T0 + 2));
+    const tie = setWriting(base, written("Tied", T0 + 2));
+    expect(mergeDecks(older, newer).writing).toEqual(written("", T0 + 2));
+    expect(mergeDecks(newer, older).writing).toEqual(written("", T0 + 2));
+    expect(mergeDecks(base, older).writing).toEqual(written("Older", T0 + 1));
+    expect(mergeDecks(older, base).writing).toEqual(written("Older", T0 + 1));
+    expect(mergeDecks(newer, tie)).toEqual(mergeDecks(tie, newer));
+    expect(mergeDecks(base, base).writing).toBeUndefined();
+  });
+
+  it("counts as a change to compare and to send", () => {
+    const deck = deckOf(card("a"));
+    const w = written("Hi", T0);
+    expect(sameDeck(deck, setWriting(deck, w))).toBe(false);
+    expect(sameDeck(setWriting(deck, w), setWriting(deck, { ...w }))).toBe(true);
+    expect(changedSince(deck, setWriting(deck, w))).toEqual({ cards: [], removed: [], writing: w });
+    expect(changedSince(setWriting(deck, w), setWriting(deck, w))).toEqual({ cards: [], removed: [] });
+  });
+
+  it("is saved and read back with its last reading, and a deck saved without one reads as having none", () => {
+    const deck = setWriting(deckOf(card("a")), { text: "Hi", read: { text: "Hi", reading }, updated: T0 });
+    expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(deck))))).toEqual(deck);
+    expect("writing" in saveDeck(deckOf(card("a")))).toBe(false);
+    expect(loadDeck(saveDeck(deckOf(card("a"))))?.writing).toBeUndefined();
+  });
+
+  it("drops a reading that is not one, and a free association that is not one", () => {
+    const saved = { ...saveDeck(deckOf(card("a"))), writing: { text: "Hi", read: { text: "Hi", reading: {} }, updated: T0 } };
+    expect(loadDeck(saved)?.writing).toEqual({ text: "Hi", read: null, updated: T0 });
+    expect(loadDeck({ ...saved, writing: { text: "Hi" } })?.writing).toBeUndefined();
   });
 });

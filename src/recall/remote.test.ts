@@ -2,8 +2,8 @@
 // one does (worker/worker.test.ts runs the real one), with timers run by hand.
 
 import { describe, expect, it } from "vitest";
-import { addCard, EMPTY_DECK, loadDeck, mergeDecks, newCard, removeCard, saveDeck, type Deck } from "./deck.ts";
-import { EVERY_MS, RecallSync, SETTLE_MS, SYNC_KEY_STORAGE, type SyncDeps } from "./remote.ts";
+import { addCard, EMPTY_DECK, loadDeck, mergeDecks, newCard, removeCard, saveDeck, setWriting, type Deck } from "./deck.ts";
+import { EVERY_MS, RecallSync, SETTLE_MS, SYNC_KEY_STORAGE, WRITING_SETTLE_MS, type SyncDeps } from "./remote.ts";
 import { RecallStore } from "./store.ts";
 
 const T0 = 1_800_000_000_000;
@@ -45,6 +45,8 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null } =
   const key = opts.key === undefined ? "k" : opts.key;
   const storage = memory(key ? { [SYNC_KEY_STORAGE]: key } : {});
   const timers = new Map<number, () => void>();
+  /** How long each timer waiting now was set for. */
+  const delays = new Map<number, number>();
   const repeating: (() => void)[] = [];
   const listeners: Record<string, (() => void)[]> = {};
   const on = ((type: string, fn: () => void) => (listeners[type] ??= []).push(fn)) as never;
@@ -56,11 +58,15 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null } =
     fetch: server.fetch,
     now: () => T0,
     setTimeout: (fn, ms) => {
-      expect(ms).toBe(SETTLE_MS);
+      expect([SETTLE_MS, WRITING_SETTLE_MS]).toContain(ms);
       timers.set(++next, fn);
+      delays.set(next, ms);
       return next as never;
     },
-    clearTimeout: (t) => void timers.delete(t as never),
+    clearTimeout: (t) => {
+      timers.delete(t as never);
+      delays.delete(t as never);
+    },
     setInterval: (fn, ms) => {
       expect(ms).toBe(EVERY_MS);
       repeating.push(fn);
@@ -81,8 +87,11 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null } =
     elapse: () => {
       const due = [...timers.values()];
       timers.clear();
+      delays.clear();
       due.forEach((fn) => fn());
     },
+    /** How long the timers waiting now were set for. */
+    waiting: () => [...delays.values()],
     tick: (shown = true) => {
       visible = shown;
       repeating.forEach((fn) => fn());
@@ -90,6 +99,30 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null } =
     fire: (type: string) => listeners[type]?.forEach((fn) => fn()),
   };
 }
+
+describe("RecallSync, with the free association", () => {
+  const writing = (text: string) => ({ text, read: null, updated: T0 + 1 });
+
+  it("sends a change to the writing alone once it pauses, and does not put off a question's", async () => {
+    const server = worker();
+    const p = page(server);
+    p.sync.start();
+    await p.settle();
+
+    p.store.update((d) => setWriting(d, writing("Medians")));
+    p.store.update((d) => setWriting(d, writing("Medians meet")));
+    expect(p.waiting()).toEqual([WRITING_SETTLE_MS]);
+    p.store.update((d) => addCard(d, card("a")));
+    expect(p.waiting()).toEqual([SETTLE_MS]);
+    p.store.update((d) => setWriting(d, writing("Medians meet at G")));
+    expect(p.waiting()).toEqual([SETTLE_MS]);
+
+    p.elapse();
+    await p.settle();
+    expect(server.deck.writing?.text).toBe("Medians meet at G");
+    expect(ids(server.deck)).toEqual(["a"]);
+  });
+});
 
 describe("RecallSync", () => {
   it("waits for a key, then sends what the page holds and takes what other devices sent", async () => {
