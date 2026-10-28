@@ -1,8 +1,8 @@
 // The site's Worker running for real, in the local Workers runtime, from
 // wrangler.jsonc: pages served from its assets, the recall deck's HTTP
 // contract, the deck surviving the object being evicted, two devices
-// syncing through it from the pages' own sync code, and answers checked by a
-// stand-in for the Claude API.
+// syncing through it from the pages' own sync code, and answers checked and
+// free associations read by a stand-in for the Claude API.
 
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
@@ -228,6 +228,44 @@ describe("checking an answer", () => {
     expect(statuses.slice(0, 10).every((s) => s === 200)).toBe(true);
     expect(statuses.at(-1)).toBe(429);
     expect(claude.asked.length).toBeLessThanOrEqual(11);
+  });
+});
+
+describe("reading a free association", () => {
+  const request = { text: "Medians meet at the incentre.", noted: ["medians"] };
+  const associate = (body: unknown = request, headers: Record<string, string> = {}) => call("POST", body, headers, "/associate");
+  const reading = {
+    remarks: [{ quote: "the incentre", note: "The centroid.", lesson: "medians" }],
+    feedback: "You know where the centres are, mostly.",
+    next: [{ lesson: "bisectors", why: "It builds on the medians." }],
+  };
+
+  it("asks Claude with the Worker's key and the course, and answers with its reading", async () => {
+    claude.reply = reading;
+    const response = await associate();
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(reading);
+    expect(claude.asked).toHaveLength(1);
+    const [{ headers, body }] = claude.asked;
+    expect(headers.authorization).toBe(`Bearer ${CLAUDE_KEY}`);
+    expect(body).toMatchObject({ model: "claude-opus-5-5", fallbacks: "default" });
+    expect(JSON.stringify(body.system)).toContain("- medians: Medians (");
+    expect(JSON.stringify(body.messages)).toContain("Medians meet at the incentre.");
+  });
+
+  it("refuses a caller without the key, and nothing to read, without asking Claude", async () => {
+    expect((await associate(request, { Authorization: "Bearer wrong" })).status).toBe(401);
+    expect((await associate({ ...request, text: " " })).status).toBe(400);
+    expect((await associate("{not json")).status).toBe(400);
+    expect(claude.asked).toEqual([]);
+  });
+
+  it("says why there is no reading when Claude declines", async () => {
+    claude.stop = "refusal";
+    claude.reply = "";
+    const declined = await associate();
+    expect(declined.status).toBe(502);
+    expect((await declined.json()).error).toContain("declined");
   });
 });
 

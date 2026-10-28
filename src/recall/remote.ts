@@ -9,10 +9,12 @@
 // the next sync that works.
 //
 // The same key lets the recall page have Claude check an answer, at /check
-// (check.ts), so that request is made here too.
+// (check.ts), and read a free association, at /associate (associate.ts), so
+// those requests are made here too.
 //
 // The rules are in sync.ts; this makes the requests and holds the state.
 
+import { readAssociateReply, type AssociateRequest, type ReadingState } from "./associate.ts";
 import { readCheckReply, type CheckRequest, type Review } from "./check.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
@@ -31,7 +33,7 @@ type Timer = ReturnType<typeof setTimeout>;
 
 /** What syncing needs from the browser, passed in so a test can stand in for it. */
 export interface SyncDeps {
-  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`. */
+  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`, free associations at `${url}/associate`. */
   url: string;
   keys: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
   fetch: typeof fetch;
@@ -136,6 +138,13 @@ export class RecallSync {
     const key = this.key();
     if (!key) return { kind: "failed", error: "This browser has no sync key." };
     return readCheckReply(await this.post(key, "/check", request));
+  }
+
+  /** Have Claude read a free association, through the Worker. */
+  async associate(request: AssociateRequest): Promise<ReadingState> {
+    const key = this.key();
+    if (!key) return { kind: "failed", error: "This browser has no sync key." };
+    return readAssociateReply(await this.post(key, "/associate", request));
   }
 
   /** Sync now, or straight after the sync under way. */

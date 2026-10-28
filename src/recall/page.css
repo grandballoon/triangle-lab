@@ -417,6 +417,46 @@ textarea:focus,
 
 .rc-source:hover { text-decoration: underline; }
 
+/* --- The free association ------------------------------------------------------ */
+
+.rc-associate .rc-asked { margin-bottom: 4px; }
+
+.rc-associate-note { margin: 0 0 18px; }
+
+/* Pages of writing, so the box starts tall. */
+.rc-associate .rc-answer,
+.rc-associate .rc-marks { min-height: 240px; }
+
+.rc-associate-key { margin-top: 0; font-size: 14px; }
+
+/* The lesson that teaches the point a remark is on. */
+.rc-remark-lesson {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #38d9a9;
+  text-decoration: none;
+}
+
+.rc-remark-lesson:hover { text-decoration: underline; }
+
+.rc-next { margin-top: 26px; }
+
+.rc-next-list { list-style: none; margin-top: 8px; }
+
+.rc-next-list li + li { margin-top: 14px; }
+
+.rc-source.rc-next-lesson { margin-top: 0; }
+
+.rc-next-why {
+  margin-top: 3px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(233, 240, 247, 0.75);
+  overflow-wrap: anywhere;
+}
+
 .rc-grade-prompt { margin-top: 24px; }
 
 .rc-grades {

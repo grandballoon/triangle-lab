@@ -23,7 +23,14 @@
 // Claude said can become questions of their own; those wait for the next
 // sitting.
 //
-// The rules are pure (deck.ts, session.ts); this file holds the page's state,
+// Apart from the questions, the learner can free associate: write down all
+// they remember of the course, and have Claude read it (associate.ts). Its
+// remarks are on the words, as on an answer, each with the lesson that
+// teaches the point, and it names the lessons that are the shortest next
+// step. The writing and Claude's reading are kept in the browser, to come
+// back to and correct.
+//
+// The rules are pure (deck.ts, session.ts, associate.ts); this file holds the page's state,
 // renders it and does the I/O.
 
 import "katex/dist/katex.min.css";
@@ -44,9 +51,23 @@ import {
   type Card,
   type Deck,
   type Grade,
-  type Remark,
   type Verdict,
 } from "./deck.ts";
+import { hrefOf, lessons, type Lesson } from "../lessons.ts";
+import {
+  askReading,
+  EMPTY_ASSOCIATION,
+  editWriting,
+  loadAssociation,
+  MAX_WRITING,
+  notedLessons,
+  readAsWritten,
+  settleReading,
+  wantsReading,
+  type Association,
+  type Note,
+  type ReadingState,
+} from "./associate.ts";
 import type { Review } from "./check.ts";
 import {
   answeredLabel,
@@ -81,7 +102,7 @@ import {
 } from "./session.ts";
 import { newId } from "./id.ts";
 import { placeRemarks, remarkAt, runsOf, stack } from "./remarks.ts";
-import { submitsOnEnter, touchFirst } from "./keys.ts";
+import { submitsOnEnter, submitsOnModEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
 import { syncLabel } from "./sync.ts";
 
@@ -104,12 +125,24 @@ const SIDE_BY_SIDE = "(min-width: 1000px)";
 /** Where the sitting under way is kept for the tab (session.ts `Sitting`). */
 const SITTING_KEY = "triangle-lab:recall-sitting";
 
+/** Where the free association is kept in the browser, between visits. */
+const ASSOCIATION_KEY = "triangle-lab:recall-association";
+
+/** Where the tab notes that it is on the free association, so a reload comes back to it. */
+const ASSOCIATING_KEY = "triangle-lab:recall-associating";
+
 const { store, sync } = openRecall();
 const root = document.getElementById("recall") as HTMLElement;
 const kept = readSitting();
 
-/** The sitting under way, or null on the overview. */
+/** The sitting under way, or null on the overview or the free association. */
 let session: Session | null = kept ? prune(kept.session, store.get()) : null;
+/** Whether the free association is on show, rather than the overview. */
+let associating = !session && readAssociating();
+/** The free association, as written and read so far. */
+let association: Association = readAssociation();
+/** The free association was just opened, and its box takes the focus at the next render. */
+let writingOpened = false;
 /** What the learner has written for the question being asked. */
 let draft = kept?.draft ?? "";
 /** What is being written while the answer is checked: a rewording, or a new question. */
@@ -130,6 +163,9 @@ let answerHeight: number | null = null;
 let editorOpened = false;
 
 store.subscribe((deck) => {
+  // The free association does not show the deck; redrawing it would only
+  // disturb the writing.
+  if (associating) return;
   if (session) {
     // Changes from other tabs reach a sitting only when they remove the card
     // being asked; anything else would wipe what is being written.
@@ -160,11 +196,14 @@ window.addEventListener("keydown", (e) => {
 
 // A sitting kept while its answer was being read lost that request with the page.
 if (session && wantsReview(session)) reviewAnswer();
+// So did writing being read.
+if (associating && wantsReading(association)) readWriting();
 render();
 
 // --- State changes ------------------------------------------------------------
 
 function begin(cards: readonly Card[]): void {
+  associating = false;
   session = startSession(cards);
   draft = "";
   editing = null;
@@ -279,8 +318,50 @@ function saveEditor(): void {
 
 function end(): void {
   session = null;
+  associating = false;
   render();
   window.scrollTo({ top: 0 });
+}
+
+/** Open the free association, as it was left. */
+function associate(): void {
+  associating = true;
+  writingOpened = true;
+  answerHeight = null;
+  editing = null;
+  notice = null;
+  render();
+  window.scrollTo({ top: 0 });
+}
+
+/**
+ * Have Claude read the free association, as it now stands, unless it has
+ * already been, or is being. Nothing is asked without the sync key. The
+ * caller renders; the reply renders when it comes.
+ */
+function readWriting(): void {
+  if (!sync.canCheck()) return;
+  const asked = askReading(association);
+  if (asked === association) return;
+  association = asked;
+  keepAssociation();
+  const sent = asked.text;
+  void sync.associate({ text: sent, noted: notedLessons(store.get()) }).then((state: ReadingState) => {
+    const next = settleReading(association, sent, state);
+    if (next === association) return;
+    association = next;
+    keepAssociation();
+    if (associating) render();
+  });
+}
+
+/** Start the free association afresh: the writing and Claude's reading of it are forgotten. */
+function clearWriting(): void {
+  association = EMPTY_ASSOCIATION;
+  answerHeight = null;
+  writingOpened = true;
+  keepAssociation();
+  render();
 }
 
 // --- Rendering ------------------------------------------------------------------
@@ -292,13 +373,14 @@ function render(): void {
   // written in keeps the focus, and the selection goes back where it was.
   const before = document.activeElement;
   const was = before instanceof HTMLTextAreaElement && root.contains(before) ? before : null;
-  root.replaceChildren(...(session ? sitting(session, deck) : overview(deck)));
+  root.replaceChildren(...(session ? sitting(session, deck) : associating ? freeAssociation(association) : overview(deck)));
   // An editor just opened takes it first; else the box written in before,
   // any editor, or the answer while it is asked for. While it is checked, the
   // answer is not focused unasked, so 1, 2 and 3 grade.
   const editorBox = root.querySelector<HTMLTextAreaElement>(".rc-editor textarea");
-  const opened = editorOpened ? editorBox : null;
+  const opened = editorOpened ? editorBox : writingOpened ? root.querySelector<HTMLTextAreaElement>(".rc-answer") : null;
   editorOpened = false;
+  writingOpened = false;
   const same = opened ? null : was && root.querySelector<HTMLTextAreaElement>(`textarea.${was.classList[0]}`);
   const field =
     opened ?? same ?? editorBox ?? (session?.phase === "ask" ? root.querySelector<HTMLTextAreaElement>(".rc-answer") : null);
@@ -316,6 +398,8 @@ function overview(deck: Deck): HTMLElement[] {
   const total = deck.cards.length;
 
   const summary = el("section", "rc-summary");
+  const freely = button("Free associate", "", associate);
+  freely.title = "Write down everything you remember of the course, and have Claude mark what's wrong and pick your next lessons.";
   if (total === 0) {
     summary.append(
       el("p", "rc-lead", "No questions yet."),
@@ -324,6 +408,7 @@ function overview(deck: Deck): HTMLElement[] {
         "rc-note",
         "In any lesson, press the question pill in the top bar, or Q, and write down something you want to be able to answer later. It is saved with the step you were on, and asked back here.",
       ),
+      row(freely),
     );
   } else {
     const later = nextDue(deck, now);
@@ -334,7 +419,7 @@ function overview(deck: Deck): HTMLElement[] {
     summary.append(
       el("p", "rc-lead", due.length === 0 ? "You're up to date." : `${due.length} due now`),
       el("p", "rc-note", facts.join(" · ")),
-      row(start, button(`Practise all ${total}`, "", () => begin(deck.cards))),
+      row(start, button(`Practise all ${total}`, "", () => begin(deck.cards)), freely),
     );
   }
 
@@ -562,29 +647,121 @@ function sitting(s: Session, deck: Deck): HTMLElement[] {
 }
 
 /**
+ * The free association: everything the learner remembers of the course, in
+ * one box kept open to correct, with Claude's remarks on its words, its
+ * feedback at the head of the margin, and the lessons it picks as the
+ * shortest next steps under the box.
+ */
+function freeAssociation(a: Association): HTMLElement[] {
+  const top = el("div", "rc-sitting-top");
+  top.append(el("span", "rc-progress", "Free association"), button("Back to your questions", "rc-small", end));
+
+  const panel = el("section", "rc-ask rc-associate");
+  panel.append(
+    el("p", "rc-asked", "Everything you remember of the course so far."),
+    el(
+      "p",
+      "rc-note rc-associate-note",
+      "Definitions, theorems, proofs, formulas, how they connect: as much detail as you can, from memory. Claude marks what's wrong, line by line, and picks the lessons that are the shortest next step from what you know.",
+    ),
+  );
+
+  const canRead = sync.canCheck();
+  const read = button(a.state ? "Read again" : "Have Claude read it", "rc-primary", () => {
+    readWriting();
+    render();
+  });
+  const controls = canRead
+    ? row(read, el("span", "rc-hint", "⌘↵ or ctrl↵ to have it read · ↵ new line"))
+    : row(el("span", "rc-note rc-associate-key", "Give this browser the sync key, under your questions, to have Claude read it."));
+  if (a.text || a.state) controls.append(confirmButton("Start afresh", clearWriting));
+
+  const reading = a.state?.kind === "done" ? a.state.reading : null;
+  panel.append(
+    writingSheet({
+      text: a.text,
+      label: "Everything you remember",
+      placeholder: "Start anywhere. One idea to a line makes Claude's remarks easier to follow.",
+      rows: 12,
+      maxLength: MAX_WRITING,
+      marking: a.state !== null,
+      remarks: reading?.remarks ?? [],
+      head: () => (association.state ? readingCard(association.state, !readAsWritten(association)) : null),
+      controls,
+      onInput: (text) => {
+        association = editWriting(association, text);
+        keepAssociation();
+      },
+      onKey: (e, field) => {
+        if (e.key === "Escape") field.blur();
+        else if (submitsOnModEnter(e) && canRead) {
+          e.preventDefault();
+          readWriting();
+          render();
+        }
+      },
+      // Nothing new to read: empty writing, or writing read as it stands.
+      painted: (text) => {
+        read.disabled = !text.trim() || (readAsWritten(association) && association.state?.kind !== "failed");
+      },
+    }),
+  );
+  if (reading && reading.next.length > 0) panel.append(nextSteps(reading.next));
+  return [top, panel];
+}
+
+/** Claude's reading of the free association as a whole: under way, its feedback, or why there is none; `stale` once the writing has changed since. */
+function readingCard(state: ReadingState, stale: boolean): HTMLElement {
+  const box = el("div", "rc-remark rc-overall");
+  box.setAttribute("role", "status");
+  box.append(el("h3", "", "Claude's reading"));
+  if (state.kind === "done") {
+    const said = el("p", "rc-said rc-feedback");
+    said.innerHTML = questionHtml(state.reading.feedback);
+    box.append(said);
+    if (state.reading.remarks.length === 0) box.append(el("p", "rc-remark-note rc-quiet", "Nothing marked wrong."));
+    if (stale) box.append(el("p", "rc-remark-note rc-quiet", "You've changed it since. Have it read again to see it as it stands."));
+  } else {
+    box.append(el("p", "rc-said rc-quiet", state.kind === "reading" ? "Reading what you wrote…" : state.error));
+  }
+  return box;
+}
+
+/** The lessons Claude picks as the shortest next steps, nearest first, each opening in a new tab so the writing stays. */
+function nextSteps(steps: readonly { lesson: string; why: string }[]): HTMLElement {
+  const section = el("div", "rc-yours rc-next");
+  const list = el("ol", "rc-next-list");
+  list.append(
+    ...steps.flatMap(({ lesson: slug, why }) => {
+      const lesson = lessons.find((l) => l.slug === slug);
+      if (!lesson) return [];
+      const item = el("li");
+      const reason = el("p", "rc-next-why");
+      reason.innerHTML = questionHtml(why);
+      item.append(lessonLink(lesson, `${lessonLabel(slug)} ↗`, "rc-source rc-next-lesson"), reason);
+      return [item];
+    }),
+  );
+  section.append(el("h3", "", steps.length === 1 ? "Shortest next step" : "Shortest next steps"), list);
+  return section;
+}
+
+/** A link opening `lesson` in a new tab. */
+function lessonLink(lesson: Lesson, text: string, cls: string): HTMLAnchorElement {
+  const link = el("a", cls, text);
+  link.href = hrefOf(lesson);
+  link.target = "_blank";
+  link.rel = "noopener";
+  return link;
+}
+
+/**
  * The answer, in one box that stays open to correct. While it is checked, the
- * words Claude remarked on are highlighted in it, as comments are in a
- * document, and the remarks are beside it (`SIDE_BY_SIDE`), or under it on a
- * narrower screen, each as near its words as it fits. Editing the answer
- * places them afresh against it, so a remark on words since changed shows as
- * dealt with. `onEdit` hears each change made while checking.
+ * words Claude remarked on are highlighted in it, and its remarks are in the
+ * margin (`writingSheet`). `onEdit` hears each change made while checking.
  */
 function answerSheet(s: Session, onEdit: () => void): HTMLElement {
   const checking = s.phase === "check";
-  const sheet = el("div", checking ? "rc-sheet rc-checking" : "rc-sheet");
-  const paper = el("div", "rc-paper");
-  const marks = el("div", "rc-marks");
-  marks.setAttribute("aria-hidden", "true");
-  const field = el("textarea", "rc-answer");
-  field.rows = 4;
-  field.setAttribute("aria-label", "Your answer");
-  field.value = checking ? s.answer : draft;
-  field.placeholder = checking
-    ? "Answered in your head. Write it here to check it."
-    : "Your answer, from memory. Writing it down is optional, but it makes the check honest.";
-  paper.append(marks, field);
-  const margin = el("aside", "rc-margin");
-  margin.setAttribute("aria-label", "Claude's check");
   const canCheck = checking && sync.canCheck();
   const again = button(s.review ? "Check again" : "Check", "rc-primary", checkAgain);
   const controls = checking
@@ -592,11 +769,89 @@ function answerSheet(s: Session, onEdit: () => void): HTMLElement {
       ? row(again, el("span", "rc-hint", "↵ check again · ⇧↵ new line · esc, then 1 · 2 · 3"))
       : row(el("span", "rc-hint", "esc, then 1 · 2 · 3"))
     : row(button("Check", "rc-primary", check), el("span", "rc-hint", "↵ check · ⇧↵ new line"));
+  return writingSheet({
+    text: checking ? s.answer : draft,
+    label: "Your answer",
+    placeholder: checking
+      ? "Answered in your head. Write it here to check it."
+      : "Your answer, from memory. Writing it down is optional, but it makes the check honest.",
+    rows: 4,
+    marking: checking,
+    remarks: s.review?.kind === "done" ? (s.review.verdict.remarks ?? []) : [],
+    head: () => (checking && session?.review ? overall(session.review, !readAsItStands(session)) : null),
+    controls,
+    onInput: (text) => {
+      if (!session) return;
+      if (session.phase === "ask") draft = text;
+      else {
+        session = editAnswer(session, text);
+        onEdit();
+      }
+      keepSitting();
+    },
+    onKey: (e, field) => {
+      if (checking && e.key === "Escape") field.blur();
+      else if (submitsOnEnter(e, touchFirst()) && (!checking || canCheck)) {
+        e.preventDefault();
+        if (checking) checkAgain();
+        else check();
+      }
+    },
+    // Nothing new to read: an empty answer, or one read as it stands.
+    painted: (text) => {
+      if (session) again.disabled = !text.trim() || (readAsItStands(session) && session.review?.kind !== "failed");
+    },
+  });
+}
+
+/** What a box of the learner's writing, marked up by Claude, holds and does. */
+interface SheetSpec {
+  text: string;
+  label: string;
+  placeholder: string;
+  rows: number;
+  maxLength?: number;
+  /** Whether Claude's remarks are on the words, and the margin is shown. */
+  marking: boolean;
+  remarks: readonly Note[];
+  /** The card at the head of the margin, for the writing as it now stands. */
+  head: () => HTMLElement | null;
+  /** Under the box. */
+  controls: HTMLElement;
+  /** Each change to the writing, before the remarks are placed afresh against it. */
+  onInput: (text: string) => void;
+  onKey: (e: KeyboardEvent, field: HTMLTextAreaElement) => void;
+  /** After each change, and after the remarks are placed against the writing as it now stands. */
+  painted: (text: string) => void;
+}
+
+/**
+ * The learner's writing, in one box that stays open to correct. While it is
+ * marked, the words Claude remarked on are highlighted in it, as comments
+ * are in a document, and the remarks are beside it (`SIDE_BY_SIDE`), or
+ * under it on a narrower screen, each as near its words as it fits. Editing
+ * the writing places them afresh against it, so a remark on words since
+ * changed shows as dealt with.
+ */
+function writingSheet(spec: SheetSpec): HTMLElement {
+  const { marking, remarks } = spec;
+  const sheet = el("div", marking ? "rc-sheet rc-checking" : "rc-sheet");
+  const paper = el("div", "rc-paper");
+  const marks = el("div", "rc-marks");
+  marks.setAttribute("aria-hidden", "true");
+  const field = el("textarea", "rc-answer");
+  field.rows = spec.rows;
+  if (spec.maxLength) field.maxLength = spec.maxLength;
+  field.setAttribute("aria-label", spec.label);
+  field.value = spec.text;
+  field.placeholder = spec.placeholder;
+  paper.append(marks, field);
+  const margin = el("aside", "rc-margin");
+  margin.setAttribute("aria-label", "Claude's check");
   const left = el("div", "rc-sheet-main");
-  left.append(paper, controls);
+  left.append(paper, spec.controls);
   sheet.append(left, margin);
 
-  const remarks = s.review?.kind === "done" ? (s.review.verdict.remarks ?? []) : [];
   let places = placeRemarks(field.value, remarks);
 
   const showActive = (): void => {
@@ -637,8 +892,9 @@ function answerSheet(s: Session, onEdit: () => void): HTMLElement {
     const order = places
       .map((place, i) => ({ place, i }))
       .sort((a, b) => (a.place?.start ?? Infinity) - (b.place?.start ?? Infinity));
+    const head = marking ? spec.head() : null;
     margin.replaceChildren(
-      ...(checking && s.review ? [overall(s.review, session ? !readAsItStands(session) : false)] : []),
+      ...(head ? [head] : []),
       ...order.map(({ place, i }) => remarkCard(remarks[i], i, place === null, () => {
         if (!place) return;
         field.focus();
@@ -646,8 +902,7 @@ function answerSheet(s: Session, onEdit: () => void): HTMLElement {
         showActive();
       })),
     );
-    // Nothing new to read: an empty answer, or one read as it stands.
-    if (session) again.disabled = !text.trim() || (readAsItStands(session) && session.review?.kind !== "failed");
+    spec.painted(text);
     showActive();
     fit();
     requestAnimationFrame(() => {
@@ -656,7 +911,7 @@ function answerSheet(s: Session, onEdit: () => void): HTMLElement {
     });
   };
 
-  // The box fits the answer up to most of the window, and scrolls past that;
+  // The box fits the writing up to most of the window, and scrolls past that;
   // the learner can drag it to any height, which it keeps. The highlights
   // behind it scroll with it, and leave room for its scroll bar, so its lines
   // break where the box's do.
@@ -691,23 +946,11 @@ function answerSheet(s: Session, onEdit: () => void): HTMLElement {
   });
 
   field.addEventListener("input", () => {
-    if (!session) return;
-    if (session.phase === "ask") draft = field.value;
-    else {
-      session = editAnswer(session, field.value);
-      paint();
-      onEdit();
-    }
-    keepSitting();
+    spec.onInput(field.value);
+    if (marking) paint();
+    else spec.painted(field.value);
   });
-  field.addEventListener("keydown", (e) => {
-    if (checking && e.key === "Escape") field.blur();
-    else if (submitsOnEnter(e, touchFirst()) && (!checking || canCheck)) {
-      e.preventDefault();
-      if (checking) checkAgain();
-      else check();
-    }
-  });
+  field.addEventListener("keydown", (e) => spec.onKey(e, field));
   for (const type of ["select", "click", "keyup", "focus", "blur"]) field.addEventListener(type, showActive);
 
   relayout = layout;
@@ -731,14 +974,21 @@ function overall(review: Review, stale: boolean): HTMLElement {
   return box;
 }
 
-/** One remark, by its words; `gone` once they have been changed. */
-function remarkCard(remark: Remark, index: number, gone: boolean, show: () => void): HTMLElement {
+/** One remark, by its words, with a link to the lesson that teaches the point if it names one; `gone` once its words have been changed. */
+function remarkCard(remark: Note, index: number, gone: boolean, show: () => void): HTMLElement {
   const box = el("div", gone ? "rc-remark rc-gone" : "rc-remark");
   box.dataset.remark = String(index);
   const quote = el("p", "rc-remark-quote", remark.quote);
   const note = el("p", "rc-remark-note");
   note.innerHTML = questionHtml(remark.note);
   box.append(quote, note);
+  const lesson = remark.lesson && lessons.find((l) => l.slug === remark.lesson);
+  if (lesson && !gone) {
+    const link = lessonLink(lesson, `${lessonLabel(lesson.slug)} ↗`, "rc-remark-lesson");
+    // Opening the lesson is not picking out the remark's words.
+    link.addEventListener("click", (e) => e.stopPropagation());
+    box.append(link);
+  }
   if (gone) box.append(el("p", "rc-remark-done", "Changed"));
   else box.addEventListener("click", show);
   return box;
@@ -910,9 +1160,39 @@ function readSitting(): Sitting | null {
   }
 }
 
-/** Keep the sitting under way for the tab, or forget it once it has ended. */
+/** The free association kept in this browser, or the empty one. */
+function readAssociation(): Association {
+  try {
+    const text = localStorage.getItem(ASSOCIATION_KEY);
+    return text ? loadAssociation(JSON.parse(text)) : EMPTY_ASSOCIATION;
+  } catch {
+    return EMPTY_ASSOCIATION;
+  }
+}
+
+/** Keep the free association in this browser. */
+function keepAssociation(): void {
+  try {
+    localStorage.setItem(ASSOCIATION_KEY, JSON.stringify(association));
+  } catch {
+    // Storage blocked: the writing lasts as long as the page.
+  }
+}
+
+/** Whether this tab was on the free association when it was last loaded. */
+function readAssociating(): boolean {
+  try {
+    return sessionStorage.getItem(ASSOCIATING_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+/** Keep the sitting under way for the tab, or forget it once it has ended, and whether the tab is on the free association. */
 function keepSitting(): void {
   try {
+    if (associating) sessionStorage.setItem(ASSOCIATING_KEY, "true");
+    else sessionStorage.removeItem(ASSOCIATING_KEY);
     if (session) sessionStorage.setItem(SITTING_KEY, JSON.stringify({ session, draft, editor } satisfies Sitting));
     else sessionStorage.removeItem(SITTING_KEY);
   } catch {

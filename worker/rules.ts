@@ -1,7 +1,7 @@
 // What the Worker does with a request, decided from plain values: whether
 // the caller holds the key, is within the rate limit, and what was asked
 // for. index.ts reads the request, follows the decision and does the I/O.
-// Only /deck and /check reach the Worker; the site's pages are served from
+// Only /deck, /check and /associate reach the Worker; the site's pages are served from
 // its assets (wrangler.jsonc), on the same origin, so no page elsewhere is
 // let in through CORS.
 //
@@ -9,8 +9,10 @@
 //   GET  /deck   the deck as held, a SavedDeck (src/recall/deck.ts)
 //   POST /deck   a SavedDeck to merge in; answers with the merged deck
 //   POST /check  a CheckRequest (src/recall/check.ts); answers with Claude's Verdict
+//   POST /associate  an AssociateRequest (src/recall/associate.ts); answers with Claude's Reading
 // Every request carries `Authorization: Bearer <RECALL_KEY>`.
 
+import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import type { Deck } from "../src/recall/deck.ts";
 
@@ -51,6 +53,7 @@ export type Decision =
   | { kind: "read" }
   | { kind: "merge" }
   | { kind: "check" }
+  | { kind: "associate" }
   | Refusal;
 
 export interface Refusal {
@@ -60,21 +63,21 @@ export interface Refusal {
 }
 
 export function decide(asked: Asked, settings: Settings): Decision {
-  const check = asked.path === CHECK_PATH;
-  if (asked.path !== "/deck" && !check) return refuse(404, "There is nothing here but /deck and /check.");
-  const methods = check ? ["POST"] : ["GET", "POST"];
+  const claude = CLAUDE_PATHS.find((c) => c.path === asked.path);
+  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check and /associate.");
+  const methods = claude ? ["POST"] : ["GET", "POST"];
   if (!methods.includes(asked.method)) return refuse(405, `Use ${methods.join(" or ")}.`);
   if (settings.key.length < MIN_KEY) {
     return refuse(503, `The Worker's RECALL_KEY is missing or shorter than ${MIN_KEY} characters.`);
   }
   // Before the key is checked, so guessing it is slowed too.
   if (!asked.withinLimit) return refuse(429, "Too many requests. Try again in a minute.");
-  if (asked.method === "POST" && asked.length !== null && asked.length > (check ? MAX_CHECK_BODY : MAX_BODY)) {
-    return check ? checkTooLarge : tooLarge;
+  if (asked.method === "POST" && asked.length !== null && asked.length > (claude?.max ?? MAX_BODY)) {
+    return claude?.tooLarge ?? tooLarge;
   }
   if (!keyMatches(asked.authorization, settings.key)) return refuse(401, "That key is not this deck's.");
-  if (check) {
-    return settings.claude ? { kind: "check" } : refuse(503, "Answer checking is off: the Worker has no ANTHROPIC_API_KEY.");
+  if (claude) {
+    return settings.claude ? { kind: claude.kind } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
   }
   return { kind: asked.method === "GET" ? "read" : "merge" };
 }
@@ -87,6 +90,18 @@ export const tooLarge: Refusal = { kind: "refuse", status: 413, error: "That dec
 
 /** The same for an answer to check over MAX_CHECK_BODY. */
 export const checkTooLarge: Refusal = { kind: "refuse", status: 413, error: "That answer is too long to check." };
+
+/** Where free associations are sent to be read by Claude. */
+export const ASSOCIATE_PATH = "/associate";
+
+/** The same for a free association over MAX_ASSOCIATE_BODY. */
+export const associateTooLarge: Refusal = { kind: "refuse", status: 413, error: "That is too long to read." };
+
+/** The paths that call Claude, each paid for, so counted against a tighter rate limit too. */
+export const CLAUDE_PATHS = [
+  { path: CHECK_PATH, kind: "check", max: MAX_CHECK_BODY, tooLarge: checkTooLarge, what: "Answer checking" },
+  { path: ASSOCIATE_PATH, kind: "associate", max: MAX_ASSOCIATE_BODY, tooLarge: associateTooLarge, what: "Reading free associations" },
+] as const;
 
 /**
  * Whether any change in `deck` is dated further ahead of `now` than a

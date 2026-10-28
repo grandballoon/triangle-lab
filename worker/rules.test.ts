@@ -3,6 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
+import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { CLOCK_SLACK_MS, datedAhead, decide, keyMatches, MAX_BODY, MIN_KEY, type Asked } from "./rules.ts";
 
@@ -75,6 +76,29 @@ describe("decide, for an answer to check", () => {
     expect(decide(check({}), off)).toMatchObject({ status: 503, error: expect.stringContaining("ANTHROPIC_API_KEY") });
     expect(decide(check({ authorization: null }), off)).toMatchObject({ status: 401 });
     expect(decide(asked({}), off)).toEqual({ kind: "read" });
+  });
+});
+
+describe("decide, for a free association to read", () => {
+  const associate = (patch: Partial<Asked>) => asked({ path: "/associate", method: "POST", ...patch });
+
+  it("reads a free association for a caller with the key, by POST only", () => {
+    expect(decide(associate({}), settings)).toEqual({ kind: "associate" });
+    expect(decide(associate({ method: "GET" }), settings)).toMatchObject({ status: 405 });
+  });
+
+  it("guards reading as it guards checking, with a size of its own", () => {
+    expect(decide(associate({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
+    expect(decide(associate({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(associate({ length: MAX_ASSOCIATE_BODY }), settings)).toEqual({ kind: "associate" });
+    expect(decide(associate({ length: MAX_ASSOCIATE_BODY + 1 }), settings)).toMatchObject({ status: 413, error: "That is too long to read." });
+  });
+
+  it("says reading is off while the Worker has no Claude API key", () => {
+    expect(decide(associate({}), { ...settings, claude: false })).toMatchObject({
+      status: 503,
+      error: expect.stringMatching(/^Reading free associations is off.*ANTHROPIC_API_KEY/),
+    });
   });
 });
 

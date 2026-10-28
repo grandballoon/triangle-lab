@@ -1,7 +1,8 @@
-// The Worker behind /deck and /check. /deck is the deck of recall questions
-// (src/recall), kept on the web so every device the learner uses holds the
-// same one; /check has Claude read an answer given in a review sitting
-// (check.ts). The rest of the site is static assets, served without running
+// The Worker behind /deck, /check and /associate. /deck is the deck of recall
+// questions (src/recall), kept on the web so every device the learner uses
+// holds the same one; /check has Claude read an answer given in a review
+// sitting (check.ts), and /associate a free association, everything the
+// learner can recall of the course (associate.ts). The rest of the site is static assets, served without running
 // this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
@@ -11,11 +12,12 @@
 // the object one at a time, so two devices syncing at once cannot undo each
 // other.
 //
-// The decisions are in rules.ts and check.ts; this does the I/O.
+// The decisions are in rules.ts, check.ts and associate.ts; this does the I/O.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
-import { MAX_CHECK_BODY, readCheckRequest, type CheckRequest } from "../src/recall/check.ts";
+import { MAX_ASSOCIATE_BODY, readAssociateRequest } from "../src/recall/associate.ts";
+import { MAX_CHECK_BODY, readCheckRequest } from "../src/recall/check.ts";
 import {
   changedSince,
   EMPTY_DECK,
@@ -25,10 +27,10 @@ import {
   type Card,
   type Deck,
   type SavedDeck,
-  type Verdict,
 } from "../src/recall/deck.ts";
+import { associateParams, readingOf } from "./associate.ts";
 import { checkParams, claudeFailed, verdictOf } from "./check.ts";
-import { CHECK_PATH, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
+import { associateTooLarge, CLAUDE_PATHS, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
 
 /** There is one learner, so one deck. */
 const DECK_NAME = "deck";
@@ -40,11 +42,12 @@ export default {
 
     const length = request.headers.get("Content-Length");
     // Counted by the caller's address, so someone guessing the key slows
-    // only themselves, never the learner's own devices. Checks, which cost
-    // money, are counted again against a tighter limit of their own.
+    // only themselves, never the learner's own devices. Calls to Claude,
+    // which cost money, are counted again against a tighter limit of their own.
     const caller = { key: request.headers.get("CF-Connecting-IP") ?? "unknown" };
     const { success: withinLimit } = await env.LIMITER.limit(caller);
-    const withinCheckLimit = url.pathname !== CHECK_PATH || (await env.CHECK_LIMITER.limit(caller)).success;
+    const paid = CLAUDE_PATHS.some((c) => c.path === url.pathname);
+    const withinCheckLimit = !paid || (await env.CHECK_LIMITER.limit(caller)).success;
     const decision = decide(
       {
         method: request.method,
@@ -77,20 +80,29 @@ export default {
         if (text.length > MAX_CHECK_BODY) return reply(checkTooLarge.status, { error: checkTooLarge.error });
         const asked = readCheckRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is not an answer to check." });
-        const verdict = await askClaude(env, asked);
+        const verdict = await askClaude(env, (client) => client.beta.messages.create(checkParams(asked)).then(verdictOf));
         return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
+      }
+      case "associate": {
+        const text = await request.text();
+        if (text.length > MAX_ASSOCIATE_BODY) return reply(associateTooLarge.status, { error: associateTooLarge.error });
+        const asked = readAssociateRequest(parseJson(text));
+        if (!asked) return reply(400, { error: "That is nothing to read." });
+        const reading = await askClaude(env, (client) => client.beta.messages.create(associateParams(asked)).then(readingOf));
+        return "kind" in reading ? reply(reading.status, { error: reading.error }) : reply(200, reading);
       }
     }
   },
 } satisfies ExportedHandler<Env>;
 
-async function askClaude(env: Env, asked: CheckRequest): Promise<Verdict | Refusal> {
+/** Call Claude with the Worker's key, turning a failed call into a refusal saying why. */
+async function askClaude<T>(env: Env, call: (client: Anthropic) => Promise<T | Refusal>): Promise<T | Refusal> {
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
   try {
-    return verdictOf(await client.beta.messages.create(checkParams(asked)));
+    return await call(client);
   } catch (error) {
     if (error instanceof Anthropic.APIError) {
-      console.error("Checking an answer failed:", error.status, error.message);
+      console.error("Calling Claude failed:", error.status, error.message);
       return claudeFailed(error.status);
     }
     throw error;

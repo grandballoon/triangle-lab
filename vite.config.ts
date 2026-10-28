@@ -31,9 +31,9 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
-    // The recall deck and answer checking, from the Worker run by `npm run
+    // The recall deck, answer checking and free association, from the Worker run by `npm run
     // preview` beside the dev server, so both work in development as on the site.
-    proxy: { "/deck": "http://localhost:8787", "/check": "http://localhost:8787" },
+    proxy: { "/deck": "http://localhost:8787", "/check": "http://localhost:8787", "/associate": "http://localhost:8787" },
   },
   build: {
     rollupOptions: {

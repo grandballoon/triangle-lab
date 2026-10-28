@@ -3,7 +3,7 @@
 Triangle Lab is a set of interactive geometry lessons drawn over the learner's webcam.
 The learner moves points with a mouse, a finger, or a hand held up to the camera, and steps through visual proofs.
 It is a static site: Vite builds a handful of HTML pages, and everything runs in the browser.
-The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking, which asks Claude through that Worker; the Worker also serves the pages.
+The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking and free association, which ask Claude through that Worker; the Worker also serves the pages.
 
 # Architecture Overview
 
@@ -188,20 +188,30 @@ They can also write new questions from the one being checked, so what Claude sai
 What is being written (`Editor`) is kept with the sitting across a reload, and an editor just opened takes the focus.
 Number keys typed into the answer or an editor are writing, not grades; Escape leaves the answer, so they grade.
 
+Apart from the questions, the overview's Free associate button opens a page for writing down everything the learner remembers of the course, in as much detail as they can (`associate.ts`).
+Once the browser has the sync key, Claude reads it at the Worker's `/associate`, sent with the lessons the learner has noted questions in (`notedLessons`), a sign of what they have taken.
+What comes back is a `Reading`: a few sentences of feedback, remarks on what is wrong, and up to three lessons that are the shortest next step from what the writing shows they know, each with why.
+The remarks are shown and placed afresh as the writing is corrected exactly as on an answer, through the same sheet (`writingSheet` in `page.ts`), and each may name the lesson that teaches its point, which it links to.
+The next steps are listed under the writing, each opening its lesson in a new tab so the writing stays.
+As in a sitting, a reading is of the writing as it was sent (`sent`): editing keeps it, Read again asks afresh, and a reply is taken only if it is to the writing as last sent (`settleReading`).
+The writing runs to many lines, so Enter is always a new line there, and Command- or Control-Enter has it read (`submitsOnModEnter`).
+The writing and Claude's reading are kept in `localStorage`, not the deck, so they wait in this browser between visits until the learner starts afresh; whether the tab is on the free association is kept for it, so a reload comes back to it, and a reading under way when the page went is asked for again.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `associate.ts` | Having Claude read a free association: the request and reading as page and Worker read them, what a reply means, the writing as it is read and corrected, and reading it back | yes |
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
-| `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen | yes |
+| `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen, and in the free association, where only Command- or Control-Enter has it read | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
-| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, with the same key | no (browser injected) |
+| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, and a free association to read, with the same key | no (browser injected) |
 | `id.ts` | New card ids | no |
 | `capture.ts` | The pill and sheet on a lesson page | no |
-| `page.ts` | The recall page: overview, sittings, the sync key, saving to and loading from a file | no |
+| `page.ts` | The recall page: overview, sittings, the free association, the sync key, saving to and loading from a file | no |
 
 Scheduling is a Leitner system.
 A card starts in box 0, due at once; recalling it moves it up a box, a shaky answer moves it down one (never below 1), and a miss sends it back to 0.
@@ -225,10 +235,10 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck` and `/check` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check` and `/associate` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck` and `/check` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
+In development, Vite sends `/deck`, `/check` and `/associate` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
@@ -248,11 +258,18 @@ The learner's text is put in tags the system prompt says are material to judge, 
 Whatever comes back is read with the same `readVerdict` the page uses, and a refusal, a cut-short reply or a failed call becomes a 502 saying why.
 `ANTHROPIC_BASE_URL` (a var in `wrangler.jsonc`) says where the Claude API is, so the Worker test can stand one in.
 
+`POST /associate` takes an `AssociateRequest` and answers with Claude's `Reading` (`src/recall/associate.ts`, shared with the page).
+It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a size limit of its own; the paths that call Claude are listed once, in `CLAUDE_PATHS` (`rules.ts`).
+The call (`associate.ts`) gives Claude the course as its system prompt (`syllabus`): every chapter with the results it teaches, and every lesson by slug, name, place and what the learner does in it, built from `src/lessons.ts`, so it never falls out of step with the course.
+That prompt is the same in every request, so it is cached, since a learner reads, corrects and asks again within minutes.
+It uses Claude Opus 5.5 at high effort, since the writing is long and the next steps want thought, with structured output whose lessons are an enum of the course's slugs, and the same fallbacks; the reply is read with the page's own `readReading`, which drops any lesson not in the course.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
 | `check.ts` | The request to Claude to check an answer, and the verdict or failure read from its reply | yes |
-| `index.ts` | The fetch handler, the call to Claude, and the `RecallDeck` object | no |
+| `associate.ts` | The course as Claude is told it, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
+| `index.ts` | The fetch handler, the calls to Claude, and the `RecallDeck` object | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
 
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
@@ -287,6 +304,8 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
 - `Session` (`src/recall/session.ts`): a review sitting in progress.
 - `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
+- `AssociateRequest`, `Reading`, `Note`, `NextStep` (`src/recall/associate.ts`): a free association sent to be read, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
+- `Association`, `ReadingState` (`src/recall/associate.ts`): the free association as written, and where it stands on getting Claude's reading.
 
 # Testing
 
@@ -308,15 +327,17 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
 - `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
 - `src/recall/check.test.ts`: reading a check request, a verdict with its remarks, and a reply from `/check`.
+- `src/recall/associate.test.ts`: the lessons noted in, reading a free association request, a reading with its remarks and next steps, a reply from `/associate`, the writing read, corrected and read again, and kept in the browser.
 - `src/recall/remarks.test.ts`: remarks placed on their words and afresh as the answer changes, the runs to highlight, the remark under the caret, and the margin's stacking.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
-- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, two pages kept the same, offline and a refused key.
-- `worker/rules.test.ts`: routing to the deck and to checking, key check, rate limit, size and clock checks, and checking off without a Claude key.
+- `worker/rules.test.ts`: routing to the deck, to checking and to free association, key check, rate limit, size and clock checks, and checking and reading off without a Claude key.
 - `worker/check.test.ts`: the request to Claude, and reading its verdict, a refusal or a failed call.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, and answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit.
+- `worker/associate.test.ts`: the course as Claude is told it, the request to read a free association, and reading its reply or a refusal.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, and free associations read through it.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.

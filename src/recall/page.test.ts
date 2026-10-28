@@ -670,3 +670,204 @@ describe("Claude checking an answer", () => {
     expect([field(root).selectionStart, field(root).selectionEnd]).toEqual([3, 6]);
   });
 });
+
+describe("free associating", () => {
+  type Answer = Record<string, unknown> | "busy" | "never";
+
+  /** The site's Worker: the deck kept as sent, and free associations read with `answers` in turn. Returns what was asked. */
+  function worker(answers: Answer[]): unknown[] {
+    const asked: unknown[] = [];
+    vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      if (url === "/deck") return new Response(init.body, { status: 200 });
+      expect(url).toBe("/associate");
+      expect((init.headers as Record<string, string>).Authorization).toBe("Bearer right");
+      asked.push(JSON.parse(init.body as string));
+      const answer = answers.shift();
+      if (answer === "never") return new Promise<Response>(() => undefined);
+      if (answer === "busy") return Response.json({ error: "Claude is busy. Try again in a minute." }, { status: 502 });
+      return Response.json(answer);
+    });
+    return asked;
+  }
+
+  const settle = async (): Promise<void> => {
+    for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
+  };
+
+  async function openSynced(cards: Card[], key = "right"): Promise<HTMLElement> {
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards, removed: [] })));
+    if (key) localStorage.setItem("triangle-lab:recall-sync-key", key);
+    return reload();
+  }
+
+  const field = (root: HTMLElement) => root.querySelector<HTMLTextAreaElement>(".rc-associate .rc-answer")!;
+  const reading = (root: HTMLElement) => root.querySelector(".rc-overall");
+  const marked = (root: HTMLElement) => [...root.querySelectorAll(".rc-marks mark")].map((m) => m.textContent);
+  const remarks = (root: HTMLElement) =>
+    [...root.querySelectorAll<HTMLElement>(".rc-margin .rc-remark:not(.rc-overall)")].map((r) => ({
+      quote: r.querySelector(".rc-remark-quote")!.textContent,
+      lesson: r.querySelector<HTMLAnchorElement>(".rc-remark-lesson")?.getAttribute("href") ?? null,
+      gone: r.classList.contains("rc-gone"),
+    }));
+  const steps = (root: HTMLElement) =>
+    [...root.querySelectorAll(".rc-next li")].map((li) => ({
+      lesson: li.querySelector("a")!.textContent,
+      href: li.querySelector("a")!.getAttribute("href"),
+      why: li.querySelector(".rc-next-why")!.textContent,
+    }));
+
+  function write(root: HTMLElement, text: string): void {
+    field(root).value = text;
+    field(root).dispatchEvent(new Event("input"));
+  }
+
+  const pressWith = (target: EventTarget, init: KeyboardEventInit): void =>
+    void target.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, cancelable: true, ...init }));
+
+  const writing = "The medians meet at the incentre.\nIt cuts each median halfway.\nAngles in a triangle sum to 180°.";
+  const read = {
+    feedback: "You know the angle sum; the centroid is muddled.",
+    remarks: [
+      { quote: "the incentre", note: "At the centroid, $G$.", lesson: "medians" },
+      { quote: "halfway", note: "Two thirds of the way from each vertex.", lesson: "" },
+    ],
+    next: [
+      { lesson: "bisectors", why: "Where the angle bisectors meet, beside the medians you know." },
+      { lesson: "nowhere", why: "Dropped: not in the course." },
+    ],
+  };
+
+  it("opens from the overview with nothing noted yet, and goes back to it", async () => {
+    worker([]);
+    const root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Free association");
+    expect(document.activeElement).toBe(field(root));
+    expect(field(root).maxLength).toBe(20_000);
+    expect(buttonNamed(root, "Have Claude read it").disabled).toBe(true);
+    buttonNamed(root, "Back to your questions").click();
+    expect(root.querySelector(".rc-lead")!.textContent).toBe("No questions yet.");
+  });
+
+  it("has Claude read it: what's wrong on its words, each with the lesson to look at, then the shortest next steps", async () => {
+    const asked = worker([read]);
+    const root = await openSynced([card("a", "Where do the medians meet?")]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    buttonNamed(root, "Have Claude read it").click();
+    expect(reading(root)!.textContent).toBe("Claude's readingReading what you wrote…");
+
+    await settle();
+    expect(asked).toEqual([{ text: writing, noted: ["medians"] }]);
+    expect(reading(root)!.querySelector(".rc-feedback")!.textContent).toBe(read.feedback);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+    expect(remarks(root)).toEqual([
+      { quote: "the incentre", lesson: "medians.html", gone: false },
+      { quote: "halfway", lesson: null, gone: false },
+    ]);
+    expect(root.querySelector(".rc-remark-note .katex")).not.toBeNull();
+    expect(root.querySelector(".rc-next h3")!.textContent).toBe("Shortest next step");
+    expect(steps(root)).toEqual([{ lesson: "Triangles · Angle Bisectors ↗", href: "bisectors.html", why: read.next[0].why }]);
+    expect(root.querySelector<HTMLAnchorElement>(".rc-next a")!.target).toBe("_blank");
+    expect(buttonNamed(root, "Read again").disabled).toBe(true);
+  });
+
+  it("corrects the writing in place, and has it read again with Command-Enter, Enter staying a new line", async () => {
+    const asked = worker([read, { feedback: "Right now.", remarks: [], next: [] }]);
+    const root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    pressWith(field(root), { key: "Enter" });
+    await settle();
+    expect(asked).toEqual([]);
+    pressWith(field(root), { key: "Enter", metaKey: true });
+    await settle();
+    expect(asked).toHaveLength(1);
+
+    write(root, writing.replace("the incentre", "the centroid"));
+    expect(remarks(root).map((r) => r.gone)).toEqual([false, true]);
+    expect(reading(root)!.textContent).toContain("You've changed it since.");
+    expect(buttonNamed(root, "Read again").disabled).toBe(false);
+
+    pressWith(field(root), { key: "Enter", ctrlKey: true });
+    await settle();
+    expect(asked).toHaveLength(2);
+    expect(reading(root)!.textContent).toContain("Nothing marked wrong.");
+    expect(remarks(root)).toEqual([]);
+    expect(root.querySelector(".rc-next")).toBeNull();
+  });
+
+  it("keeps the writing and Claude's reading in the browser, and the tab on it across a reload", async () => {
+    worker([read]);
+    let root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    buttonNamed(root, "Have Claude read it").click();
+    await settle();
+
+    root = await reload();
+    expect(field(root).value).toBe(writing);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+
+    buttonNamed(root, "Back to your questions").click();
+    root = await reload();
+    expect(root.querySelector(".rc-associate")).toBeNull();
+    buttonNamed(root, "Free associate").click();
+    expect(field(root).value).toBe(writing);
+  });
+
+  it("asks again after a reload that came while Claude was reading", async () => {
+    const asked = worker(["never", read]);
+    let root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    buttonNamed(root, "Have Claude read it").click();
+    root = await reload();
+    await settle();
+    expect(asked).toHaveLength(2);
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+  });
+
+  it("says why a reading failed, and tries again when asked", async () => {
+    worker(["busy", read]);
+    const root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    buttonNamed(root, "Have Claude read it").click();
+    await settle();
+    expect(reading(root)!.textContent).toContain("Claude is busy.");
+    buttonNamed(root, "Read again").click();
+    await settle();
+    expect(marked(root)).toEqual(["the incentre", "halfway"]);
+  });
+
+  it("asks nothing without the sync key, and says where to give it", async () => {
+    const asked = worker([read]);
+    const root = await openSynced([], "");
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    pressWith(field(root), { key: "Enter", metaKey: true });
+    await settle();
+    expect(asked).toEqual([]);
+    expect(buttonNamed(root, "Have Claude read it")).toBeUndefined();
+    expect(root.querySelector(".rc-associate-key")!.textContent).toContain("sync key");
+  });
+
+  it("starts afresh on a second press, forgetting the writing and the reading", async () => {
+    worker([read]);
+    let root = await openSynced([]);
+    buttonNamed(root, "Free associate").click();
+    write(root, writing);
+    buttonNamed(root, "Have Claude read it").click();
+    await settle();
+    buttonNamed(root, "Start afresh").click();
+    expect(field(root).value).toBe(writing);
+    buttonNamed(root, "Start afresh?").click();
+    expect(field(root).value).toBe("");
+    expect(reading(root)).toBeNull();
+    root = await reload();
+    expect(field(root).value).toBe("");
+  });
+});
