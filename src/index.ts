@@ -1,7 +1,7 @@
 // Builds the lesson menu from the shared reading order, so the order the cards
 // appear in and the order the pager walks are the same list (lessons.ts).
 
-import { chapters, hrefOf, type Chapter, type Lesson } from "./lessons.ts";
+import { anchorOf, chapters, hrefOf, type Chapter, type Lesson } from "./lessons.ts";
 import { dueCards } from "./recall/deck.ts";
 import { openRecall } from "./recall/remote.ts";
 
@@ -12,7 +12,8 @@ menu.append(...shown.map(section));
 
 // The margin lists each chapter's main results by name. Beside the menu it
 // starts open; stacked under it on a narrow screen it starts folded, since
-// it would otherwise run on for screens.
+// it would otherwise run on for screens. Each chapter's name there jumps to
+// its lessons; the arrow beside it folds its results.
 const margin = document.getElementById("axioms") as HTMLElement;
 margin.append(
   disclosure("Axioms", shown.map(axiomGroup), !matchMedia("(max-width: 960px)").matches),
@@ -41,16 +42,20 @@ function axiomGroup(chapter: Chapter): HTMLDetailsElement {
       return item;
     }),
   );
-  const group = disclosure(chapter.title, [list], true);
+  // A link in a summary is followed rather than folding it.
+  const jump = document.createElement("a");
+  jump.href = `#${anchorOf(chapter)}`;
+  jump.textContent = chapter.title;
+  const group = disclosure(jump, [list], true);
   group.className = "group";
   return group;
 }
 
-function disclosure(label: string, body: HTMLElement[], open: boolean): HTMLDetailsElement {
+function disclosure(label: string | HTMLElement, body: HTMLElement[], open: boolean): HTMLDetailsElement {
   const details = document.createElement("details");
   details.open = open;
   const summary = document.createElement("summary");
-  summary.textContent = label;
+  summary.append(label);
   details.append(summary, ...body);
   return details;
 }
@@ -58,6 +63,7 @@ function disclosure(label: string, body: HTMLElement[], open: boolean): HTMLDeta
 function section(chapter: Chapter): HTMLElement {
   const el = document.createElement("section");
   el.className = "chapter";
+  el.id = anchorOf(chapter);
 
   const title = document.createElement("h2");
   title.textContent = chapter.title;

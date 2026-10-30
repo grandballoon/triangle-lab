@@ -82,6 +82,7 @@ It is saved with the lesson and the step you were on.
 
 The recall page (linked from the menu, `recall.html`) asks your questions back once they are due.
 Answer each from memory first, writing it down or not, then check: your last answer is there to unfold, and "Check in the lesson" opens the lesson at the step the question came from.
+Your question, your answer and Claude's reading go with you, in a sheet beside the lesson where you can keep correcting the answer and noting new questions; "Back to review" picks the review up where you left it.
 Your answer stays in the same box, open to correct, until you have it right.
 Then say how it went: got it right first time, fixed it once corrected, or still struggling.
 Got right, a question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days); fixed, a little sooner than last time, and never before tomorrow; still struggling, in your next review.
@@ -167,7 +168,6 @@ To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
 A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set.
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
-## Lessons
 ## Staging
 
 Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
@@ -203,6 +203,7 @@ STAGING_ACCESS_CLIENT_SECRET=<client secret>
 
 The staging workflow uses the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets as the deploy from `main`.
 
+## Lessons
 
 130 lessons in fourteen chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.

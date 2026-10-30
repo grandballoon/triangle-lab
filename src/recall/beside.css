@@ -1,0 +1,50 @@
+/* The review beside a lesson (beside.ts): a floating sheet like the question
+   sheet (capture.css's .recall-sheet, bar, body and grip), wider, holding the
+   card being checked as the recall page draws it (sheet.css), sized down for
+   a sheet over the lesson. Its remarks are always under the answer. */
+
+:where(.rc-beside) *,
+:where(.rc-beside) *::before,
+:where(.rc-beside) *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+.rc-beside { width: min(440px, calc(100vw - 16px)); }
+
+.rc-beside .recall-bar { gap: 6px; }
+
+.rc-beside-back {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #38d9a9);
+  text-decoration: none;
+}
+
+.rc-beside-back:hover,
+.rc-beside-back.hand-hover { background: rgba(255, 255, 255, 0.08); }
+
+.rc-beside-back:focus-visible {
+  outline: 2px solid var(--accent, #38d9a9);
+  outline-offset: 2px;
+}
+
+.rc-beside-body { padding-top: 4px; padding-bottom: 16px; }
+
+.rc-beside .rc-asked { margin: 6px 0 14px; font-size: 18px; }
+
+.rc-beside .rc-question-actions { margin: -6px 0 12px; }
+
+.rc-beside .rc-asked-edit { margin: 6px 0 14px; }
+
+.rc-beside .rc-asked-edit textarea { font-size: 16px; }
+
+.rc-beside .rc-answer,
+.rc-beside .rc-marks { min-height: 90px; }
+
+.rc-beside .rc-row { margin-top: 12px; }
+
+.rc-beside .rc-margin:not(:empty) { margin-top: 12px; }
+
+.rc-beside .rc-remark-note,
+.rc-beside .rc-remark.rc-overall .rc-said { font-size: 14px; }

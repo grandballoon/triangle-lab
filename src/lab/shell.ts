@@ -99,11 +99,13 @@ export class Shell {
    *   measure the learner's own hand.
    * @param leftInset Width taken from the left of the window by chrome the
    *   figure must stay clear of (the docked curriculum rail), read each frame.
+   * @param onStep Told each time another step becomes current.
    */
   constructor(
     private readonly el: ShellElements,
     private readonly hands: () => readonly { side: "left" | "right"; screen: readonly Vec[] }[],
     private readonly leftInset: () => number = () => 0,
+    private readonly onStep: () => void = () => {},
   ) {
     this.ctx = el.canvas.getContext("2d")!;
     this.stepList = new StepList(el.steps, (step, scroll) => this.select(step, scroll));
@@ -168,11 +170,13 @@ export class Shell {
   private select(step: number, scroll: boolean): void {
     const c = this.current;
     if (!c) return;
-    if (step !== c.step) {
+    const changed = step !== c.step;
+    if (changed) {
       c.step = step;
       c.stepShownAt = performance.now();
     }
     this.stepList.mark(step, scroll);
+    if (changed) this.onStep();
   }
 
   /** Put the lesson back the way it started. */

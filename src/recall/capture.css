@@ -1,6 +1,8 @@
 /* The recall pill in a lesson's top bar and the sheet it opens (capture.ts).
    The pill is a nav pill like the pager's; the sheet is styled like the hands
-   settings sheet and placed under the pill when it opens. */
+   settings sheet and opens under the pill, until the learner moves or sizes
+   it: then capture.ts gives it a box (frame.ts) and it is .boxed. Its header
+   bar stays put while its body scrolls, and folded it is the bar alone. */
 
 .nav-recall {
   flex: none;
@@ -38,11 +40,11 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
 .recall-sheet {
   position: fixed;
   z-index: 50;
+  display: flex;
+  flex-direction: column;
   width: min(400px, calc(100vw - 16px));
   max-height: calc(100dvh - 80px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 14px 16px 12px;
+  overflow: hidden;
   border-radius: 16px;
   background: rgba(10, 15, 22, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -54,7 +56,31 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
 
 .recall-sheet[hidden] { display: none; }
 
+/* In its own box the sheet is as tall as it was made, up to the window. */
+.recall-sheet.boxed { max-height: calc(100dvh - 16px); }
+
+/* No text selection or figure underneath catching the drag. */
+.recall-sheet.dragging { user-select: none; }
+
+/* --- Header bar: the handle the sheet is moved by ------------------------------ */
+
+.recall-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 8px 0 16px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.recall-sheet.dragging .recall-bar { cursor: grabbing; }
+.recall-sheet.folded .recall-bar { padding-bottom: 8px; }
+
 .recall-head {
+  flex: 1;
+  min-width: 0;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -62,8 +88,45 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
   color: var(--accent, #38d9a9);
 }
 
+.recall-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: rgba(233, 240, 247, 0.5);
+  cursor: pointer;
+}
+
+.recall-icon svg { width: 16px; height: 16px; }
+
+.recall-icon:hover,
+.recall-icon.hand-hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+.recall-fold svg { transition: transform 0.15s ease; }
+.recall-fold[aria-expanded="false"] svg { transform: rotate(180deg); }
+
+/* --- Body: everything under the bar, scrolling when it outgrows the sheet ------- */
+
+.recall-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 16px 12px;
+}
+
+.recall-body[hidden] { display: none; }
+.recall-body > * { flex: none; }
+
 .recall-place {
-  margin: 3px 0 10px;
+  margin: 1px 0 10px;
   font-size: 13px;
   color: rgba(233, 240, 247, 0.6);
 }
@@ -72,7 +135,8 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
   display: block;
   width: 100%;
   min-height: 72px;
-  resize: vertical;
+  /* The sheet is sized from its corner grip instead. */
+  resize: none;
   padding: 9px 11px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -84,6 +148,9 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
   line-height: 1.4;
   outline: none;
 }
+
+/* Made taller, the sheet gives the room to the question. */
+.recall-sheet.boxed .recall-input { flex: 1 0 72px; }
 
 .recall-input:focus { border-color: var(--accent, #38d9a9); }
 
@@ -191,6 +258,26 @@ html[data-layout="stacked"] .nav-recall-count { display: none; }
 }
 
 .recall-review:hover { text-decoration: underline; }
+
+/* --- Corner grip: the handle the sheet is sized by ------------------------------- */
+
+.recall-grip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  touch-action: none;
+  /* Two short diagonal strokes in the corner. */
+  background:
+    linear-gradient(135deg, transparent 55%, rgba(233, 240, 247, 0.32) 55%, rgba(233, 240, 247, 0.32) 63%, transparent 63%,
+      transparent 75%, rgba(233, 240, 247, 0.32) 75%, rgba(233, 240, 247, 0.32) 83%, transparent 83%);
+  border-bottom-right-radius: 16px;
+}
+
+.recall-grip:hover { background-color: rgba(255, 255, 255, 0.04); }
+.recall-sheet.folded .recall-grip { display: none; }
 
 .nav-recall:focus-visible,
 .recall-sheet button:focus-visible,

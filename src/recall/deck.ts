@@ -108,6 +108,12 @@ export interface Card extends Place {
   /** When the card is next asked. Due once this is not after now. */
   due: number;
   attempts: Attempt[];
+  /**
+   * When the learner marked the card to revisit, as a question they blank
+   * out on; absent while it is not marked. Apart from the schedule: a mark
+   * stays until they take it off.
+   */
+  revisit?: number;
 }
 
 /**
@@ -195,6 +201,24 @@ export function editCard(deck: Deck, id: string, question: string, now: number):
   const text = cleanQuestion(question);
   if (!text) return deck;
   return mapCard(deck, id, (c) => (c.question === text ? c : { ...c, question: text, updated: now }));
+}
+
+/** Mark a card to revisit, or take the mark off. Marking a marked card keeps its first mark. */
+export function markRevisit(deck: Deck, id: string, on: boolean, now: number): Deck {
+  const held = deck.cards.find((c) => c.id === id);
+  if (!held || on === (held.revisit !== undefined)) return deck;
+  return mapCard(deck, id, (c) => {
+    if (on) return { ...c, revisit: now, updated: now };
+    const { revisit: _, ...rest } = c;
+    return { ...rest, updated: now };
+  });
+}
+
+/** Cards marked to revisit, longest marked first. */
+export function revisitCards(deck: Deck): Card[] {
+  return deck.cards
+    .filter((c): c is Card & { revisit: number } => c.revisit !== undefined)
+    .sort((a, b) => a.revisit - b.revisit || a.created - b.created);
 }
 
 export function removeCard(deck: Deck, id: string, now: number): Deck {
@@ -410,11 +434,11 @@ const SLUGS: ReadonlySet<string> = new Set(lessons.map((l) => l.slug));
 
 function loadCard(raw: unknown): Card | null {
   if (!isObject(raw)) return null;
-  const { id, question, lesson, step, stepTitle, created, updated, box, due, attempts } = raw;
+  const { id, question, lesson, step, stepTitle, created, updated, box, due, attempts, revisit } = raw;
   if (typeof id !== "string" || !id || typeof question !== "string" || typeof lesson !== "string") return null;
   const text = cleanQuestion(question);
   if (!text || !isTime(created)) return null;
-  return {
+  const card: Card = {
     id,
     question: text,
     lesson,
@@ -426,6 +450,8 @@ function loadCard(raw: unknown): Card | null {
     due: isTime(due) ? due : created,
     attempts: Array.isArray(attempts) ? attempts.map(loadAttempt).filter((a): a is Attempt => a !== null) : [],
   };
+  if (isTime(revisit)) card.revisit = revisit;
+  return card;
 }
 
 function loadRemoval(raw: unknown): Removal | null {
