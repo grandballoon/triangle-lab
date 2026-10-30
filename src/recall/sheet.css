@@ -1,0 +1,281 @@
+/* The card a sitting is on, and the learner's writing marked up by Claude
+   (card.ts, sheet.ts): shared by the recall page (page.css) and the review
+   beside a lesson (beside.css). The margin goes beside the answer only on
+   the recall page, on a wide screen; page.ts says so to sheet.ts to match. */
+
+.rc-note { margin-top: 6px; font-size: 15px; line-height: 1.5; color: rgba(233, 240, 247, 0.6); }
+
+.rc-note:empty { display: none; }
+
+.rc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+
+.rc-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(233, 240, 247, 0.85);
+  font: 500 15px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.rc-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); color: #fff; }
+
+.rc-button:disabled { opacity: 0.4; cursor: default; }
+
+.rc-button.rc-primary { background: #38d9a9; border-color: #38d9a9; color: #06110d; font-weight: 650; }
+
+.rc-button.rc-primary:hover:not(:disabled) { background: #5ae4bb; border-color: #5ae4bb; color: #06110d; }
+
+.rc-button.rc-small { min-height: 30px; padding: 0 11px; font-size: 13px; border-radius: 8px; }
+
+.rc-button[data-confirm] { color: #ff8787; border-color: rgba(255, 107, 107, 0.5); }
+
+.rc-button:focus-visible,
+.rc-source:focus-visible,
+.rc-remark-lesson:focus-visible {
+  outline: 2px solid #38d9a9;
+  outline-offset: 2px;
+}
+
+.rc-answer,
+.rc-edit {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  font-family: inherit;
+  /* 16px stops a phone zooming in on the box. */
+  font-size: 16px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.rc-answer:focus,
+.rc-edit:focus { border-color: #38d9a9; }
+
+.rc-hint { font-size: 12.5px; color: rgba(233, 240, 247, 0.45); }
+
+@media (pointer: coarse) {
+  .rc-hint { display: none; }
+}
+
+.rc-notice { margin-top: 12px; font-size: 14px; color: #38d9a9; }
+
+.rc-notice.rc-error { color: #ff8787; }
+
+.rc-from {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #38d9a9;
+}
+
+.rc-asked {
+  margin: 10px 0 20px;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* Rewording the question, or writing a new one from it, while checking. */
+.rc-question-actions { margin: -8px 0 16px; }
+
+/* The answer: one box, kept open to correct while it is checked. Claude's
+   remarks are on its words, highlighted from behind it (.rc-marks, which
+   lays the same text out the same way, with the remarked words marked), and
+   beside it or under it in the margin (page.ts answerSheet). */
+.rc-paper { position: relative; }
+
+.rc-answer,
+.rc-marks {
+  min-height: 110px;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.rc-paper .rc-answer {
+  position: relative;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: transparent;
+  /* It fits the answer up to a height, then scrolls, and can be dragged
+     taller or shorter; the highlights scroll with it (page.ts answerSheet). */
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.rc-paper .rc-answer:focus { border-color: #38d9a9; }
+
+.rc-marks {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  color: transparent;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rc-marks mark {
+  color: transparent;
+  border-radius: 2px;
+  background: rgba(255, 212, 59, 0.2);
+  box-shadow: inset 0 -2px 0 rgba(255, 212, 59, 0.65);
+}
+
+.rc-marks mark.rc-active { background: rgba(255, 212, 59, 0.42); }
+
+/* Under the answer, one under another, on a narrow screen. */
+.rc-margin:not(:empty) { margin-top: 14px; }
+
+.rc-remark {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid rgba(255, 212, 59, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+}
+
+.rc-remark + .rc-remark { margin-top: 10px; }
+
+.rc-remark:hover,
+.rc-remark.rc-active { background: rgba(255, 212, 59, 0.08); border-color: rgba(255, 212, 59, 0.35); border-left-color: #ffd43b; }
+
+.rc-remark.rc-overall { border-left-color: #38d9a9; cursor: default; }
+.rc-remark.rc-overall:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1); border-left-color: #38d9a9; }
+.rc-remark.rc-overall h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.45);
+}
+.rc-remark.rc-overall .rc-said { font-size: 15px; }
+
+.rc-remark-quote {
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(233, 240, 247, 0.5);
+  overflow-wrap: anywhere;
+}
+
+.rc-remark-quote::before { content: "“"; }
+.rc-remark-quote::after { content: "”"; }
+
+.rc-remark-note { display: block; margin-top: 3px; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+
+.rc-remark-note.rc-quiet { font-size: 13px; color: rgba(233, 240, 247, 0.5); }
+
+/* A remark on words since changed: dealt with, so set back. */
+.rc-remark.rc-gone { opacity: 0.5; cursor: default; border-left-color: rgba(255, 255, 255, 0.25); }
+.rc-remark.rc-gone:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1); border-left-color: rgba(255, 255, 255, 0.25); }
+.rc-remark.rc-gone .rc-remark-quote { text-decoration: line-through; }
+.rc-remark-done { margin-top: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #38d9a9; }
+
+/* Beside the answer, each by its words, on a wide screen: the page widens
+   for a sitting to make room. The width matches page.ts SIDE_BY_SIDE. */
+@media (min-width: 1000px) {
+  .rc-page:has(.rc-sitting-top) { max-width: 1040px; }
+  .rc-page .rc-sheet { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
+  .rc-page .rc-margin { position: relative; }
+  .rc-page .rc-margin:not(:empty) { margin-top: 0; }
+  .rc-page .rc-margin > .rc-remark { position: absolute; left: 0; right: 0; }
+  .rc-page .rc-remark + .rc-remark { margin-top: 0; }
+}
+
+/* The last answer given, folded away until opened. */
+.rc-last { margin-top: 16px; }
+.rc-last summary {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.45);
+  cursor: pointer;
+}
+.rc-last summary:hover { color: rgba(233, 240, 247, 0.75); }
+.rc-last .rc-said-sheet { margin-top: 6px; }
+
+/* An answer as given, with the words Claude remarked on marked. */
+.rc-said-sheet mark {
+  color: inherit;
+  border-radius: 2px;
+  background: rgba(255, 212, 59, 0.16);
+  box-shadow: inset 0 -2px 0 rgba(255, 212, 59, 0.55);
+}
+.rc-said-remarks { margin: 8px 0 0; padding-left: 18px; }
+.rc-said-remarks li { font-size: 14px; line-height: 1.45; }
+.rc-said-remarks li + li { margin-top: 4px; }
+.rc-said-remarks .rc-remark-note { display: inline; margin-left: 6px; font-size: 14px; }
+
+.rc-yours { margin-top: 14px; }
+
+.rc-yours h3 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(233, 240, 247, 0.45);
+}
+
+.rc-said {
+  margin-top: 4px;
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rc-said.rc-quiet { color: rgba(233, 240, 247, 0.5); font-style: italic; }
+
+/* Typeset, so its markup's own whitespace is not kept. */
+.rc-said.rc-feedback { white-space: normal; }
+
+/* Rewording the question or the answer, or writing a new question, while checking. */
+.rc-editor { margin-top: 6px; }
+.rc-editor .rc-row { margin-top: 8px; }
+.rc-asked-edit { margin: 10px 0 20px; }
+.rc-asked-edit textarea { font-size: 18px; }
+
+/* The questions written while checking, quiet under the box that wrote them. */
+.rc-written { margin-top: 14px; }
+.rc-written ol { margin: 6px 0 0; padding-left: 20px; }
+.rc-written li { font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.rc-written li + li { margin-top: 4px; }
+
+.rc-source {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #38d9a9;
+  text-decoration: none;
+}
+
+.rc-source:hover { text-decoration: underline; }
+
+/* The lesson that teaches the point a remark is on. */
+.rc-remark-lesson {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #38d9a9;
+  text-decoration: none;
+}
+
+.rc-remark-lesson:hover { text-decoration: underline; }

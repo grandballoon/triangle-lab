@@ -14,6 +14,7 @@ import {
   EMPTY_DECK,
   lessonCards,
   loadDeck,
+  markRevisit,
   MAX_QUESTION,
   mergeDecks,
   newCard,
@@ -21,6 +22,7 @@ import {
   nextDue,
   setWriting,
   removeCard,
+  revisitCards,
   sameDeck,
   saveDeck,
   type Card,
@@ -146,6 +148,44 @@ describe("the schedule", () => {
     const deck = deckOf(card("a"), card("b", { due: T0 + 3 * DAY_MS }), card("c", { due: T0 + DAY_MS }));
     expect(nextDue(deck, T0)).toBe(T0 + DAY_MS);
     expect(nextDue(deckOf(card("a")), T0)).toBeNull();
+  });
+});
+
+describe("marking cards to revisit", () => {
+  it("marks a card, keeping its first mark, and takes the mark off", () => {
+    const marked = markRevisit(deckOf(card("a")), "a", true, T0 + HOUR);
+    expect(marked.cards[0]).toMatchObject({ revisit: T0 + HOUR, updated: T0 + HOUR });
+    expect(markRevisit(marked, "a", true, T0 + 2 * HOUR)).toBe(marked);
+    const cleared = markRevisit(marked, "a", false, T0 + 3 * HOUR);
+    expect(cleared.cards[0]).toEqual({ ...card("a"), updated: T0 + 3 * HOUR });
+    expect("revisit" in cleared.cards[0]).toBe(false);
+  });
+
+  it("leaves the schedule alone, and is kept through an answer", () => {
+    const marked = markRevisit(deckOf(card("a")), "a", true, T0);
+    const answered = answerCard(marked, "a", "", "recalled", T0 + HOUR);
+    expect(answered.cards[0]).toMatchObject({ box: 1, revisit: T0 });
+  });
+
+  it("lists the marked cards, longest marked first", () => {
+    let deck = deckOf(card("a"), card("b"), card("c"));
+    deck = markRevisit(deck, "c", true, T0 + HOUR);
+    deck = markRevisit(deck, "a", true, T0 + 2 * HOUR);
+    expect(revisitCards(deck).map((c) => c.id)).toEqual(["c", "a"]);
+  });
+
+  it("syncs as any change to a card does: the later copy wins", () => {
+    const ours = markRevisit(deckOf(card("a")), "a", true, T0 + HOUR);
+    const theirs = markRevisit(ours, "a", false, T0 + 2 * HOUR);
+    expect(mergeDecks(ours, theirs).cards[0].revisit).toBeUndefined();
+    expect(mergeDecks(theirs, ours).cards[0].revisit).toBeUndefined();
+  });
+
+  it("is read back from the stored form, and a mark that is not a time is dropped", () => {
+    const marked = markRevisit(deckOf(card("a")), "a", true, T0);
+    expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(marked))))!.cards[0].revisit).toBe(T0);
+    const odd = { ...saveDeck(deckOf(card("a"))), cards: [{ ...card("a"), revisit: "soon" }] };
+    expect("revisit" in loadDeck(odd)!.cards[0]).toBe(false);
   });
 });
 

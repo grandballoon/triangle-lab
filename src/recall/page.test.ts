@@ -31,8 +31,17 @@ const listening: (() => void)[] = [];
 
 /** Load the page again, as a browser does to a tab it set aside, storage and all. */
 async function reload(): Promise<HTMLElement> {
+  await load(`<main id="recall"></main>`, () => import("./page.ts"));
+  return document.getElementById("recall")!;
+}
+
+/**
+ * Load a page into this tab: what the last page listened to is taken off,
+ * the body is `html`, and `run` runs its script afresh.
+ */
+async function load(html: string, run: () => Promise<unknown>): Promise<void> {
   for (const off of listening.splice(0)) off();
-  document.body.innerHTML = `<main id="recall"></main>`;
+  document.body.innerHTML = html;
   vi.resetModules();
   const targets = [window, document] as EventTarget[];
   const adds = targets.map((target) => target.addEventListener);
@@ -43,11 +52,10 @@ async function reload(): Promise<HTMLElement> {
     };
   });
   try {
-    await import("./page.ts");
+    await run();
   } finally {
     targets.forEach((target, i) => (target.addEventListener = adds[i]));
   }
-  return document.getElementById("recall")!;
 }
 
 const stored = (): Card[] => JSON.parse(localStorage.getItem(KEY) ?? '{"cards":[]}').cards;
@@ -127,7 +135,8 @@ describe("the recall page", () => {
     ]);
     const source = root.querySelector<HTMLAnchorElement>(".rc-source")!;
     expect(source.getAttribute("href")).toBe("medians.html#step-2");
-    expect(source.target).toBe("_blank");
+    // In this tab, taking the sitting along (beside.ts).
+    expect(source.target).toBe("");
     const hints = [...root.querySelectorAll(".rc-grade-when")].map((h) => h.textContent);
     expect(hints).toEqual(["again now", "in 18 hours", "in 18 hours"]);
 
@@ -177,6 +186,56 @@ describe("the recall page", () => {
     expect(remove().textContent).toBe("Delete?");
     remove().click();
     expect(stored().map((c) => c.id)).toEqual(["a"]);
+  });
+
+  it("marks a question to revisit in a review, asked or checked, and lists it at the head of the overview", async () => {
+    const root = await open([card("a", "Where do the medians meet?"), card("b", "What is a median?"), card("c", "Why two to one?")]);
+    buttonNamed(root, "Start review").click();
+    const mark = (): HTMLButtonElement => buttonNamed(root, "Revisit");
+    expect(mark().getAttribute("aria-pressed")).toBe("false");
+    mark().click();
+    expect(mark().getAttribute("aria-pressed")).toBe("true");
+    expect(mark().textContent).toBe("Revisiting");
+    expect(root.querySelector(".rc-asked")!.textContent).toBe("Where do the medians meet?");
+    buttonNamed(root, "Skip").click();
+
+    buttonNamed(root, "Check").click();
+    mark().click();
+    expect(stored().filter((c) => c.revisit !== undefined).map((c) => c.id)).toEqual(["a", "b"]);
+    // Marking leaves the schedule alone.
+    expect(stored().map((c) => c.box)).toEqual([0, 0, 0]);
+
+    buttonNamed(root, "End review").click();
+    const revisit = root.querySelector<HTMLElement>(".rc-revisit")!;
+    expect(revisit.querySelector("h2")!.textContent).toBe("Revisit · 2");
+    expect([...revisit.querySelectorAll(".rc-question")].map((q) => q.textContent)).toEqual([
+      "Where do the medians meet?",
+      "What is a median?",
+    ]);
+    expect(revisit.querySelector<HTMLAnchorElement>(".rc-meta a")!.getAttribute("href")).toBe("medians.html#step-2");
+    expect(root.querySelector(".rc-all")!.textContent).toBe("All your questions · 3");
+  });
+
+  it("practises the questions marked to revisit on their own, and takes a mark off", async () => {
+    const root = await open([
+      card("a", "Where do the medians meet?", { revisit: now - 2 }),
+      card("b", "What is a median?"),
+      card("c", "Why two to one?", { revisit: now - 1, box: 3, due: now + 7 * DAY_MS }),
+    ]);
+    const revisit = (): HTMLElement => root.querySelector<HTMLElement>(".rc-revisit")!;
+    buttonNamed(revisit(), "Practise these 2").click();
+    expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 1 of 2");
+    buttonNamed(root, "End review").click();
+
+    buttonNamed(revisit(), "Unmark").click();
+    expect(revisit().querySelector("h2")!.textContent).toBe("Revisit · 1");
+    expect(buttonNamed(revisit(), "Practise it")).toBeDefined();
+    // On the card itself, the toggle says it is marked, and takes the mark off too.
+    const marked = [...root.querySelectorAll<HTMLButtonElement>(".rc-card .rc-revisit-on")];
+    expect(marked).toHaveLength(1);
+    marked[0].click();
+    expect(root.querySelector(".rc-revisit")).toBeNull();
+    expect(stored().some((c) => c.revisit !== undefined)).toBe(false);
   });
 
   it("carries on a sitting after the tab is reloaded, with what was being written", async () => {
@@ -668,6 +727,174 @@ describe("Claude checking an answer", () => {
     expect(review(root)!.textContent).toContain("Nearly.");
     expect(document.activeElement).toBe(field(root));
     expect([field(root).selectionStart, field(root).selectionEnd]).toEqual([3, 6]);
+  });
+
+  describe("in the lesson", () => {
+    /**
+     * Open a lesson page in this tab, as following a link does, with the
+     * review beside it (beside.ts) and the tab's storage as the recall page
+     * left it. Returns the review's sheet while it is shown.
+     */
+    async function lesson(): Promise<HTMLElement | null> {
+      await load(`<header id="topbar"></header>`, async () => (await import("./beside.ts")).mountBeside());
+      const sheet = document.getElementById("recall-beside");
+      return sheet && !sheet.hidden ? sheet : null;
+    }
+
+    /** Follow a link as a plain click does, short of the page load, which the DOM stand-in cannot do. */
+    function follow(link: HTMLAnchorElement): void {
+      const stop = (e: Event): void => e.preventDefault();
+      window.addEventListener("click", stop);
+      link.click();
+      window.removeEventListener("click", stop);
+    }
+
+    const kept = () => JSON.parse(sessionStorage.getItem("triangle-lab:recall-sitting") ?? "null");
+
+    it("takes the question, the answer and Claude's reading to the lesson, to correct there, and back", async () => {
+      const checks = worker([wrong, { grade: "recalled", feedback: "Yes: the centroid, two thirds along." }]);
+      let root = await openSynced([card("a", "Where do the medians meet?"), card("b", "What is a median?")]);
+      answerWith(root, "At the incentre, halfway down each median");
+      await settle();
+      const link = root.querySelector<HTMLAnchorElement>(".rc-source")!;
+      expect(link.getAttribute("href")).toBe("medians.html#step-2");
+      follow(link);
+      expect(kept()).toMatchObject({ inLesson: true, session: { phase: "check" } });
+
+      // Everything is on the table beside the lesson.
+      let sheet = (await lesson())!;
+      expect(sheet).not.toBeNull();
+      expect(sheet.querySelector(".recall-head")!.textContent).toBe("Review · 1 of 2");
+      expect(sheet.querySelector(".rc-from")!.textContent).toBe("Triangles · Medians · Step 2: Find the centroid");
+      expect(sheet.querySelector(".rc-asked")!.textContent).toBe("Where do the medians meet?");
+      expect(field(sheet).value).toBe("At the incentre, halfway down each median");
+      expect(review(sheet)!.textContent).toContain("Claude's check · missed it");
+      expect(marked(sheet)).toEqual(["the incentre", "halfway"]);
+      // Nothing asked again: the reading is of the answer as it stands.
+      expect(checks).toHaveLength(1);
+      // The ways out of the card are on the recall page, and so are its number keys.
+      expect(sheet.querySelector(".rc-grades")).toBeNull();
+      expect(sheet.querySelector(".rc-sheet .rc-hint")!.textContent).not.toContain("1 · 2 · 3");
+
+      // Corrected there, and read again.
+      correct(sheet, "At the centroid, two thirds of the way down each median");
+      expect(remarks(sheet).map((r) => r.gone)).toEqual([true, true]);
+      press(field(sheet), "Enter");
+      await settle();
+      expect(checks).toHaveLength(2);
+      expect(review(sheet)!.textContent).toContain("Yes: the centroid, two thirds along.");
+
+      // A new question noted from it, at the same step.
+      buttonNamed(sheet, "New question").click();
+      write(sheet, "Why two thirds?");
+      expect([...sheet.querySelectorAll(".rc-written li")].map((li) => li.textContent)).toEqual(["Why two thirds?"]);
+      expect(stored().find((c) => c.question === "Why two thirds?")).toMatchObject({ lesson: "medians", step: 1 });
+
+      // And reworded.
+      buttonNamed(sheet, "Done").click();
+      buttonNamed(sheet, "Edit question").click();
+      write(sheet, "Where, exactly, do the medians meet?");
+      expect(sheet.querySelector(".rc-asked")!.textContent).toBe("Where, exactly, do the medians meet?");
+      await settle();
+      expect(checks).toHaveLength(3);
+
+      // A reload of the lesson keeps it all.
+      sheet = (await lesson())!;
+      expect(field(sheet).value).toBe("At the centroid, two thirds of the way down each median");
+      expect(sheet.querySelector(".rc-written")!.textContent).toContain("Why two thirds?");
+
+      // Back to the review, where the sitting carries on as left.
+      follow(sheet.querySelector<HTMLAnchorElement>(".rc-beside-back")!);
+      expect(kept().inLesson).toBe(false);
+      root = await reload();
+      expect(root.querySelector(".rc-progress")!.textContent).toBe("Question 1 of 2");
+      expect(root.querySelector(".rc-asked")!.textContent).toBe("Where, exactly, do the medians meet?");
+      expect(field(root).value).toBe("At the centroid, two thirds of the way down each median");
+      expect(root.querySelector(".rc-written")!.textContent).toContain("Why two thirds?");
+      buttonNamed(root, "Fixed it").click();
+      expect(stored().find((c) => c.id === "a")!.attempts).toMatchObject([
+        { answer: "At the centroid, two thirds of the way down each median", grade: "shaky" },
+      ]);
+
+      // The lesson shows nothing once the sitting is back.
+      expect(await lesson()).toBeNull();
+    });
+
+    it("comes back to the recall page by the browser's Back button as well", async () => {
+      worker([]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      answerWith(root, "");
+      follow(root.querySelector<HTMLAnchorElement>(".rc-source")!);
+      expect(await lesson()).not.toBeNull();
+      await reload();
+      expect(kept().inLesson).toBe(false);
+    });
+
+    it("shows nothing beside a lesson without a sitting taken there", async () => {
+      worker([]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      expect(await lesson()).toBeNull();
+      // A sitting asking, or checking on the recall page, stays there.
+      buttonNamed(root, "Start review").click();
+      expect(await lesson()).toBeNull();
+      const again = await reload();
+      buttonNamed(again, "Check").click();
+      expect(kept().session.phase).toBe("check");
+      expect(await lesson()).toBeNull();
+    });
+
+    it("asks Claude again for a reading that was under way when the recall page went", async () => {
+      const checks = worker(["never", { grade: "recalled", feedback: "Exactly." }]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      answerWith(root, "At the centroid");
+      follow(root.querySelector<HTMLAnchorElement>(".rc-source")!);
+      const sheet = (await lesson())!;
+      await settle();
+      expect(checks).toHaveLength(2);
+      expect(review(sheet)!.textContent).toContain("Exactly.");
+    });
+
+    it("keeps keys typed beside the lesson from the lesson's shortcuts", async () => {
+      worker([]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      answerWith(root, "At the centroid");
+      follow(root.querySelector<HTMLAnchorElement>(".rc-source")!);
+      const sheet = (await lesson())!;
+      const shortcut = vi.fn();
+      window.addEventListener("keydown", shortcut);
+      press(field(sheet), "ArrowRight");
+      press(field(sheet), "q");
+      window.removeEventListener("keydown", shortcut);
+      expect(shortcut).not.toHaveBeenCalled();
+    });
+
+    it("folds down to its header, out of the lesson's way, and unfolds to the answer", async () => {
+      worker([]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      answerWith(root, "At the centroid");
+      follow(root.querySelector<HTMLAnchorElement>(".rc-source")!);
+      const sheet = (await lesson())!;
+      const fold = sheet.querySelector<HTMLButtonElement>(".recall-fold")!;
+      fold.click();
+      expect(sheet.classList.contains("folded")).toBe(true);
+      expect(sheet.querySelector<HTMLElement>(".recall-body")!.hidden).toBe(true);
+      expect(fold.getAttribute("aria-expanded")).toBe("false");
+      fold.click();
+      expect(sheet.querySelector<HTMLElement>(".recall-body")!.hidden).toBe(false);
+      expect(document.activeElement).toBe(field(sheet));
+    });
+
+    it("takes the sitting up as it is now when the browser brings the lesson back from its cache", async () => {
+      worker([]);
+      const root = await openSynced([card("a", "Where do the medians meet?")]);
+      answerWith(root, "At the centroid");
+      follow(root.querySelector<HTMLAnchorElement>(".rc-source")!);
+      const sheet = (await lesson())!;
+      // The recall page took the sitting back meanwhile.
+      sessionStorage.setItem("triangle-lab:recall-sitting", JSON.stringify({ ...kept(), inLesson: false }));
+      window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
+      expect(sheet.hidden).toBe(true);
+    });
   });
 });
 

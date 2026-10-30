@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { directions } from "./directions.ts";
 import { linkTex } from "./lab/link.ts";
 import { richHtml } from "./lab/math.ts";
-import { lessons } from "./lessons.ts";
+import { anchorOf, chapters, lessons } from "./lessons.ts";
 import { moveBy } from "./pager.ts";
 
 const pages = import.meta.glob<string>("../*.html", { query: "?raw", import: "default", eager: true });
@@ -94,5 +94,18 @@ describe("moveBy", () => {
   it("stays put at the ends of the course", () => {
     expect(moveBy(2, 3, 1, { prev: first, next: undefined })).toBeNull();
     expect(moveBy(0, 3, -1, { prev: undefined, next: second })).toBeNull();
+  });
+});
+
+describe("anchorOf", () => {
+  it("makes a chapter's id from its title", () => {
+    expect(anchorOf({ title: "Angles & Lines" })).toBe("angles-lines");
+    expect(anchorOf({ title: "  Triangles: Classic Results!  " })).toBe("triangles-classic-results");
+  });
+
+  it("gives every chapter on the menu its own id, so each margin link lands on its own section", () => {
+    const ids = chapters.map(anchorOf);
+    expect(ids.every((id) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(id))).toBe(true);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
