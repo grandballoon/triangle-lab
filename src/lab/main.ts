@@ -6,6 +6,7 @@
 import "katex/dist/katex.min.css";
 import "./lab.css";
 import { mountArLink } from "../ar/link.ts";
+import { mountBackdrop } from "../backdrop.ts";
 import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
@@ -24,6 +25,7 @@ const byId = <T extends HTMLElement>(id: string): T => document.getElementById(i
 const video = byId<HTMLVideoElement>("cam");
 const topbar = byId("topbar");
 mountCameraSwitch(topbar);
+mountBackdrop(topbar, video);
 const showArLink = mountArLink(topbar);
 
 const hands = startHands({

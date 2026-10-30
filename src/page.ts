@@ -4,8 +4,8 @@
 // builds what the lab page has around its figure, so the two kinds of lesson
 // read alike:
 //
-//   - the top bar: the pager, the camera switch (cameraSwitch.ts), then the
-//     chapter and the lesson's name;
+//   - the top bar: the pager, the camera switch (cameraSwitch.ts), the
+//     background photo (backdrop.ts), then the chapter and the lesson's name;
 //   - the step column on the right, holding the lesson's written directions
 //     (directions.ts);
 //   - the formula band along the bottom, for a lesson with live formulas;
@@ -22,6 +22,7 @@
 // the lesson refits its figure on the event.
 
 import "katex/dist/katex.min.css";
+import { mountBackdrop } from "./backdrop.ts";
 import { mountCameraSwitch } from "./cameraSwitch.ts";
 import { formulaRows, setStep } from "./chrome.ts";
 import { railInset } from "./curriculum.ts";
@@ -52,6 +53,7 @@ function mount(): void {
   document.body.append(topbar);
   const neighbours = mountPager(slug, topbar);
   mountCameraSwitch(topbar);
+  mountBackdrop(topbar, document.getElementById("cam") as HTMLVideoElement);
 
   const column = element("aside", "steps");
   column.setAttribute("aria-label", "Steps");
