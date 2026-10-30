@@ -1,14 +1,16 @@
 // Dev-only UI feedback: hold Alt to outline the element under the cursor,
 // Alt-click it to write a comment, and the comment is posted to the dev
-// server (tools/feedback-plugin.ts), which appends it to ui-feedback.md.
+// server (tools/feedback-plugin.ts), which appends it to ui-feedback.md, or
+// on staging to the staging Worker, which keeps it for `npm run staging:pull`.
 //
-// The plugin injects this module into every page under `vite dev` only; no
-// page imports it, so it never reaches a build. Alt-clicks are swallowed
+// The plugin injects this module into every page under `vite dev` and in the
+// staging build only; no page imports it, so it never reaches a production
+// build. Alt-clicks are swallowed
 // before a lesson sees them, and keys typed into the comment box never reach
 // the lesson's shortcuts.
 
 import { capture } from "./capture.ts";
-import { FEEDBACK_ENDPOINT } from "./entry.ts";
+import { FEEDBACK_ENDPOINT, type Saved } from "./entry.ts";
 
 const ACCENT = "#38d9a9";
 
@@ -137,7 +139,7 @@ async function submit(): Promise<void> {
       body: JSON.stringify(entry),
     });
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-    notify("Saved to ui-feedback.md");
+    notify(`Saved to ${((await res.json()) as Saved).where}`);
   } catch (err) {
     notify(`Comment not saved: ${err instanceof Error ? err.message : err}`, true);
   }

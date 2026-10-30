@@ -1,11 +1,14 @@
 // Dev-server half of the UI feedback overlay (src/dev/feedback/overlay.ts):
 // injects the overlay into every page and appends each comment it posts to a
-// Markdown file. Applies to `vite dev` only, so builds never contain either.
+// Markdown file. The overlay is in pages under `vite dev` and in the staging
+// build (devTools, staging-mode.ts), where the staging Worker keeps comments
+// for `npm run staging:pull`; a production build never contains it.
 
 import { appendFile, writeFile } from "node:fs/promises";
 import type { IncomingMessage } from "node:http";
 import type { Plugin } from "vite";
-import { FEEDBACK_ENDPOINT, FEEDBACK_HEADER, formatEntry, parseEntry } from "../src/dev/feedback/entry.ts";
+import { devTools } from "./staging-mode.ts";
+import { FEEDBACK_ENDPOINT, FEEDBACK_HEADER, formatEntry, parseEntry, type Saved } from "../src/dev/feedback/entry.ts";
 
 const OVERLAY = "/src/dev/feedback/overlay.ts";
 const MAX_BODY = 64 * 1024;
@@ -23,8 +26,8 @@ function readBody(req: IncomingMessage): Promise<string> {
   });
 }
 
-/** Append a formatted entry to `file`, starting the file with its header. */
-async function record(file: string, text: string): Promise<void> {
+/** Append formatted entries to `file`, starting the file with its header. */
+export async function record(file: string, text: string): Promise<void> {
   try {
     await writeFile(file, FEEDBACK_HEADER + text, { flag: "wx" });
   } catch (err) {
@@ -37,8 +40,12 @@ async function record(file: string, text: string): Promise<void> {
 export function uiFeedback(file: string): Plugin {
   return {
     name: "ui-feedback",
-    apply: "serve",
-    transformIndexHtml: () => [{ tag: "script", attrs: { type: "module", src: OVERLAY }, injectTo: "body" }],
+    apply: devTools,
+    transformIndexHtml: {
+      // Before Vite reads the page's scripts, so a staging build bundles it.
+      order: "pre",
+      handler: () => [{ tag: "script", attrs: { type: "module", src: OVERLAY }, injectTo: "body" }],
+    },
     configureServer(server) {
       server.middlewares.use(FEEDBACK_ENDPOINT, async (req, res) => {
         const reply = (status: number, text = "") => {
@@ -55,7 +62,9 @@ export function uiFeedback(file: string): Plugin {
         if (!entry) return reply(400, "not a feedback entry");
         try {
           await record(file, formatEntry(entry, new Date()));
-          reply(204);
+          const saved: Saved = { where: "ui-feedback.md" };
+          res.setHeader("Content-Type", "application/json");
+          reply(200, JSON.stringify(saved));
         } catch (err) {
           server.config.logger.error(`ui-feedback: ${String(err)}`);
           reply(500, "could not write the feedback file");

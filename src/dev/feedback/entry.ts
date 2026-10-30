@@ -1,8 +1,16 @@
 // One UI comment, as the overlay sends it and the dev server records it.
 // Shared by both sides of the wire, so it stays free of DOM and Node APIs.
 
-/** Where the overlay posts comments; served by tools/feedback-plugin.ts. */
+/**
+ * Where the overlay posts comments: served by tools/feedback-plugin.ts on
+ * the dev server, and by worker/staging.ts on staging.
+ */
 export const FEEDBACK_ENDPOINT = "/__ui-feedback";
+
+/** The reply to a posted comment: where it was kept, for the overlay to say. */
+export interface Saved {
+  where: string;
+}
 
 export interface Size {
   width: number;

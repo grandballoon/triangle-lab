@@ -35,7 +35,16 @@ Under `npm run dev`, every page can take comments on its own elements.
 Hold Alt (⌥) to outline the element under the cursor, Alt-click it, type a comment and press Enter.
 The comment is appended to `ui-feedback.md` at the project root, together with the page, a selector for the element, where you clicked and the window size.
 That file is gitignored; each entry starts open (`[ ]`) and is marked `[x]` once dealt with.
-The overlay exists only on the dev server and is never part of a build.
+The overlay exists only on the dev server and on staging (see "Staging"), and is never part of a production build.
+
+### Editing step text
+
+Under `npm run dev`, every lesson page has an "Edit steps" button in its bottom-left corner.
+With it on, click a step's title or text to edit it as its source writes it, `$…$` LaTeX and all, with the step text typeset below as you type.
+Press Enter or Save, and the change is written into the lesson's source file (`src/directions.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson); the page then reloads at the same step.
+Escape cancels.
+Edit mode stays on across the reload, and the button exists only on the dev server and on staging (see "Staging").
+A changed step makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
 
 ## Using your hands
 
@@ -159,6 +168,41 @@ A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_A
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ## Lessons
+## Staging
+
+Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
+It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sync key, behind Cloudflare Access.
+It runs the `staging` branch: `main`, plus the step edits made on staging.
+
+- A step edit saved on staging is committed to the `staging` branch, and the push redeploys staging in a minute or two; the page shows the new text at once.
+- A comment left on staging is kept there; `npm run staging:pull` appends it to your local `ui-feedback.md`, as the dev server would have.
+- A push to `main` is merged into `staging` and redeploys it (`.github/workflows/staging.yml`), so staging never falls behind.
+
+To bring staging's step edits to `main`, merge the branch, then run `/syllabus`, since an edited step leaves its lesson's syllabus entry stale and the tests (and so the deploy from `main`) fail until it is described again:
+
+```bash
+git fetch origin && git merge origin/staging
+```
+
+### Setting up staging
+
+Once:
+
+1. Make the branch: `git push origin main:staging`.
+2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `RECALL_KEY` (a new key, not production's) and `ANTHROPIC_API_KEY`.
+3. Deploy once by hand to make the Worker: `npm run deploy:staging`. It prints staging's address, `triangle-lab-staging.<your subdomain>.workers.dev`.
+4. Put Cloudflare Access in front of it. In the Cloudflare dashboard, open the Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it). Give the application a policy that allows your email address.
+5. Copy the application's audience (AUD) tag and your team's domain into `ACCESS_AUD` and `ACCESS_ISSUER` (`https://<team>.cloudflareaccess.com`) under `env.staging.vars` in `wrangler.jsonc`, and commit them. Until both are set, the dev tools on staging answer 503.
+6. For `npm run staging:pull`, make an Access service token (Zero Trust, Access, Service credentials), add a policy to the application with the action Service Auth that includes it, and put it in `.dev.vars` with staging's address:
+
+```
+STAGING_URL=https://triangle-lab-staging.<your subdomain>.workers.dev
+STAGING_ACCESS_CLIENT_ID=<client id>
+STAGING_ACCESS_CLIENT_SECRET=<client secret>
+```
+
+The staging workflow uses the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets as the deploy from `main`.
+
 
 130 lessons in fourteen chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
@@ -199,7 +243,8 @@ worker/               The Cloudflare Worker: serves the site, syncs recall quest
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
-tools/                Vite plugins used by the dev server
+src/dev/steps/        Dev-only editor that writes step text back to its source
+tools/                Vite plugins used by the dev server, and pulling comments from staging
 specs/                Design notes for the original triangle lessons, and the open
                       question of how to draw an equation (equations-display.md)
 architecture.md       How the pieces fit and where the boundaries are

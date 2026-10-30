@@ -40,5 +40,51 @@
 	"vars": {
 		// Where the Claude API is. Tests point it at a stand-in.
 		"ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+	},
+	"env": {
+		// Staging, `npx wrangler deploy --env staging` (the Worker
+		// triangle-lab-staging): the site as built by `npm run build:staging`,
+		// which keeps the dev tools in, behind Cloudflare Access. It has its
+		// own deck, sync key and rate limits, so testing never touches the
+		// real ones, and serves the dev tools' endpoints (worker/staging.ts).
+		// Bindings and vars are not inherited, so all are given again here.
+		"staging": {
+			"main": "worker/staging.ts",
+			"assets": {
+				"directory": "./dist-staging",
+				"run_worker_first": ["/deck", "/check", "/associate", "/__step-source", "/__ui-feedback"]
+			},
+			"durable_objects": {
+				"bindings": [
+					{ "name": "DECKS", "class_name": "RecallDeck" },
+					// Alt-click comments, kept until `npm run staging:pull`.
+					{ "name": "INBOX", "class_name": "StagingInbox" }
+				]
+			},
+			"migrations": [{ "tag": "v1", "new_sqlite_classes": ["RecallDeck", "StagingInbox"] }],
+			"ratelimits": [
+				{ "name": "LIMITER", "namespace_id": "4209", "simple": { "limit": 60, "period": 60 } },
+				{ "name": "CHECK_LIMITER", "namespace_id": "4210", "simple": { "limit": 10, "period": 60 } }
+			],
+			// As above, plus GITHUB_TOKEN: a fine-grained token for this
+			// repository only, with read and write access to its contents,
+			// which step edits are committed with.
+			"secrets": { "required": ["RECALL_KEY", "ANTHROPIC_API_KEY", "GITHUB_TOKEN"] },
+			"vars": {
+				"ANTHROPIC_BASE_URL": "https://api.anthropic.com",
+				// Where step edits are committed. A push there redeploys
+				// staging (.github/workflows/staging.yml).
+				"GITHUB_API_URL": "https://api.github.com",
+				"GITHUB_REPO": "grandballoon/triangle-lab",
+				"GITHUB_BRANCH": "staging",
+				// The Cloudflare Access application in front of staging
+				// (README.md, "Staging"): the team's issuer,
+				// https://<team>.cloudflareaccess.com, and the application's
+				// audience tag. While either is empty the dev tools' endpoints
+				// answer 503.
+				"ACCESS_ISSUER": "https://nameless-frog-5ff8.cloudflareaccess.com/cdn-cgi/access/certs",
+				"ACCESS_AUD": "630624a9db51760184be60564f9191e77ef7aaeca8241f3c45b6fcc6a96c06cb"
+			}
+		}
 	}
 }
