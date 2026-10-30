@@ -54,8 +54,10 @@ it("injects the overlay into every page", async () => {
 });
 
 it("appends posted comments to the feedback file", async () => {
-  expect((await post(entry)).status).toBe(204);
-  expect((await post({ ...entry, comment: "Second one." })).status).toBe(204);
+  const saved = await post(entry);
+  expect(saved.status).toBe(200);
+  expect(await saved.json()).toEqual({ where: "ui-feedback.md" });
+  expect((await post({ ...entry, comment: "Second one." })).status).toBe(200);
   const text = await readFile(file, "utf8");
   expect(text.startsWith(FEEDBACK_HEADER)).toBe(true);
   expect(text.match(/^## \[ \] /gm)).toHaveLength(2);

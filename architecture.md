@@ -303,14 +303,14 @@ The Worker reads the file when it is built, so a change reaches Claude with the 
 
 ## Dev-only UI feedback (`src/dev/feedback`, `tools/feedback-plugin.ts`)
 
-A review aid for the dev server, separate from the lessons: Alt-click any element to leave a comment on it.
-The Vite plugin applies to `vite dev` only; it injects `overlay.ts` into every page and appends each comment it receives to `ui-feedback.md`.
-No page imports the overlay, so it can never reach a build, and no lesson knows it exists.
+A review aid for the dev server and staging, separate from the lessons: Alt-click any element to leave a comment on it.
+The Vite plugin injects `overlay.ts` into every page under `vite dev` and in the staging build only (`devTools`, `tools/staging-mode.ts`); on the dev server it appends each comment it receives to `ui-feedback.md`, and on staging the staging Worker keeps it until pulled (see "Staging").
+No page imports the overlay, so it can never reach a production build, and no lesson knows it exists.
 The overlay takes Alt-clicks in the capture phase before a lesson sees them, and keys typed into its comment box stop at the box.
 
 | File | Role |
 | --- | --- |
-| `dev/feedback/entry.ts` | The comment's wire format, its validation and its Markdown form. Shared by page and server; no DOM or Node APIs. |
+| `dev/feedback/entry.ts` | The comment's wire format, its validation and its Markdown form. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
 | `dev/feedback/capture.ts` | Clicked element → selector, description and click position. |
 | `dev/feedback/overlay.ts` | The outline, the comment box and the post to the server. |
 | `tools/feedback-plugin.ts` | Injects the overlay and records comments. Runs in Node. |
@@ -350,6 +350,62 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
 - `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
 - `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+## Dev-only step editor (`src/dev/steps`, `tools/step-editor-plugin.ts`)
+
+An authoring aid for the dev server and staging: the text of each lesson's steps can be edited on the page, and the edit lands in the source, since the repository is where the text lives.
+A standalone page's steps are its entry in `directions` (`src/directions.ts`); a lab lesson's are the `steps` array of its module.
+Like the feedback overlay, the plugin injects `editor.ts` into every page under `vite dev` and in the staging build only, so no page imports it, it can never reach a production build, and no lesson or `StepList` knows it exists.
+
+The editor adds an "Edit steps" button to any page with a step column.
+In edit mode, a click on a step's title or text is taken in the capture phase before the column sees it, and opens that field as raw source text, with step text typeset below it as the column will show it.
+The editor asks the server for the page's steps as the source writes them, and pairs the clicked step with one of them by its title: the step at the same place when the titles agree, otherwise the only one with that title.
+A save posts the edit with the step as it was listed; the server finds that step in the source again, rewrites only the literal's span, keeping its quote, and writes the file.
+Vite sees the change and reloads the page, which comes back at the same step through its `#step-N` hash; edit mode is remembered for the tab, so it is still on.
+On staging the same request reaches the staging Worker, which commits the edit to the staging branch instead and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor shows the new text in the step itself.
+
+The finding and rewriting are a pure core, `src/dev/steps/source.ts`: source text in, source text out, used alike by the dev server and the staging Worker.
+It parses the source with Babel's parser rather than matching patterns, so comments, other strings and formatting never confuse it; the parser is small enough for a Worker, where the TypeScript compiler is not.
+A field is editable only where the source writes it as a plain string literal; one built in code, a step that has changed since it was listed, or a step it cannot tell from another is refused, and the source is left alone.
+Every lesson's steps are found this way today, and a test keeps it so.
+An edited step changes its lesson's teaching text, so its syllabus entry goes stale and the syllabus test fails until `/syllabus` describes it again (see "The syllabus").
+
+| File | Role |
+| --- | --- |
+| `dev/steps/wire.ts` | The listing, edit and save wire formats, their validation, and pairing a shown step with a listed one. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
+| `dev/steps/draft.ts` | A draft as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
+| `dev/steps/editor.ts` | The button, the in-place editor, and the calls to the server. |
+| `dev/steps/source.ts` | A page → its source file; the steps in a source; a source with one step rewritten. Pure. |
+| `tools/step-editor-plugin.ts` | Injects the editor, lists a page's steps and writes edits, one at a time. Runs in Node. |
+
+## Staging (`worker/staging.ts`, `env.staging`, `.github/workflows/staging.yml`)
+
+Staging is the site with the dev tools in, on the web, so the feedback overlay and the step editor work without a local server.
+It is a Worker of its own, `triangle-lab-staging`: its own deck, sync key and rate limits, so testing never touches the real ones.
+Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
+
+Cloudflare Access guards the whole staging host, so a page or asset is only served to someone signed in.
+The dev tools' endpoints also check the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
+With either var unset they answer 503, so a misconfigured staging fails closed.
+
+The two tools keep their endpoints and wire formats; only where things land differs.
+
+- **Step edits** are committed to the `staging` branch through GitHub's contents API, with a token scoped to the repository (`GITHUB_TOKEN`).
+  The Worker reads the file from the branch, rewrites the step with the same core the dev server uses, and writes it over the version it read; if the branch moved meanwhile GitHub refuses, and the edit is made again on the newer version, which still holds the step only if nobody changed it.
+  Listing steps reads the branch too, so a step edited twice before staging redeploys is found as it now reads.
+- **UI comments** are kept in a Durable Object (`StagingInbox`) until `npm run staging:pull` (`tools/staging.ts`) appends them to the local `ui-feedback.md`, formatted as the dev server formats them, and tells staging to forget them.
+  The pull gets past Access with a service token from `.dev.vars`.
+
+A push to `staging` redeploys it; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
+The workflow builds but does not test: an edited step leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
+
+| File | Role |
+| --- | --- |
+| `worker/staging-rules.ts` | Which dev tool and action a request is, the Access token taken apart and its claims checked, and the GitHub requests. Pure. |
+| `worker/staging.ts` | The staging entry point: checks the token's signature, reads and commits through GitHub, and holds the comments (`StagingInbox`). |
+| `tools/staging-mode.ts` | Which builds carry the dev tools (`devTools`). |
+| `tools/staging.ts` | `npm run staging:pull`. Runs in Node. |
+| `.github/workflows/staging.yml` | Merges `main` into `staging` and deploys it. |
+
 - `src/pages.test.ts`: every standalone page's stage rule, script order and directions, and that every page is a build entry.
 - `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
@@ -381,3 +437,9 @@ None of this checks how a lesson looks, and no test sees a real hand: gesture th
 
 - `README.md`: running the project and adding a lesson.
 - `specs/`: design notes for the original triangle lessons.
+- `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
+- `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
+- `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
+- `worker/staging-rules.test.ts`: routing to the dev tools on staging, Access tokens taken apart and their claims checked, and the GitHub requests.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, nothing let in without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
+- `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.

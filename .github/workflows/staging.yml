@@ -1,0 +1,51 @@
+name: Deploy staging
+
+# Staging is the site with its dev tools in, behind Cloudflare Access
+# (`env.staging` in wrangler.jsonc). It runs the staging branch, which is main
+# plus the step edits committed from staging itself. A push to main is merged
+# into staging first, so staging never falls behind; a push to staging (a
+# step edit) just redeploys it.
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+
+# Writing to the staging branch, to merge main into it.
+permissions:
+  contents: write
+
+# One deploy at a time. A run waiting behind another is replaced by a newer
+# one, so a burst of step edits deploys once, with all of them.
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+      # A conflict between main and an edit made on staging stops the run;
+      # resolve it by merging main into staging locally.
+      - name: Merge main into staging
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-edit origin/main
+          git push origin HEAD:staging
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # No `npm test`: a step edit leaves its lesson's syllabus entry stale
+      # until `/syllabus` runs on the way to main, which the syllabus test
+      # would refuse. The build still type-checks everything.
+      - run: npm run build:staging
+      - run: npx wrangler deploy --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
