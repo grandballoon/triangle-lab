@@ -65,6 +65,25 @@ The hand-tracking model and its runtime are downloaded from public CDNs the firs
 
 The keyboard also works in lab lessons: `←` and `→` step through a proof and roll over into the neighbouring lesson, `R` resets, `F` shows or hides the formulas.
 
+## Placing a figure in the room
+
+A lab lesson can also be opened in AR, from the "View in AR" pill in its top bar; for now only Tangent Meets Chord, in Angles, has one.
+The AR page puts the lesson's figure on a flat sheet over the camera view and lets you stand that sheet up in the room in perspective, so you can lay a circle over a plate or a tangent along a table edge and see the theorem on real things.
+Nothing in the room is detected: you line the sheet up by eye, and it stays where you put it while you step through the lesson's stages.
+On a phone, switch to the camera on the back.
+
+| To… | Do this |
+| --- | --- |
+| Drag a point of the figure | Drag it, wherever the sheet now lies. |
+| Slide the sheet | Drag empty space (with "Drag to: Move"). |
+| Lean the sheet back or turn it | Drag empty space with "Drag to: Lean", or with Shift held, or with the right mouse button. |
+| Size and spin it | Pinch and twist with two fingers or two hands; or scroll to size and Shift-scroll to spin. |
+| Set it exactly | Use the Tilt, Turn, Spin and Size sliders in "Place the sheet". |
+| Match the camera's perspective | The Lens slider is the camera's field of view: lower for a zoomed-in camera, higher for a wide one. |
+| Go to a stage | Press its number on the card, or `←` / `→`, or the hand poses. |
+
+"Sheet" turns the tinted, ruled backing on and off, "Face me" stands the sheet square to the screen again, and "Reset" (or `0`) puts it back where it started; `R` resets the figure.
+
 ## Recalling what you learned
 
 While you work through a lesson, you can note a question you want to be able to answer later from memory.

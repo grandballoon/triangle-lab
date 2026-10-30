@@ -89,6 +89,7 @@ It never touches the DOM.
 | `lab/terms.ts` | Finds the term under the pointer and draws leader lines from it to the figure. |
 | `lab/hold.ts` | Holds the formula band's numbers still, greyed, while the figure is dragged. Pure. |
 | `lab/sprites.ts` | Loads and caches the images lessons draw with `g.sprite`. |
+| `lab/grip.ts` | How handles and sliders are drawn, and how near a press must land to grab one; shared with the AR page. |
 | `lab/main.ts` | Entry point: picks the lesson from the URL, swaps lessons in place. |
 | `lab/kit/` | Helpers shared by several lessons of one chapter. |
 
@@ -154,6 +155,28 @@ The curriculum rail lists every chapter, lesson and axiom down the left of a les
 On a wide screen it docks: it publishes the width it takes as `--rail-inset` on `<html>` and fires `resize`.
 Standalone pages honour that through their `#stage` rule and size their figure from the canvas box; the lab shell takes it as `leftInset` and fits the stage beside it.
 The entries live in per-chapter files under `src/chapters/`.
+
+## AR (`ar.html`, `src/ar`)
+
+The AR page shows one lab lesson's figure on a flat sheet that the learner places in the camera view in perspective, to lay it over things in the room.
+Nothing is tracked in the scene; the learner matches the sheet to the room by eye.
+The lesson is the lab's own module, built from a `Scene` and drawn by `Draw` as on the lab page, so the AR page needs nothing from it; which lessons the page takes is a list (`lessons.ts`), and the lab page's top bar links to it for those (`link.ts`).
+
+The sheet is a canvas the size of the lab's stage at 60 pixels a unit, so strokes and labels keep their proportion to the figure at any size on screen.
+Its pose (slide, size, tilt, turn, spin, and the camera's field of view) becomes one CSS `matrix3d` with the perspective folded in, so the browser draws the canvas in perspective; the canvas is redrawn at a resolution that follows its size on screen, so it stays sharp.
+The same matrix, read as a homography of the sheet's plane, maps a pointer back onto the sheet: a press is matched to the figure's handles by where they show on screen, and a dragged handle is moved to the stage point under the pointer.
+A press elsewhere moves the sheet: one pointer slides or leans it, two pinch it, which two hands do too, since hands arrive as pointers.
+Grips are drawn and caught as the lab shell does it (`lab/grip.ts`).
+
+| File | Role | Pure |
+| --- | --- | --- |
+| `pose.ts` | The sheet's pose, its matrix, projecting and unprojecting through it, what each gesture does to it, keeping it in front of the eye, picking a handle on screen, the canvas resolution | yes |
+| `dials.ts` | The pose panel's sliders: what each reads from and writes to a pose | yes |
+| `lessons.ts` | Which lessons the AR page takes, and the link to it | yes |
+| `card.ts` | The step card: the stage on the sheet, a button for each stage, the live formulas | no |
+| `panel.ts` | The pose panel: the sliders, what dragging does, the sheet's backing, facing it square on and resetting it | no |
+| `link.ts` | The lab page's "View in AR" pill | no |
+| `main.ts` | Entry point: holds the pose and the lesson, routes pointers, draws each frame | no |
 
 ## Recall (`src/recall`)
 
@@ -355,6 +378,8 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
+- `src/ar/pose.test.ts`: the AR sheet's matrix, unprojecting a pointer onto it under any pose, each gesture, the limits that keep it in front of the eye, picking handles on screen, and the canvas resolution.
+- `src/ar/chrome.test.ts`: the AR step card and pose panel against a DOM stand-in, the sliders read back, and the lab page's way into AR.
 - `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, the free association merged and kept, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
 - `src/recall/check.test.ts`: reading a check request, a verdict with its remarks, and a reply from `/check`.
 - `src/recall/associate.test.ts`: the lessons noted in, reading a free association request, a reading with its remarks and next steps, a reply from `/associate`, the writing read, corrected and read again, and kept in the deck.

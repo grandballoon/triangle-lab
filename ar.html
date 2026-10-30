@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triangle Lab</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%2338d9a9' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body class="hands-top ar">
+    <video id="cam" playsinline muted autoplay></video>
+    <div id="veil"></div>
+    <canvas id="sheet" aria-label="The figure, placed in the room"></canvas>
+    <div id="surface"></div>
+
+    <header id="topbar">
+      <a id="back" class="nav-pill" href="index.html">← Lesson</a>
+      <div id="heading">
+        <span id="eyebrow"></span>
+        <h1 id="title"></h1>
+      </div>
+    </header>
+
+    <section id="pose" aria-label="Placing the sheet" hidden>
+      <button id="pose-toggle" class="panel-head" type="button" aria-controls="pose-body">Place the sheet</button>
+      <div id="pose-body"></div>
+    </section>
+
+    <section id="card" aria-label="Stages">
+      <div class="card-head">
+        <span id="stage-count"></span>
+        <div id="stages" role="group" aria-label="Go to stage"></div>
+      </div>
+      <h2 id="stage-title"></h2>
+      <p id="stage-text"></p>
+      <div id="readouts"></div>
+      <div class="card-nav">
+        <button id="prev" class="chip" type="button">← Back</button>
+        <button id="next" class="chip" type="button">Next →</button>
+      </div>
+    </section>
+
+    <script type="module" src="/src/ar/main.ts"></script>
+  </body>
+</html>
