@@ -173,8 +173,8 @@ Grips are drawn and caught as the lab shell does it (`lab/grip.ts`).
 | `pose.ts` | The sheet's pose, its matrix, projecting and unprojecting through it, what each gesture does to it, keeping it in front of the eye, picking a handle on screen, the canvas resolution | yes |
 | `dials.ts` | The pose panel's sliders: what each reads from and writes to a pose | yes |
 | `lessons.ts` | Which lessons the AR page takes, and the link to it | yes |
-| `card.ts` | The step card: the stage on the sheet, a button for each stage, the live formulas | no |
-| `panel.ts` | The pose panel: the sliders, what dragging does, the sheet's backing, facing it square on and resetting it | no |
+| `card.ts` | The step card: the stage on the sheet, a button for each stage, the live formulas; folds to a caret | no |
+| `panel.ts` | The pose panel: the sliders, what dragging does, how strongly the sheet's backing shows, facing it square on and resetting it | no |
 | `link.ts` | The lab page's "View in AR" pill | no |
 | `main.ts` | Entry point: holds the pose and the lesson, routes pointers, draws each frame | no |
 

@@ -83,7 +83,7 @@ let stepShownAt = performance.now();
 const loadedAt = performance.now();
 let pose: Pose = initialPose(viewport(), SHEET);
 let mode: DragMode = "move";
-let backed = true;
+let backing = 1;
 let matrix: Matrix = sheetMatrix(pose, viewport(), SHEET);
 let resolution = 0;
 let shownPanel = "";
@@ -117,6 +117,9 @@ mountCameraSwitch(topbar);
 
 const card = new StepCard(
   {
+    root: byId("card"),
+    toggle: byId<HTMLButtonElement>("card-toggle"),
+    body: byId("card-body"),
     count: byId("stage-count"),
     title: byId("stage-title"),
     text: byId("stage-text"),
@@ -135,7 +138,7 @@ const panel = new PosePanel(
   {
     pose: (change) => setPose(change(pose)),
     mode: (m) => (mode = m),
-    backed: (on) => (backed = on),
+    backing: (amount) => (backing = amount),
     face: () => setPose({ ...pose, tilt: 0, turn: 0 }),
     reset: () => (pose = initialPose(viewport(), SHEET)),
   },
@@ -212,7 +215,7 @@ function frame(now: number): void {
   ctx.setTransform(res, 0, 0, res, 0, 0);
   ctx.clearRect(0, 0, SHEET.width, SHEET.height);
 
-  const state = { pose, mode, backed };
+  const state = { pose, mode, backing };
   if (JSON.stringify(state) !== shownPanel) {
     shownPanel = JSON.stringify(state);
     panel.show(state);
@@ -229,9 +232,10 @@ function frame(now: number): void {
   };
 
   const g = new Draw(ctx, SHEET_VIEW, lesson.accent, { pictures: sprites });
-  if (backed) {
+  if (backing > 0) {
     // A tinted, ruled sheet: the figure reads over a bright room, and the
-    // rulings show how the sheet lies.
+    // rulings show how the sheet lies. It fades on its own, down to nothing,
+    // so the figure alone can be laid over the room.
     const { halfWidth: w, halfHeight: h } = STAGE;
     const corners = [
       { x: -w, y: -h },
@@ -239,9 +243,9 @@ function frame(now: number): void {
       { x: w, y: h },
       { x: -w, y: h },
     ];
-    g.polygon(corners, { fill: "rgba(6, 10, 16, 0.34)", stroke: null });
-    g.grid(1, { color: "rgba(238, 244, 251, 0.1)" });
-    g.polygon(corners, { stroke: C.faint, width: 3 });
+    g.polygon(corners, { fill: "rgba(6, 10, 16, 0.34)", stroke: null, alpha: backing });
+    g.grid(1, { color: "rgba(238, 244, 251, 0.1)", alpha: backing });
+    g.polygon(corners, { stroke: C.faint, width: 3, alpha: backing });
   }
   lesson.view.draw(g, f);
   for (const s of lesson.scene.sliders) drawSlider(g, s);

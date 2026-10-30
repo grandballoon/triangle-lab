@@ -80,9 +80,12 @@ On a phone, switch to the camera on the back.
 | Size and spin it | Pinch and twist with two fingers or two hands; or scroll to size and Shift-scroll to spin. |
 | Set it exactly | Use the Tilt, Turn, Spin and Size sliders in "Place the sheet". |
 | Match the camera's perspective | The Lens slider is the camera's field of view: lower for a zoomed-in camera, higher for a wide one. |
+| Lay the figure alone over the room | The Sheet slider fades the tinted, ruled backing, down to nothing at 0%; the figure stays as it is. |
 | Go to a stage | Press its number on the card, or `←` / `→`, or the hand poses. |
+| Clear the card off the figure | Press the caret in its corner; it folds to the caret, and the caret opens it again. |
 
-"Sheet" turns the tinted, ruled backing on and off, "Face me" stands the sheet square to the screen again, and "Reset" (or `0`) puts it back where it started; `R` resets the figure.
+"Face me" stands the sheet square to the screen again, and "Reset" (or `0`) puts it back where it started.
+`R` resets the figure.
 
 ## Recalling what you learned
 

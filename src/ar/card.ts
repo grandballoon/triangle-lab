@@ -1,11 +1,15 @@
 // The AR page's step card: which stage of the figure is on the sheet, what it
 // says, and the lesson's live formulas, with a button for each stage and for
-// the one before and after. It only shows; the page owns the current step.
+// the one before and after. It folds to a caret, so it leaves the figure clear.
+// It only shows; the page owns the current step.
 
 import { richHtml, texHtml } from "../lab/math.ts";
 import type { Readout, Step } from "../lab/scene.ts";
 
 export interface CardElements {
+  root: HTMLElement;
+  toggle: HTMLButtonElement;
+  body: HTMLElement;
   count: HTMLElement;
   title: HTMLElement;
   text: HTMLElement;
@@ -28,6 +32,15 @@ export class StepCard {
   ) {
     el.prev.addEventListener("click", () => this.go(this.shownStep - 1));
     el.next.addEventListener("click", () => this.go(this.shownStep + 1));
+    el.toggle.addEventListener("click", () => this.setOpen(el.body.hidden));
+    this.setOpen(true);
+  }
+
+  private setOpen(open: boolean): void {
+    this.el.body.hidden = !open;
+    this.el.root.classList.toggle("folded", !open);
+    this.el.toggle.setAttribute("aria-expanded", String(open));
+    this.el.toggle.setAttribute("aria-label", open ? "Hide the stage's text" : "Show the stage's text");
   }
 
   show(steps: readonly Step[]): void {

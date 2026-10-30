@@ -29,16 +29,19 @@
     </section>
 
     <section id="card" aria-label="Stages">
-      <div class="card-head">
-        <span id="stage-count"></span>
-        <div id="stages" role="group" aria-label="Go to stage"></div>
-      </div>
-      <h2 id="stage-title"></h2>
-      <p id="stage-text"></p>
-      <div id="readouts"></div>
-      <div class="card-nav">
-        <button id="prev" class="chip" type="button">← Back</button>
-        <button id="next" class="chip" type="button">Next →</button>
+      <button id="card-toggle" type="button" aria-controls="card-body"></button>
+      <div id="card-body">
+        <div class="card-head">
+          <span id="stage-count"></span>
+          <div id="stages" role="group" aria-label="Go to stage"></div>
+        </div>
+        <h2 id="stage-title"></h2>
+        <p id="stage-text"></p>
+        <div id="readouts"></div>
+        <div class="card-nav">
+          <button id="prev" class="chip" type="button">← Back</button>
+          <button id="next" class="chip" type="button">Next →</button>
+        </div>
       </div>
     </section>
 

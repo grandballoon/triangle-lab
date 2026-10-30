@@ -22,6 +22,9 @@ describe("StepCard", () => {
 
   function mount() {
     const parts = {
+      root: el("section"),
+      toggle: el<HTMLButtonElement>("button"),
+      body: el("div"),
       count: el("span"),
       title: el("h2"),
       text: el("p"),
@@ -35,6 +38,19 @@ describe("StepCard", () => {
     card.show(steps);
     return { parts, card, asked };
   }
+
+  it("starts open, and folds to its caret and back", () => {
+    const { parts } = mount();
+    expect(parts.body.hidden).toBe(false);
+    expect(parts.toggle.getAttribute("aria-expanded")).toBe("true");
+    parts.toggle.click();
+    expect(parts.body.hidden).toBe(true);
+    expect(parts.root.classList.contains("folded")).toBe(true);
+    expect(parts.toggle.getAttribute("aria-label")).toBe("Show the stage's text");
+    parts.toggle.click();
+    expect(parts.body.hidden).toBe(false);
+    expect(parts.root.classList.contains("folded")).toBe(false);
+  });
 
   it("shows the stage on the sheet, with a button for each", () => {
     const { parts, card } = mount();
@@ -79,7 +95,7 @@ describe("PosePanel", () => {
     let state: PanelState = {
       pose: initialPose({ width: 1200, height: 800 }, { width: 960, height: 600 }),
       mode: "move",
-      backed: true,
+      backing: 1,
     };
     const panel = new PosePanel(
       root,
@@ -88,7 +104,7 @@ describe("PosePanel", () => {
       {
         pose: (change: (p: Pose) => Pose) => (state = { ...state, pose: change(state.pose) }),
         mode: (mode) => (state = { ...state, mode }),
-        backed: (backed) => (state = { ...state, backed }),
+        backing: (backing) => (state = { ...state, backing }),
         face: () => {},
         reset: () => {},
       },
@@ -110,7 +126,8 @@ describe("PosePanel", () => {
   it("writes a slider into the pose, and follows the pose otherwise", () => {
     const { body, panel, get } = mount();
     const inputs = [...body.querySelectorAll<HTMLInputElement>("input[type=range]")];
-    expect(inputs).toHaveLength(dials.length);
+    // A slider for each dial, and the sheet's.
+    expect(inputs).toHaveLength(dials.length + 1);
     const tilt = inputs[dials.findIndex((d) => d.key === "tilt")];
     expect(Number(tilt.value)).toBeCloseTo(30);
     tilt.value = "-20";
@@ -121,16 +138,27 @@ describe("PosePanel", () => {
     expect(Number(tilt.value)).toBeCloseTo((0.5 * 180) / Math.PI, 0);
   });
 
-  it("picks what dragging does, and whether the sheet is backed", () => {
+  it("picks what dragging does", () => {
     const { body, panel, get } = mount();
     const chips = [...body.querySelectorAll<HTMLButtonElement>(".chip")];
     chips.find((c) => c.textContent === "Lean")!.click();
-    chips.find((c) => c.textContent === "Sheet")!.click();
     expect(get().mode).toBe("lean");
-    expect(get().backed).toBe(false);
     panel.show(get());
     expect(chips.find((c) => c.textContent === "Lean")!.getAttribute("aria-pressed")).toBe("true");
-    expect(chips.find((c) => c.textContent === "Sheet")!.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("fades the sheet behind the figure, down to nothing, and follows it otherwise", () => {
+    const { body, panel, get } = mount();
+    const sheet = [...body.querySelectorAll<HTMLInputElement>("input[type=range]")].at(-1)!;
+    expect(sheet.closest("label")!.textContent).toContain("Sheet");
+    expect(Number(sheet.value)).toBe(100);
+    sheet.value = "0";
+    sheet.dispatchEvent(new Event("input"));
+    expect(get().backing).toBe(0);
+    expect(sheet.closest("label")!.textContent).toContain("0%");
+    sheet.dispatchEvent(new Event("change"));
+    panel.show({ ...get(), backing: 0.4 });
+    expect(Number(sheet.value)).toBe(40);
   });
 });
 

@@ -1,8 +1,8 @@
 // The AR page's pose panel: a slider for each way the sheet can be placed
-// (dials.ts), what dragging the sheet does, whether the sheet is tinted and
-// ruled or the figure floats bare, and buttons to face the sheet square on or
-// start over. It folds to its header. It only shows and reports; the page
-// owns the pose.
+// (dials.ts), what dragging the sheet does, how strongly the tinted, ruled
+// sheet shows behind the figure, down to not at all, and buttons to face the
+// sheet square on or start over. It folds to its header. It only shows and
+// reports; the page owns the pose.
 
 import { dials } from "./dials.ts";
 import type { Pose } from "./pose.ts";
@@ -13,16 +13,34 @@ export type DragMode = "move" | "lean";
 export interface PanelState {
   pose: Pose;
   mode: DragMode;
-  /** Whether the sheet is tinted and ruled behind the figure. */
-  backed: boolean;
+  /** How strongly the tinted, ruled sheet shows behind the figure: 0, not at all; 1, fully. */
+  backing: number;
 }
 
 export interface PanelActions {
   pose(next: (pose: Pose) => Pose): void;
   mode(mode: DragMode): void;
-  backed(on: boolean): void;
+  backing(amount: number): void;
   face(): void;
   reset(): void;
+}
+
+/** A slider of the panel: what it shows of the state, and what moving it does. */
+interface SliderSpec {
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  read(state: PanelState): number;
+  write(value: number): void;
+  format(value: number): string;
+}
+
+interface Slider {
+  input: HTMLInputElement;
+  value: HTMLElement;
+  read(state: PanelState): number;
+  format(value: number): string;
 }
 
 const MODES: readonly { mode: DragMode; label: string }[] = [
@@ -31,10 +49,9 @@ const MODES: readonly { mode: DragMode; label: string }[] = [
 ];
 
 export class PosePanel {
-  private readonly inputs: { input: HTMLInputElement; value: HTMLElement }[] = [];
+  private readonly sliders: Slider[] = [];
   private readonly modeChips: HTMLButtonElement[] = [];
-  private readonly sheetChip: HTMLButtonElement;
-  /** The slider being dragged, which the pose is not written back into. */
+  /** The slider being dragged, which the state is not written back into. */
   private editing: HTMLInputElement | null = null;
 
   constructor(
@@ -70,50 +87,60 @@ export class PosePanel {
       drag.append(b);
     }
 
-    const sliders = dials.map((dial) => {
+    const slider = (spec: SliderSpec): HTMLElement => {
       const row = document.createElement("label");
       row.className = "dial";
       const name = document.createElement("span");
       name.className = "panel-label";
-      name.textContent = dial.label;
+      name.textContent = spec.label;
       const input = document.createElement("input");
       input.type = "range";
-      input.min = String(dial.min);
-      input.max = String(dial.max);
-      input.step = String(dial.step);
+      input.min = String(spec.min);
+      input.max = String(spec.max);
+      input.step = String(spec.step);
       const value = document.createElement("span");
       value.className = "dial-value";
       input.addEventListener("input", () => {
         this.editing = input;
         const v = Number(input.value);
-        value.textContent = dial.format(v);
-        actions.pose((pose) => dial.write(pose, v));
+        value.textContent = spec.format(v);
+        spec.write(v);
       });
       input.addEventListener("change", () => (this.editing = null));
-      this.inputs.push({ input, value });
+      this.sliders.push({ input, value, read: spec.read, format: spec.format });
       row.append(name, input, value);
       return row;
+    };
+
+    const poses = dials.map((dial) =>
+      slider({ ...dial, read: (state) => dial.read(state.pose), write: (v) => actions.pose((pose) => dial.write(pose, v)) }),
+    );
+    const backing = slider({
+      label: "Sheet",
+      min: 0,
+      max: 100,
+      step: 1,
+      read: (state) => state.backing * 100,
+      write: (v) => actions.backing(v / 100),
+      format: (v) => `${Math.round(v)}%`,
     });
 
-    this.sheetChip = chip("Sheet", () => actions.backed(this.sheetChip.getAttribute("aria-pressed") !== "true"));
     const buttons = document.createElement("div");
     buttons.className = "panel-row";
-    buttons.append(this.sheetChip, chip("Face me", actions.face), chip("Reset", actions.reset));
+    buttons.append(chip("Face me", actions.face), chip("Reset", actions.reset));
 
-    body.append(drag, ...sliders, buttons);
+    body.append(drag, ...poses, backing, buttons);
     root.hidden = false;
   }
 
   show(state: PanelState): void {
-    dials.forEach((dial, i) => {
-      const { input, value } = this.inputs[i];
-      if (input === this.editing) return;
-      const v = dial.read(state.pose);
+    for (const { input, value, read, format } of this.sliders) {
+      if (input === this.editing) continue;
+      const v = read(state);
       input.value = String(v);
-      value.textContent = dial.format(v);
-    });
+      value.textContent = format(v);
+    }
     this.modeChips.forEach((b, i) => b.setAttribute("aria-pressed", String(MODES[i].mode === state.mode)));
-    this.sheetChip.setAttribute("aria-pressed", String(state.backed));
   }
 
   private setOpen(open: boolean): void {
