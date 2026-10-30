@@ -26,9 +26,13 @@ The camera can also be turned off from the hands settings sheet, which leaves th
 Off is remembered too, and a page opened with the camera off never asks for it.
 A camera facing the user is shown mirrored and one facing away is not; the video carries which as `data-mirror`, and hand tracking maps landmarks to the screen, and reads handedness, to match.
 
-A photo can stand in for the camera's picture (`src/backdrop.ts`): dropped onto the page, pasted, or picked with a pill in the top bar, which takes it away again once it shows.
-The photo is an `<img>` laid over the video and under the veil, so it leaves the camera itself alone: hand tracking still reads the video, and the camera is still turned on and off from the hands sheet.
-The photo is remembered in IndexedDB, as the camera's choice is in localStorage, so the next lesson page opens over it too.
+A photo can stand in for the camera's picture (`src/backdrop/`): dropped onto the page, pasted, or picked with a pill in the top bar.
+The photo is laid over the video and under the veil, so it leaves the camera itself alone: hand tracking still reads the video, and the camera is still turned on and off from the hands sheet.
+Once a photo shows, the pill arranges it, to line it up with the figure (`arrange.ts`).
+A layer over the whole page then takes every pointer, so a drag moves the photo rather than the figure; two pointers, the wheel or a trackpad pinch resize it, and a bar of buttons and the keys do both by hand.
+Where the photo sits is a `Placement`: its size relative to just covering the window, and its centre's offset in widths of the photo at that size, so it stays roughly lined up as the window changes shape.
+Every move is a pure function from one placement to the next (`core.ts`).
+The photo and its placement are remembered in IndexedDB (`store.ts`), as the camera's choice is in localStorage, so the next lesson page opens over it too.
 
 ## Hands are a pointer (`src/hands`)
 
