@@ -82,7 +82,7 @@
 				// https://<team>.cloudflareaccess.com, and the application's
 				// audience tag. While either is empty the dev tools' endpoints
 				// answer 503.
-				"ACCESS_ISSUER": "https://nameless-frog-5ff8.cloudflareaccess.com/cdn-cgi/access/certs",
+				"ACCESS_ISSUER": "https://nameless-frog-5ff8.cloudflareaccess.com",
 				"ACCESS_AUD": "630624a9db51760184be60564f9191e77ef7aaeca8241f3c45b6fcc6a96c06cb"
 			}
 		}
