@@ -1,0 +1,157 @@
+/* The photo backdrop (backdrop/index.ts). The frame covers the window as the
+   camera's video does, over it and under the veil, on the page's own dark
+   background, so a photo made smaller than the window hides the camera all
+   the same. The photo inside is placed in pixels from core.ts's photoBox,
+   dimmed as the camera is so the figure reads as well over either; unlike
+   the camera, it is never mirrored. */
+
+#photo {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #0b0f14;
+}
+
+#photo[hidden] { display: none; }
+
+#photo img {
+  position: absolute;
+  max-width: none;
+  filter: saturate(0.85) brightness(0.7);
+  user-select: none;
+}
+
+/* The pill in the top bar: pick a photo, or, with one showing, arrange it. */
+.nav-photo {
+  flex: none;
+  padding: 0 10px;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-photo:hover,
+.nav-photo.hand-hover { color: #fff; background: rgba(6, 10, 16, 0.68); }
+.nav-photo[aria-pressed="true"] { color: var(--accent, #38d9a9); }
+.nav-photo svg { width: 17px; height: 17px; }
+
+/* Shown while a file is dragged over the page. */
+#photo-drop {
+  position: fixed;
+  inset: 12px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed color-mix(in srgb, var(--accent, #38d9a9) 80%, transparent);
+  border-radius: 18px;
+  background: rgba(6, 10, 16, 0.55);
+  color: #e9f0f7;
+  font: 600 18px ui-sans-serif, system-ui, -apple-system, sans-serif;
+  pointer-events: none;
+}
+
+#photo-drop[hidden] { display: none; }
+
+/* --- Arranging (arrange.ts) ---------------------------------------------------- */
+
+/* Takes every pointer while the photo is arranged, so a drag moves the photo
+   rather than the figure. Clear, so the figure shows through to line up with.
+   Above the hands overlay, under the bar. */
+#photo-arrange {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  cursor: grab;
+  touch-action: none;
+  /* A thin accent edge says the page is in a different mode. */
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent, #38d9a9) 60%, transparent);
+}
+
+#photo-arrange.grabbing { cursor: grabbing; }
+#photo-arrange[hidden] { display: none; }
+
+#photo-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  z-index: 66;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 24px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: rgba(6, 10, 16, 0.78);
+  backdrop-filter: blur(8px);
+  color: #e9f0f7;
+  font: 500 14px ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+#photo-bar[hidden] { display: none; }
+
+.photo-hint {
+  font-size: 12px;
+  color: rgba(233, 240, 247, 0.6);
+  text-align: center;
+}
+
+.photo-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-sizing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.photo-size {
+  /* Fixed digit width, so the buttons beside it hold still as it changes. */
+  min-width: 4.2em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* As the lab's .chip, which standalone pages do not load. */
+.photo-chip {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font: 500 14px/1 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  color: rgba(233, 240, 247, 0.85);
+  background: rgba(6, 10, 16, 0.55);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.photo-chip.photo-step {
+  width: 34px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.photo-chip:hover,
+.photo-chip.hand-hover {
+  border-color: var(--accent, #38d9a9);
+  background: rgba(6, 10, 16, 0.75);
+}
+
+.photo-chip.photo-done {
+  color: #071018;
+  background: var(--accent, #38d9a9);
+  border-color: var(--accent, #38d9a9);
+  font-weight: 650;
+}
+
+.photo-chip:focus-visible {
+  outline: 2px solid var(--accent, #38d9a9);
+  outline-offset: 2px;
+}

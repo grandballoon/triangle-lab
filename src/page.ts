@@ -5,7 +5,7 @@
 // read alike:
 //
 //   - the top bar: the pager, the camera switch (cameraSwitch.ts), the
-//     background photo (backdrop.ts), then the chapter and the lesson's name;
+//     background photo (backdrop/), then the chapter and the lesson's name;
 //   - the step column on the right, holding the lesson's written directions
 //     (directions.ts);
 //   - the formula band along the bottom, for a lesson with live formulas;
@@ -22,7 +22,7 @@
 // the lesson refits its figure on the event.
 
 import "katex/dist/katex.min.css";
-import { mountBackdrop } from "./backdrop.ts";
+import { mountBackdrop } from "./backdrop/index.ts";
 import { mountCameraSwitch } from "./cameraSwitch.ts";
 import { formulaRows, setStep } from "./chrome.ts";
 import { railInset } from "./curriculum.ts";

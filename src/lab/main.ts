@@ -5,7 +5,7 @@
 
 import "katex/dist/katex.min.css";
 import "./lab.css";
-import { mountBackdrop } from "../backdrop.ts";
+import { mountBackdrop } from "../backdrop/index.ts";
 import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
