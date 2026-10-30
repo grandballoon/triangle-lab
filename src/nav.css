@@ -150,3 +150,6 @@ html[data-layout="stacked"] #title {
 /* The lesson count gives way, so the pager, the camera switch and the hands
    pill share one row on the narrowest phone. */
 html[data-layout="stacked"] .nav-step { display: none; }
+
+/* The lab page's way into AR (src/ar/link.ts), after the lesson's name. */
+.nav-ar { flex: none; }

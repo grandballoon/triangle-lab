@@ -1,0 +1,253 @@
+/* The AR page (ar.html): the camera view, barely dimmed so the room reads
+   clearly; the figure's sheet, placed in perspective by main.ts; a surface
+   over everything that takes the pointers; and the chrome — the top bar
+   (nav.css), the pose panel at the top right and the step card at the
+   bottom left. Chips and the camera come from lab.css.
+
+   Below 700px across main.ts marks <html data-layout="stacked">: the top bar
+   takes two rows (nav.css), the pose panel starts folded under it, and the
+   card spans the bottom. */
+
+:root { --edge: 16px; }
+
+html[data-layout="stacked"] { --edge: 10px; }
+
+body.ar #cam { filter: saturate(0.95) brightness(0.92); }
+body.ar #veil { background: rgba(6, 10, 16, 0.18); }
+
+#sheet {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+#surface {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+#surface.can-grab { cursor: grab; }
+#surface.grabbing { cursor: grabbing; }
+
+/* --- Panels ------------------------------------------------------------------- */
+
+#pose,
+#card {
+  position: fixed;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(6, 10, 16, 0.72);
+  backdrop-filter: blur(8px);
+  color: #e9f0f7;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+#pose {
+  top: 64px;
+  right: var(--edge);
+  width: 272px;
+}
+
+html[data-layout="stacked"] #pose { top: 82px; width: min(272px, calc(100% - 2 * var(--edge))); }
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 650 14px/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.panel-head::after,
+#card-toggle::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  opacity: 0.6;
+  transition: transform 0.15s ease;
+}
+
+.panel-head[aria-expanded="true"]::after { transform: translateY(2px) rotate(-135deg); }
+
+.panel-head:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 14px; }
+
+#pose-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px 14px 14px;
+}
+
+.panel-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.panel-label {
+  font-size: 13px;
+  color: rgba(233, 240, 247, 0.6);
+}
+
+.panel-row .panel-label { margin-right: 4px; }
+
+#pose .chip { height: 30px; padding: 0 12px; font-size: 13px; }
+
+.dial {
+  display: grid;
+  grid-template-columns: 44px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+}
+
+.dial input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.dial-value {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: rgba(233, 240, 247, 0.85);
+}
+
+/* --- The step card -------------------------------------------------------------- */
+
+#card {
+  left: var(--edge);
+  bottom: var(--edge);
+  width: min(460px, calc(100% - 2 * var(--edge)));
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+
+html[data-layout="stacked"] #card { max-height: 42%; padding: 12px 14px; }
+
+/* Open, the caret sits in the card's top right corner and points down, to fold
+   it; folded, the card is only the caret, pointing up, to open it again. */
+#card-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+#card-toggle:hover { background: rgba(255, 255, 255, 0.08); }
+#card-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+#card .card-head { padding-right: 36px; }
+
+#card.folded,
+html[data-layout="stacked"] #card.folded {
+  width: auto;
+  padding: 0;
+  overflow: visible;
+}
+
+#card.folded #card-toggle {
+  position: static;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+}
+
+#card.folded #card-toggle::after { transform: translateY(2px) rotate(-135deg); }
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#stage-count {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#stages { display: flex; gap: 4px; }
+
+#card .chip.stage {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 13px;
+}
+
+#stage-title {
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+#stage-text {
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(233, 240, 247, 0.88);
+}
+
+#readouts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#readouts:empty { display: none; }
+
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: 12px;
+  font-size: 13px;
+}
+
+.readout-label { color: rgba(233, 240, 247, 0.6); }
+.readout-tex { font-size: 14px; }
+.readout.tone-good .readout-tex { color: #38d9a9; }
+.readout.tone-warn .readout-tex { color: #ff6b6b; }
+.readout.tone-dim .readout-tex { color: rgba(233, 240, 247, 0.45); }
+
+.card-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+#card .chip:disabled { opacity: 0.35; cursor: default; }

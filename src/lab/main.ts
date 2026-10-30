@@ -5,6 +5,7 @@
 
 import "katex/dist/katex.min.css";
 import "./lab.css";
+import { mountArLink } from "../ar/link.ts";
 import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
@@ -23,6 +24,7 @@ const byId = <T extends HTMLElement>(id: string): T => document.getElementById(i
 const video = byId<HTMLVideoElement>("cam");
 const topbar = byId("topbar");
 mountCameraSwitch(topbar);
+const showArLink = mountArLink(topbar);
 
 const hands = startHands({
   video,
@@ -83,6 +85,7 @@ async function show(slug: string): Promise<void> {
     history.replaceState(history.state, "", location.pathname + location.search);
   }
   neighbours = mountPager(slug, topbar);
+  showArLink(slug);
   recall.refresh();
   document.title = `${lesson.name} · Triangle Lab`;
 }

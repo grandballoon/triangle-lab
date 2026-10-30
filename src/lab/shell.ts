@@ -7,10 +7,11 @@
 // src/hands, so this file has no gesture code.
 
 import { capturePointer, releasePointer } from "../pointer.ts";
-import { C, Draw, tint, toScreen, toStage, type View } from "./draw.ts";
+import { Draw, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
 import { Arranger } from "./arrange.ts";
 import { FormulaBand } from "./formulas.ts";
+import { drawGrip, drawSlider, pickRadius } from "./grip.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
 import { layoutChrome } from "./layout.ts";
 import { linkTex, termAliases } from "./link.ts";
@@ -19,22 +20,16 @@ import { StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
 import {
   Scene,
+  STAGE,
   type Frame,
   type Handle,
   type HandPoints,
   type LessonBuilder,
   type LessonView,
-  type Slider,
 } from "./scene.ts";
-
-/** Lessons compose inside this much stage, centred on the origin. */
-export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 
 const STEP_FADE_SECONDS = 0.7;
 
-// How close a press must land to grab a handle. A pinch is far less precise
-// than a mouse, so hands get a wider catch.
-const PICK_RADIUS_PX: Record<string, number> = { mouse: 24, pen: 24, touch: 36, hand: 46 };
 
 export interface ShellElements {
   canvas: HTMLCanvasElement;
@@ -248,8 +243,8 @@ export class Shell {
     // A lesson may change a control itself (a step that picks a case, a
     // button that resets a toggle); keep the chips showing the truth.
     if (this.controlState(c.scene) !== this.shownControls) this.renderControls();
-    for (const s of c.scene.sliders) this.drawSlider(g, s);
-    for (const h of c.scene.handles) this.drawHandle(g, view, h, c.header.accent);
+    for (const s of c.scene.sliders) drawSlider(g, s);
+    for (const h of c.scene.handles) drawGrip(this.ctx, g, h);
     const shown = present(this.hold, this.drags.size > 0, c.view.readout?.(frame) ?? []);
     this.hold = shown.hold;
     this.band.show(shown.rows);
@@ -264,41 +259,6 @@ export class Shell {
   }
 
   private viewNow: View = { scale: 1, ox: 0, oy: 0, width: 0, height: 0 };
-
-  private drawHandle(g: Draw, view: View, h: Handle, accent: string): void {
-    if (h.hidden) return;
-    const color = h.color ?? accent;
-    if (!h.enabled) {
-      g.point(h, { color, label: h.label });
-      return;
-    }
-    const s = toScreen(view, h);
-    const { ctx } = this;
-    const active = h.grabbed || h.hover;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, active ? 17 : 13, 0, Math.PI * 2);
-    ctx.fillStyle = tint(color, h.grabbed ? 0.45 : active ? 0.32 : 0.2);
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = color;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = h.grabbed ? "#ffffff" : color;
-    ctx.fill();
-    ctx.restore();
-    if (h.label) g.label(h, h.label, { color, dx: 18, dy: 18, bold: true });
-  }
-
-  private drawSlider(g: Draw, s: Slider): void {
-    const color = g.accent;
-    const active = s.knob.grabbed || s.knob.hover;
-    g.segment(s.a, s.b, { color: C.faint, width: 6 });
-    g.segment(s.a, s.knob, { color, width: 6 });
-    g.circle(s.knob, g.px(active ? 13 : 10), { fill: color, stroke: "#ffffff", width: 2 });
-    g.label(s.a, s.text, { align: "left", dy: 22, size: 14 });
-  }
 
   // --- Panels ----------------------------------------------------------------
 
@@ -362,7 +322,7 @@ export class Shell {
     const scene = this.current?.scene;
     if (!scene) return;
     const p = this.stagePoint(e);
-    const radius = (PICK_RADIUS_PX[e.pointerType] ?? PICK_RADIUS_PX.touch) / this.viewNow.scale;
+    const radius = pickRadius(e.pointerType) / this.viewNow.scale;
     const handle = scene.pick(p, radius);
     // One pointer per handle: a second hand cannot steal a point mid-drag.
     if (handle?.grabbed) return;
@@ -383,7 +343,7 @@ export class Shell {
     const p = this.stagePoint(e);
     const drag = this.drags.get(e.pointerId);
     if (!drag) {
-      const radius = (PICK_RADIUS_PX[e.pointerType] ?? PICK_RADIUS_PX.touch) / this.viewNow.scale;
+      const radius = pickRadius(e.pointerType) / this.viewNow.scale;
       const over = scene.pick(p, radius);
       for (const h of scene.handles) h.hover = h === over;
       this.el.canvas.classList.toggle("can-grab", over !== null);

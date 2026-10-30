@@ -14,8 +14,9 @@ const mediapipe = JSON.parse(
 
 // One project, several pages. The root index.html is the lesson menu; each
 // standalone lesson is its own HTML entry point; lab.html hosts every lab
-// lesson (src/lab/lessons), loading each one on demand; recall.html asks back
-// the questions noted in the lessons (src/recall).
+// lesson (src/lab/lessons), loading each one on demand; ar.html places one
+// lab lesson's figure in the camera view in perspective (src/ar); recall.html
+// asks back the questions noted in the lessons (src/recall).
 //
 // The built site is served from the root of its own origin by the Worker in
 // wrangler.jsonc, which also holds the recall deck at /deck and checks
@@ -48,6 +49,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.html"),
         lab: resolve(__dirname, "lab.html"),
         recall: resolve(__dirname, "recall.html"),
+        ar: resolve(__dirname, "ar.html"),
         angles: resolve(__dirname, "angles.html"),
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),
