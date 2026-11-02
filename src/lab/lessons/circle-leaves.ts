@@ -56,6 +56,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Trimming the crust off a slice",
+        text: "A slice of round pie is a sector. Cut straight across between the two ends of its crust and you split it into a triangle and a curved strip of crust. The strip is the segment, the slice minus the triangle, which is how this lesson finds it.",
+      },
+      {
+        title: "Two overlapping coasters",
+        text: "Lay two round coasters so they overlap, and put a ruler across the two points where their edges cross. The overlap splits into two caps, each one cut off a coaster by that straight line. That is the chord $OT$: it turns a leaf, which has no formula, into two segments, which do.",
+      },
+    ],
+    uses: [
+      {
+        title: "How much water is in a pipe?",
+        text: "Water lying in a horizontal pipe fills a circular segment of its cross-section, and engineers find its area as sector minus triangle. In a pipe of radius 10 cm, a water surface that spans $60^\\circ$ at the centre gives $100\\left(\\frac{\\pi}{6} - \\frac{\\sqrt3}{4}\\right) \\approx 9.1$ square centimetres, from water only about 1.3 cm deep. The same sum, with other angles, gives the depth charts for fuel tanks lying on their side.",
+      },
+      {
+        title: "Glass for an arched window",
+        text: "A segmental arch, common over doors and windows, is a circular segment sitting on a straight top. The glass it needs is the sector of the arch's circle minus the triangle under the chord: for a $60^\\circ$ arch of radius 1 m, $\\frac{\\pi}{6} - \\frac{\\sqrt3}{4} \\approx 0.09$ square metres.",
+      },
+    ],
+
     draw(g, f) {
       const { r, centers, tips, leaves } = figure();
       const [P] = centers;

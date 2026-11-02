@@ -59,6 +59,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Leaning a stack of paper",
+        text: "Push the top of a neat stack of paper sideways and it leans, but it is still the same sheets and the same height. Think of the triangle as thin strips lying parallel to the base: sliding $A$ along its line shifts each strip sideways without changing its length, so the area stays $\\tfrac12 \\cdot BC \\cdot h$.",
+      },
+      {
+        title: "Cutting a slice from the tip",
+        text: "Cut a triangular tray bake from its top corner straight down to the bottom edge. Both pieces rise to the same corner, so they have the same height, and their sizes go only by how much of the bottom edge each one gets. Cut a third of the way along and you have a third and two thirds.",
+      },
+    ],
+    uses: [
+      {
+        title: "Sharing a field fairly",
+        text: "Two buyers want parts of a triangular field that both reach the corner at the gate. A straight fence from that corner to the far side splits the area in the same ratio as it splits the far side. To give one buyer twice as much as the other, put the fence two thirds of the way along.",
+      },
+      {
+        title: "Straightening a crooked fence",
+        text: "A fence between two fields runs from $A$ to a bend at $P$ and on to $B$ on a road. To replace it with one straight fence from $A$, surveyors draw a line through $P$ parallel to $AB$; where it meets the road is the new corner $Q$. Triangles $ABP$ and $ABQ$ share the base $AB$ and have the same altitude, so they have equal areas, and each owner keeps exactly as much land as before.",
+      },
+    ],
+
     draw(g, f) {
       const a = apex();
       const foot = vec(a.x, BASE_Y);

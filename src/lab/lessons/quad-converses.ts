@@ -173,6 +173,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Tying two sticks into a kite frame",
+        text: "Lash two sticks together and stretch string round their four ends. Tie each stick at its middle and the string makes a parallelogram; cross them at right angles as well and it makes a diamond; use two equal sticks tied at their middles and it makes a rectangle; do all three and it is a square. Where and how you tie the sticks decides the shape.",
+      },
+      {
+        title: "Covering a kite",
+        text: "A traditional kite has its crossbar at right angles to the spine, but not at the spine's middle. However far up the crossbar sits, the paper needed to cover it is half the rectangle the two sticks would fill, $\\tfrac12 d_1 d_2$, because the crossbar cuts the kite into two triangles standing on it.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Marking out a rectangular bed with string",
+        text: "To mark out a rectangular flower bed without a set square, take two equal lengths of string and peg them so they cross at their midpoints. The four ends are the corners of a rectangle: equal diagonals that bisect each other force all four right angles.",
+      },
+      {
+        title: "Cutting fabric for a kite",
+        text: "A kite with a $90$ cm spine and a $60$ cm crossbar at right angles to it needs a sail of $\\tfrac12 \\cdot 90 \\cdot 60 = 2700$ square centimetres, wherever along the spine the crossbar is fixed. That tells you how much ripstop to buy before you have decided on the exact shape.",
+      },
+    ],
+
     draw(g, f) {
       settle();
       const m = measure();

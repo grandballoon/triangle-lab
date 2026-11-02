@@ -136,6 +136,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Finishing a square patio",
+        text: "A square patio has had a strip of paving laid along one side. To make it square again, you lift half the strip and relay it along the top. Now only a small square in the corner is missing, and one more slab finishes the job. That slab is $\\left(\\frac{b}{2}\\right)^2$, and in an equation you must add it to both sides.",
+      },
+      {
+        title: "Rounding up to add in your head",
+        text: "To add 37 and 25 in your head, you might borrow 3 to make a round 40, add 25 to get 65, and then take the 3 off again: 62. Completing the square borrows in the same way. It adds the missing corner to reach a shape that is easy to undo, a perfect square, and keeps the equation fair by adding the corner to the other side too.",
+      },
+    ],
+
     uses: [
       {
         title: "The biggest bed for your edging",

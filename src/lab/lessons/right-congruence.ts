@@ -148,6 +148,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Leaning a ladder against a wall",
+        text: "The wall and the ground meet at a right angle. Once you know how long the ladder is and how far its foot stands from the wall, there is only one height it can reach. That is HL: the ladder is the hypotenuse, the gap at the foot is a leg, and the right angle settles everything else.",
+      },
+      {
+        title: "Ordering a corner shelf",
+        text: "A triangular shelf for the corner of a room has two edges running along the walls, which meet at a right angle. Tell the shop those two lengths and the front edge is fixed too, so every shelf cut to them is the same. That is LL: two legs with the right angle between them.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "One rafter as the pattern",
+        text: "When carpenters frame a roof, they work out the rise and the run for a common rafter, cut one, and use it as a template for all the rest. Each rafter with its run and rise forms a right triangle fixed by its two legs, so every copy fits the same way. That is why a roof can be framed from one carefully cut piece.",
+      },
+      {
+        title: "Measuring a tree without climbing it",
+        text: "Stand 20 metres from a tree and measure the angle up to its top with a phone app or a clinometer. The tree meets the ground at a right angle, so one side and one acute angle are known, and SA says only one triangle fits. Its height is therefore settled; with an angle of $35^\\circ$ it is about 14 metres, plus the height of your eyes.",
+      },
+      {
+        title: "Will the ladder reach the gutter?",
+        text: "Safety guidance says a ladder's foot should stand 1 unit out from the wall for every 4 units up. Set a 4 metre ladder that way and its foot is just under 1 metre out, and HL says the top must then be at one height only, about $\\sqrt{4^2 - 0.97^2} \\approx 3.9$ metres. So you know before you carry it out whether it reaches the gutter.",
+      },
+    ],
+
     draw(g) {
       placeA();
       const m = mode.value;

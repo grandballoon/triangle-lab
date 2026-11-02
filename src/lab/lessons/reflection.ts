@@ -88,6 +88,30 @@ export default lesson((s) => {
         text: "Drop the highlighted vertex and its image onto the mirror at $F$. The two right triangles share the leg $XF$ and have equal legs to $F$, so they are congruent: the line and its image meet the mirror at equal angles.",
       },
     ],
+    likes: [
+      {
+        title: "Making a folded paint blot",
+        text: "Dab paint on one half of a sheet, fold it along the crease and press: the blot prints on the other half. The crease is the mirror. Each blot and its print sit at equal distances on either side of the crease, joined by a line square to it, and paint that was already on the crease stays exactly where it was. The print is the blot turned over, so writing done this way comes out backwards.",
+      },
+      {
+        title: "Looking in a mirror",
+        text: "Your reflection stands as far behind the glass as you stand in front of it, straight across from you, so the glass is the perpendicular bisector of the line from you to your image. Touch the glass and your fingertip meets its reflection, because a point on the mirror is its own image. Raise your right hand and the person in the glass raises the hand on the same side, which would be their left: the reflection has reversed orientation.",
+      },
+    ],
+    uses: [
+      {
+        title: "Writing on an ambulance",
+        text: "The word AMBULANCE is often painted on the front of the vehicle in mirror writing. A driver ahead sees it in their rear-view mirror, which reflects it a second time and turns it the right way round, so they can read it at a glance and pull over.",
+      },
+      {
+        title: "Banking a ball off a cushion",
+        text: "In snooker and pool, to bounce the cue ball off a cushion onto a target, players aim at the target's reflection in the cushion. The straight line to that reflection crosses the cushion at the bounce point, and since the real path and its reflection meet the cushion at equal angles, the ball comes off the cushion heading straight for the real target.",
+      },
+      {
+        title: "Cutting on the fold",
+        text: "Sewing patterns for symmetric pieces, like the back of a shirt, give only half the shape and say place on fold. You fold the fabric, line the pattern's straight edge up with the fold and cut through both layers at once. Unfolded, the second half is the reflection of the first in the fold, so the two sides match exactly.",
+      },
+    ],
 
     draw(g, f) {
       const src = original();

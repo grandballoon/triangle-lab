@@ -97,6 +97,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "A winding road beside a river",
+        text: "Picture the curve as a winding road and the axis as a river. Each time the road crosses the river is a root, and between two crossings it must turn back; where it only touches the bank and turns away, two roots have met. Raise the road on an embankment and the crossings disappear two at a time, never one alone.",
+      },
+      {
+        title: "Putting socks away in pairs",
+        text: "Socks go into the drawer in pairs, so if you started with an odd number, at least one is still out on the bed. Roots leave the axis in conjugate pairs in the same way, so a cubic, with three roots, always keeps at least one real root on the axis.",
+      },
+    ],
+
     uses: [
       {
         title: "An open box from a sheet of card",

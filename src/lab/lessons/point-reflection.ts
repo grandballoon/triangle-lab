@@ -67,6 +67,30 @@ export default lesson((s) => {
         text: "Spin the triangle $180^\\circ$ about $O$: each point keeps its distance from $O$ and ends up directly opposite. That is exactly where the reflection put it, so the two maps are the same.",
       },
     ],
+    likes: [
+      {
+        title: "Sitting across a round table",
+        text: "At a round table, the person sitting directly opposite you is on the straight line through the centre, as far beyond it as you are on this side. The centre of the table is $O$, and it is the midpoint between you and them. Spin the table top half a turn and your plate goes exactly to their place, which is why the point reflection is a half-turn.",
+      },
+      {
+        title: "Pacing past a lamp post",
+        text: "Stand at $A$ and walk to a lamp post at $O$, counting your paces: say $4$ east and $3$ north. Now take exactly the same paces again from the lamp post, and you arrive at $A'$. You have walked the step $O - A$ twice, which is the rule $A' = 2O - A$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Playing cards that read either way up",
+        text: "The kings, queens and jacks in a standard pack are printed double-ended: the lower half of the card is the upper half turned through $180^\\circ$ about the card's centre. Every point of the design has a matching point straight through the centre and as far again. So the card looks the same whichever way up you are dealt it, and you never need to turn it round.",
+      },
+      {
+        title: "Drawing a rectangle from its centre",
+        text: "Many drawing programs let you hold a key to draw a rectangle out from its centre instead of from a corner. The program keeps the centre $O$ fixed and puts the opposite corner at $2O - A$, where $A$ is the corner you are dragging. With the centre at $(5, 3)$ and your pointer at $(8, 5)$, the far corner lands at $(2, 1)$.",
+      },
+      {
+        title: "Why a pinhole camera turns the picture over",
+        text: "In a pinhole camera, light from each point of the scene travels in a straight line through the pinhole and lands on the far side. So the picture on the screen is upside down and swapped left to right at once: a half-turn about the pinhole, not a flip. It is a true point reflection only when the screen is as far behind the pinhole as the subject is in front; otherwise the picture is also shrunk or enlarged.",
+      },
+    ],
 
     draw(g, f) {
       const src = original();

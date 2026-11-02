@@ -162,5 +162,27 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    likes: [
+      {
+        title: "Turning a ruler on a pin",
+        text: "Pin a ruler at $P$ over a round plate and turn it. Along the ruler the plate's edge is at $A$ and at $B$, and as one distance from the pin shrinks, the other grows just enough to keep $PA \\cdot PB$ the same. Move the pin and the constant changes: zero with the pin on the rim, and larger the further the pin moves from the rim, inwards or outwards.",
+      },
+      {
+        title: "Reading a contour map",
+        text: "Every spot on a hill has one height, whichever path you took to get there. The power of a point is like that: one number belongs to $P$, whichever line you measure it along. Points the same distance from the centre have the same power, so the circles round $O$ are its contour lines, with the circle itself at zero.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Water in a round pipe",
+        text: "A drain pipe 1 m across has water lying in it, and the water's surface is 80 cm wide. The surface is a chord, halved by the upright line through the centre, so with $r = 50$ cm, $40^2 = 50^2 - d^2$ and the surface is $d = 30$ cm from the centre. The water is 20 cm deep, or 80 cm if the pipe is more than half full.",
+      },
+      {
+        title: "Clearance in a round-topped tunnel",
+        text: "A van 2 m wide drives down the middle of a semicircular tunnel of radius 3 m. Each side of the van is $d = 1$ m from the centre of the floor, and the halved chord straight up from there has $h^2 = r^2 - d^2 = 9 - 1 = 8$. So the roof is about 2.83 m above the van's sides, and the van must be lower than that to pass.",
+      },
+    ],
   };
 });

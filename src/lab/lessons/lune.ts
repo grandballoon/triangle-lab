@@ -54,6 +54,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Weighing the cat",
+        text: "A cat will not sit still on the bathroom scales, so you weigh yourself holding it, then take away your own weight. The crescent will not sit still for a formula either, so you measure shapes that do have one, the triangle plus the semicircle, and take away the quarter circle.",
+      },
+      {
+        title: "Borrowing and giving back",
+        text: "Borrow a cup of sugar from one neighbour and give a cup back to another, and you have just as much sugar as you started with, even though the cups were different shapes. The triangle borrows the semicircle and gives back the quarter circle, which has exactly the same area. What is left, the crescent, has the triangle's area; only its shape has changed.",
+      },
+    ],
+    uses: [
+      {
+        title: "Turf for a curved lawn",
+        text: "A lawn is a 6 m by 4 m rectangle with a semicircular end of radius 2 m, and a round pond of radius 1 m in the middle. No formula covers that shape, but adding and taking away simple pieces does: $24 + \\tfrac12 \\pi \\cdot 2^2 - \\pi \\cdot 1^2 = 24 + \\pi \\approx 27.1$ square metres of turf.",
+      },
+      {
+        title: "How much of the Moon is lit?",
+        text: "A crescent Moon's lit part is bounded by the edge of the disc, a semicircle, and the line between day and night, which we see as half an ellipse. Neither piece is a crescent, but the crescent is the half disc with the half ellipse taken away, and both of those have simple areas. That subtraction gives the percentage illuminated that almanacs and moon-phase apps list.",
+      },
+    ],
+
     draw(g, f) {
       const { half, leg, A, K, lune } = figure();
       const crescent = outline(lune);

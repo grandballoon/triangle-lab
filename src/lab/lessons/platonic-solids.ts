@@ -87,6 +87,30 @@ export default lesson((s) => {
         text: "Lay the faces round one corner flat. They must leave a gap, or the corner could not fold up: $q$ angles must total less than $360^\\circ$. Only 3, 4 or 5 triangles, 3 squares, or 3 pentagons manage it.",
       },
     ],
+    likes: [
+      {
+        title: "Counting handshakes at a party",
+        text: "To count the handshakes at a party, ask everyone how many hands they shook and add up the answers. Every handshake has been counted twice, once by each person, so halve the total. Counting edges works the same way: each face reports its $p$ sides, every edge is reported by two faces, so $E = \\tfrac{pF}{2}$.",
+      },
+      {
+        title: "Laying tiles round one spot",
+        text: "Lay flat shapes round a point on the floor: six triangles, four squares or three hexagons close up exactly, filling $360^\\circ$ and staying flat. To make a corner that pops up, you must leave a gap and pinch it shut, like folding a paper cone. That is why fewer faces must meet at a corner, and only five ways manage it.",
+      },
+    ],
+    uses: [
+      {
+        title: "Fair dice",
+        text: "Tabletop games use dice shaped like all five solids: four, six, eight, twelve and twenty sides. Because every face and every corner of a Platonic solid is exactly alike, no face is favoured, so each number is equally likely to land on top.",
+      },
+      {
+        title: "Counting the seams on a football",
+        text: "A classic football is stitched from $12$ pentagons and $20$ hexagons. Every seam joins two panels, so there are $\\tfrac{12 \\cdot 5 + 20 \\cdot 6}{2} = 90$ seams, and three panels meet at each corner, giving $\\tfrac{180}{3} = 60$ corners. Euler's formula checks the count: $60 - 90 + 32 = 2$.",
+      },
+      {
+        title: "Geodesic domes",
+        text: "Geodesic domes and many 3D-modelled spheres start from an icosahedron and split each triangle into smaller ones. Splitting each of the $20$ faces into $4$ gives $80$ faces, $120$ edges and $42$ corners. Before building, a designer can check such counts with $V - E + F = 2$: here $42 - 120 + 80 = 2$.",
+      },
+    ],
 
     draw(g, f) {
       const solid = SOLIDS[pick.value];

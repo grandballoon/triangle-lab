@@ -59,6 +59,26 @@ export default lesson((s) => {
         text: "Triangle $DBI$ has equal angles at $B$ and $I$, so $DB = DI$. The same chase on the other side gives $DC = DI$. A circle centred at $D$ passes through $B$, $I$ and $C$; its arc is dashed.",
       },
     ],
+    likes: [
+      {
+        title: "Looking at a goal from round a circle",
+        text: "Stand anywhere on a circle through both goalposts $B$ and $C$, on the same side of the goal, and the goal looks equally wide: equal inscribed angles see equal arcs. So if, from $A$, you split your view of the goal exactly in half, your line of sight carries on to the point of the circle midway between the posts on the far side. That is why the bisector lands at $D$, the midpoint of arc $BC$.",
+      },
+      {
+        title: "An A-frame stepladder",
+        text: "A stepladder with equal legs makes equal angles with the floor, and if the angles are equal the legs must be too. In the lesson, $D$ is the top of the ladder and $B$ and $I$ are its feet. The angle chase shows the angles at $B$ and $I$ are both $\\alpha + \\beta$, so the legs $DB$ and $DI$ are equal.",
+      },
+    ],
+    uses: [
+      {
+        title: "Fixing a ship's position",
+        text: "Coastal navigators measure the angle between two landmarks, such as two lighthouses, with a sextant held sideways. Every point from which that angle looks the same lies on one circle through the two landmarks, the inscribed-angle fact at the heart of this lesson. A second angle to a third landmark gives a second circle, and the ship is where they cross.",
+      },
+      {
+        title: "A round flower bed in a triangular garden",
+        text: "The largest circle that fits inside a triangular plot is centred at the incentre $I$, the point equally far from all three sides. That is where to put a round flower bed, a fountain or a rotating sprinkler meant to reach each fence equally. The lesson gives a way to find $I$ with a compass: it is where the circle about $D$ through $B$ and $C$ meets the bisector $AD$.",
+      },
+    ],
 
     draw(g, f) {
       const { I, D } = figure();

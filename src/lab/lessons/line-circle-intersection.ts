@@ -92,6 +92,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Walking past a round pond",
+        text: "Walk a straight path near a round pond. Either your path crosses it, going in at one point and out at another; or it just brushes the edge at one point; or it misses. The discriminant tells you which, before you take a step.",
+      },
+      {
+        title: "A treasure hunt with two clues",
+        text: "The treasure is on the path, and it is 10 paces from the old oak. The first clue lets you describe any spot by one number, how far along the path it is; putting that into the second clue leaves one thing to solve for. You may find two spots, one where the path only just reaches 10 paces from the oak, or none at all.",
+      },
+    ],
+    uses: [
+      {
+        title: "Drawing pictures with rays",
+        text: "Ray tracing, used for film effects and realistic games, follows a straight ray of light from the camera through each pixel. To see whether the ray hits a ball, the program puts the ray's equation into the ball's and gets a quadratic. A negative discriminant means a miss, so that pixel shows whatever is behind; otherwise the smaller solution is where the ray first meets the ball.",
+      },
+      {
+        title: "Steering clear of a no-fly zone",
+        text: "Suppose a no-fly zone is the circle $x^2 + y^2 = 4$ around a point, in km, and a drone's planned route is $y = x + 3$. Substituting gives $2x^2 + 6x + 5 = 0$, with $D = 36 - 40 = -4 < 0$. No solutions: the route never enters the zone.",
+      },
+    ],
+
     draw(g, f) {
       const found = meet(A, B, O);
       const [first, second] = found.points;

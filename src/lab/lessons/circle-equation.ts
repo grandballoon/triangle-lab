@@ -71,6 +71,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "A dog on a lead",
+        text: "Tie a dog to a post with a 3 m lead. The spots it can reach at full stretch form a circle round the post. Any spot nearer than 3 m it can reach with the lead slack, any further it cannot: that is the test of comparing $(x - p)^2 + (y - q)^2$ with $R^2$.",
+      },
+      {
+        title: "Marking out a round flowerbed",
+        text: "Push a stake into the lawn, tie on a string, and walk round with the string tight to mark a circle. Every point you mark is as many steps across from the stake, $x - p$, and as many up, $y - q$, as fit a hypotenuse the length of the string. Pythagoras turns that into $(x - p)^2 + (y - q)^2 = R^2$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Finding a phone from two masts",
+        text: "If a phone is 5 km from a mast at $(0, 0)$, it lies on $x^2 + y^2 = 25$; if it is also 5 km from a mast at $(8, 0)$, it lies on $(x - 8)^2 + y^2 = 25$. Subtracting the equations leaves $x = 4$, so $y = \\pm 3$, and a third mast settles which. GPS works on the same idea, with spheres round satellites.",
+      },
+      {
+        title: "Is the address in the delivery zone?",
+        text: "A takeaway delivers within 5 km. A house 3 km east and 4 km north of it has $3^2 + 4^2 = 25 = 5^2$, so it is right on the edge. Testing the squared distance against $R^2$ answers inside, on or outside without taking a square root.",
+      },
+    ],
+
     draw(g, f) {
       // The rim point rides along with the centre, keeping the radius.
       rim.x += O.x - lastO.x;

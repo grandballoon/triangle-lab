@@ -106,5 +106,27 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    likes: [
+      {
+        title: "Looking at a round tower",
+        text: "Stand in a field facing a round tower. Your lines of sight to its two edges just graze it, at $S$ and $T$, and by symmetry each edge is the same distance from you. Look straight at the middle of the tower and your gaze runs through its centre, splitting the angle between the two edges evenly.",
+      },
+      {
+        title: "Folding the drawing in half",
+        text: "Fold the drawing along the line $PO$. The circle lands on itself, since every point of it is $r$ from $O$, and the tangent through $S$ lands on the tangent through $T$. Folding stretches nothing, so $PS = PT$ and the two angles at $P$ match: that is what the congruent triangles say.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Joining two straight roads with a curve",
+        text: "Where two straight roads or railway lines meet at an angle, engineers join them with a circular curve that touches each one. The points where the curve begins and ends are the points of contact of two tangents from the corner, so they are the same distance back along each straight. Surveyors work out that distance once, measure it back from the corner along both roads, and start and end the curve there.",
+      },
+      {
+        title: "Finding the centre of a round bar",
+        text: "A woodworker's centre finder is a V with a straight blade along the line that bisects it. Push a dowel or a round bar into the V and it touches both arms equally far from the tip, so the blade runs through its centre. Scribe a line along the blade, turn the bar a quarter turn, scribe again, and the centre is where the two lines cross.",
+      },
+    ],
   };
 });

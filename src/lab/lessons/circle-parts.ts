@@ -58,6 +58,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "A bicycle wheel",
+        text: "The hub is the centre and every spoke is a radius, all the same length, which is exactly what keeps the rim round. Two spokes lined up straight across the hub make a diameter, so a diameter is two radii end to end. The road under the tyre is a tangent: it touches the rim at one point and nowhere else.",
+      },
+      {
+        title: "Cutting a round cake",
+        text: "A cut from the middle to the edge is a radius, and two such cuts free a slice: a sector, with a curved strip of icing along its edge that is an arc. One straight cut that misses the middle is a chord, and the thin sliver it trims off the side is a circular segment.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Marking out a round flower bed",
+        text: "Gardeners mark a round bed with a peg in the ground and a string tied to it. Walking round with the string held tight, every mark they make is one radius from the peg, so the outline is a circle. A $1.5$ metre string gives a bed $3$ metres across, its diameter.",
+      },
+      {
+        title: "Sizing a pizza",
+        text: "A $30$ cm pizza is measured straight across through the middle: that is its diameter, so the radius from the centre to the crust is $15$ cm. Each slice cut from the middle is a sector, and its crust is an arc.",
+      },
+      {
+        title: "Running a belt round two wheels",
+        text: "On a bike's chain or an engine's fan belt, the belt wraps part way round each wheel and runs straight between them. Each straight run leaves a wheel along a tangent, and the part lying on a wheel is an arc. To find the length of belt needed, mechanics add the straight tangent runs to those arcs.",
+      },
+    ],
+
     draw(g) {
       settle();
       const r = radius();

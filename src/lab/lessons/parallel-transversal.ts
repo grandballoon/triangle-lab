@@ -81,6 +81,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Driving across railway tracks",
+        text: "Drive straight across a pair of railway rails and your road crosses each rail at exactly the same slant, because the rails run in the same direction. The second crossing is a copy of the first slid along the road, so the matching angles are equal. If the rails splayed apart, the two crossings would differ by exactly the splay.",
+      },
+      {
+        title: "Angled parking bays",
+        text: "In a car park with slanted bays, every bay line meets the kerb at the same angle, and that alone keeps the lines parallel, so you swing into each bay the same way. Paint one line at a different angle and that bay would narrow towards one end.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Drawing parallel lines with a set square",
+        text: "Draughtspeople and carpenters draw parallel lines by sliding a set square along a straight edge and drawing along its side at each stop. The side always meets the straight edge at the same angle, so, reading the rule backwards, every line drawn is parallel.",
+      },
+      {
+        title: "Measuring the Earth",
+        text: "Sunlight arrives in parallel rays. In Eratosthenes' famous measurement, at noon on midsummer the Sun was overhead at Syene, while at Alexandria a stick's shadow showed the rays coming in $7.2^\\circ$ from vertical. The two vertical lines meet at the Earth's centre, and the alternate angle there is also $7.2^\\circ$, one fiftieth of a circle, so the Earth's circumference is fifty times the distance between the two cities.",
+      },
+    ],
+
     draw(g, f) {
       const { atX, yArm, beta, parallel } = figure();
 

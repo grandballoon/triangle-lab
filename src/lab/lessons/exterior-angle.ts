@@ -66,6 +66,17 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Splitting the same bill two ways",
+        text: "Suppose you, Ana and Ben split a $180$ dollar bill, and on another night you and Dana split a bill of the same size, with you paying the same both times. Dana must have paid what Ana and Ben did together. At $C$, $\\gamma$ is you: inside it shares $180^\\circ$ with $\\alpha$ and $\\beta$, outside with $\\delta$ alone, so $\\delta = \\alpha + \\beta$.",
+      },
+      {
+        title: "Walking round a triangular park",
+        text: "Walk round the edge of a triangular park, turning at each corner. Back at the start you face the way you began, having turned exactly once round, so the three turns, the exterior angles, add up to $360^\\circ$. This only works while every corner turns the same way.",
+      },
+    ],
+
     uses: [
       {
         title: "How far away is that lighthouse?",

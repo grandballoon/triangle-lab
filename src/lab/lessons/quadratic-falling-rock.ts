@@ -116,6 +116,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Freewheeling down a hill",
+        text: "Roll down a hill on a bike without pedalling and each second carries you further than the second before. Distance is no longer speed times time, because the speed itself keeps growing, and the extra distance builds up like the $t^2$ in the rock's height. A steady ride would draw a straight line on the graph; this one draws a curve.",
+      },
+      {
+        title: "Pocket money that rises each week",
+        text: "Suppose you are given 1 coin the first week, 2 the second, 3 the third, and so on. Your savings no longer grow by the same amount each week: after $t$ weeks you have $\\tfrac12 t(t + 1)$ coins. Asking when you will have 55 means solving $t^2 + t = 110$, and, just as with the rock, dividing alone cannot get $t$ out. (It is week 10.)",
+      },
+    ],
+
     uses: [
       {
         title: "How deep is the well?",

@@ -44,6 +44,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Folding a paper triangle in half",
+        text: "Cut out a triangle with two equal sides and fold it so that $B$ lands on $C$. The fold runs down the altitude $AX$, the two equal sides lie exactly on top of each other, and so do the two base angles. The fold is the pair of congruent right triangles from the proof.",
+      },
+      {
+        title: "Hanging a picture on one nail",
+        text: "A picture hangs from a single nail on a cord tied to two hooks. If the cord is tied so the two halves are equally long, the picture hangs level and the cord makes the same angle with the frame at both hooks. Shift the knot so the halves differ, and the picture tilts: equal sides and equal angles come together.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "The 45 degree trick for heights",
+        text: "To estimate how tall a tree or building is, walk back from it until you see its top at $45^\\circ$ above level, using a set square or a folded sheet of paper to sight along. The triangle you, the base and the top make has a right angle and two $45^\\circ$ angles, so it has two equal sides: the height above your eyes equals your distance from the base. Pace that distance out and add your eye height.",
+      },
+      {
+        title: "Both sides of a gable roof",
+        text: "On a symmetrical gable roof, the rafters on both sides are the same length and meet at the ridge above the middle of the span. The two slopes then meet the walls at the same angle, so the roofer only needs to work out the pitch once, and the tiles on both sides sit at the same slope.",
+      },
+    ],
+
     draw(g, f) {
       const B = mirror();
       // A mark that belongs to one step fades in during it and is solid otherwise.

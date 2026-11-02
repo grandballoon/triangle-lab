@@ -97,6 +97,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Knowing the total but not the shares",
+        text: "Two flatmates each spend a third of their own monthly budget on food. You do not know either budget, but if you know the two budgets together come to $1500$ a month, you know they spend $500$ on food between them. The budgets are $\\angle A$ and $\\angle D$, a third of each is $x$ and $y$, and the total is what the quadrilateral's angle sum gives away.",
+      },
+      {
+        title: "Pouring between two glasses",
+        text: "Pour water back and forth between two glasses: one fills as the other empties, but the total never changes, and neither does a third of the total. Dragging $A$ and $D$ is that pouring. Angle moves from one corner to the other, but $\\angle A + \\angle D$ stays put, so $x + y$ and the angles at $E$ and $F$ stay put too.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Mitring a four-sided frame",
+        text: "Each corner of a picture frame is cut so the two pieces meet on the line that halves its angle. In a four-sided frame with two corners fixed at $100^\\circ$ and $110^\\circ$, the other two total $150^\\circ$, so their two mitre cuts total $75^\\circ$ however that $150^\\circ$ is shared out: the lesson's argument with halves in place of thirds.",
+      },
+      {
+        title: "Light through a prism",
+        text: "Inside a glass prism a ray makes angles $r_1$ and $r_2$ with the lines square to the two faces it passes through. Those two lines and the two faces make a quadrilateral with two right angles, so the lines meet at $180^\\circ - A$, where $A$ is the prism's apex angle; the triangle they make with the ray then forces $r_1 + r_2 = A$, however steeply the light enters. Opticians use this fixed total to work out how far a prism bends light.",
+      },
+    ],
+
     draw(g, f) {
       const { fromA, fromD, E, F } = figure();
       if (!E || !F) return;

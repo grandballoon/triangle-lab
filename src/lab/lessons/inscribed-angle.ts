@@ -71,6 +71,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Watching a stage from a curved row",
+        text: "Imagine a curved row of seats lying on the circle through the two ends of a stage. Every seat in that row sees the stage spread across the same angle, as the inscribed angle does. Stand at the centre of that circle instead and the stage spans twice as wide an angle.",
+      },
+      {
+        title: "Stepping back from a doorway",
+        text: "Stand at the centre of a round room and a doorway in the wall spans some angle. Walk to the far wall and look back: the doorway now spans exactly half that angle, and it stays half wherever along that wall you stand.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Fixing a ship's position",
+        text: "A navigator measures the angle between two lighthouses with a sextant held flat. Every point that sees them at that angle lies on one arc of a circle through both lighthouses, so the ship is somewhere on that arc. A second angle, to a third landmark, gives another arc, and the ship is where they cross.",
+      },
+      {
+        title: "Framing two buildings in a photo",
+        text: "A photographer wants two towers to sit exactly at the edges of a lens that sees $40^\\circ$ across. Any spot on the arc through both towers that sees them at $40^\\circ$ works, so they can walk along that arc to pick the best foreground.",
+      },
+    ],
+
     draw(g, f) {
       const m = measure();
       // The proof's scaffolding clears away for the last step.

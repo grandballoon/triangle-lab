@@ -44,6 +44,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Walking round a pond",
+        text: "However big a round pond is, walking all the way round it is just over three times as far as rowing straight across through the middle. A bigger pond makes both trips longer by the same factor, so that ratio never changes: it is $\\pi$.",
+      },
+      {
+        title: "Rolling a coin along a ruler",
+        text: "Mark a point on a coin's edge and roll it one full turn along a ruler: the distance it travels is its circumference, the rim laid out flat. Lay the coin's width along that distance and it fits just over three times, whichever coin you use.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "A trundle wheel",
+        text: "Groundskeepers and surveyors measure distances with a trundle wheel, a wheel on a handle that clicks once per turn. A wheel whose circumference is exactly $1$ metre has diameter $\\frac{1}{\\pi} \\approx 0.318$ metres, so each click means one metre walked.",
+      },
+      {
+        title: "A bike computer",
+        text: "A cycle computer counts turns of the wheel using a magnet on a spoke, and you tell it the wheel's circumference. A wheel about $0.67$ metres across rolls $\\pi \\times 0.67 \\approx 2.1$ metres per turn, so $1000$ turns is about $2.1$ km.",
+      },
+      {
+        title: "Ribbon round a cake",
+        text: "To tie a ribbon round a round cake $20$ cm across, you need $\\pi \\times 20 \\approx 63$ cm of ribbon, plus a little extra for the bow.",
+      },
+    ],
+
     draw(g, f) {
       wheel.set(centreAt(turn));
       const r = d.value / 2;

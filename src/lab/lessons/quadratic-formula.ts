@@ -138,6 +138,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Watching a thrown ball pass a window",
+        text: "A ball tossed up to a friend rises and falls along an arc that is the same on both sides of its highest point. So it passes any given height twice, equally far either side of the top: the mirror line, plus or minus a reach. Ask about exactly the top and the two passes merge into one, $D = 0$; ask about a height above the top and the ball never gets there, $D < 0$.",
+      },
+      {
+        title: "Hanging a picture on two hooks",
+        text: "To hang a picture centred on a wall, you find the middle first, then measure the same distance out to each side for the two hooks. The formula places the roots the same way: the middle is $-\\frac{b}{2a}$, and $\\frac{\\sqrt{b^2 - 4ac}}{2a}$ is how far to measure out.",
+      },
+    ],
+
     uses: [
       {
         title: "A diagonal brace for a gate",

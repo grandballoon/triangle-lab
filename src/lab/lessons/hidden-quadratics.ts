@@ -113,6 +113,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "A familiar recipe in another language",
+        text: "A recipe in another language looks strange until you notice that “huevo” means egg, and then it is the omelette you already know how to make. Calling $x^2$ by the name $z$ does the same: $x^4 + Bx^2 + C$ turns out to be a quadratic you already know how to solve. At the end you translate back, from $z$ to $x$.",
+      },
+      {
+        title: "Unpacking a delivery",
+        text: "A delivery comes as boxes, and each box has to be opened to see what is inside. Solving for $z$ finds the boxes; finding $x$ opens them. A positive $z$ holds two answers, $\\sqrt{z}$ and $-\\sqrt{z}$, $z = 0$ holds just one, and a negative $z$ turns out to hold no real $x$ at all.",
+      },
+    ],
+
     uses: [
       {
         title: "Two years of interest",

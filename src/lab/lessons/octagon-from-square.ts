@@ -61,6 +61,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a mount for a picture",
+        text: "A card mount for a picture is a rectangle with a window cut out. No one has a formula for its odd shape, but you can find how much card it uses easily: the outer rectangle minus the window. A ring is the same: a disc minus a disc.",
+      },
+      {
+        title: "Trimming the corners off pastry",
+        text: "Cut the four corners off a square of pastry and you have an octagon. How much pastry is left is the square minus the four snipped triangles, which are easy to measure. It is only a regular octagon if each snip has legs $s/\\sqrt2$, so all eight edges come out equal.",
+      },
+    ],
+    uses: [
+      {
+        title: "How much metal is in a pipe?",
+        text: "A pipe's cross-section is a ring. A pipe 10 cm across with walls 1 cm thick has outer radius 5 cm and inner radius 4 cm, so its wall has area $\\pi \\cdot 5^2 - \\pi \\cdot 4^2 = 9\\pi \\approx 28.3$ square centimetres. Multiply by the length to find how much metal it takes.",
+      },
+      {
+        title: "Cutting a stop sign",
+        text: "Stop signs are regular octagons, sized by their width across the flat sides, which is the square of this lesson. A sign 75 cm across has $s = \\frac{75}{1 + \\sqrt2} \\approx 31.1$ cm. Cut from a 75 cm square sheet, it uses $75^2 - s^2 \\approx 4660$ square centimetres, and the four corners thrown away add up to $s^2 \\approx 965$.",
+      },
+    ],
+
     draw(g, f) {
       // The ring leads at first, then steps back for the octagon.
       const ringAlpha = 1 - 0.6 * f.at(1);

@@ -135,6 +135,34 @@ export default lesson((s) => {
         text: "A dilation changes lengths and area but keeps every angle, so the image is similar. A distortion keeps neither lengths nor angles. Yet both still send straight lines to straight lines.",
       },
     ],
+    likes: [
+      {
+        title: "Rearranging furniture",
+        text: "Slide a table across the room or turn it to face the window, and it is the same table: every length, angle and area is unchanged, like the three rigid motions. Lift a patterned rug and lay it back upside down and it is still the same size, but its pattern now runs the other way round, which is the one thing a reflection changes.",
+      },
+      {
+        title: "Printing a photo at two sizes",
+        text: "A small print and a poster of the same photo look identical apart from size: every length is multiplied by the same amount, so every angle is kept and faces look right. That is a dilation, similar but not congruent.",
+      },
+      {
+        title: "Squashing a photo to fit a frame",
+        text: "Drag one edge of a photo to make it fit a frame and faces go wide or thin, because one direction is scaled and the other is not. Straight edges in the photo stay straight, but the angles between them change, which is a distortion.",
+      },
+    ],
+    uses: [
+      {
+        title: "Making left and right shoes",
+        text: "A shoe factory cuts the left sole from the right sole's pattern turned over. The two soles are congruent, every length matching, but a reflection reverses orientation, so no amount of sliding or turning makes a left shoe into a right one.",
+      },
+      {
+        title: "Resizing images on a web page",
+        text: "Web designers keep a picture's aspect ratio when they resize it: an image $800$ by $600$ pixels can be shown at $400$ by $300$, scaling both directions by $\\frac{1}{2}$, and nothing looks wrong. Shown at $400$ by $400$, it is scaled by $\\frac{1}{2}$ across but only $\\frac{2}{3}$ down, a distortion, and round things turn into ovals.",
+      },
+      {
+        title: "Measuring from an architect's plan",
+        text: "A floor plan drawn at $1{:}50$ is a dilation of the building, so lengths on paper are $\\frac{1}{50}$ of the real ones while every angle is drawn true: a builder can measure an angle straight off the plan with a protractor. Areas scale by $\\left(\\frac{1}{50}\\right)^2$, so $1$ square centimetre of plan stands for $2500$ square centimetres, a quarter of a square metre, of floor.",
+      },
+    ],
 
     draw(g) {
       steer.follow();

@@ -95,6 +95,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Choosing a fair meeting spot",
+        text: "Two friends want to meet somewhere equally far from both their houses. Every fair spot lies on one straight line, crossing the road between the houses at its midpoint at a right angle: the perpendicular bisector. Add a third friend, and only the one spot where two of those lines cross is fair to all three. If the three houses are spread in a flat, obtuse triangle, that spot lands outside the triangle, just as $O$ does.",
+      },
+      {
+        title: "Sitting round a campfire",
+        text: "Everyone who sits the same distance from a fire sits on one circle around it. If three people have already sat down, there is exactly one place the fire could be so that all three are equally warm, and it is the centre $O$ of the circle through $A$, $B$ and $C$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "How big was the broken plate?",
+        text: "Archaeologists often find only a curved piece of the rim of a pot or plate, yet want its original size. One way is to mark three points along the rim and join them into two chords. The perpendicular bisectors of those chords cross at the centre of the whole rim, and the distance from there to the rim is its radius.",
+      },
+      {
+        title: "Turning survey points into a landscape",
+        text: "Mapping software and game engines build terrain by joining measured points into triangles. A popular rule, the Delaunay triangulation, picks the triangles so that no other point lies inside any triangle's circumcircle. This avoids long thin slivers, so the surface between the points looks natural and smooth.",
+      },
+    ],
+
     draw(g, f) {
       heldRight = f.step === RIGHT_STEP;
       V.set(V);

@@ -98,6 +98,26 @@ export default lesson((s) => {
         text: "Each side face is a triangle with base $a$ (a side of the polygon) and height $l$, so its area is $\\tfrac12 al$. There are $n$ of them: the lateral area is $\\tfrac12 (na)\\,l = \\tfrac12 pl$, with $p$ the base perimeter.",
       },
     ],
+    likes: [
+      {
+        title: "Filling a pointed mould with sand",
+        text: "Fill a pyramid-shaped mould with sand and pour it into a box with the same base and height: it takes three loads to fill the box. The pyramid holds so little because it narrows to a point, so most of its layers are much smaller than the base $B$, while every layer of the box is the full base.",
+      },
+      {
+        title: "Pitching a pyramid tent",
+        text: "A pyramid tent stands on one pole, $PO$, in the middle. To cut its fabric you need the length down the middle of each panel, $PM$, not the pole, and $PM$ is longer because it runs at a slant from the top to the middle of a side. Each panel is a triangle with that slant height, and all the panels together use $\\tfrac12 pl$ of fabric.",
+      },
+    ],
+    uses: [
+      {
+        title: "Tiles for a pyramid roof",
+        text: "A summer house with a square pyramid roof, $4$ m along each side of the base and $1.5$ m tall, needs roofing for its four sloping faces. The slant height is $l = \\sqrt{1.5^2 + 2^2} = 2.5$ m, so the roof area is $\\tfrac12 pl = \\tfrac12 \\cdot 16 \\cdot 2.5 = 20$ square metres, which is what the roofer prices.",
+      },
+      {
+        title: "Space under a pyramid roof",
+        text: "The loft under a square pyramid roof on an $8$ m by $8$ m house, rising $3$ m to the peak, holds $\\tfrac13 \\cdot 64 \\cdot 3 = 64$ cubic metres of air. That is a third of a box-shaped loft of the same size, which matters when sizing insulation or ventilation.",
+      },
+    ],
 
     draw(g, f) {
       const { n, h, base, apex, O, M } = model();

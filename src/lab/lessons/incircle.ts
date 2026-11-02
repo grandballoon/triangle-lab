@@ -62,6 +62,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Walking down the middle of a V-shaped garden",
+        text: "Two fences meet at a corner, and you want to walk a path that never gets closer to one fence than the other. Your distance to a fence is the shortest step to it, straight across at a right angle. The only path that keeps both distances equal is the straight line that splits the corner exactly in half: the bisector, with the corner as $A$.",
+      },
+      {
+        title: "Fitting the biggest cake tin in a triangular box",
+        text: "Push a round tin into a triangular box and it jams against one wall, then two. It only stops growing when it presses on all three walls at once, so its centre is equally far from every wall. That is exactly the point $I$ where the bisectors meet, and the tin is the incircle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Cutting the biggest disc from an offcut",
+        text: "A woodworker with a triangular scrap of plywood wants the largest round coaster or wheel it will give. Bisect two of the corners with a protractor or by folding a paper template, and where the lines cross is the centre. The shortest distance from there to any edge is the radius, and the circle just touches all three edges.",
+      },
+      {
+        title: "How deep a V-carving bit plunges",
+        text: "Sign makers carve letters with a V-shaped router bit, letting it sink deeper where the shape is wider so that its edges just graze the outline. In a triangular part of a letter the bit goes deepest at the point farthest from every edge, which is the incentre, and it reaches that point by travelling along the angle bisectors from the corners. Carving software traces exactly these lines.",
+      },
+    ],
+
     draw(g, f) {
       const I = incenter(A, B, V);
       const D = bisectorFoot(A, B, V);

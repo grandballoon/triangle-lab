@@ -235,6 +235,31 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "An ironing board's crossed legs",
+        text: "An ironing board's legs cross at a pivot, with the board above and the floor below, both level. The triangle of legs above the pivot and the one below are the same shape, one upside down, just like $ABE$ and $CDE$. If the tops of the legs are half as far apart as their feet, the top triangle is half the size in every length, and so a quarter of the area.",
+      },
+      {
+        title: "Two shopping bags with the same loaf",
+        text: "Two shopping bags weigh the same, and each has the same loaf in it. Take the loaf out of both and what is left weighs the same too. Triangles $ABD$ and $ABC$ are the equal bags, $ABE$ is the shared loaf, and what is left over is $[AED] = [BEC]$.",
+      },
+      {
+        title: "A see-saw pivoting at its middle",
+        text: "When a see-saw pivots at its middle, one end rises exactly as far above the pivot as the other dips below it. $BD$ is the plank and $X$ its middle, so $B$ and $D$ are equally far from any line through $X$, such as $AC$: equal altitudes, equal areas.",
+      },
+    ],
+    uses: [
+      {
+        title: "A pinhole camera",
+        text: "In a pinhole camera, light from the top and bottom of a person crosses at the pinhole and lands upside down on the back of the box, which is parallel to them. That is the trapezoid's figure: two similar triangles meeting at $E$. A person 1.8 m tall standing 6 m away from a box 15 cm deep makes an image $\\frac{0.15}{6} = \\frac{1}{40}$ as tall, 4.5 cm.",
+      },
+      {
+        title: "Measuring across a river",
+        text: "To find the width of a river without crossing it, pick a tree $A$ on the far bank and stand at $B$ opposite it. Walk 20 paces along the bank to a post $E$, then 10 more to $D$, and turn away from the river until you see $E$ and the tree lined up; say that point $C$ is 15 paces from $D$. Triangles $ABE$ and $CDE$ are similar with $AB$ twice $CD$, so the river is 30 paces wide.",
+      },
+    ],
+
     draw(g, f) {
       const second = f.step >= SECOND_FIGURE;
       stage(second);

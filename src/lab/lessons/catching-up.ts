@@ -129,6 +129,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Catching up a friend in the street",
+        text: "Your friend leaves the café a few minutes before you and strolls off at a steady pace. The gap between you is what they walked in that head start, and each minute you win back the difference between your speed and theirs. Walk at their pace and the gap never closes: on the graph, the two lines are parallel.",
+      },
+      {
+        title: "Lapping someone on a running track",
+        text: "On a 400 m track, a faster runner laps a slower one at the moment they have run exactly 400 m more. Both distances grow steadily, so setting the faster runner's distance equal to the slower one's plus 400 is one linear equation in the time, just like the cars'. The lap happens where the two lines on the graph have drawn 400 m apart.",
+      },
+    ],
+
     uses: [
       {
         title: "Catching up on a bike",

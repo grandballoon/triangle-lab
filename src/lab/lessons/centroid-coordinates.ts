@@ -69,6 +69,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Balancing three cups on a tray",
+        text: "Put three equal cups on a light tray and its balance point is the average of their positions. Two of the cups balance like one double-weight cup at their midpoint $D$. The third cup at $A$ is half as heavy as that pair, so the balance point sits twice as far from $A$ as from $D$: $AG = 2\\,GD$.",
+      },
+      {
+        title: "Choosing a meeting place for three",
+        text: "Three friends can find a spot in the middle of their homes by averaging: their east-west positions, then their north-south ones. That gives the centroid of their triangle. It is not always the spot with the least total walking, but it is a fair middle that takes everyone equally into account.",
+      },
+    ],
+    uses: [
+      {
+        title: "Balancing a triangular sign",
+        text: "A flat triangular sign of even thickness balances on its centroid. With corners at $(0, 0)$, $(60, 0)$ and $(30, 90)$ cm, the balance point is $\\left(\\frac{0 + 60 + 30}{3}, \\frac{0 + 0 + 90}{3}\\right) = (30, 30)$, so a single post fixed there holds it level.",
+      },
+      {
+        title: "Sorting triangles in 3D graphics",
+        text: "A 3D picture is made of thousands of triangles. When some are see-through, renderers often draw them from the back forwards, sorting each triangle by the depth of its centroid, found by averaging its three corners. Averaging is quick, which matters when it is done for every triangle in every frame.",
+      },
+    ],
+
     draw(g, f) {
       // Back on the axes, the triangle returns to its starting placement.
       if (wasFree && !free.on) {

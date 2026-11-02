@@ -59,6 +59,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a slice of cake",
+        text: "Cut a slice with a $60^\\circ$ angle and you have one sixth of the cake, whatever its size: the angle sets the fraction, just as $\\theta$ sets the arc's measure. The cake's size then decides how much that fraction is: a bigger cake gives a longer edge, growing with $r$, and more cake, growing with $r^2$.",
+      },
+      {
+        title: "Swinging a gate",
+        text: "A gate swinging open a quarter turn sweeps a quarter-circle sector across the path. The latch at the far end travels much further than a point near the hinge, though both turn through the same angle: arc length is the radius times the angle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Staggered starts on a running track",
+        text: "On a standard track each lane is $1.22$ metres wider than the last, so on each half-circle bend a runner one lane out goes about $\\pi \\times 1.22 \\approx 3.8$ metres further. That is why the $400$ metre start is staggered: outer runners start ahead, so everyone runs the same distance.",
+      },
+      {
+        title: "A sprinkler in a corner",
+        text: "A sprinkler in the corner of a lawn, set to sweep a quarter turn, $\\frac{\\pi}{2}$, with a $6$ metre throw, waters a sector of $\\tfrac12 \\cdot 6^2 \\cdot \\frac{\\pi}{2} \\approx 28$ square metres.",
+      },
+      {
+        title: "Oil in a lying tank",
+        text: "A cylindrical tank lying on its side, like a home heating oil tank, has a circular end. When it is partly full, the liquid's end face is a circular segment: sector minus triangle. Dip charts that turn a depth reading into litres are worked out this way.",
+      },
+    ],
+
     draw(g, f) {
       const { r, theta } = figure();
 

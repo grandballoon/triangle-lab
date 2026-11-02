@@ -86,6 +86,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Looking ahead on a bend",
+        text: "Driving round a steady curve, you face along the tangent. A lamppost further along the bend sits off to the side by an angle that is exactly half of how much the road will have turned by the time you reach it.",
+      },
+      {
+        title: "Swinging a ball on a string",
+        text: "Swing a ball round on a string and let go: it flies off along the tangent, square to the string. The string is the radius, and the radius meets the tangent at a right angle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Setting out a curved road",
+        text: "Surveyors peg out a circular curve from the point where it leaves a straight. From there they turn off from the straight by the tangent–chord angle, half the arc, to sight each peg. On a curve of radius $200$ m with pegs $20$ m apart, each arc is $\\frac{20}{200}$ radians, about $5.73^\\circ$, so each peg is a further $2.86^\\circ$ round from the straight.",
+      },
+      {
+        title: "Joining a straight to a curve",
+        text: "When a designer runs a straight path or track into a circular bend, the bend's centre must lie on the line square to the straight at the join, because a radius meets its tangent at a right angle. Put the centre anywhere else and there is a kink where they meet.",
+      },
+    ],
+
     draw(g, f) {
       const m = measure();
       X.hidden = f.step < 1;

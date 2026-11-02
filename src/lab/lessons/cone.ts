@@ -44,6 +44,26 @@ export default lesson((s) => {
         text: "Add the base, a disc of radius $r$, to the lateral surface: the total surface area of a cone is $\\pi r l + \\pi r^2$.",
       },
     ],
+    likes: [
+      {
+        title: "Rolling a party hat",
+        text: "Cut a wedge out of a paper circle and roll the rest into a party hat. The paper circle's radius becomes the slant height $l$ of the hat, and the curved edge of the paper becomes the rim. Cut a bigger wedge away and the rim gets shorter, so the hat comes out narrower: that is why the sector's share of the full circle is $\\tfrac{r}{l}$.",
+      },
+      {
+        title: "Pouring from a paper cone cup",
+        text: "Fill a paper cone cup with water and pour it into a straight-sided cup with the same rim and the same height. It fills only a third of the cup: you would need three cone cups to fill it. The cone narrows to a point, so most of its layers are far smaller than the rim.",
+      },
+    ],
+    uses: [
+      {
+        title: "Cutting a funnel from sheet metal",
+        text: "To make a funnel with a rim of radius $10$ cm and sides $15$ cm long, a metalworker cuts a sector of a circle of radius $15$ cm. Its arc must be as long as the rim, so it is $\\tfrac{10}{15}$ of the full circle: an angle of $\\tfrac23 \\cdot 360^\\circ = 240^\\circ$. Rolled up and seamed, it is the cone.",
+      },
+      {
+        title: "How much gravel is in the pile?",
+        text: "Sand and gravel poured from a chute settle into a cone. A pile $4$ m across and $1.5$ m tall holds about $\\tfrac13 \\pi \\cdot 2^2 \\cdot 1.5 = 2\\pi \\approx 6.3$ cubic metres. Builders' merchants and quarries estimate stockpiles this way from just the width and height.",
+      },
+    ],
 
     draw(g, f) {
       const r = radius.value;

@@ -36,6 +36,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a flatbread from one corner",
+        text: "Cut a many-sided flatbread into wedges by slicing from one corner to every corner that is not next to it. With $n$ corners you make $n - 3$ cuts and get $n - 2$ triangular pieces. Every corner of every piece is part of a corner of the flatbread, and together they make up all of them, so the flatbread's corners total $n - 2$ lots of $180^\\circ$.",
+      },
+      {
+        title: "Pegging out one more corner of a groundsheet",
+        text: "Pull out the middle of one edge of a pegged groundsheet and peg it down as a new corner. The sheet gains one triangle, and its three angles all go to corners: one is the new corner and the other two widen the corners on either side. So each corner you add adds $180^\\circ$ to the total.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Why a football is round",
+        text: "A classic football is sewn from pentagons and hexagons. A regular pentagon's angles are $\\tfrac{540^\\circ}{5} = 108^\\circ$ and a regular hexagon's are $\\tfrac{720^\\circ}{6} = 120^\\circ$, so where one pentagon and two hexagons meet the angles total $348^\\circ$, short of a flat $360^\\circ$. That missing $12^\\circ$ at every corner is what curves the panels into a ball.",
+      },
+      {
+        title: "Checking a survey of a plot",
+        text: "A surveyor who measures every corner of a five-sided plot expects the angles to total $180^\\circ \\cdot 3 = 540^\\circ$. If they add to $540^\\circ\\,5'$, the extra five minutes of angle are measurement error, and the correction is shared out among the corners before the plan is drawn.",
+      },
+    ],
+
     draw(g, f) {
       const pts = polygon.corners();
       const n = pts.length;

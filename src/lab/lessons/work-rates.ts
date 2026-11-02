@@ -102,6 +102,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Sharing a pizza",
+        text: "You can finish a pizza in 20 minutes and a friend can in 30. Thinking in minutes is the trap: 20 and 30 do not add to anything useful. Think in pizza per minute instead, $\\tfrac{1}{20}$ and $\\tfrac{1}{30}$, and those add to $\\tfrac{1}{12}$, so together you finish it in 12 minutes.",
+      },
+      {
+        title: "Folding laundry together",
+        text: "You fold a basket of laundry in 30 minutes and your partner takes 60. In an hour you would fold 2 baskets and they would fold 1, so together you fold 3 an hour, and one basket takes 20 minutes. The comparison stops working if you get in each other's way: rates add only while each of you keeps your own pace.",
+      },
+    ],
+
     uses: [
       {
         title: "Mowing with a friend",

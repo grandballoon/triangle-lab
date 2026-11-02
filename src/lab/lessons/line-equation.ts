@@ -102,6 +102,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Filling a bath that already has water in it",
+        text: "The bath already holds 10 cm of water when you turn the tap on, and the level rises 2 cm a minute. After $x$ minutes the depth is $y = 2x + 10$: the slope is how fast it fills, and the intercept $b$ is where you started at minute $0$. The $x$-intercept, $-5$, is when the bath would have been empty, five minutes before.",
+      },
+      {
+        title: "Saving in a jar",
+        text: "You put the same amount into a jar each week. If it held 30 pounds after 2 weeks and 50 pounds after 6, the 20 pounds gained over 4 weeks means 5 pounds a week, the slope. Counting back 2 weeks from 30 pounds gives the 20 pounds you started with, the intercept. Two readings are enough to know the whole line.",
+      },
+    ],
+    uses: [
+      {
+        title: "Converting temperatures",
+        text: "Water freezes at $0^\\circ$C, which is $32^\\circ$F, and boils at $100^\\circ$C, which is $212^\\circ$F. Those two points give the slope $\\frac{212 - 32}{100 - 0} = 1.8$ and the intercept $32$, so $F = 1.8C + 32$. Its $x$-intercept says that $0^\\circ$F is about $-17.8^\\circ$C.",
+      },
+      {
+        title: "A taxi fare",
+        text: "A taxi that charges 3 pounds when you get in and 2 pounds a mile costs $y = 2x + 3$ pounds for $x$ miles. The intercept is the fixed charge and the slope the rate, so you can price a 7 mile trip, 17 pounds, before you set off.",
+      },
+    ],
+
     draw(g, f) {
       settle(Q);
       Q.hidden = f.step < 3;

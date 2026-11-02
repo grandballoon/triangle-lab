@@ -114,6 +114,26 @@ export default lesson((s) => {
         text: "The strips make up the whole figure, and every one of them grew by the same factor. So the whole area is multiplied by $k$ — for the triangle, the circle, or any shape at all.",
       },
     ],
+    likes: [
+      {
+        title: "Planting a garden in rows",
+        text: "Picture a bed of any shape, planted in thin rows that all run the same way. If you make every row $k$ times as long while keeping the number of rows the same, every row holds $k$ times as many plants, so the whole bed holds $k$ times as many, whatever its shape. The rows are the strips, and the reason the area is multiplied by $k$ is that each strip's is.",
+      },
+      {
+        title: "Rolling pastry one way",
+        text: "Roll pastry only lengthways and a round disc grows into an oval: it gets longer while its width across stays the same, just as the circle becomes an ellipse. A shape you cut into it, like a heart, comes out longer and thinner, with its angles changed. Real pastry also gets thinner and creeps a little sideways, so the comparison is only rough.",
+      },
+    ],
+    uses: [
+      {
+        title: "Stretching an old TV programme to widescreen",
+        text: "Old programmes were made for screens $4$ units wide and $3$ high; a widescreen TV is $16$ wide and $9$ high. Stretching the old picture sideways to fill the screen at the same height multiplies every width by $\\frac{16/9}{4/3} = \\frac{4}{3}$ and leaves heights alone. A round ball becomes an oval $\\frac{4}{3}$ as wide as it is tall, faces look broader, and every area on screen grows by $\\frac{4}{3}$.",
+      },
+      {
+        title: "The area of an oval table",
+        text: "An ellipse with half-width $a$ and half-height $b$ is a circle of radius $b$ stretched sideways by $k = a/b$. The circle's area is $\\pi b^2$, so the ellipse's is $\\pi b^2 \\cdot \\frac{a}{b} = \\pi a b$. An oval table top $2$ m long and $1$ m wide has $a = 1$ and $b = 0.5$, so about $1.57$ square metres to varnish.",
+      },
+    ],
 
     draw(g, f) {
       rim.follow();

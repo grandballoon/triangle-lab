@@ -66,6 +66,30 @@ export default lesson((s) => {
         text: "Every side is multiplied by $|k|$ and stays parallel to itself, so every angle is kept: the image is similar to the original. Base and height both scale by $|k|$, so the area scales by $k^2$.",
       },
     ],
+    likes: [
+      {
+        title: "Making shadow puppets",
+        text: "Hold your hand up between a torch and a wall: the torch is the centre $O$, and the line from the torch through each fingertip lands on that fingertip's shadow. Move your hand closer to the torch and the shadow grows, every part by the same factor, so it keeps the shape of your hand. This only works cleanly when the wall is parallel to your hand; tilt the wall and the shadow is skewed as well as enlarged.",
+      },
+      {
+        title: "Zooming a photo with two fingers",
+        text: "When you spread two fingers on a phone screen, the point between them stays put while everything else moves straight away from it, further for things that were further away. That fixed point is $O$ and how far you spread your fingers sets $k$. Every line in the picture stays parallel to itself, which is why faces get bigger without changing shape.",
+      },
+    ],
+    uses: [
+      {
+        title: "Comparing pizza sizes",
+        text: "A $30$ cm pizza is a dilation of a $20$ cm one by $k = 1.5$, so it has $1.5^2 = 2.25$ times the area, more than twice as much to eat, though it is only half as wide again. That is why a large pizza is often better value than two small ones: compare the prices with the areas, not the diameters.",
+      },
+      {
+        title: "Reading a map scale",
+        text: "A $1{:}25\\,000$ map is a dilation of the land by $k = \\frac{1}{25\\,000}$, so $4$ cm on the map is $1$ km on the ground, and every angle, like the bend of a road, is drawn true. Areas scale by $k^2$: a $1$ cm square on the map covers $250$ m by $250$ m, which is $62\\,500$ square metres.",
+      },
+      {
+        title: "Enlarging A4 to A3 on a photocopier",
+        text: "An A3 sheet has exactly twice the area of an A4 sheet and the same shape. Since areas scale by $k^2$, the copier needs $k^2 = 2$, so $k = \\sqrt{2} \\approx 1.41$. That is why the A4 to A3 button on a photocopier is marked $141\\%$.",
+      },
+    ],
 
     draw(g, f) {
       const src = original();

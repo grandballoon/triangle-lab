@@ -150,5 +150,27 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    likes: [
+      {
+        title: "Weighing three parcels in pairs",
+        text: "Suppose you can only weigh three parcels two at a time, and the readings are $y + z$, $z + x$ and $x + y$. Adding all three readings counts every parcel twice, so half the total is $x + y + z$, and taking one reading away from that leaves the parcel that was not in it. The sides of the triangle are those readings and the tangent pieces are the parcels: $x = s - a$.",
+      },
+      {
+        title: "A ball pushed into a corner",
+        text: "Roll a ball into the corner of a box. It touches the two walls equally far from the corner: the two equal tangents. When the corner is square, the corner, the two points of contact and the ball's centre make a little square, so that distance is just the ball's radius, as $r = z$ is at a right angle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "The biggest round pond in a corner plot",
+        text: "A triangular plot has sides 3 m, 4 m and 5 m, with a right angle between the two shorter ones. The biggest round pond that fits touches all three sides: it is the incircle, of radius $r = \\tfrac12(3 + 4 - 5) = 1$ m. To peg it out, use the tangent lengths: with $s = 6$, the pond touches the sides 1 m from the right-angled corner, 2 m from the corner where the 3 m side meets the longest, and 3 m from the corner where the 4 m side does.",
+      },
+      {
+        title: "Cutting a disc from an offcut",
+        text: "A plywood offcut is a right triangle with short edges 30 cm and 40 cm, and a long edge of 50 cm. The largest disc you can cut from it has radius $\\tfrac12(30 + 40 - 50) = 10$ cm, a 20 cm clock face. Its centre is 10 cm in from each short edge, so you can mark it with a square from the right-angled corner before reaching for the compass.",
+      },
+    ],
   };
 });

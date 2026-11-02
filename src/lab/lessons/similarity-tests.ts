@@ -107,6 +107,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting the tip off a slice of pizza",
+        text: "Cut across a triangular slice of pizza parallel to the crust, and the tip you cut off is a small copy of the whole slice: same corner, same shape, every edge shrunk by the same amount. That is the AA case, with $DE$ parallel to $BC$. Cut halfway down the sides and the new edge is exactly half the crust, the midsegment.",
+      },
+      {
+        title: "Enlarging a photo",
+        text: "When you enlarge a photo, every length grows by the same factor $k$ and no angle changes, so faces still look right. Stretch only the width and everyone looks wider: the angles change because the ratios no longer agree. The tests say how few checks you need to know an enlargement is honest.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "How tall is that building?",
+        text: "On a sunny day, measure your own shadow and the building's. Sunlight arrives in parallel rays, so you and your shadow form a triangle similar to the building and its shadow (AA). If you are 1.8 metres tall with a 1.2 metre shadow, and the building's shadow is 20 metres, the building is $20 \\cdot \\tfrac{1.8}{1.2} = 30$ metres tall.",
+      },
+      {
+        title: "Sizing a projector picture",
+        text: "Light from a projector spreads from one point, so the picture and the lens form similar triangles at every distance. If the picture is 2 metres wide with the projector 3 metres from the wall, moving it back to 4.5 metres makes the picture $2 \\cdot \\tfrac{4.5}{3} = 3$ metres wide. Installers use this ratio, often printed as the throw ratio, to choose where to mount it.",
+      },
+      {
+        title: "A brace for an A-frame",
+        text: "An A-frame sign or stepladder whose feet stand 80 centimetres apart can be braced with a bar joining the midpoints of its two legs. By the midsegment, that bar is parallel to the floor and exactly 40 centimetres long, so you can cut it before assembling anything.",
+      },
+    ],
+
     draw(g) {
       const m = mode.value;
       const { d, e, similar } = measure();

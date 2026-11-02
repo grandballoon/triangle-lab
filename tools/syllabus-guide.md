@@ -10,6 +10,7 @@ Two to six short statements of what the lesson establishes, as the learner shoul
 - State the mathematics itself: definitions, theorems, formulas, methods, and when they apply.
 - Do not describe what the learner does with their hands, the figure, or the lesson's real-world examples.
 - Take the facts from the lesson's steps (their `title` and `text`) and its uses; do not add results the lesson does not teach.
+- Its likes are everyday comparisons that scaffold the idea, not facts it establishes: leave them out of `teaches`.
 - Use the lesson's own notation, with `$…$` LaTeX for mathematics and no other dollar signs.
 
 ## `builds_on`

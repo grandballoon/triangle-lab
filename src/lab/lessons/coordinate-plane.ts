@@ -58,6 +58,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Finding your seat in a cinema",
+        text: "A cinema ticket says row F, seat 12: one number for how far back, one for how far across, just like $(x, y)$. Everyone in row F sits on one straight line, which is what freezing one coordinate gives you.",
+      },
+      {
+        title: "Pointing and pacing",
+        text: "In an open field you might say “twenty steps that way” and point. That is a polar address: a distance $r$ and a direction $\\theta$. Everyone twenty steps from you stands on a circle, and everyone in the direction you point stands on a ray.",
+      },
+    ],
+    uses: [
+      {
+        title: "Grid references on a map",
+        text: "Ordnance Survey maps name a spot by eastings then northings: how far across, then how far up, just like $(x, y)$. A six-figure reference such as 123 456 means 12.3 km east and 45.6 km north of the south-west corner of its 100 km square. Walkers learn it as “along the corridor, then up the stairs”.",
+      },
+      {
+        title: "Radar screens",
+        text: "Radar finds a ship or aircraft by how far away it is and in which direction, a polar address. To plot it on a map, the computer converts with $x = r\\cos\\theta$ and $y = r\\sin\\theta$. One catch: navigators measure bearings clockwise from north, so a bearing of $90^\\circ$ means due east, $\\theta = 0^\\circ$.",
+      },
+    ],
+
     draw(g, f) {
       settle(P);
       const cartesian = guides.value === "Cartesian";

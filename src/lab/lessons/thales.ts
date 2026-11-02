@@ -57,6 +57,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "A sliding ladder",
+        text: "A ladder slides down a wall, its foot slipping out across the floor. Wall and floor meet at a right angle and the ladder is the hypotenuse, so its midpoint is always half a ladder's length from the corner: a paint spot at the middle traces a quarter circle.",
+      },
+      {
+        title: "A set square between two nails",
+        text: "Push the corner of a set square between two nails so each edge rests against one nail, then slide it round, keeping the edges on the nails. The corner traces a semicircle, with the two nails at the ends of its diameter.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Finding the centre of a round table",
+        text: "Lay a carpenter's square with its corner on the edge of the table and mark where its two edges cross the rim: the line joining the marks is a diameter. Do it again from another spot, and the two diameters cross at the centre.",
+      },
+      {
+        title: "One sprinkler for a right-angled lawn",
+        text: "To reach all three corners of a lawn shaped like a right triangle with one sprinkler set to the shortest throw, put it at the midpoint of the longest side. That point is the same distance from all three corners.",
+      },
+    ],
+
     draw(g, f) {
       const B = opposite();
       const a = bearing(O, A);

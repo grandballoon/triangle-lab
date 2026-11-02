@@ -96,6 +96,34 @@ export default lesson((s) => {
         text: "Line $m$ lies in the plane. Two lines that point the same way are parallel. Lines that point different ways and still never meet are skew — impossible on flat paper, common in space.",
       },
     ],
+    likes: [
+      {
+        title: "Checking a tent pole stands straight",
+        text: "Look at a tent pole from the front and it can seem perfectly upright while it leans towards you. So you walk round and check it from a second side as well. That is why one right angle is not enough: the pole is only perpendicular to the ground if it is square to every line through its foot, and checking two different directions turns out to settle all the rest.",
+      },
+      {
+        title: "Lowering a bucket from a window",
+        text: "Lower a bucket on a rope from a window at $P$ and it hangs straight down, landing at the spot $H$ right below you. That is the shortest rope that reaches the ground. To land the bucket anywhere else, at $F$, the rope runs at a slant and becomes the hypotenuse of the right triangle $PHF$, so it must be longer.",
+      },
+      {
+        title: "A road passing over another",
+        text: "Where one road crosses another on a bridge, the two point different ways yet never meet, because one runs above the other. They are skew. On a flat map they seem to cross, which is why skew lines cannot happen on flat paper: you need the extra direction, up, to slip one past the other.",
+      },
+    ],
+    uses: [
+      {
+        title: "Setting a fence post plumb",
+        text: "Builders check a fence post or a door frame with a spirit level held against two neighbouring faces, not just one. A post can read perfectly vertical on its front face while leaning sideways, just as a line can make one right angle with the plane and still be tilted. Once both faces read level, the post is perpendicular to the ground.",
+      },
+      {
+        title: "Measuring a ceiling with a laser",
+        text: "A laser measure held on the floor and pointed straight up gives the true ceiling height, the perpendicular distance. Tilt it by $10^\\circ$ under a $2.4$ m ceiling and the beam travels along a hypotenuse instead, reading about $2.44$ m. That is why such tools are held against a flat surface, or take the smallest of several readings.",
+      },
+      {
+        title: "Do the two cables touch?",
+        text: "Game and physics engines often model rods, limbs and cables as capsules: line segments with a thickness. To test whether two of them collide, the engine finds the closest points of the two segments, which are usually skew in space. If that gap is smaller than the two thicknesses added together, they touch.",
+      },
+    ],
 
     draw(g, f) {
       const { h, d, P, F } = model();

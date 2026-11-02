@@ -79,6 +79,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Bouncing a ball into a corner",
+        text: "Roll a ball into a narrow V between two walls and each time it bounces it leaves at a steeper angle than before, steeper by exactly the angle of the V. The zigzag here climbs the same way: the links meet the sides at $b$, then $2b$, then $3b$. Here equal links, not bounces, force each step, but the reason is the same: an exterior angle is the sum of the two far angles.",
+      },
+      {
+        title: "Following a trail of clues",
+        text: "In a treasure hunt you do not need to know where the prize is to start; each clue tells you where the next one is. The chase works the same way: call the unknown angle $b$ and let each isosceles triangle or exterior angle lead to the next, until the last clue, $BA = BC$, turns the trail into an equation you can solve.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Corner reflectors",
+        text: "A ray bouncing between two mirrors set at an angle $\\phi$ is turned through $2\\phi$ in all, wherever it comes in: chasing angles round the triangle it makes with the mirrors shows the angle of entry cancels. With the mirrors at $90^\\circ$ the ray is sent straight back the way it came, and the same idea with three mirrors in a cube corner is behind the reflectors on a bicycle.",
+      },
+      {
+        title: "Looking through a periscope",
+        text: "A periscope has two parallel mirrors, each at $45^\\circ$ to the tube. Light coming in level meets the top mirror at $45^\\circ$, leaves it at $45^\\circ$, and so is turned through $90^\\circ$ down the tube; the second mirror, parallel to the first, turns it back through $90^\\circ$ by the same chase. The light comes out travelling the way it went in, just lower down, at your eye.",
+      },
+    ],
+
     draw(g, f) {
       const { Q, P, A, Cc } = figure(f.at(6));
       // The slider has nothing to say once the last step fixes the angle.

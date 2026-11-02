@@ -58,6 +58,36 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "A ladder sliding down a wall",
+        text: "Picture a ladder exactly 1 metre long. Its top is $\\sin A$ up the wall and its foot is $\\cos A$ out from it, where $A$ is the angle with the ground. As it slides, one grows while the other shrinks, but the ladder's length never changes, so $\\sin^2 A + \\cos^2 A$ always comes back to 1.",
+      },
+      {
+        title: "Sitting across the table",
+        text: "The window that is on your left is on your right for the friend facing you. Nothing moved, only who is looking. In the same way, the leg that is opposite $A$ is beside $B$, so the sine of one angle is the cosine of the other.",
+      },
+      {
+        title: "Measuring in a different unit",
+        text: "Measure a room in metres or in feet and every length changes, yet the room is the same shape. Rescaling the triangle so one leg is 1 is just choosing that leg as the unit, and Pythagoras still holds: that is where $\\tan^2 A + 1 = \\sec^2 A$ comes from.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Fixing diagonal speed in games",
+        text: "If a game moves a character 1 step right and 1 step up each frame for a diagonal, it actually travels $\\sqrt2 \\approx 1.41$ steps, faster than in a straight line. Games fix this by moving $\\cos A$ across and $\\sin A$ up for a direction $A$. Because $\\sin^2 A + \\cos^2 A = 1$, the step is exactly 1 in every direction.",
+      },
+      {
+        title: "Rafter length per foot of run",
+        text: "A carpenter's framing square has a table giving the length of a rafter for every foot it spans horizontally. For a roof that rises 6 inches per foot, $\\tan A = \\tfrac{6}{12}$, and $\\sec^2 A = 1 + \\tan^2 A = 1.25$. So each foot of run needs $12\\sqrt{1.25} \\approx 13.4$ inches of rafter, the number printed on the square.",
+      },
+      {
+        title: "Sunlight on a flat solar panel",
+        text: "A flat panel catches the most light with the sun straight overhead. When the sun is $A$ above the horizon, it is $90^\\circ - A$ from overhead, and the panel catches the fraction $\\cos(90^\\circ - A) = \\sin A$ of the full amount. With the sun $30^\\circ$ up, that is half, which is why installers tilt panels toward the sun.",
+      },
+    ],
+
     draw(g, f) {
       const { foot, sin, cos } = measure();
       // The same triangle about A, enlarged by `k`.

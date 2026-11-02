@@ -74,6 +74,26 @@ export default lesson((s) => {
         text: "The altitude cuts the triangle into two 30-60-90 triangles with hypotenuse $s$ and short leg $\\tfrac{s}{2}$, so $h = \\tfrac{\\sqrt3}{2}s$. The area is $\\tfrac12 s h = \\tfrac{\\sqrt3}{4}s^2$.",
       },
     ],
+    likes: [
+      {
+        title: "Cutting a triangular sandwich into three",
+        text: "Pick any point inside a triangular sandwich and cut to the three corners. The three pieces always make up the whole sandwich. Each piece has one of the equal crust edges as its base, so their heights, the three distances, must always add up to the same total, the altitude.",
+      },
+      {
+        title: "Pouring between three glasses",
+        text: "Pour water back and forth between three glasses: one fills as another empties, but the total never changes. Moving $P$ is like that: step nearer one side and the distances to the others grow by exactly as much in total. The comparison stops at the shape: it only works because the triangle's sides are equal.",
+      },
+    ],
+    uses: [
+      {
+        title: "Reading a soil texture triangle",
+        text: "Soil scientists and gardeners classify soil with a triangle chart whose three sides stand for sand, silt and clay. A point's distances to the sides give the three percentages, and they always total $100\\%$ because the triangle is equilateral: they add to the altitude. A sample with $40\\%$ sand, $40\\%$ silt and $20\\%$ clay lands in the region called loam.",
+      },
+      {
+        title: "Mixing three ingredients",
+        text: "Metallurgists and chemists plot mixtures of three ingredients, such as three metals in an alloy, on the same kind of equilateral triangle. Each corner is a pure ingredient, and any point inside is a mix whose three amounts add to the whole. Viviani's result is what makes every point a valid recipe.",
+      },
+    ],
 
     draw(g, f) {
       const { A, B, K, feet, d, h } = figure();

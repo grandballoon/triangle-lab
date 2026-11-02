@@ -1,6 +1,6 @@
 /* The step column (steps.ts), down the right of a lesson page or along the
    bottom of a phone's: every step as a section of one scrolling list, the
-   current one marked, then the lesson's uses. Both kinds of page show it, so
+   current one marked, then the lesson's asides. Both kinds of page show it, so
    it is styled here rather than in either page's stylesheet.
 
    Its box comes from the shared layout (layout.ts, placed by arrange.ts); the
@@ -80,7 +80,7 @@
 }
 
 .step-text,
-.use p {
+.aside-item p {
   font-size: 15px;
   line-height: 1.45;
   color: rgba(233, 240, 247, 0.85);
@@ -88,13 +88,15 @@
 
 .step-head button.hand-hover .step-title { color: var(--accent); }
 
-.uses {
+.aside {
   margin: 18px 0 14px;
   padding: 16px 10px 0 15px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.uses h2 {
+.aside + .aside { margin-top: 0; }
+
+.aside h2 {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -102,7 +104,7 @@
   color: var(--accent);
 }
 
-.uses > summary {
+.aside > summary {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -114,9 +116,9 @@
   user-select: none;
 }
 
-.uses > summary::-webkit-details-marker { display: none; }
+.aside > summary::-webkit-details-marker { display: none; }
 
-.uses > summary::before {
+.aside > summary::before {
   content: "";
   flex: none;
   width: 5px;
@@ -127,20 +129,20 @@
   transition: transform 0.15s ease;
 }
 
-.uses[open] > summary::before { transform: rotate(45deg); }
+.aside[open] > summary::before { transform: rotate(45deg); }
 
-.uses > summary:hover { background: rgba(255, 255, 255, 0.05); }
+.aside > summary:hover { background: rgba(255, 255, 255, 0.05); }
 
-.uses > summary:focus-visible {
+.aside > summary:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.uses[open] > summary { margin-bottom: 6px; }
+.aside[open] > summary { margin-bottom: 6px; }
 
-.use + .use { margin-top: 14px; }
+.aside-item + .aside-item { margin-top: 14px; }
 
-.use h3 {
+.aside-item h3 {
   font-size: 15px;
   font-weight: 700;
   margin-bottom: 4px;
@@ -157,7 +159,7 @@
    step at a time (steps.ts setPaged). Every step sits in the same grid cell
    and only the current one is visible, so the cell, and with it the
    column's height, is the tallest step's: the figure keeps its size from
-   step to step. A row above the list pages through, and the uses come with
+   step to step. A row above the list pages through, and the asides come with
    the last step. */
 
 .step-pager { display: none; }
@@ -224,5 +226,5 @@ html[data-layout="stacked"] #step-list:not([data-single]) .step-count { display:
 html[data-layout="stacked"] .step-title { font-size: 16px; margin: 0 0 4px; }
 html[data-layout="stacked"] .step-text { font-size: 14.5px; line-height: 1.4; }
 html[data-layout="stacked"] .step-spacer { display: none; }
-html[data-layout="stacked"] .uses { display: none; margin-top: 10px; }
-html[data-layout="stacked"] #step-list[data-last] .uses { display: block; }
+html[data-layout="stacked"] .aside { display: none; margin-top: 10px; }
+html[data-layout="stacked"] #step-list[data-last] .aside { display: block; }

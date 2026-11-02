@@ -32,6 +32,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting across the park",
+        text: "Walk 3 blocks east and 4 blocks north along the streets and you have walked 7 blocks. Cut straight across the park instead and it is only 5. The streets are the legs of the right triangle and your shortcut is the hypotenuse, so $\\sqrt{3^2 + 4^2} = 5$.",
+      },
+      {
+        title: "Going there and coming back",
+        text: "The walk home is as long as the walk out, even though every step goes the other way. In the formula, swapping the points makes both differences negative, but squaring them gives the same numbers, so the distance comes out the same.",
+      },
+    ],
+    uses: [
+      {
+        title: "Measuring a television",
+        text: "Screens are sold by their diagonal. A screen 120 cm wide and 67.5 cm tall measures $\\sqrt{120^2 + 67.5^2} \\approx 137.7$ cm corner to corner, which is about 54 inches, the size on the box.",
+      },
+      {
+        title: "Is the enemy in range?",
+        text: "A video game checks distances all the time: is the player close enough to open a door, or within reach of an enemy? With the player at $(3, 4)$ and an enemy at $(0, 0)$ with reach 6, it compares $3^2 + 4^2 = 25$ with $6^2 = 36$. Comparing the squares skips the square root, which saves time when the game does it thousands of times a second.",
+      },
+    ],
+
     draw(g, f) {
       settle(A, B);
       const dx = B.x - A.x;

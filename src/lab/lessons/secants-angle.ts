@@ -69,6 +69,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Standing near a round tower",
+        text: "Look at a round tower from outside: the two edges you see are tangent lines from your eye. The tower takes up $180^\\circ$ minus the arc of wall you can see. Walk closer and you see less of its curve, so it looks wider.",
+      },
+      {
+        title: "Two torches through a round tent",
+        text: "Shine two torch beams from outside through a round tent. Each beam crosses the near wall, then the far wall. The beams' angle is half the far stretch between them minus half the near stretch: the near wall's stretch is taken away.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "How much Earth the space station sees",
+        text: "From the International Space Station, about $400$ km up, the Earth fills about $140^\\circ$ of the view, between two tangent lines to it. The arc of Earth it can see is $180^\\circ - 140^\\circ = 40^\\circ$, which puts the horizon about $20^\\circ$, roughly $2200$ km, away along the ground in every direction.",
+      },
+      {
+        title: "Coverage from a geostationary satellite",
+        text: "A geostationary satellite, about $36\\,000$ km up, sees the whole Earth across only about $17.4^\\circ$. The arc it can see is $180^\\circ - 17.4^\\circ \\approx 162.6^\\circ$, so it reaches about $81^\\circ$ either side of the point below it, which is why such satellites cannot serve the far polar regions.",
+      },
+    ],
+
     draw(g, f) {
       const m = measure();
       const { A, ptC } = m;

@@ -108,5 +108,27 @@ export default lesson((s) => {
         },
       ];
     },
+
+    likes: [
+      {
+        title: "Sharing out the edges of a table",
+        text: "Four people sit at the corners of a table, and each owns the same length along both of the sides they sit at, so each side is made of the two lengths owned by the people at its ends. Pick either pair of opposite sides and everyone appears exactly once. So both pairs add up to the same thing, everyone's length together: $w + x + y + z$.",
+      },
+      {
+        title: "A tray for a round cake",
+        text: "A round cake can touch all four sides of a square tray, but in a long rectangular tray it rattles about. The rule says why: opposite sides must add up to the same, and in a rectangle that is not a square, the two long sides outweigh the two short ones. A kite or a rhombus can still hug the cake.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "A frame to hug a round clock",
+        text: "You want a frame shaped like a symmetric trapezium, 30 cm along the top and 50 cm along the bottom, that touches a round clock face on all four sides. The top and bottom add to 80 cm, so the two slanted sides must add to 80 too: each is 40 cm. The frame's height is then $\\sqrt{40^2 - 10^2} \\approx 38.7$ cm, and that is the diameter of clock it holds.",
+      },
+      {
+        title: "Checking a plan before you cut",
+        text: "Before cutting wood for a four-sided frame meant to touch a round mirror on every side, add up the opposite sides of the plan. Sides of 60, 45, 50 and 45 cm in turn fail the test, since $60 + 50$ is not $45 + 45$: no circle can touch all four, and the mirror would sit loose against one side. Change the lengths until the two sums agree, then cut.",
+      },
+    ],
   };
 });

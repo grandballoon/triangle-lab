@@ -35,6 +35,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Opening a laptop",
+        text: "The hinge is the vertex and the screen and keyboard are the two arms. Shut, the angle is $0^\\circ$; upright it is about a right angle; tipped further back it is obtuse; and a laptop that folds flat makes a straight angle.",
+      },
+      {
+        title: "Opening a door",
+        text: "The hinge is the vertex, and how far the door swings open is the angle. A narrow door and a wide one opened the same amount make the same angle, even though the wide door's edge travels further: the angle does not depend on how long the arms are.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Measuring the sky with your hand",
+        text: "Stargazers and hikers estimate angles with an outstretched arm: a closed fist held at arm's length covers about $10^\\circ$ of sky. The Pole Star stands as high above the horizon as your latitude, so from London, at about $51^\\circ$ north, it is roughly five fists up.",
+      },
+      {
+        title: "Measuring how far a joint bends",
+        text: "Physiotherapists measure a joint with a goniometer, a protractor with two long arms laid along the limb and its pivot on the joint. Measuring a recovering knee week by week, say from $90^\\circ$ of bend to $120^\\circ$, shows how well the treatment is working.",
+      },
+      {
+        title: "Hand tracking",
+        text: "Headsets with hand tracking do what this page does: find points on the fingers in each camera frame and work out the angles between them. Whether a finger is bent or straight can be read from the angle at its knuckle.",
+      },
+    ],
+
     draw(g, f) {
       const hand = follow.on ? f.hands[0] : undefined;
       if (hand) {

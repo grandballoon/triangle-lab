@@ -61,6 +61,30 @@ export default lesson((s) => {
         text: "Reflecting in the centre is a half-turn. $180^\\circ$ is a multiple of $360^\\circ / n$ only when $n$ is even: then the pink half-turned copy fits the outline. For odd $n$ every corner lands opposite a side.",
       },
     ],
+    likes: [
+      {
+        title: "Putting the lid on a square box",
+        text: "A square lid drops onto a square box in $4$ ways by turning it, a quarter-turn apart, one for each corner it could put over a chosen corner of the box. Turn the lid over and it still fits, in $4$ more ways, one for each of its $4$ mirror lines. A lid shaped like an equilateral triangle fits in $3$ ways by turning, but half a turn leaves its corners over the sides of the box, because $3$ is odd.",
+      },
+      {
+        title: "Folding a paper snowflake",
+        text: "To cut a six-pointed snowflake, you fold a paper circle into a thin wedge and cut a pattern into it once. Unfolded, the pattern appears $6$ times, spaced $60^\\circ$ apart round the centre, and each crease is a mirror line, so the snowflake turns onto itself in $6$ ways and has mirrors through every point and between every pair of points.",
+      },
+    ],
+    uses: [
+      {
+        title: "Fitting a spanner on a nut",
+        text: "Nuts and bolt heads are usually hexagons, so a spanner fits them in $6$ positions, $60^\\circ$ apart. In a tight space you only need room to swing the spanner $60^\\circ$: take it off and put it back on one corner further round, and it fits again. A $12$-point socket fits a hexagonal nut every $30^\\circ$, for even less room.",
+      },
+      {
+        title: "Bolting on a car wheel",
+        text: "Many car wheels are held on by $5$ bolts spaced evenly round a circle, $360^\\circ / 5 = 72^\\circ$ apart. So a wheel can go on in $5$ positions, turning it $72^\\circ$ at a time until the holes line up with the bolts. Since $5$ is odd, a half-turn of the wheel would put each hole opposite a gap between two bolts.",
+      },
+      {
+        title: "The shape of the 20p and 50p coins",
+        text: "British 20p and 50p coins are seven-sided, with gently curved sides, and turn onto themselves in $7$ ways, every $360^\\circ / 7$. Because $7$ is odd, every corner sits opposite the middle of a side, and the curves are chosen so the coin is the same width measured across in any direction. That lets coin machines measure them by width, like a round coin.",
+      },
+    ],
 
     draw(g, f) {
       grip.set(grip); // a change of n moves the places where the copy clicks in

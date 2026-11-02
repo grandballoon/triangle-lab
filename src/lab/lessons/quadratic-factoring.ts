@@ -123,6 +123,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Old fairy lights wired in a chain",
+        text: "On an old string of fairy lights wired one bulb after another, the whole string goes dark when any single bulb fails, and only then. A product behaves the same way: it is zero exactly when one of its factors is. So to find where $a(x - r)(x - s)$ is zero, you test the factors one at a time, as you would the bulbs: $x = r$ or $x = s$.",
+      },
+      {
+        title: "Choosing a rectangle of paving",
+        text: "You want 12 paving slabs laid as a rectangle whose length and width add up to 7 slabs. List the pairs that multiply to 12 (1 and 12, 2 and 6, 3 and 4) and pick the one that adds to 7. That hunt for two numbers from their product and sum is exactly factoring $x^2 - 7x + 12 = (x - 3)(x - 4)$.",
+      },
+    ],
+
     uses: [
       {
         title: "A frame for a picture",

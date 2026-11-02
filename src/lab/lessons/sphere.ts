@@ -46,6 +46,26 @@ export default lesson((s) => {
         text: "The same holds for every diameter, so $OB$ is perpendicular to the plane and $OB = d$. In right triangle $OBA$: $AB^2 = r^2 - d^2$, so the cut has radius $\\sqrt{r^2 - d^2}$.",
       },
     ],
+    likes: [
+      {
+        title: "Slicing an orange",
+        text: "Cut an orange straight through and the slice through the middle is the biggest round; slices nearer the end are smaller. Your knife is the plane, and its distance from the centre is $d$. Every point of a slice's edge is still on the peel, so it is $r$ from the centre of the orange, and that is what forces the slice's radius to be $\\sqrt{r^2 - d^2}$: the slices shrink slowly near the middle and very fast near the end.",
+      },
+      {
+        title: "Resting a ball on a cup",
+        text: "Set a ball on top of a cup and the rim touches it all the way round, in a circle. The ball settles with its centre straight above the centre of the rim, just as $O$ sits above $B$. A wider cup lets the ball sink lower, so a larger cut circle goes with a smaller distance $d$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Lines of latitude",
+        text: "Each line of latitude on a globe is the cut of a plane parallel to the equator. At $60^\\circ$ north the plane sits $d = R\\sin 60^\\circ$ above the centre, so the circle has radius $\\sqrt{R^2 - d^2} = R\\cos 60^\\circ = \\tfrac12 R$. That is why, near Oslo or Helsinki, one degree of longitude spans only about $56$ km, half the $111$ km it spans at the equator.",
+      },
+      {
+        title: "Measuring a lens with a spherometer",
+        text: "Opticians measure how curved a lens is with a spherometer: three legs stand on a circle of radius $a$ and a central screw measures how far the surface bulges, $h$. The legs' circle is a cut of the sphere at distance $d = R - h$ from its centre, so $a^2 = R^2 - (R - h)^2$, giving $R = \\frac{a^2 + h^2}{2h}$. With $a = 2$ cm and $h = 0.1$ cm, the lens surface is part of a sphere of radius about $20$ cm.",
+      },
+    ],
 
     draw(g, f) {
       const r = radius.value;

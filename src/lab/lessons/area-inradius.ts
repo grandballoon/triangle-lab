@@ -65,6 +65,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a triangular cake from the centre",
+        text: "Cut a triangular cake from the middle point $I$ out to each corner. You get three slices, each with one side of the cake as its crust, and since $I$ is the same distance $r$ from every side, all three slices have the same height. So the whole cake is half of $r$ times the total length of crust.",
+      },
+      {
+        title: "Standing the slices in a row",
+        text: "Now stand those three slices on a counter with their crusts end to end. The crusts make a line $a + b + c$ long, and every tip is $r$ above it. Three triangles of the same height side by side have area $\\frac12 \\cdot r \\cdot (a + b + c)$, which is $rs$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "The biggest pond in a corner garden",
+        text: "A triangular garden has sides of 5, 12 and 13 metres, so it is right-angled with area $\\frac12 \\cdot 5 \\cdot 12 = 30$ square metres. Its semiperimeter is 15, so $r = 30 / 15 = 2$ metres. A round pond or trampoline any wider than 4 metres across will not fit inside.",
+      },
+      {
+        title: "A round duct in a roof space",
+        text: "The space under a roof is 8 metres wide with sloping sides of 5 metres each, so it is 3 metres high and its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres. The semiperimeter is 9, so the largest round duct that fits has radius $12 / 9 \\approx 1.33$ metres.",
+      },
+    ],
+
     draw(g, f) {
       const { I, r } = measure();
       const pieces = [

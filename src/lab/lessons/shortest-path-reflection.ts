@@ -51,6 +51,26 @@ export default lesson((s) => {
         text: "At $P^*$ the angle $AP^*$ makes with the line equals its vertical angle below, and reflection copies that angle onto the one $P^*B$ makes. The shortest path arrives and leaves at equal angles, like light off a mirror.",
       },
     ],
+    likes: [
+      {
+        title: "Fetching water on the way to a friend's",
+        text: "You walk from home at $A$ to the river, fill a bucket, then carry on to a friend's house at $B$. Imagine your friend's house mirrored across the river to $B'$: every route to $B$ is exactly as long as the matching route to $B'$. The shortest way to $B'$ is a straight line, so aim for $B'$ and stop at the river where that line meets it.",
+      },
+      {
+        title: "A tree reflected in a puddle",
+        text: "When you see a tree in a puddle, the light travels from the tree down to the water and up to your eye. The tree seems to stand upside down below the ground, at its mirror image, and the light reaches you as if along a straight line from that image. That is the lesson's trick: replace $B$ by $B'$ and the bent path becomes straight, meeting the mirror at equal angles.",
+      },
+    ],
+    uses: [
+      {
+        title: "How tall a mirror you need",
+        text: "To see yourself head to toe in a wall mirror, the mirror needs to be only half your height. Light from your feet bounces off the mirror at the point level with halfway between your feet and eyes, and light from the top of your head at halfway between your eyes and the top. For someone $1.70$ m tall, an $85$ cm mirror, hung at the right height, is enough, wherever they stand.",
+      },
+      {
+        title: "Bank shots in pool",
+        text: "To hit a ball off the cushion into a pocket, players aim at the pocket's mirror image on the far side of the cushion. The straight line to that image crosses the cushion at the right spot to bounce off, because the ball leaves at the same angle it arrives. Spin and a soft cushion change this a little in practice.",
+      },
+    ],
 
     draw(g, f) {
       const Bi = image();

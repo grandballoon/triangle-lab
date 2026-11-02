@@ -54,6 +54,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Meeting a friend halfway",
+        text: "You and a friend live on a grid of streets and agree to meet halfway. The meeting point is halfway as far east and halfway as far north as your friend's house: average your east-west positions, then your north-south ones. That is the midpoint formula, one coordinate at a time.",
+      },
+      {
+        title: "Partway through a straight drive",
+        text: "On a straight drive, if you have done 30% of the trip you have also done 30% of the distance east and 30% of the distance north. So your position is the start plus $t = 0.3$ of the way across and $0.3$ of the way up, which is the lesson's formula for a point a fraction $t$ of the way.",
+      },
+    ],
+    uses: [
+      {
+        title: "Smooth movement in games and animation",
+        text: "Animation software and game engines move an object from $A$ to $B$ by computing $A + t(B - A)$ for $t$ running from $0$ to $1$, a step called linear interpolation, or “lerp”. Going from $(0, 0)$ to $(10, 4)$, a quarter of the way along at $t = 0.25$ the object is at $(2.5, 1)$.",
+      },
+      {
+        title: "Blending colours",
+        text: "Screens mix red, green and blue light, so a colour is three numbers, like coordinates. A gradient from red $(255, 0, 0)$ to blue $(0, 0, 255)$ finds each colour along the way with the same formula, and halfway across it shows about $(128, 0, 128)$, a purple.",
+      },
+    ],
+
     draw(g, f) {
       settle(A, B);
       const t = fraction.value;

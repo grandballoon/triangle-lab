@@ -70,6 +70,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Pushing a deck of cards sideways",
+        text: "Push the top of a stack of cards so it leans over: the stack slants, but it is still the same cards, so it takes up just as much room. Sliding $C$ along a line parallel to the base does the same to the triangle. Each thin strip keeps its length, and the height stays put, so the area cannot change.",
+      },
+      {
+        title: "Cutting a sandwich corner to corner",
+        text: "Cut a rectangular sandwich from one corner to the opposite one and you get two identical right triangles, each half the sandwich. That is why a right triangle with legs $m$ and $h$ has area $\\frac12 mh$, and every other triangle is two of those put together or one taken from another.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Painting a gable end",
+        text: "The triangular end wall of a house under a pitched roof is 8 metres wide at the eaves and 3 metres from there up to the peak. Its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres, which is what you need to buy enough paint. The peak does not have to be in the middle for this to work.",
+      },
+      {
+        title: "Measuring an odd-shaped field",
+        text: "Surveyors find the area of an irregular field by splitting it into triangles. For each triangle they measure one side along the ground and the perpendicular distance to the opposite corner, then add up half of each product. It works for any shape with straight edges, however lopsided the triangles are.",
+      },
+    ],
+
     draw(g, f) {
       const { P, Q, R, D, far, near, n, where } = read(base.value);
       const up = sub(R, D);

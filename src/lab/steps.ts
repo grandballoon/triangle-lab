@@ -1,5 +1,6 @@
 // The step column: every step of a lesson as one section of a single
-// scrolling list, followed by the lesson's real-world uses. The step at the
+// scrolling list, followed by its asides: what its idea is like, and what it
+// is used for. The step at the
 // top of the list is the current one, so scrolling through the text is how
 // the reader moves through the proof; pressing a step, the arrow keys and
 // the hand gestures move it too, and the list scrolls to follow.
@@ -15,7 +16,7 @@
 import "./steps.css";
 import { linkTex } from "./link.ts";
 import { richHtml } from "./math.ts";
-import type { Step, Use } from "./scene.ts";
+import type { Asides, Likeness, Step, Use } from "./scene.ts";
 
 /** A step becomes current once its top is scrolled this close to the list's top. */
 const ACTIVE_LINE_PX = 48;
@@ -26,6 +27,7 @@ const SCROLL_SETTLE_MS = 900;
 /** Room under the tallest step when paged, plus the column's border. */
 const PAGED_BOTTOM_PX = 10;
 
+export const LIKES_HEADING = "What is this like?";
 export const USES_HEADING = "What will we use this for?";
 
 export class StepList {
@@ -84,7 +86,7 @@ export class StepList {
   }
 
   /** Build the list for a lesson, scrolled to its first step. */
-  show(steps: readonly Step[], uses: readonly Use[]): void {
+  show(steps: readonly Step[], asides: Asides): void {
     const doc = this.host.ownerDocument;
     const single = steps.length === 1;
     this.sections = steps.map((step, i) => {
@@ -113,7 +115,8 @@ export class StepList {
 
     this.track.replaceChildren(...this.sections);
     const nodes: HTMLElement[] = [this.track];
-    if (uses.length > 0) nodes.push(usesSection(doc, uses));
+    if (asides.likes.length > 0) nodes.push(asideSection(doc, LIKES_HEADING, asides.likes));
+    if (asides.uses.length > 0) nodes.push(asideSection(doc, USES_HEADING, asides.uses));
     this.host.replaceChildren(...nodes, this.spacer);
     this.host.toggleAttribute("data-single", single);
     this.pager.hidden = single;
@@ -154,7 +157,7 @@ export class StepList {
     this.pagerLabel.textContent = `Step ${step + 1} of ${count}`;
     this.prev.disabled = step <= 0;
     this.next.disabled = step >= count - 1;
-    // Paged, the uses follow the last step.
+    // Paged, the asides follow the last step.
     this.host.toggleAttribute("data-last", step === count - 1);
     if (this.paged) {
       // Each step starts at its top; the others are hidden, not scrolled past.
@@ -217,22 +220,22 @@ export class StepList {
   }
 }
 
-/** The lesson's real-world uses, collapsed at first and opened by their heading. */
-function usesSection(doc: Document, uses: readonly Use[]): HTMLElement {
+/** One of the lesson's asides, collapsed at first and opened by its heading. */
+function asideSection(doc: Document, heading: string, items: readonly (Likeness | Use)[]): HTMLElement {
   const section = doc.createElement("details");
-  section.className = "uses";
+  section.className = "aside";
   const summary = doc.createElement("summary");
-  const heading = doc.createElement("h2");
-  heading.textContent = USES_HEADING;
-  summary.append(heading);
+  const head = doc.createElement("h2");
+  head.textContent = heading;
+  summary.append(head);
   section.append(summary);
-  for (const use of uses) {
+  for (const entry of items) {
     const item = doc.createElement("article");
-    item.className = "use";
+    item.className = "aside-item";
     const title = doc.createElement("h3");
-    title.textContent = use.title;
+    title.textContent = entry.title;
     const text = doc.createElement("p");
-    text.innerHTML = richHtml(use.text);
+    text.innerHTML = richHtml(entry.text);
     item.append(title, text);
     section.append(item);
   }

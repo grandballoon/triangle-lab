@@ -66,6 +66,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Two gates on one post",
+        text: "Hang two gates of the same width on one post and open them $150^\\circ$ apart. A rope tied between their far ends makes the same angle with each gate, so those two angles share what is left of $180^\\circ$: $15^\\circ$ each. The post is $A$, the gates are $AE$ and $AD$, and the rope is $ED$.",
+      },
+      {
+        title: "Trimming a wedge of cheese",
+        text: "Cut a $15^\\circ$ sliver off one side of a $60^\\circ$ wedge of cheese and the wedge left is $45^\\circ$; put the sliver back on the other side instead and it grows to $75^\\circ$. Angles that sit side by side at one point just add or subtract, which is all the last step does at $E$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Drawing a fifteen-degree angle with compasses",
+        text: "With only a straight edge and compasses you can draw a square and an equilateral triangle on one of its sides. Joining the triangle's tip to the far corner of the square, as in this lesson, gives a $15^\\circ$ angle at the tip, a classic way to mark angles that are not on a set square.",
+      },
+      {
+        title: "Folding sixty degrees in origami",
+        text: "Paper folders make a $60^\\circ$ angle from a square without a protractor: fold the square in half to make a crease, then fold one bottom corner up so that it lands on the crease while the fold passes through the other bottom corner. Where the corner lands is the same distance from both bottom corners, and a whole side away from the corner the fold passes through, so it is the tip of an equilateral triangle on the bottom side, like $E$ here.",
+      },
+    ],
+
     draw(g, f) {
       const { A, B, Cc, E } = figure();
       const square = [A, B, Cc, D];

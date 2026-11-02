@@ -41,6 +41,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a sandwich into four",
+        text: "Cut a triangular sandwich along the three lines that join the middles of its edges and you get four small triangles. Each is a half-size copy of the whole, half as long in every direction, so each holds a quarter. The one in the middle looks different only because it is turned upside down.",
+      },
+      {
+        title: "Shrinking a picture on a photocopier",
+        text: "Set the copier to 50% and every edge of the picture comes out half as long. Yet the copy takes up only a quarter of the page, so four of them fit on one sheet: halving the lengths quarters the area, just as $k = \\tfrac12$ gives $[DEF] = \\tfrac14 [ABC]$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Smoother 3D models",
+        text: "3D modelling programs and game engines often refine a surface made of triangles by splitting each triangle into four, joining the midpoints of its sides. Each new triangle is a quarter of the old one, so every round multiplies the count by 4. A sphere built this way from a 20-triangle starting shape goes 20, 80, 320, 1280 triangles as it gets rounder.",
+      },
+      {
+        title: "Splitting a triangular plot four ways",
+        text: "To divide a triangular field into four plots of exactly the same size and shape, you do not need to measure any angles or areas. Find the middle of each side with a tape measure, run fences between the three midpoints, and the four pieces are congruent.",
+      },
+    ],
+
     draw(g, f) {
       const { D, E, F } = midpoints();
 

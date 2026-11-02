@@ -66,6 +66,26 @@ export default lesson((s) => {
         text: "Strip away every block that touches the outside and a smaller cube of edge $n - 2$ is left, with no paint at all: $(n-2)^3$ blocks. Together the four counts must account for all $n^3$ blocks.",
       },
     ],
+    likes: [
+      {
+        title: "A Rubik's cube",
+        text: "A Rubik's cube is the painted cube with $n = 3$. Its $8$ corner pieces show three colours, its $12$ edge pieces show two, its $6$ centre pieces show one, and the single hidden core in the middle shows none. That is $8 + 12 + 6 + 1 = 27 = 3^3$ pieces.",
+      },
+      {
+        title: "Trimming the crusts off a sandwich",
+        text: "Cut the crusts off a square sandwich $n$ squares wide and the middle is $n - 2$ squares wide, not $n - 1$, because you trim one strip from each side. Peeling the shell off the painted cube works the same way in every direction, which is why the unpainted inside is $(n-2)^3$ and why each edge holds $n - 2$ two-painted blocks once its two corners are taken off.",
+      },
+    ],
+    uses: [
+      {
+        title: "Counting pieces on a bigger puzzle cube",
+        text: "The $4 \\times 4 \\times 4$ puzzle cube has $8$ corners, $12 \\cdot 2 = 24$ edge pieces and $6 \\cdot 2^2 = 24$ centre pieces: $56$ visible pieces. The other $(4-2)^3 = 8$ positions are hidden inside, which is why the real puzzle replaces them with a mechanism. The stickers check out too: $8 \\cdot 3 + 24 \\cdot 2 + 24 \\cdot 1 = 96 = 6 \\cdot 4^2$.",
+      },
+      {
+        title: "Drawing only what you can see",
+        text: "Block-building games draw only the faces of blocks that touch air. A solid $10 \\times 10 \\times 10$ cube of stone has $1000$ blocks, but only $6 \\cdot 10^2 = 600$ visible faces, and the $8^3 = 512$ blocks of the inside need no drawing at all. Skipping hidden faces this way is a large part of how such games run smoothly.",
+      },
+    ],
 
     draw(g) {
       const n = size.value;

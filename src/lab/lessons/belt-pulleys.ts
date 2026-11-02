@@ -83,6 +83,26 @@ export default lesson((s) => {
         text: "An arc of angle $\\theta$ radians on a circle of radius $\\rho$ has length $\\rho\\theta$. Add the two arcs to the two tangents and you have the belt's length, from nothing but $d$, $R$ and $r$.",
       },
     ],
+    likes: [
+      {
+        title: "The chain on a bike",
+        text: "A bike chain runs round a big chainring at the pedals and a small sprocket at the back wheel. The straight runs top and bottom touch each wheel at right angles to its spokes, which is the tangent meeting the radius at $90^\\circ$. Because the wheels differ in size, the chain tilts, and the gap $R - r$ between their radii, together with the distance between the hubs, sets that tilt.",
+      },
+      {
+        title: "A rubber band round two jars",
+        text: "Stretch a rubber band round two jars and it makes the open belt. Twist it into a figure of eight and it crosses between them: now one jar turns the other the opposite way. The crossed band hugs more of each jar, which is why the crossed belt wraps $2\\pi - 2\\alpha$ round both wheels.",
+      },
+    ],
+    uses: [
+      {
+        title: "Ordering the right belt",
+        text: "Mechanics work out belt length from the pulleys and their spacing alone. With wheels of radius $R = 10$ cm and $r = 5$ cm, $40$ cm apart, each straight run is $\\sqrt{40^2 - 5^2} \\approx 39.7$ cm and $\\cos\\alpha = \\tfrac{5}{40}$, so $\\alpha \\approx 1.45$ rad. Adding the two runs to the arcs, $10(2\\pi - 2\\alpha) \\approx 33.9$ cm and $5 \\cdot 2\\alpha \\approx 14.5$ cm, gives a belt of about $127.7$ cm.",
+      },
+      {
+        title: "Reversing a machine with a crossed belt",
+        text: "In old workshops driven by belts from one overhead shaft, a crossed belt made a machine turn the opposite way to the shaft. It also grips better: with the sizes above, the crossed belt wraps about $224^\\circ$ of the small wheel, where the open belt wraps only about $166^\\circ$, and more contact means less slipping.",
+      },
+    ],
 
     draw(g, f) {
       const { R, r, crossed, alpha, tangent, T1, T2, U1, U2, H, smallArc } = figure();
