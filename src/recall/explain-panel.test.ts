@@ -5,7 +5,7 @@
 // keys typed there never reach the lesson, and each lesson keeps its own.
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Review } from "./check.ts";
+import { SIGNED_OUT, type Review } from "./check.ts";
 import type { Place } from "./deck.ts";
 import { EXPLAIN_STORAGE, mountExplain } from "./explain-panel.ts";
 import type { ExplainRequest } from "./explain.ts";
@@ -70,6 +70,19 @@ describe("the Explain tab", () => {
     type(field.value.replace("incentre", "centroid"));
     expect(pane.querySelector(".explain-marks mark")).toBeNull();
     expect(pane.querySelector(".explain-gone")).not.toBeNull();
+    expect(check.disabled).toBe(false);
+  });
+
+  it("offers to sign in again once the site's sign-in has run out", async () => {
+    const { check, type } = mount();
+    type("Medians meet.");
+    check.click();
+    answer({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    await Promise.resolve();
+    await Promise.resolve();
+    const link = pane.querySelector<HTMLAnchorElement>(".explain-sign-in")!;
+    expect(link.getAttribute("href")).toBe("signin.html");
+    expect(link.target).toBe("_blank");
     expect(check.disabled).toBe(false);
   });
 

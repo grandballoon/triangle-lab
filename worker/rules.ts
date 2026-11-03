@@ -19,6 +19,7 @@ import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
 import type { Deck } from "../src/recall/deck.ts";
+import type { Barred } from "../src/recall/sync.ts";
 import { claimsProblem, waivedLocally, type Access } from "./access.ts";
 
 /** Largest deck accepted, in characters of JSON: far above any real deck. */
@@ -72,6 +73,17 @@ export interface Refusal {
   kind: "refuse";
   status: number;
   error: string;
+  /**
+   * On a 401, what the caller lacks: the sync key, or a Cloudflare Access
+   * sign-in. Pages tell the two apart by it (src/recall/sync.ts `barredBy`):
+   * a wrong key is not tried again, while a sign-in that has run out is.
+   */
+  reason?: Barred;
+}
+
+/** A refusal as the Worker sends it: its error, and why on a 401. */
+export function refusalBody({ error, reason }: Refusal): { error: string; reason?: Barred } {
+  return reason ? { error, reason } : { error };
 }
 
 /** What to do with `asked`, at `now` (ms), which an Access token must be in date for. */
@@ -90,7 +102,7 @@ export function decide(asked: Asked, settings: Settings, now: number): Decision 
   if (asked.method === "POST" && asked.length !== null && asked.length > (claude?.max ?? MAX_BODY)) {
     return claude?.tooLarge ?? tooLarge;
   }
-  if (!keyMatches(asked.authorization, settings.key)) return refuse(401, "That key is not this deck's.");
+  if (!keyMatches(asked.authorization, settings.key)) return { ...refuse(401, "That key is not this deck's."), reason: "key" };
   if (claude) {
     return settings.claude ? { kind: claude.kind } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
   }
@@ -108,7 +120,7 @@ function accessProblem(asked: Asked, access: Access, now: number): Refusal | nul
     return refuse(503, "The Worker's ACCESS_ISSUER or ACCESS_AUD is not set, so it lets no one in.");
   }
   const problem = asked.claims ? claimsProblem(asked.claims, access, now) : "There is no valid Cloudflare Access token.";
-  return problem ? refuse(401, problem) : null;
+  return problem ? { ...refuse(401, problem), reason: "access" } : null;
 }
 
 /** Where answers are sent to be checked by Claude. */

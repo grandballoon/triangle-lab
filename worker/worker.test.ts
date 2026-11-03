@@ -159,6 +159,11 @@ describe("behind Cloudflare Access", () => {
     }
     expect(claude.asked).toEqual([]);
   });
+
+  it("says a 401 is for the sign-in, not the key, so pages keep the key", async () => {
+    expect(await (await call("GET", undefined, { "Cf-Access-Jwt-Assertion": "" })).json()).toMatchObject({ reason: "access" });
+    expect(await (await call("GET", undefined, { Authorization: "Bearer wrong" })).json()).toMatchObject({ reason: "key" });
+  });
 });
 
 describe("the recall deck", () => {

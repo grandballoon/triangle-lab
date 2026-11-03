@@ -53,6 +53,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.html"),
         lab: resolve(__dirname, "lab.html"),
         recall: resolve(__dirname, "recall.html"),
+        signin: resolve(__dirname, "signin.html"),
         angles: resolve(__dirname, "angles.html"),
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),

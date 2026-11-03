@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { editCard, newCard, removeCard, saveDeck, setWriting, type Deck } from "./deck.ts";
-import { afterReply, hasNews, readReply, sendWhen, syncLabel } from "./sync.ts";
+import { afterReply, barredBy, hasNews, readReply, REDIRECTED, sendWhen, syncLabel } from "./sync.ts";
 
 const T0 = 1_800_000_000_000;
 const MIN = 60_000;
@@ -18,8 +18,11 @@ describe("readReply", () => {
     expect(readReply({ status: 200, body: { cards: [] } })).toMatchObject({ kind: "failed" });
   });
 
-  it("tells a refused key, no answer at all, and other failures apart", () => {
-    expect(readReply({ status: 401, body: { error: "No." } })).toEqual({ kind: "refused" });
+  it("tells a refused key, a sign-in run out, no answer at all, and other failures apart", () => {
+    expect(readReply({ status: 401, body: { error: "No.", reason: "key" } })).toEqual({ kind: "refused" });
+    expect(readReply({ status: 401, body: { error: "No.", reason: "access" } })).toEqual({ kind: "signed-out" });
+    expect(readReply({ status: 401, body: null })).toEqual({ kind: "signed-out" });
+    expect(readReply({ status: REDIRECTED, body: null })).toEqual({ kind: "signed-out" });
     expect(readReply(null)).toEqual({ kind: "unreachable" });
     expect(readReply({ status: 413, body: { error: "That deck is too large." } })).toEqual({
       kind: "failed",
@@ -29,12 +32,24 @@ describe("readReply", () => {
   });
 });
 
+describe("barredBy", () => {
+  it("blames the key only when the Worker says so, and Access for any other 401 or a redirect", () => {
+    expect(barredBy({ status: 401, body: { reason: "key" } })).toBe("key");
+    // Access answers before the Worker, with a page of its own or nothing.
+    for (const body of [null, "<html>", { error: "x" }, { reason: "access" }]) expect(barredBy({ status: 401, body })).toBe("access");
+    expect(barredBy({ status: REDIRECTED, body: null })).toBe("access");
+    expect(barredBy({ status: 200, body: { reason: "key" } })).toBeNull();
+    expect(barredBy({ status: 502, body: null })).toBeNull();
+  });
+});
+
 describe("afterReply", () => {
   it("moves the last success only when the sync worked", () => {
     expect(afterReply({ kind: "deck", deck }, T0, T0 + MIN)).toEqual({ kind: "synced", last: T0 + MIN });
     expect(afterReply({ kind: "unreachable" }, T0, T0 + MIN)).toEqual({ kind: "unreachable", last: T0 });
     expect(afterReply({ kind: "failed", error: "x" }, null, T0)).toEqual({ kind: "failed", last: null, error: "x" });
     expect(afterReply({ kind: "refused" }, T0, T0 + MIN)).toEqual({ kind: "refused" });
+    expect(afterReply({ kind: "signed-out" }, T0, T0 + MIN)).toEqual({ kind: "signed-out", last: T0 });
   });
 });
 
@@ -81,6 +96,9 @@ describe("syncLabel", () => {
       "Syncing went wrong: That deck is too large. Changes are kept here.",
     );
     expect(syncLabel({ kind: "refused" }, T0)).toContain("doesn't take that key");
+    expect(syncLabel({ kind: "signed-out", last: T0 }, T0 + 2 * MIN)).toBe(
+      "Your sign-in to the site has run out. Changes are kept here and sent once you sign in again. Last synced 2 min ago.",
+    );
     expect(syncLabel({ kind: "no-key" }, T0)).toContain("Enter your sync key");
   });
 });

@@ -6,7 +6,7 @@ import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
-import { CLOCK_SLACK_MS, datedAhead, decide as decideAt, keyMatches, MAX_BODY, MIN_KEY, type Asked, type Settings } from "./rules.ts";
+import { CLOCK_SLACK_MS, datedAhead, decide as decideAt, keyMatches, MAX_BODY, MIN_KEY, refusalBody, type Asked, type Settings } from "./rules.ts";
 
 const KEY = "k".repeat(MIN_KEY);
 const NOW = 1_700_000_000_000;
@@ -98,6 +98,13 @@ describe("decide, behind Cloudflare Access", () => {
     }
     expect(decide(asked({ claims: { ...CLAIMS, aud: ["other"] } }), settings)).toMatchObject({ status: 401, error: "The Access token is for another application." });
     expect(decide(asked({ claims: { ...CLAIMS, exp: NOW / 1000 - 120 } }), settings)).toMatchObject({ status: 401, error: "The Access token has expired." });
+  });
+
+  it("says which a 401 lacks, the key or an Access sign-in, so a page tells them apart", () => {
+    expect(decide(asked({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401, reason: "key" });
+    expect(decide(asked({ claims: null }), settings)).toMatchObject({ status: 401, reason: "access" });
+    expect(refusalBody({ kind: "refuse", status: 401, error: "No.", reason: "key" })).toEqual({ error: "No.", reason: "key" });
+    expect(refusalBody({ kind: "refuse", status: 429, error: "Slow down." })).toEqual({ error: "Slow down." });
   });
 
   it("checks Access before the key, so the key cannot be guessed at from outside it", () => {

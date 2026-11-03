@@ -13,6 +13,7 @@
 // the verdict by the same rules.
 
 import { MAX_ANSWER, MAX_QUESTION, readVerdict, type Verdict } from "./deck.ts";
+import { barredBy } from "./sync.ts";
 
 /** What the page sends to have an answer checked. */
 export interface CheckRequest {
@@ -27,7 +28,11 @@ export interface CheckRequest {
 export type Review =
   | { kind: "checking" }
   | { kind: "done"; verdict: Verdict }
-  | { kind: "failed"; error: string };
+  /** `signIn` when the site's Access sign-in has run out, so the page offers to sign in again. */
+  | { kind: "failed"; error: string; signIn?: true };
+
+/** Why a request to Claude failed once the site's Access sign-in has run out. */
+export const SIGNED_OUT = "Your sign-in to the site has run out. Sign in again, then try once more.";
 
 const MAX_WHERE = 300;
 
@@ -54,7 +59,9 @@ export function readCheckRequest(raw: unknown): CheckRequest | null {
 export function readCheckReply(answer: { status: number; body: unknown } | null): Review {
   if (!answer) return { kind: "failed", error: "Can't reach the server to check this." };
   const { status, body } = answer;
-  if (status === 401) return { kind: "failed", error: "The server doesn't take this browser's sync key." };
+  const barred = barredBy(answer);
+  if (barred === "key") return { kind: "failed", error: "The server doesn't take this browser's sync key." };
+  if (barred === "access") return { kind: "failed", error: SIGNED_OUT, signIn: true };
   if (status >= 200 && status < 300) {
     const verdict = readVerdict(body);
     return verdict ? { kind: "done", verdict } : { kind: "failed", error: "The check came back unreadable." };
@@ -74,7 +81,9 @@ export function loadReview(raw: unknown): Review | null {
     const verdict = readVerdict(raw.verdict);
     return verdict ? { kind: "done", verdict } : null;
   }
-  if (raw.kind === "failed" && typeof raw.error === "string") return { kind: "failed", error: raw.error };
+  if (raw.kind === "failed" && typeof raw.error === "string") {
+    return raw.signIn === true ? { kind: "failed", error: raw.error, signIn: true } : { kind: "failed", error: raw.error };
+  }
   return null;
 }
 

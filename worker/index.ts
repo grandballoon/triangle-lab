@@ -44,6 +44,7 @@ import {
   decide,
   explainTooLarge,
   MAX_BODY,
+  refusalBody,
   tooLarge,
   type Refusal,
 } from "./rules.ts";
@@ -83,7 +84,7 @@ export default {
     const deck = env.DECKS.getByName(DECK_NAME);
     switch (decision.kind) {
       case "refuse":
-        return reply(decision.status, { error: decision.error });
+        return reply(decision.status, refusalBody(decision));
       case "read":
         return reply(200, await deck.read());
       case "merge": {

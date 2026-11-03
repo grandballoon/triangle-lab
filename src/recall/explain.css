@@ -216,3 +216,12 @@
 html[data-layout="stacked"] .explain { padding: 8px 10px 12px; }
 html[data-layout="stacked"] .explain-ask { font-size: 15px; }
 html[data-layout="stacked"] .explain-text { min-height: 96px; }
+
+/* Once the site's sign-in has run out (signin.ts). */
+.explain-sign-in {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}

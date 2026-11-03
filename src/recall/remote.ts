@@ -20,7 +20,7 @@ import { readCheckReply, type CheckRequest, type Review } from "./check.ts";
 import type { ExplainRequest } from "./explain.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
-import { afterReply, hasNews, lastSynced, readReply, sendWhen, type SyncState } from "./sync.ts";
+import { afterReply, hasNews, lastSynced, readReply, REDIRECTED, sendWhen, type SyncState } from "./sync.ts";
 
 /** Where this browser keeps the sync key it was given. */
 export const SYNC_KEY_STORAGE = "triangle-lab:recall-sync-key";
@@ -222,9 +222,14 @@ export class RecallSync {
     try {
       const response = await this.deps.fetch(`${this.deps.url}${path}`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        // Asks Cloudflare Access to answer 401 rather than send the page
+        // off to sign in once its sign-in has run out; a redirect it sends
+        // anyway is not followed, but read as the same (sync.ts barredBy).
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+        redirect: "manual",
         body: JSON.stringify(body),
       });
+      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) return { status: REDIRECTED, body: null };
       return { status: response.status, body: await response.json().catch(() => null) };
     } catch {
       return null;

@@ -51,7 +51,7 @@ export function decideStaging(asked: StagingAsked, access: Access, now: number):
   }
   if (!asked.withinLimit) return refuse(429, "Too many requests. Try again in a minute.");
   const problem = asked.claims ? claimsProblem(asked.claims, access, now) : "There is no valid Cloudflare Access token.";
-  if (problem) return refuse(401, problem);
+  if (problem) return { ...refuse(401, problem), reason: "access" };
   if (url.pathname === STEPS_ENDPOINT) {
     if (method === "GET") return { kind: "list-steps", page: url.searchParams.get("page") ?? "" };
     if (method === "POST") return { kind: "edit-step" };

@@ -15,6 +15,7 @@ import { parseEntry, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import { homeOf, listing, rewriteStep, stepsIn } from "../src/dev/steps/source.ts";
 import { parseEdit, type Listing, type SaveReply, type StepEdit } from "../src/dev/steps/wire.ts";
 import production, { RecallDeck } from "./index.ts";
+import { refusalBody } from "./rules.ts";
 import { verifiedClaims } from "./access-keys.ts";
 import {
   commitBody,
@@ -62,7 +63,7 @@ export default {
 
     switch (decision.kind) {
       case "refuse":
-        return reply(decision.status, { error: decision.error });
+        return reply(decision.status, refusalBody(decision));
       case "list-steps": {
         const home = homeOf(decision.page);
         if (!home) return reply(404, { error: "This page has no steps." });

@@ -233,9 +233,10 @@ They stay in this browser rather than the deck: they are the learner's working, 
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen, and in the free association, where only Command- or Control-Enter has it read | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
-| `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
+| `sync.ts` | What the Worker's replies mean, a wrong key told from a sign-in run out, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
-| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, and a free association to read, with the same key | no (browser injected) |
+| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, a free association to read, and an explanation to check, with the same key | no (browser injected) |
+| `signin.ts` | The link that signs the learner in to the site again, once its Access sign-in has run out | no |
 | `id.ts` | New card ids | no |
 | `capture.ts` | The pill and sheet on a lesson page | no |
 | `page.ts` | The recall page: overview, sittings, the free association, the sync key, saving to and loading from a file | no |
@@ -255,6 +256,15 @@ A change to the free association alone, which comes with every key pressed, is s
 Taking a reply in is not itself a change to send, since `hasNews` compares the deck with the Worker's copy as last heard.
 While syncing cannot happen, nothing is lost: the deck is still in `localStorage`, and goes with the next sync that works.
 A key the Worker turns down is not tried again until a key is given again.
+
+The site sits behind Cloudflare Access (see "The Worker"), whose sign-in runs out, after 24 hours as set up.
+Access renews it only when a page is opened, never on a page's own requests: once it has run out, Access answers the requests itself, before the Worker sees them, with a 401 when a request says it is one (`X-Requested-With`, which every request to the Worker sends), or else a redirect to its sign-in page, which the page does not follow.
+Neither is the key's fault, so a page must not stop trying the key on one.
+The Worker therefore says on each 401 what was lacking (`reason`: the key, or an Access sign-in), and only a 401 it marks as the key's is taken as a wrong key; any other 401, or a redirect, means the sign-in has run out (`barredBy` in `sync.ts`).
+Syncing then stands as signed out: the deck is kept here as when offline, and syncing goes on trying at every cause it has.
+A check or reading asked for meanwhile fails saying so (`signIn`).
+Where the page says either, it offers to sign in again (`signin.ts`): a link opening `signin.html` in a new tab, which Access signs the learner in on the way to, without asking while their sign-in to the Access team still holds, and which closes itself once open.
+The tab they came from keeps everything they wrote, syncs when it gets the focus back, and can ask Claude again.
 The recall page can also save the deck to a JSON file and load one back, merged the same way.
 A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background while the learner checks an answer in the lesson's tab.
 
@@ -275,6 +285,7 @@ The Worker refuses to serve with a key under 32 characters, and a rate limit per
 Cloudflare Access stands in front of the whole site, as it does staging, so only someone signed in is served a page, and the Worker does not trust that alone (`access.ts`).
 Every request it serves must also carry the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys (`access-keys.ts`), issued by the team (`ACCESS_ISSUER`), for the site's application (`ACCESS_AUD`), and in date.
 It is checked after the rate limit and before the key, so the deck and the calls to Claude, which cost money, stay shut to anyone Access did not let in, even if Access were turned off in front of the site.
+A 401 says which it was (`reason`), so a page whose Access sign-in has run out does not take its key to be wrong (see "Recall").
 With either var unset the Worker answers 503 to everything, so a Worker deployed without Access fails closed, and the deploy refuses to start (`tools/access.ts`).
 The token is not asked for on `localhost` (`waivedLocally`), where `wrangler dev` and the Vite dev server serve the Worker with no Access in front; Cloudflare routes a request to a deployed Worker only by a hostname it serves, so a deployed one never sees that name.
 A deck declared larger than 5 MB is refused before it is read.
@@ -458,7 +469,7 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 - `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
 - `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
-- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline and a refused key.
+- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline, a refused key, and the site's sign-in run out, told from a refused key and recovered from.
 - `worker/rules.test.ts`: routing to the deck, to checking, to free association and to explanations, the Access token required on every path (and waived on `localhost` only), key check, rate limit, size and clock checks, and calls to Claude off without a Claude key.
 - `worker/access.test.ts`: Access tokens taken apart, their claims checked, and where Access is waived.
 - `worker/explain.test.ts`: the lesson as Claude is told it, and the request to check an explanation.
