@@ -48,7 +48,7 @@
 		// to a request carrying a token Access signed for it (worker/access.ts);
 		// while either is empty it lets no one in, and `npm run deploy` stops.
 		"ACCESS_ISSUER": "https://nameless-frog-5ff8.cloudflareaccess.com",
-		"ACCESS_AUD": ""
+		"ACCESS_AUD": "2d07a6b2770d259eca3408faae995f99dc176cbb0b20efa54b7e7157bd61b439"
 	},
 	"env": {
 		// Staging, `npx wrangler deploy --env staging` (the Worker

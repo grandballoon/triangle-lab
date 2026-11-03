@@ -177,6 +177,8 @@ Once:
 1. In the Cloudflare dashboard, open the `triangle-lab` Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it).
    Give the application a policy that allows the email addresses of everyone who should use the site.
 2. Copy the application's audience (AUD) tag into `ACCESS_AUD` under the top-level `vars` in `wrangler.jsonc`; `ACCESS_ISSUER` is already the team's, `https://nameless-frog-5ff8.cloudflareaccess.com`, the same as staging's.
+   The dashboard may not show the tag for an application the Worker's toggle made, but every token Access signs carries it.
+   Sign in to the site, copy the `CF_Authorization` cookie from the browser's developer tools, and decode it in the same tab's console, so it never leaves the browser: `JSON.parse(atob(prompt("Paste CF_Authorization").split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).aud`.
    Run `npm run worker:types`, and commit both.
 3. Deploy. Signed out, the site now shows Access's sign-in page; signed in, it works as before.
 
