@@ -145,10 +145,13 @@ const call = (method: string, path: string, body?: unknown, jwt: string | null =
 const steps = (page: string, jwt?: string | null) => call("GET", `/__step-source?page=${encodeURIComponent(page)}`, undefined, jwt);
 
 describe("staging", () => {
-  it("serves the site and its own deck as production does", async () => {
+  it("serves the site and its own deck as production does, behind Access", async () => {
     expect(await (await fetch(`${base}/`)).text()).toBe("<title>Lessons</title>");
-    const deck = await fetch(`${base}/deck`, { headers: { Authorization: `Bearer ${KEY}` } });
-    expect(deck.status).toBe(200);
+    const deck = (jwt: string | null) =>
+      fetch(`${base}/deck`, { headers: { Authorization: `Bearer ${KEY}`, ...(jwt ? { "Cf-Access-Jwt-Assertion": jwt } : {}) } });
+    expect((await deck(token())).status).toBe(200);
+    expect((await deck(null)).status).toBe(401);
+    expect((await deck(token({ aud: ["other"] }))).status).toBe(401);
   });
 
   it("lets nothing reach the dev tools without a signed Access token for this application", async () => {

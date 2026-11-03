@@ -1,6 +1,6 @@
 // What the Worker does with a request, decided from plain values: whether
-// the caller holds the key, is within the rate limit, and what was asked
-// for. index.ts reads the request, follows the decision and does the I/O.
+// the caller came through Cloudflare Access (access.ts), holds the key, is
+// within the rate limit, and what was asked for. index.ts reads the request, follows the decision and does the I/O.
 // Only /deck, /check, /associate and /explain reach the Worker; the site's pages are served from
 // its assets (wrangler.jsonc), on the same origin, so no page elsewhere is
 // let in through CORS.
@@ -11,12 +11,15 @@
 //   POST /check  a CheckRequest (src/recall/check.ts); answers with Claude's Verdict
 //   POST /associate  an AssociateRequest (src/recall/associate.ts); answers with Claude's Reading
 //   POST /explain  an ExplainRequest (src/recall/explain.ts); answers with Claude's Verdict
-// Every request carries `Authorization: Bearer <RECALL_KEY>`.
+// Every request carries `Authorization: Bearer <RECALL_KEY>`, and the token
+// Cloudflare Access forwards for the site's application, so the deck and the
+// calls to Claude, which cost money, are only for someone Access let in.
 
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
 import type { Deck } from "../src/recall/deck.ts";
+import { claimsProblem, waivedLocally, type Access } from "./access.ts";
 
 /** Largest deck accepted, in characters of JSON: far above any real deck. */
 export const MAX_BODY = 5_000_000;
@@ -37,6 +40,10 @@ export const CLOCK_SLACK_MS = 60 * 60 * 1000;
 export interface Asked {
   method: string;
   path: string;
+  /** The hostname the request was made to. */
+  hostname: string;
+  /** The Access token's claims, once its signature is checked; null without a valid one. */
+  claims: Record<string, unknown> | null;
   authorization: string | null;
   /** The Content-Length header, if sent. */
   length: number | null;
@@ -49,6 +56,8 @@ export interface Settings {
   key: string;
   /** Whether the Worker can call Claude: its ANTHROPIC_API_KEY is set. */
   claude: boolean;
+  /** The Access application in front of the site; empty fields when it was never set. */
+  access: Access;
 }
 
 export type Decision =
@@ -65,7 +74,8 @@ export interface Refusal {
   error: string;
 }
 
-export function decide(asked: Asked, settings: Settings): Decision {
+/** What to do with `asked`, at `now` (ms), which an Access token must be in date for. */
+export function decide(asked: Asked, settings: Settings, now: number): Decision {
   const claude = CLAUDE_PATHS.find((c) => c.path === asked.path);
   if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check, /associate and /explain.");
   const methods = claude ? ["POST"] : ["GET", "POST"];
@@ -75,6 +85,8 @@ export function decide(asked: Asked, settings: Settings): Decision {
   }
   // Before the key is checked, so guessing it is slowed too.
   if (!asked.withinLimit) return refuse(429, "Too many requests. Try again in a minute.");
+  const screened = accessProblem(asked, settings.access, now);
+  if (screened) return screened;
   if (asked.method === "POST" && asked.length !== null && asked.length > (claude?.max ?? MAX_BODY)) {
     return claude?.tooLarge ?? tooLarge;
   }
@@ -83,6 +95,20 @@ export function decide(asked: Asked, settings: Settings): Decision {
     return settings.claude ? { kind: claude.kind } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
   }
   return { kind: asked.method === "GET" ? "read" : "merge" };
+}
+
+/**
+ * Why `asked` did not come through Cloudflare Access, or null if it did, or
+ * needs not (`waivedLocally`). Unset, Access refuses everything: a Worker
+ * deployed without it fails closed.
+ */
+function accessProblem(asked: Asked, access: Access, now: number): Refusal | null {
+  if (waivedLocally(asked.hostname)) return null;
+  if (!access.issuer || !access.aud) {
+    return refuse(503, "The Worker's ACCESS_ISSUER or ACCESS_AUD is not set, so it lets no one in.");
+  }
+  const problem = asked.claims ? claimsProblem(asked.claims, access, now) : "There is no valid Cloudflare Access token.";
+  return problem ? refuse(401, problem) : null;
 }
 
 /** Where answers are sent to be checked by Claude. */

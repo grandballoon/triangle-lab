@@ -158,14 +158,27 @@ Each check is a paid call on that Claude key.
 
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with answer checking at `/check`.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`.
 Giving the site an origin of its own keeps its browser storage, and the sync key in it, away from any other site.
+
+The site sits behind Cloudflare Access, so only someone you let in can open it, and above all spend on its Claude key.
+The Worker checks the token Access forwards on every path it serves, besides the sync key, so the deck and the calls to Claude stay shut even if Access were turned off; on `localhost`, under `npm run preview` and `npm run dev`, it does not ask for one.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
-A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set.
+A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set, and stops before it starts while `ACCESS_ISSUER` or `ACCESS_AUD` is empty under `vars` in `wrangler.jsonc` (`tools/access.ts`), since the Worker would let no one in.
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
+
+### Putting production behind Access
+
+Once:
+
+1. In the Cloudflare dashboard, open the `triangle-lab` Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it).
+   Give the application a policy that allows the email addresses of everyone who should use the site.
+2. Copy the application's audience (AUD) tag into `ACCESS_AUD` under the top-level `vars` in `wrangler.jsonc`; `ACCESS_ISSUER` is already the team's, `https://nameless-frog-5ff8.cloudflareaccess.com`, the same as staging's.
+   Run `npm run worker:types`, and commit both.
+3. Deploy. Signed out, the site now shows Access's sign-in page; signed in, it works as before.
 
 ## Lessons
 ## Staging

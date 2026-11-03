@@ -44,6 +44,7 @@ jobs:
       # No `npm test`: a step edit leaves its lesson's syllabus entry stale
       # until `/syllabus` runs on the way to main, which the syllabus test
       # would refuse. The build still type-checks everything.
+      - run: node tools/access.ts --env staging
       - run: npm run build:staging
       - run: npx wrangler deploy --env staging
         env:

@@ -41,7 +41,14 @@
 	"secrets": { "required": ["RECALL_KEY", "ANTHROPIC_API_KEY"] },
 	"vars": {
 		// Where the Claude API is. Tests point it at a stand-in.
-		"ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+		"ANTHROPIC_BASE_URL": "https://api.anthropic.com",
+		// The Cloudflare Access application in front of the site (README.md,
+		// "Deploying"): the team's issuer, https://<team>.cloudflareaccess.com,
+		// and the application's audience tag. The Worker serves its paths only
+		// to a request carrying a token Access signed for it (worker/access.ts);
+		// while either is empty it lets no one in, and `npm run deploy` stops.
+		"ACCESS_ISSUER": "https://nameless-frog-5ff8.cloudflareaccess.com",
+		"ACCESS_AUD": ""
 	},
 	"env": {
 		// Staging, `npx wrangler deploy --env staging` (the Worker

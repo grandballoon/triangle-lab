@@ -1,7 +1,7 @@
 name: Deploy to Cloudflare
 
 # The site and its recall deck are one Worker (wrangler.jsonc): the built
-# pages as its assets, and the deck at /deck.
+# pages as its assets, and the deck at /deck, behind Cloudflare Access.
 on:
   push:
     branches: [main]
@@ -25,6 +25,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Stops here while the Access application is not set in wrangler.jsonc.
+      - run: node tools/access.ts
       - run: npm test
       - run: npm run build
       # The token needs the "Edit Cloudflare Workers" permissions; both values

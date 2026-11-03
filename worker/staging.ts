@@ -15,18 +15,16 @@ import { parseEntry, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import { homeOf, listing, rewriteStep, stepsIn } from "../src/dev/steps/source.ts";
 import { parseEdit, type Listing, type SaveReply, type StepEdit } from "../src/dev/steps/wire.ts";
 import production, { RecallDeck } from "./index.ts";
+import { verifiedClaims } from "./access-keys.ts";
 import {
-  certsUrl,
   commitBody,
   commitLink,
   commitMessage,
   contentsUrl,
   decideStaging,
   githubHeaders,
-  JWT_ALG,
   MAX_STAGING_BODY,
   readContents,
-  readJwt,
   STAGING_PATHS,
   type GitHub,
   type InboxItem,
@@ -143,32 +141,6 @@ async function commitEdit(github: GitHub, edit: StepEdit): Promise<SaveReply | F
     }
   }
   return { status: 409, error: `${home.file} keeps changing on ${github.branch}; try again.` };
-}
-
-/** Access's signing keys, kept for a while: they change rarely, and every request needs them. */
-let certs: { issuer: string; keys: JsonWebKey[]; until: number } | null = null;
-const CERTS_TTL_MS = 10 * 60 * 1000;
-
-async function signingKeys(issuer: string, refresh: boolean): Promise<JsonWebKey[]> {
-  if (!refresh && certs?.issuer === issuer && certs.until > Date.now()) return certs.keys;
-  const res = await fetch(certsUrl(issuer));
-  const body = res.ok ? ((await res.json()) as { keys?: JsonWebKey[] }) : {};
-  const keys = Array.isArray(body.keys) ? body.keys : [];
-  certs = { issuer, keys, until: Date.now() + CERTS_TTL_MS };
-  return keys;
-}
-
-/** The claims of an Access token whose signature holds, or null. */
-async function verifiedClaims(token: string | null, issuer: string): Promise<Record<string, unknown> | null> {
-  const jwt = readJwt(token);
-  if (!jwt || jwt.header.alg !== JWT_ALG) return null;
-  const find = (keys: JsonWebKey[]) => keys.find((k) => (k as { kid?: unknown }).kid === jwt.header.kid);
-  // A key not seen yet may be a new one Access has rotated in.
-  const jwk = find(await signingKeys(issuer, false)) ?? find(await signingKeys(issuer, true));
-  if (!jwk) return null;
-  const algorithm = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
-  const key = await crypto.subtle.importKey("jwk", jwk, algorithm, false, ["verify"]);
-  return (await crypto.subtle.verify(algorithm, key, jwt.signature, jwt.signed)) ? jwt.claims : null;
 }
 
 function parseJson(text: string): unknown {

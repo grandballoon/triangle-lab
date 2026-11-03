@@ -2,8 +2,10 @@
 // wrangler.jsonc: pages served from its assets, the recall deck's HTTP
 // contract, the deck surviving the object being evicted, two devices
 // syncing through it from the pages' own sync code, and answers checked and
-// free associations read by a stand-in for the Claude API.
+// free associations read by a stand-in for the Claude API, all behind a
+// stand-in for Cloudflare Access: nothing is let in without a token it signed.
 
+import { createSign, generateKeyPairSync } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -18,6 +20,9 @@ import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
 
 const KEY = "a-test-key-long-enough-to-be-served";
+const AUD = "production-aud-tag";
+/** The stand-in Access team's signing key. */
+const ACCESS_KEYS = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const CLAUDE_KEY = "a-test-claude-key";
 const ROOT = resolve(__dirname, "..");
 const T0 = 1_700_000_000_000;
@@ -41,12 +46,26 @@ const claude = {
   stop: "end_turn",
 };
 let claudeServer: Server;
+/** The stand-in Access team, served by the stand-in Claude API's server. */
+let issuer: string;
+
+/** A token as Access would forward it, signed with the stand-in team's key. */
+function accessToken(claims: Record<string, unknown> = {}): string {
+  const part = (value: unknown) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const head = `${part({ alg: "RS256", kid: "k1" })}.${part({ iss: issuer, aud: [AUD], exp: Math.floor(Date.now() / 1000) + 600, ...claims })}`;
+  return `${head}.${createSign("RSA-SHA256").update(head).sign(ACCESS_KEYS.privateKey).toString("base64url")}`;
+}
 
 beforeAll(async () => {
   claudeServer = createServer((req, res) => {
     let text = "";
     req.on("data", (chunk) => (text += chunk));
     req.on("end", () => {
+      if (req.url === "/cdn-cgi/access/certs") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ keys: [{ ...ACCESS_KEYS.publicKey.export({ format: "jwk" }), kid: "k1", alg: "RS256", use: "sig" }] }));
+        return;
+      }
       claude.asked.push({ headers: req.headers, body: JSON.parse(text) });
       res.writeHead(claude.status, { "Content-Type": "application/json" });
       if (claude.status !== 200) {
@@ -69,6 +88,7 @@ beforeAll(async () => {
   });
   await new Promise<void>((done) => claudeServer.listen(0, "127.0.0.1", done));
   const claudeUrl = `http://127.0.0.1:${(claudeServer.address() as AddressInfo).port}`;
+  issuer = claudeUrl;
 
   dir = await mkdtemp(join(tmpdir(), "triangle-lab-worker-"));
   const assets = join(dir, "assets");
@@ -89,7 +109,7 @@ beforeAll(async () => {
           ...config,
           main: join(ROOT, config.main),
           assets: { ...config.assets, directory: assets },
-          vars: { ANTHROPIC_BASE_URL: claudeUrl },
+          vars: { ...config.vars, ANTHROPIC_BASE_URL: claudeUrl, ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
         },
       },
     ],
@@ -112,7 +132,7 @@ afterAll(async () => {
 const call = (method: string, body?: unknown, headers: Record<string, string> = {}, path = "/deck") =>
   fetch(`${base}${path}`, {
     method,
-    headers: { Authorization: `Bearer ${KEY}`, ...headers },
+    headers: { Authorization: `Bearer ${KEY}`, "Cf-Access-Jwt-Assertion": accessToken(), ...headers },
     body: body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body),
   });
 
@@ -122,6 +142,22 @@ describe("the site", () => {
     expect(await (await fetch(`${base}/recall`)).text()).toBe("<title>Recall</title>");
     expect((await fetch(`${base}/nowhere.html`)).status).toBe(404);
     expect((await call("GET")).status).toBe(200);
+  });
+});
+
+describe("behind Cloudflare Access", () => {
+  it("lets nothing reach the deck or Claude without a token Access signed for the site", async () => {
+    const forged = `${accessToken().split(".").slice(0, 2).join(".")}.${Buffer.from("forged").toString("base64url")}`;
+    for (const jwt of ["", "not.a.token", forged, accessToken({ aud: ["other"] }), accessToken({ exp: 1 })]) {
+      expect((await call("GET", undefined, { "Cf-Access-Jwt-Assertion": jwt })).status, jwt).toBe(401);
+    }
+    // Fewer here: these count against the calls to Claude's rate limit too.
+    for (const jwt of ["", forged]) {
+      for (const path of ["/check", "/associate", "/explain"]) {
+        expect((await call("POST", {}, { "Cf-Access-Jwt-Assertion": jwt }, path)).status, path).toBe(401);
+      }
+    }
+    expect(claude.asked).toEqual([]);
   });
 });
 
@@ -314,7 +350,8 @@ describe("two devices syncing through the Worker", () => {
     const sync = new RecallSync(store, {
       url: base,
       keys: storage,
-      fetch: (input, init) => fetch(input, init),
+      // Access adds its token to every request a signed-in browser makes.
+      fetch: (input, init) => fetch(input, { ...init, headers: { ...(init?.headers as Record<string, string>), "Cf-Access-Jwt-Assertion": accessToken() } }),
       now: () => Date.now(),
       setTimeout: (fn, ms) => setTimeout(fn, ms),
       clearTimeout: (t) => clearTimeout(t),

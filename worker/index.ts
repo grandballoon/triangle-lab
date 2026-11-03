@@ -33,6 +33,8 @@ import {
 } from "../src/recall/deck.ts";
 import { associateParams, readingOf } from "./associate.ts";
 import { checkParams, claudeFailed, usageLine, verdictOf } from "./check.ts";
+import { verifiedClaims } from "./access-keys.ts";
+import { waivedLocally, type Access } from "./access.ts";
 import { explainParams } from "./explain.ts";
 import {
   associateTooLarge,
@@ -62,15 +64,21 @@ export default {
     const { success: withinLimit } = await env.LIMITER.limit(caller);
     const paid = CLAUDE_PATHS.some((c) => c.path === url.pathname);
     const withinCheckLimit = !paid || (await env.CHECK_LIMITER.limit(caller)).success;
+    const access: Access = { issuer: env.ACCESS_ISSUER ?? "", aud: env.ACCESS_AUD ?? "" };
+    // The token's signature is only worth checking where Access is required.
+    const screened = !waivedLocally(url.hostname) && access.issuer !== "";
     const decision = decide(
       {
         method: request.method,
         path: url.pathname,
+        hostname: url.hostname,
+        claims: screened ? await verifiedClaims(request.headers.get("Cf-Access-Jwt-Assertion"), access.issuer) : null,
         authorization: request.headers.get("Authorization"),
         length: length === null ? null : Number(length),
         withinLimit: withinLimit && withinCheckLimit,
       },
-      { key: env.RECALL_KEY ?? "", claude: !!env.ANTHROPIC_API_KEY },
+      { key: env.RECALL_KEY ?? "", claude: !!env.ANTHROPIC_API_KEY, access },
+      Date.now(),
     );
     const deck = env.DECKS.getByName(DECK_NAME);
     switch (decision.kind) {

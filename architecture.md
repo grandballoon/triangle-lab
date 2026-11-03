@@ -270,7 +270,13 @@ In development, Vite sends `/deck`, `/check`, `/associate` and `/explain` on to 
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
-The key is all that guards the deck, so the Worker refuses to serve with one under 32 characters, and a rate limit per caller address (`LIMITER`, 60 a minute) is checked before the key so it cannot be guessed at speed.
+The Worker refuses to serve with a key under 32 characters, and a rate limit per caller address (`LIMITER`, 60 a minute) is checked before the key so it cannot be guessed at speed.
+
+Cloudflare Access stands in front of the whole site, as it does staging, so only someone signed in is served a page, and the Worker does not trust that alone (`access.ts`).
+Every request it serves must also carry the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys (`access-keys.ts`), issued by the team (`ACCESS_ISSUER`), for the site's application (`ACCESS_AUD`), and in date.
+It is checked after the rate limit and before the key, so the deck and the calls to Claude, which cost money, stay shut to anyone Access did not let in, even if Access were turned off in front of the site.
+With either var unset the Worker answers 503 to everything, so a Worker deployed without Access fails closed, and the deploy refuses to start (`tools/access.ts`).
+The token is not asked for on `localhost` (`waivedLocally`), where `wrangler dev` and the Vite dev server serve the Worker with no Access in front; Cloudflare routes a request to a deployed Worker only by a hostname it serves, so a deployed one never sees that name.
 A deck declared larger than 5 MB is refused before it is read.
 A merge takes the latest change, so a change dated far ahead would win every merge until that time came; the Worker refuses any dated more than an hour ahead of its clock, which leaves room only for a device's clock being a little off.
 
@@ -301,7 +307,9 @@ It asks for the verdict to the same schema as a check, on the same model at the 
 
 | File | Role | Pure |
 | --- | --- | --- |
-| `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
+| `rules.ts` | Which request it is, whether the caller came through Access and holds the key, the rate limit, size and clock checks | yes |
+| `access.ts` | Cloudflare Access tokens taken apart and their claims checked, and where Access is waived | yes |
+| `access-keys.ts` | A token's signature checked against the Access team's published keys | no |
 | `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
 | `explain.ts` | The lesson as Claude is told it, and the request to Claude to check an explanation | yes |
 | `associate.ts` | The course as Claude is told it, with the syllabus, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
@@ -412,7 +420,7 @@ It is a Worker of its own, `triangle-lab-staging`: its own deck, sync key and ra
 Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
 
 Cloudflare Access guards the whole staging host, so a page or asset is only served to someone signed in.
-The dev tools' endpoints also check the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
+Its deck and calls to Claude check the token Access forwards as production's do, and the dev tools' endpoints also check it (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
 With either var unset they answer 503, so a misconfigured staging fails closed.
 
 The two tools keep their endpoints and wire formats; only where things land differs.
@@ -428,7 +436,7 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 
 | File | Role |
 | --- | --- |
-| `worker/staging-rules.ts` | Which dev tool and action a request is, the Access token taken apart and its claims checked, and the GitHub requests. Pure. |
+| `worker/staging-rules.ts` | Which dev tool and action a request is, whether its Access token holds up (`access.ts`), and the GitHub requests. Pure. |
 | `worker/staging.ts` | The staging entry point: checks the token's signature, reads and commits through GitHub, and holds the comments (`StagingInbox`). |
 | `tools/staging-mode.ts` | Which builds carry the dev tools (`devTools`). |
 | `tools/staging.ts` | `npm run staging:pull`. Runs in Node. |
@@ -451,10 +459,13 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 - `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline and a refused key.
-- `worker/rules.test.ts`: routing to the deck, to checking and to free association, key check, rate limit, size and clock checks, and checking and reading off without a Claude key.
+- `worker/rules.test.ts`: routing to the deck, to checking, to free association and to explanations, the Access token required on every path (and waived on `localhost` only), key check, rate limit, size and clock checks, and calls to Claude off without a Claude key.
+- `worker/access.test.ts`: Access tokens taken apart, their claims checked, and where Access is waived.
+- `worker/explain.test.ts`: the lesson as Claude is told it, and the request to check an explanation.
+- `tools/access.test.ts`: the deploy guard, which Access vars `wrangler.jsonc` leaves empty.
 - `worker/check.test.ts`: the request to Claude, reading its verdict, a refusal or a failed call, and the usage line logged for each call.
 - `worker/associate.test.ts`: the course as Claude is told it, with what the syllabus says and the lessons within reach, the request to read a free association, and reading its reply or a refusal.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, and free associations read through it.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and all of it behind a stand-in Access team, nothing let in without a token it signed for the site.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.
@@ -468,6 +479,6 @@ None of this checks how a lesson looks, and no test sees a real hand: gesture th
 - `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
 - `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
 - `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
-- `worker/staging-rules.test.ts`: routing to the dev tools on staging, Access tokens taken apart and their claims checked, and the GitHub requests.
+- `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
 - `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, nothing let in without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
