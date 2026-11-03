@@ -193,14 +193,34 @@ export function prune(session: Session, deck: Deck): Session {
 
 /**
  * A sitting as kept for the tab, with what was being written. A phone often
- * reloads a tab left in the background (as when the learner checks an answer
- * in the lesson, in another tab), and the sitting carries on from here.
+ * reloads a tab left in the background, and the sitting carries on from here.
+ * It is also how the sitting goes to the lesson: checking an answer in the
+ * lesson opens it in the same tab, which shows the card being checked beside
+ * the lesson (beside.ts), and the recall page takes it back from here.
  */
 export interface Sitting {
   session: Session;
   draft: string;
   /** What is being written while the answer is checked, if anything. */
   editor: Editor | null;
+  /** New questions saved while checking the answer on show, oldest first. */
+  written: string[];
+  /** Whether the answer is being checked in the lesson, beside it, rather than on the recall page. */
+  inLesson: boolean;
+}
+
+/** A sitting that has only begun: nothing written, and on the recall page. */
+export function freshSitting(session: Session): Sitting {
+  return { session, draft: "", editor: null, written: [], inLesson: false };
+}
+
+/**
+ * The card a lesson page shows beside it: the one being checked, once the
+ * learner has taken the sitting to the lesson. Null when there is none.
+ */
+export function cardInLesson(sitting: Sitting | null, deck: Deck): Card | null {
+  if (!sitting?.inLesson || sitting.session.phase !== "check") return null;
+  return currentCard(sitting.session, deck);
 }
 
 /**
@@ -219,7 +239,7 @@ const EDITOR_KINDS: readonly Editor["kind"][] = ["question", "new"];
 export function loadSitting(raw: unknown): Sitting | null {
   if (!isObject(raw) || typeof raw.draft !== "string" || !isObject(raw.session)) return null;
   const { queue, phase, answer, tally, skipped, review, read, first } = raw.session;
-  if (!isIds(queue) || (phase !== "ask" && phase !== "check") || typeof answer !== "string") return null;
+  if (!isStrings(queue) || (phase !== "ask" && phase !== "check") || typeof answer !== "string") return null;
   if (!isObject(tally) || !GRADES.every((g) => Number.isInteger(tally[g]) && (tally[g] as number) >= 0)) return null;
   const counts = tally as Record<Grade, number>;
   return {
@@ -238,6 +258,9 @@ export function loadSitting(raw: unknown): Sitting | null {
     draft: raw.draft,
     // Kept only while checking, and absent from a sitting kept before there were editors.
     editor: phase === "check" ? loadEditor(raw.editor) : null,
+    // The same for what was written, and absent from a sitting kept before either was kept.
+    written: phase === "check" && isStrings(raw.written) ? raw.written : [],
+    inLesson: phase === "check" && raw.inLesson === true,
   };
 }
 
@@ -254,4 +277,4 @@ function loadEditor(raw: unknown): Editor | null {
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
 
-const isIds = (v: unknown): v is string[] => Array.isArray(v) && v.every((id) => typeof id === "string");
+const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((id) => typeof id === "string");

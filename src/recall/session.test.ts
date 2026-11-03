@@ -7,9 +7,11 @@ import type { Review } from "./check.ts";
 import { dueAfter, editCard, newCard, removeCard, type Card, type Deck } from "./deck.ts";
 import {
   askReview,
+  cardInLesson,
   currentCard,
   dropReview,
   editAnswer,
+  freshSitting,
   gradeCurrent,
   loadSitting,
   progress,
@@ -233,6 +235,22 @@ describe("the outcome Claude's readings point to", () => {
   });
 });
 
+describe("a sitting taken to the lesson", () => {
+  it("shows the card being checked beside the lesson, once taken there", () => {
+    const checking = freshSitting(reveal(startSession(deck.cards), "x"));
+    expect(cardInLesson(checking, deck)).toBeNull();
+    expect(cardInLesson({ ...checking, inLesson: true }, deck)?.id).toBe("a");
+    expect(cardInLesson(null, deck)).toBeNull();
+  });
+
+  it("shows nothing while a card is asked, or once the card has gone", () => {
+    const asking = { ...freshSitting(startSession(deck.cards)), inLesson: true };
+    expect(cardInLesson(asking, deck)).toBeNull();
+    const checking = { ...freshSitting(reveal(startSession(deck.cards), "x")), inLesson: true };
+    expect(cardInLesson(checking, removeCard(deck, "a", T0))).toBeNull();
+  });
+});
+
 describe("a sitting kept across a reload", () => {
   it("keeps Claude's reading, but asks again for one still under way", () => {
     const checked = reveal(startSession(deck.cards), "x");
@@ -246,8 +264,24 @@ describe("a sitting kept across a reload", () => {
 
   it("reads back as it was kept", () => {
     const { session } = gradeCurrent(reveal(startSession(deck.cards), "x"), deck, "missed", T0);
-    const kept = { session: reveal(session, "half"), draft: "half", editor: { kind: "new" as const, text: "Why?" } };
+    const kept = {
+      session: reveal(session, "half"),
+      draft: "half",
+      editor: { kind: "new" as const, text: "Why?" },
+      written: ["How?"],
+      inLesson: true,
+    };
     expect(loadSitting(JSON.parse(JSON.stringify(kept)))).toEqual(kept);
+  });
+
+  it("keeps the questions written and the sitting's going to the lesson only while checking, and reads a sitting kept before either", () => {
+    const beside = { written: ["How?"], inLesson: true };
+    const asking = { session: startSession(deck.cards), draft: "", ...beside };
+    expect(loadSitting(JSON.parse(JSON.stringify(asking)))).toMatchObject({ written: [], inLesson: false });
+    const checking = { session: reveal(startSession(deck.cards), "x"), draft: "" };
+    expect(loadSitting(checking)).toMatchObject({ written: [], inLesson: false });
+    expect(loadSitting({ ...checking, written: [3], inLesson: "yes" })).toMatchObject({ written: [], inLesson: false });
+    expect(loadSitting({ ...checking, ...beside })).toMatchObject(beside);
   });
 
   it("keeps what was being written only while checking, and reads a sitting kept before there was any", () => {

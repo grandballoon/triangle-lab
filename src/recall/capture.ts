@@ -4,12 +4,20 @@
 // on the recall page (recall.html) once it falls due. The sheet also lists the
 // questions already asked in this lesson.
 //
+// The sheet stays open while the lesson is used, so the learner can watch the
+// figure as they write: they can drag it aside by its header, fold it down to
+// the header, or size it from its corner (float.ts, as the review beside a
+// lesson does). Where they put it is remembered; until then it opens under
+// its pill.
+//
 // Both kinds of lesson page mount it: page.ts for a standalone lesson, the lab
 // page's main.ts for a lab lesson. The page says where the learner is through
 // `where`; everything else is here.
 
 import "./capture.css";
 import { addCard, dueCards, lessonCards, newCard, removeCard, type Place } from "./deck.ts";
+import { floatSheet } from "./float.ts";
+import { GAP } from "./frame.ts";
 import { newId } from "./id.ts";
 import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { questionHtml, stepLabel, lessonName } from "./labels.ts";
@@ -25,8 +33,14 @@ const ICON =
 
 const HINT = "↵ save · ⇧↵ new line · esc close";
 
-/** Gap kept between the sheet and the pill, and the window's edges. */
-const GAP = 8;
+/** Where the learner last put the sheet (a frame.ts Box). */
+const BOX_KEY = "triangle-lab:recall-sheet";
+
+// A chevron that points up when the sheet is unfolded, and a cross.
+const FOLD_ICON =
+  '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>';
+const CLOSE_ICON =
+  '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
 
 export interface RecallCapture {
   /** Show the lesson and step the learner is on now, as after a lesson swap. */
@@ -67,7 +81,17 @@ export function mountRecall(
   sheet.hidden = true;
   sheet.setAttribute("role", "dialog");
   sheet.setAttribute("aria-label", "Question to recall later");
+  const bar = el("div", "recall-bar");
+  bar.title = "Drag to move";
   const head = el("div", "recall-head", "Question for later");
+  const fold = iconButton("recall-fold", FOLD_ICON);
+  fold.setAttribute("aria-controls", "recall-body");
+  const shut = iconButton("recall-close", CLOSE_ICON);
+  shut.title = "Close (esc)";
+  shut.setAttribute("aria-label", "Close");
+  bar.append(head, fold, shut);
+  const body = el("div", "recall-body");
+  body.id = "recall-body";
   const place = el("div", "recall-place");
   const input = el("textarea", "recall-input");
   input.rows = 3;
@@ -84,9 +108,14 @@ export function mountRecall(
   asked.append(askedHead, list);
   const review = el("a", "recall-review");
   review.href = "recall.html";
-  sheet.append(head, place, input, row, asked, review);
+  body.append(place, input, row, asked, review);
+  const grip = el("div", "recall-grip");
+  grip.title = "Drag to resize";
+  grip.setAttribute("aria-hidden", "true");
+  sheet.append(bar, body, grip);
   doc.body.append(sheet);
 
+  const win = doc.defaultView!;
   const isOpen = (): boolean => !sheet.hidden;
 
   const render = (): void => {
@@ -113,23 +142,22 @@ export function mountRecall(
     review.textContent = due > 0 ? `Review your questions · ${due} due →` : "Review your questions →";
   };
 
-  const position = (): void => {
-    if (!isOpen()) return;
+  // Until the learner moves it, the sheet opens under its pill.
+  const floating = floatSheet({ sheet, bar, body, fold, grip }, BOX_KEY, () => {
     const anchor = pill.getBoundingClientRect();
-    const width = sheet.offsetWidth;
-    const left = Math.min(anchor.left, window.innerWidth - width - GAP);
-    sheet.style.left = `${Math.max(GAP, left)}px`;
-    sheet.style.top = `${anchor.bottom + GAP}px`;
-  };
+    const left = Math.min(anchor.left, win.innerWidth - sheet.offsetWidth - GAP);
+    return { left: Math.max(GAP, left), top: anchor.bottom + GAP };
+  }, () => input.focus());
 
   const open = (): void => {
     if (where() === null) return;
     render();
     sheet.hidden = false;
+    floating.unfold();
     pill.setAttribute("aria-expanded", "true");
     hint.textContent = HINT;
     hint.classList.remove("warn");
-    position();
+    floating.layout();
     input.focus();
   };
 
@@ -164,6 +192,10 @@ export function mountRecall(
 
   pill.addEventListener("click", () => (isOpen() ? close() : open()));
   save.addEventListener("click", submit);
+  shut.addEventListener("click", () => {
+    close();
+    pill.focus();
+  });
 
   // Keys typed in the sheet are the learner's, not the lesson's shortcuts.
   for (const type of ["keydown", "keyup", "keypress"] as const) {
@@ -179,7 +211,7 @@ export function mountRecall(
     }
   });
 
-  doc.defaultView?.addEventListener("keydown", (e) => {
+  win.addEventListener("keydown", (e) => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || isOpen() || !sheet.isConnected) return;
     if ((e.key === "q" || e.key === "Q") && !editable(e.target)) {
       e.preventDefault();
@@ -187,20 +219,17 @@ export function mountRecall(
     }
   });
 
-  // Pressing anywhere else puts the sheet away.
-  doc.addEventListener(
-    "pointerdown",
-    (e) => {
-      const target = e.target as Node | null;
-      if (isOpen() && target && !sheet.contains(target) && !pill.contains(target)) close();
-    },
-    true,
-  );
-
-  doc.defaultView?.addEventListener("resize", position);
   store.subscribe(render);
   render();
   return { refresh: render };
+}
+
+function iconButton(cls: string, icon: string): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `recall-icon ${cls}`;
+  button.innerHTML = icon;
+  return button;
 }
 
 /** A delete button that asks once more before it deletes. */

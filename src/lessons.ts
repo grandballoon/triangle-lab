@@ -289,6 +289,11 @@ export function hrefOf(lesson: Lesson, step?: number): string {
   return step === undefined ? page : `${page}#step-${step + 1}`;
 }
 
+/** The id of a chapter's section on the menu, from its title: "Angles & Lines" is "angles-lines". */
+export function anchorOf(chapter: Pick<Chapter, "title">): string {
+  return chapter.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 /** The step, counted from 0, that a link's `#step-N` asks for, or null for none. */
 export function stepOfHash(hash: string): number | null {
   const match = /^#step-([1-9]\d*)$/.exec(hash);

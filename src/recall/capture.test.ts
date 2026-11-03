@@ -37,6 +37,7 @@ const key = (target: EventTarget, k: string, init: KeyboardEventInit = {}): Keyb
 afterEach(() => vi.unstubAllGlobals());
 
 beforeEach(() => {
+  localStorage.clear();
   place = { lesson: "medians", step: 1, stepTitle: "Find the centroid" };
 });
 
@@ -153,7 +154,7 @@ describe("the sheet", () => {
     expect(items()).toEqual(["Second?"]);
   });
 
-  it("closes on Escape or a press outside it, keeping the draft", () => {
+  it("closes on Escape or its close button, keeping the draft", () => {
     const { pill, sheet, input } = mount();
     pill.click();
     input.value = "half a thought";
@@ -161,8 +162,24 @@ describe("the sheet", () => {
     expect(sheet.hidden).toBe(true);
     pill.click();
     expect(input.value).toBe("half a thought");
-    document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    sheet.querySelector<HTMLButtonElement>(".recall-close")!.click();
     expect(sheet.hidden).toBe(true);
+    expect(document.activeElement).toBe(pill);
+  });
+
+  it("stays open while the lesson is used, so the figure can be watched", () => {
+    const { pill, sheet } = mount();
+    pill.click();
+    document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    expect(sheet.hidden).toBe(false);
+  });
+
+  it("follows the step on show while it is open", () => {
+    const { capture, pill, sheet } = mount();
+    pill.click();
+    place = { lesson: "medians", step: 2, stepTitle: "Two to one" };
+    capture.refresh();
+    expect(sheet.querySelector(".recall-place")!.textContent).toBe("Medians · Step 3: Two to one");
   });
 
   it("follows the lesson when the page swaps it in place", () => {
@@ -178,5 +195,78 @@ describe("the sheet", () => {
     place = { lesson: "altitudes", step: 0, stepTitle: "" };
     capture.refresh();
     expect(pill.textContent).toBe("1");
+  });
+});
+
+describe("moving the sheet out of the way", () => {
+  const BOX_KEY = "triangle-lab:recall-sheet";
+  const pointer = (target: EventTarget, type: string, x: number, y: number): void => {
+    target.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 1, button: 0, clientX: x, clientY: y }));
+  };
+  const style = (sheet: HTMLElement) => {
+    const { left, top, width, height } = sheet.style;
+    return { left, top, width, height };
+  };
+
+  it("folds down to its header and back, focusing the box again", () => {
+    const { pill, sheet, input } = mount();
+    pill.click();
+    const fold = sheet.querySelector<HTMLButtonElement>(".recall-fold")!;
+    fold.click();
+    expect(sheet.classList.contains("folded")).toBe(true);
+    expect(sheet.querySelector<HTMLElement>(".recall-body")!.hidden).toBe(true);
+    expect(fold.getAttribute("aria-expanded")).toBe("false");
+    fold.click();
+    expect(sheet.querySelector<HTMLElement>(".recall-body")!.hidden).toBe(false);
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("opens unfolded, whichever way it was closed", () => {
+    const { pill, sheet, input } = mount();
+    pill.click();
+    sheet.querySelector<HTMLButtonElement>(".recall-fold")!.click();
+    key(sheet, "Escape");
+    pill.click();
+    expect(sheet.classList.contains("folded")).toBe(false);
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("opens where it was last put, kept to the window", () => {
+    localStorage.setItem(BOX_KEY, JSON.stringify({ left: 300, top: 5000, width: 420, height: 320 }));
+    const { pill, sheet } = mount();
+    pill.click();
+    expect(sheet.classList.contains("boxed")).toBe(true);
+    expect(style(sheet)).toEqual({ left: "300px", top: `${innerHeight - 320 - 8}px`, width: "420px", height: "320px" });
+  });
+
+  it("is dragged by its header and sized by its corner, and remembers both", () => {
+    localStorage.setItem(BOX_KEY, JSON.stringify({ left: 100, top: 100, width: 400, height: 300 }));
+    const { pill, sheet } = mount();
+    pill.click();
+    // jsdom draws nothing, so the drawn box is the one set as style.
+    sheet.getBoundingClientRect = () => {
+      const [left, top, width, height] = ["left", "top", "width", "height"].map((p) => parseFloat(sheet.style.getPropertyValue(p)));
+      return { left, top, width, height } as DOMRect;
+    };
+
+    const bar = sheet.querySelector<HTMLElement>(".recall-bar")!;
+    pointer(bar, "pointerdown", 10, 10);
+    pointer(bar, "pointermove", 60, 30);
+    pointer(bar, "pointerup", 60, 30);
+    expect(style(sheet)).toEqual({ left: "150px", top: "120px", width: "400px", height: "300px" });
+
+    const grip = sheet.querySelector<HTMLElement>(".recall-grip")!;
+    pointer(grip, "pointerdown", 0, 0);
+    pointer(grip, "pointermove", 40, 80);
+    pointer(grip, "pointerup", 40, 80);
+    expect(style(sheet)).toEqual({ left: "150px", top: "120px", width: "440px", height: "380px" });
+    expect(JSON.parse(localStorage.getItem(BOX_KEY)!)).toEqual({ left: 150, top: 120, width: 440, height: 380 });
+  });
+
+  it("is not dragged by a press on its header's buttons", () => {
+    const { pill, sheet } = mount();
+    pill.click();
+    pointer(sheet.querySelector(".recall-close")!, "pointerdown", 0, 0);
+    expect(sheet.classList.contains("dragging")).toBe(false);
   });
 });

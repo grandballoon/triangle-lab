@@ -74,6 +74,28 @@ The hand-tracking model and its runtime are downloaded from public CDNs the firs
 
 The keyboard also works in lab lessons: `←` and `→` step through a proof and roll over into the neighbouring lesson, `R` resets, `F` shows or hides the formulas.
 
+## Placing a figure in the room
+
+A lab lesson can also be opened in AR, from the "View in AR" pill in its top bar; for now only Tangent Meets Chord, in Angles, has one.
+The AR page puts the lesson's figure on a flat sheet over the camera view and lets you stand that sheet up in the room in perspective, so you can lay a circle over a plate or a tangent along a table edge and see the theorem on real things.
+Nothing in the room is detected: you line the sheet up by eye, and it stays where you put it while you step through the lesson's stages.
+On a phone, switch to the camera on the back.
+
+| To… | Do this |
+| --- | --- |
+| Drag a point of the figure | Drag it, wherever the sheet now lies. |
+| Slide the sheet | Drag empty space (with "Drag to: Move"). |
+| Lean the sheet back or turn it | Drag empty space with "Drag to: Lean", or with Shift held, or with the right mouse button. |
+| Size and spin it | Pinch and twist with two fingers or two hands; or scroll to size and Shift-scroll to spin. |
+| Set it exactly | Use the Tilt, Turn, Spin and Size sliders in "Place the sheet". |
+| Match the camera's perspective | The Lens slider is the camera's field of view: lower for a zoomed-in camera, higher for a wide one. |
+| Lay the figure alone over the room | The Sheet slider fades the tinted, ruled backing, down to nothing at 0%; the figure stays as it is. |
+| Go to a stage | Press its number on the card, or `←` / `→`, or the hand poses. |
+| Clear the card off the figure | Press the caret in its corner; it folds to the caret, and the caret opens it again. |
+
+"Face me" stands the sheet square to the screen again, and "Reset" (or `0`) puts it back where it started.
+`R` resets the figure.
+
 ## Recalling what you learned
 
 While you work through a lesson, you can note a question you want to be able to answer later from memory.
@@ -82,6 +104,7 @@ It is saved with the lesson and the step you were on.
 
 The recall page (linked from the menu, `recall.html`) asks your questions back once they are due.
 Answer each from memory first, writing it down or not, then check: your last answer is there to unfold, and "Check in the lesson" opens the lesson at the step the question came from.
+Your question, your answer and Claude's reading go with you, in a sheet beside the lesson where you can keep correcting the answer and noting new questions; "Back to review" picks the review up where you left it.
 Your answer stays in the same box, open to correct, until you have it right.
 Then say how it went: got it right first time, fixed it once corrected, or still struggling.
 Got right, a question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days); fixed, a little sooner than last time, and never before tomorrow; still struggling, in your next review.
@@ -182,7 +205,6 @@ Once:
    Run `npm run worker:types`, and commit both.
 3. Deploy. Signed out, the site now shows Access's sign-in page; signed in, it works as before.
 
-## Lessons
 ## Staging
 
 Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
@@ -218,6 +240,7 @@ STAGING_ACCESS_CLIENT_SECRET=<client secret>
 
 The staging workflow uses the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets as the deploy from `main`.
 
+## Lessons
 
 130 lessons in fourteen chapters, read in order.
 The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.

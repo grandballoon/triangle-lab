@@ -36,6 +36,7 @@ import { layoutChrome } from "./lab/layout.ts";
 import { StepList } from "./lab/steps.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
+import { mountBeside } from "./recall/beside.ts";
 import { mountRecall } from "./recall/capture.ts";
 import { mountExplain } from "./recall/explain-panel.ts";
 import { camera } from "./webcam.ts";
@@ -64,10 +65,18 @@ function mount(): void {
   document.body.append(column);
 
   let current = 0;
+  // Questions noted here are asked from this lesson and the step on show,
+  // and explanations are checked against them.
+  const here = () => (lesson ? { lesson: slug, step: current, stepTitle: steps[current]?.title ?? "" } : null);
+  const recall = mountRecall(topbar, here);
+  // A review sitting taken to the lesson, to check an answer here, beside it.
+  mountBeside();
   const select = (step: number, scroll: boolean): void => {
     current = step;
     setStep(step);
     list.mark(step, scroll);
+    // The question sheet can stay open as the steps change under it.
+    recall.refresh();
   };
   const list = new StepList(host, select);
   list.show(steps, asides[slug] ?? { likes: [], uses: [] });
@@ -79,10 +88,6 @@ function mount(): void {
     history.replaceState(history.state, "", location.pathname + location.search);
   }
 
-  // Questions noted here are asked from this lesson and the step on show,
-  // and explanations are checked against them.
-  const here = () => (lesson ? { lesson: slug, step: current, stepTitle: steps[current]?.title ?? "" } : null);
-  mountRecall(topbar, here);
   mountExplain(list, here);
 
   const go = (delta: -1 | 1): void => {

@@ -97,6 +97,7 @@ It never touches the DOM.
 | `lab/terms.ts` | Finds the term under the pointer and draws leader lines from it to the figure. |
 | `lab/hold.ts` | Holds the formula band's numbers still, greyed, while the figure is dragged. Pure. |
 | `lab/sprites.ts` | Loads and caches the images lessons draw with `g.sprite`. |
+| `lab/grip.ts` | How handles and sliders are drawn, and how near a press must land to grab one; shared with the AR page. |
 | `lab/main.ts` | Entry point: picks the lesson from the URL, swaps lessons in place. |
 | `lab/kit/` | Helpers shared by several lessons of one chapter. |
 
@@ -157,11 +158,34 @@ The standalone lessons keep the top 64px of their canvas clear for the top bar; 
 
 One list defines every lesson and its order.
 The menu (`src/index.ts`), the pager (`src/pager.ts`) and the curriculum rail (`src/curriculum.ts`) all render from it, so they cannot drift apart.
+The menu's margin names each chapter's main results; a chapter's name there links to its section of the menu, whose id comes from its title (`anchorOf`).
 
 The curriculum rail lists every chapter, lesson and axiom down the left of a lesson page, with the open lesson marked; the pager mounts it, so every lesson page has it.
 On a wide screen it docks: it publishes the width it takes as `--rail-inset` on `<html>` and fires `resize`.
 Standalone pages honour that through their `#stage` rule and size their figure from the canvas box; the lab shell takes it as `leftInset` and fits the stage beside it.
 The entries live in per-chapter files under `src/chapters/`.
+
+## AR (`ar.html`, `src/ar`)
+
+The AR page shows one lab lesson's figure on a flat sheet that the learner places in the camera view in perspective, to lay it over things in the room.
+Nothing is tracked in the scene; the learner matches the sheet to the room by eye.
+The lesson is the lab's own module, built from a `Scene` and drawn by `Draw` as on the lab page, so the AR page needs nothing from it; which lessons the page takes is a list (`lessons.ts`), and the lab page's top bar links to it for those (`link.ts`).
+
+The sheet is a canvas the size of the lab's stage at 60 pixels a unit, so strokes and labels keep their proportion to the figure at any size on screen.
+Its pose (slide, size, tilt, turn, spin, and the camera's field of view) becomes one CSS `matrix3d` with the perspective folded in, so the browser draws the canvas in perspective; the canvas is redrawn at a resolution that follows its size on screen, so it stays sharp.
+The same matrix, read as a homography of the sheet's plane, maps a pointer back onto the sheet: a press is matched to the figure's handles by where they show on screen, and a dragged handle is moved to the stage point under the pointer.
+A press elsewhere moves the sheet: one pointer slides or leans it, two pinch it, which two hands do too, since hands arrive as pointers.
+Grips are drawn and caught as the lab shell does it (`lab/grip.ts`).
+
+| File | Role | Pure |
+| --- | --- | --- |
+| `pose.ts` | The sheet's pose, its matrix, projecting and unprojecting through it, what each gesture does to it, keeping it in front of the eye, picking a handle on screen, the canvas resolution | yes |
+| `dials.ts` | The pose panel's sliders: what each reads from and writes to a pose | yes |
+| `lessons.ts` | Which lessons the AR page takes, and the link to it | yes |
+| `card.ts` | The step card: the stage on the sheet, a button for each stage, the live formulas; folds to a caret | no |
+| `panel.ts` | The pose panel: the sliders, what dragging does, how strongly the sheet's backing shows, facing it square on and resetting it | no |
+| `link.ts` | The lab page's "View in AR" pill | no |
+| `main.ts` | Entry point: holds the pose and the lesson, routes pointers, draws each frame | no |
 
 ## Recall (`src/recall`)
 
@@ -171,12 +195,39 @@ It is separate from the lessons: no lesson knows it exists, and each kind of pag
 A pill in the top bar, or the Q key, opens a sheet for the question (`capture.ts`).
 `page.ts` and the lab's `main.ts` mount it with a function returning the current lesson's slug and step, and the question is saved with both and the step's title.
 Keys typed into the sheet stop there, so they never reach a lesson's shortcuts.
+The sheet stays open while the lesson is used, so the learner can watch and work the figure as they write; it closes on its close button, Escape, the pill, or a save.
+It is moved by dragging its header, folded down to the header, and sized from its bottom-right corner.
+`float.ts` does the moving, folding and sizing, for this sheet and the review beside a lesson alike.
+Where it is put is a box the pure `frame.ts` keeps inside the window (`fitBox`, `moveBox`, `resizeBox`), and the box is remembered in local storage; until the learner sets one, the sheet opens under its pill.
+Both pages tell the sheet when the step changes (`refresh`), so the step it names stays the one on show.
 
 The recall page lists every question by lesson and runs review sittings.
 A sitting asks each due question in turn: the learner answers from memory, in writing or not, then checks against their last answer and the lesson itself, correcting the answer in the same box until they have it right, and says how it went.
 There are three ways out of a card, which are the deck's three grades: right first time (recalled), right once corrected (shaky), or still struggling (missed), which leaves the card for the next sitting rather than asking it again in this one.
 The answer graded is the answer as corrected, so a card has one attempt for each sitting, not one for each try.
-"Check in the lesson" opens the lesson in a new tab at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
+Any question on show in a sitting, asked or checked, can be marked to revisit, as one the learner blanks out on (`markRevisit` in `deck.ts`).
+The mark is kept on the card as the time it was made, apart from the schedule, so it syncs like any other change to a card and stays until the learner takes it off.
+The overview lists the marked questions together at its head (`revisitCards`), each linking to its lesson step, to practise on their own; under them comes every question, by lesson, to reword, mark or delete.
+"Check in the lesson" opens the lesson at the step the question came from: any lesson link may end in `#step-N` (`hrefOf`, `stepOfHash` in `lessons.ts`), which both kinds of page go to on load and then drop from the address.
+It opens in the same tab, and the sitting goes along, so nothing the learner is working on leaves their sight.
+
+### The review beside the lesson (`beside.ts`)
+
+While the answer is checked in the lesson, the lesson page shows the card being checked in a sheet floating over it: where it was asked, the question, the answer in its box with Claude's remarks on its words and its feedback, rewording the question, writing new ones, and the last answer given.
+All of it works there as on the recall page; only the ways out of the card (the three outcomes, Skip and End review) stay on the recall page, which its "Back to review" link returns to.
+The sheet is moved by its header, folded down to it, and sized from its corner, like the question sheet, through `float.ts` over the same pure `frame.ts`, and its box is remembered apart from the question sheet's; until the learner moves it, it opens at the top left, clear of the top bar and the docked rail.
+Its remarks are always under the answer, since the sheet is narrow.
+Keys typed into it stop there, so they never reach the lesson's shortcuts or open the question sheet.
+
+The sitting travels in the tab's `sessionStorage`, where it is kept at every change anyway (see below): the link marks it as taken to the lesson (`inLesson` on the kept `Sitting`), and both kinds of lesson page mount `beside.ts`, which shows the sheet while the kept sitting is taken there and checking a card that still exists (`cardInLesson`).
+The lab page swaps lessons in place, so the sheet stays as the learner follows the pager or the rail; a standalone page shows it again on load.
+The recall page takes the sitting back on load, as from "Back to review" or the browser's Back button, and carries on where the learner left it, with the answer as corrected, Claude's latest reading, an editor still open, and the questions written.
+A page the browser brings back from its cache takes the sitting up as it now stands (`pageshow`), since the other page may have changed it.
+A reading still under way when one page went is asked for again by the next, as after a reload.
+
+Both pages hold the sitting through one `HeldSitting` (`sitting.ts`): the state, its keeping, and the calls to Claude, over the pure rules of `session.ts`.
+Both draw the card through `card.ts`, and the learner's writing marked up by Claude through `sheet.ts`, which the free association uses too; `sheet.css` styles them for both pages, and each page's own stylesheet sizes them for itself.
+A modified click on the link, asking for a new tab, opens the lesson there without the sitting, which stays on the recall page.
 
 While the learner checks a written answer, Claude reads it too, once the browser has the sync key, and again each time they press Check again as they correct it.
 The page sends the question, where it was asked and the answer to the Worker's `/check`.
@@ -193,7 +244,7 @@ The next time the card is checked, the last attempt is there to unfold, with its
 
 While checking, the learner can reword the question (in the deck), and Claude reads the answer afresh against it: the reading of the old wording is dropped (`dropReview`), and a reply still on its way for it is ignored.
 They can also write new questions from the one being checked, so what Claude said can become questions of their own; each is saved at the same lesson step and waits for the next sitting rather than joining this one.
-What is being written (`Editor`) is kept with the sitting across a reload, and an editor just opened takes the focus.
+What is being written (`Editor`), and the questions written from the card on show, are kept with the sitting across a reload, and an editor just opened takes the focus.
 Number keys typed into the answer or an editor are writing, not grades; Escape leaves the answer, so they grade.
 
 Apart from the questions, the overview's Free associate button opens a page for writing down everything the learner remembers of the course, in as much detail as they can (`associate.ts`).
@@ -223,7 +274,7 @@ They stay in this browser rather than the deck: they are the learner's working, 
 
 | File | Role | Pure |
 | --- | --- | --- |
-| `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
+| `deck.ts` | Cards and their answers, with Claude's verdicts where kept, marks to revisit, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
 | `explain.ts` | Having Claude check an explanation on a lesson page: the request as page and Worker read it, the explanation as it is written, checked and corrected, and as it is kept | yes |
@@ -233,12 +284,19 @@ They stay in this browser rather than the deck: they are the learner's working, 
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen, and in the free association, where only Command- or Control-Enter has it read | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
+| `frame.ts` | Where a floating sheet goes once moved or sized, kept inside the window | yes |
 | `sync.ts` | What the Worker's replies mean, a wrong key told from a sign-in run out, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
 | `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, a free association to read, and an explanation to check, with the same key | no (browser injected) |
 | `signin.ts` | The link that signs the learner in to the site again, once its Access sign-in has run out | no |
 | `id.ts` | New card ids | no |
 | `capture.ts` | The pill and sheet on a lesson page | no |
+| `float.ts` | A sheet over a lesson that moves, folds and sizes, its box remembered | no |
+| `sitting.ts` | The sitting under way in the tab, held for the page showing it: its state, kept for the tab, and Claude's readings | no (storage injected) |
+| `card.ts` | The card a sitting is on: the question, the answer, Claude's reading, rewording and new questions | no |
+| `sheet.ts` | The learner's writing marked up by Claude, and an answer as given | no |
+| `dom.ts` | Markup helpers, and redrawing without losing the learner's place in a text box | no |
+| `beside.ts` | The review beside a lesson, while the sitting is taken there | no |
 | `page.ts` | The recall page: overview, sittings, the free association, the sync key, saving to and loading from a file | no |
 
 Scheduling is a Leitner system.
@@ -266,7 +324,7 @@ A check or reading asked for meanwhile fails saying so (`signIn`).
 Where the page says either, it offers to sign in again (`signin.ts`): a link opening `signin.html` in a new tab, which Access signs the learner in on the way to, without asking while their sign-in to the Access team still holds, and which closes itself once open.
 The tab they came from keeps everything they wrote, syncs when it gets the focus back, and can ask Claude again.
 The recall page can also save the deck to a JSON file and load one back, merged the same way.
-A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background while the learner checks an answer in the lesson's tab.
+A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background, and because that is how the sitting goes to the lesson and back (see "The review beside the lesson").
 
 Every change to the store is read-modify-write against storage, so two tabs cannot undo each other's questions; if storage refuses a write, the page keeps its deck for as long as it is open and says so.
 
@@ -361,42 +419,6 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 | `dev/feedback/overlay.ts` | The outline, the comment box and the post to the server. |
 | `tools/feedback-plugin.ts` | Injects the overlay and records comments. Runs in Node. |
 
-# Data Types
-
-- `Lesson`, `Chapter` (`src/chapters/types.ts`): a lesson's menu entry and where it sits.
-- `GestureSettings` (`src/hands/settings.ts`): everything the gesture panel can change.
-- `HandFrame` (`src/hands/pose.ts`): one hand in one video frame, in screen and metric coordinates.
-- `HandState` (`src/hands/interpreter.ts`): the interpreted hand: cursor, grab edges, held pose, fired action.
-- `LessonView`, `Step`, `Use`, `Readout`, `Frame` (`src/lab/scene.ts`): what a lab lesson returns and what it is given each frame.
-- `Handle`, `Slider`, `Toggle`, `Choice`, `Button` (`src/lab/scene.ts`): the things a learner can touch.
-- `View` (`src/lab/draw.ts`): the mapping from stage coordinates to the canvas.
-- `TermRef` (`src/lab/link.ts`): what a found term refers to — a point, segment, angle, polygon, symbol or number.
-- `FigureIndex` (`src/lab/figure.ts`): the lines, arcs, angle marks, shapes and labels one frame drew, in screen pixels.
-- `Hold` (`src/lab/hold.ts`): whether the formula band is live, held through a drag, or settling after one.
-- `Card`, `Deck`, `Place`, `Attempt`, `Removal` (`src/recall/deck.ts`): a noted question, where it was asked, its answers, when it is next due, and a removed one.
-- `Verdict` (`src/recall/deck.ts`): Claude's grade and feedback on an answer, kept on an `Attempt` graded missed or shaky.
-- `SavedDeck` (`src/recall/deck.ts`): the deck as stored, exported, and sent to and from the Worker.
-- `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
-- `Session` (`src/recall/session.ts`): a review sitting in progress.
-- `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
-- `Writing`, `Reading`, `Note`, `NextStep` (`src/recall/deck.ts`): the free association as kept in the deck, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
-- `AssociateRequest`, `Association`, `ReadingState` (`src/recall/associate.ts`): a free association sent to be read, the one on show as written, and where it stands on getting Claude's reading.
-- `ExplainRequest`, `Explanation` (`src/recall/explain.ts`): an explanation sent to be checked, and the one on show as written, with where it stands on getting Claude's check.
-- `Syllabus`, `Entry` (`src/recall/syllabus.ts`): what each lesson teaches and builds on, stamped with a hash of the source it was written from.
-
-# Testing
-
-`npm test` runs everything without a browser or a camera.
-
-- `src/hands/hands.test.ts`: pose classification on synthetic hands, the grab and hold state machine, settings rules.
-- `src/lab/geo.test.ts`: the geometry kernel.
-- `src/lab/layout.test.ts`: the chrome's boxes in wide and phone windows, and that the chrome never covers the figure at any common screen size.
-- `src/lab/draw.test.ts`: focused terms, the anchors leader lines run to, and sprites.
-- `src/lab/link.test.ts`: which pieces of LaTeX become found terms, and which are left alone.
-- `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures, and reading labels.
-- `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
-- `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
-- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
 ## Dev-only step editor (`src/dev/steps`, `tools/step-editor-plugin.ts`)
 
 An authoring aid for the dev server and staging: the text of each lesson's steps can be edited on the page, and the edit lands in the source, since the repository is where the text lives.
@@ -453,12 +475,50 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 | `tools/staging.ts` | `npm run staging:pull`. Runs in Node. |
 | `.github/workflows/staging.yml` | Merges `main` into `staging` and deploys it. |
 
+# Data Types
+
+- `Lesson`, `Chapter` (`src/chapters/types.ts`): a lesson's menu entry and where it sits.
+- `GestureSettings` (`src/hands/settings.ts`): everything the gesture panel can change.
+- `HandFrame` (`src/hands/pose.ts`): one hand in one video frame, in screen and metric coordinates.
+- `HandState` (`src/hands/interpreter.ts`): the interpreted hand: cursor, grab edges, held pose, fired action.
+- `LessonView`, `Step`, `Use`, `Readout`, `Frame` (`src/lab/scene.ts`): what a lab lesson returns and what it is given each frame.
+- `Handle`, `Slider`, `Toggle`, `Choice`, `Button` (`src/lab/scene.ts`): the things a learner can touch.
+- `View` (`src/lab/draw.ts`): the mapping from stage coordinates to the canvas.
+- `TermRef` (`src/lab/link.ts`): what a found term refers to — a point, segment, angle, polygon, symbol or number.
+- `FigureIndex` (`src/lab/figure.ts`): the lines, arcs, angle marks, shapes and labels one frame drew, in screen pixels.
+- `Hold` (`src/lab/hold.ts`): whether the formula band is live, held through a drag, or settling after one.
+- `Card`, `Deck`, `Place`, `Attempt`, `Removal` (`src/recall/deck.ts`): a noted question, where it was asked, its answers, when it is next due, and a removed one.
+- `Verdict` (`src/recall/deck.ts`): Claude's grade and feedback on an answer, kept on an `Attempt` graded missed or shaky.
+- `SavedDeck` (`src/recall/deck.ts`): the deck as stored, exported, and sent to and from the Worker.
+- `SyncState`, `Reply` (`src/recall/sync.ts`): how syncing stands, and what came back from the Worker.
+- `Session`, `Sitting` (`src/recall/session.ts`): a review sitting in progress, and as kept for the tab, with what is being written and whether it has been taken to the lesson.
+- `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
+- `Writing`, `Reading`, `Note`, `NextStep` (`src/recall/deck.ts`): the free association as kept in the deck, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
+- `AssociateRequest`, `Association`, `ReadingState` (`src/recall/associate.ts`): a free association sent to be read, the one on show as written, and where it stands on getting Claude's reading.
+- `ExplainRequest`, `Explanation` (`src/recall/explain.ts`): an explanation sent to be checked, and the one on show as written, with where it stands on getting Claude's check.
+- `Syllabus`, `Entry` (`src/recall/syllabus.ts`): what each lesson teaches and builds on, stamped with a hash of the source it was written from.
+
+# Testing
+
+`npm test` runs everything without a browser or a camera.
+
+- `src/hands/hands.test.ts`: pose classification on synthetic hands, the grab and hold state machine, settings rules.
+- `src/lab/geo.test.ts`: the geometry kernel.
+- `src/lab/layout.test.ts`: the chrome's boxes in wide and phone windows, and that the chrome never covers the figure at any common screen size.
+- `src/lab/draw.test.ts`: focused terms, the anchors leader lines run to, and sprites.
+- `src/lab/link.test.ts`: which pieces of LaTeX become found terms, and which are left alone.
+- `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures, and reading labels.
+- `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
+- `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
+- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
 - `src/pages.test.ts`: every standalone page's stage rule, script order and directions, and that every page is a build entry.
 - `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
 - `src/fit.test.ts`: grab radii per pointer type, nearest knob, caption scaling, placing a captioned figure, fitting text.
 - `src/webcam.test.ts`: which camera a switch tries next, and which are shown mirrored.
-- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, the free association merged and kept, review sittings and Claude's reading in them, links to a step, labels and the Enter key.
+- `src/ar/pose.test.ts`: the AR sheet's matrix, unprojecting a pointer onto it under any pose, each gesture, the limits that keep it in front of the eye, picking handles on screen, and the canvas resolution.
+- `src/ar/chrome.test.ts`: the AR step card and pose panel against a DOM stand-in, the sliders read back, and the lab page's way into AR.
+- `src/recall/deck.test.ts`, `session.test.ts`, `labels.test.ts`, `keys.test.ts`: the recall schedule, the free association merged and kept, review sittings and Claude's reading in them, a sitting kept for the tab and taken to the lesson, links to a step, labels and the Enter key.
 - `src/recall/check.test.ts`: reading a check request, a verdict with its remarks, and a reply from `/check`.
 - `src/recall/associate.test.ts`: the lessons noted in, reading a free association request, a reading with its remarks and next steps, a reply from `/associate`, the writing read, corrected and read again, and kept in the deck.
 - `src/recall/syllabus.test.ts`: reading and saving the syllabus, what is wrong with one, what is stale, and the lessons within reach.
@@ -466,8 +526,9 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 - `tools/syllabus-claude.test.ts`: the request to the Claude API to describe a lesson, and reading its reply.
 - `src/recall/remarks.test.ts`: remarks placed on their words and afresh as the answer changes, the runs to highlight, the remark under the caret, and the margin's stacking.
 - `src/recall/store.test.ts`: the deck saved, shared between tabs, and kept when storage refuses.
-- `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in.
-- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
+- `src/recall/capture.test.ts`: noting a question from a lesson page, against a DOM stand-in, and moving, folding and sizing the sheet.
+- `src/recall/frame.test.ts`: where the moved or sized sheet goes, kept inside the window.
+- `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; checking in the lesson: the question, the answer and Claude's reading taken to a lesson page and corrected, read again, reworded and added to there, kept across its reload and brought back to the recall page, the browser's Back button and cache, a reading under way asked for again, keys kept from the lesson, and folding; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
 - `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline, a refused key, and the site's sign-in run out, told from a refused key and recovered from.
 - `worker/rules.test.ts`: routing to the deck, to checking, to free association and to explanations, the Access token required on every path (and waived on `localhost` only), key check, rate limit, size and clock checks, and calls to Claude off without a Claude key.
@@ -479,6 +540,12 @@ Each reload takes off what the last load of the page listened to on the window a
 - `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and all of it behind a stand-in Access team, nothing let in without a token it signed for the site.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
+- `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
+- `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
+- `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
+- `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, nothing let in without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
+- `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
@@ -487,9 +554,3 @@ None of this checks how a lesson looks, and no test sees a real hand: gesture th
 
 - `README.md`: running the project and adding a lesson.
 - `specs/`: design notes for the original triangle lessons.
-- `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
-- `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
-- `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
-- `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
-- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, nothing let in without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
-- `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.

@@ -5,12 +5,14 @@
 
 import "katex/dist/katex.min.css";
 import "./lab.css";
+import { mountArLink } from "../ar/link.ts";
 import { mountBackdrop } from "../backdrop/index.ts";
 import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { railInset } from "../curriculum.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash, type Lesson } from "../lessons.ts";
 import { mountPager, type Neighbours } from "../pager.ts";
+import { mountBeside } from "../recall/beside.ts";
 import { mountRecall } from "../recall/capture.ts";
 import { mountExplain } from "../recall/explain-panel.ts";
 import { camera, startWebcam } from "../webcam.ts";
@@ -25,6 +27,7 @@ const video = byId<HTMLVideoElement>("cam");
 const topbar = byId("topbar");
 mountCameraSwitch(topbar);
 mountBackdrop(topbar, video);
+const showArLink = mountArLink(topbar);
 
 const hands = startHands({
   video,
@@ -52,6 +55,8 @@ const shell = new Shell(
   },
   () => hands.frames(),
   railInset,
+  // The question sheet can stay open as the steps change under it.
+  () => recall.refresh(),
 );
 
 // Questions noted here are asked from the lesson and step on show now, and
@@ -63,6 +68,8 @@ const here = () => {
 };
 const recall = mountRecall(topbar, here);
 const explain = mountExplain(shell, here);
+// A review sitting taken to the lesson, to check an answer here, beside it.
+mountBeside();
 
 let neighbours: Neighbours = { prev: undefined, next: undefined };
 
@@ -84,6 +91,7 @@ async function show(slug: string): Promise<void> {
     history.replaceState(history.state, "", location.pathname + location.search);
   }
   neighbours = mountPager(slug, topbar);
+  showArLink(slug);
   recall.refresh();
   explain.refresh();
   document.title = `${lesson.name} · Triangle Lab`;
