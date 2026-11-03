@@ -10,8 +10,7 @@ import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
 import { linkTex } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
-import { Scene, type Frame, type HandPoints, type LessonBuilder, type LessonView } from "./scene.ts";
-import { STAGE } from "./shell.ts";
+import { Scene, STAGE, type Frame, type HandPoints, type LessonBuilder, type LessonView } from "./scene.ts";
 
 const modules = import.meta.glob<{ default: LessonBuilder }>("./lessons/*.ts", { eager: true });
 const moduleSlugs = Object.keys(modules).map((path) => path.replace(/^.*\/(.+)\.ts$/, "$1"));

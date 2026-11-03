@@ -12,6 +12,9 @@ import type { Orbit } from "./solid.ts";
 
 // --- Lesson contract -------------------------------------------------------
 
+/** Lessons compose inside this much stage, centred on the origin. */
+export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
+
 /** One beat of a proof or exploration. Text may hold `$…$` LaTeX. */
 export interface Step {
   title: string;
