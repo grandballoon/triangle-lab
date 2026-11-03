@@ -1,7 +1,7 @@
 // What the Worker does with a request, decided from plain values: whether
 // the caller holds the key, is within the rate limit, and what was asked
 // for. index.ts reads the request, follows the decision and does the I/O.
-// Only /deck, /check and /associate reach the Worker; the site's pages are served from
+// Only /deck, /check, /associate and /explain reach the Worker; the site's pages are served from
 // its assets (wrangler.jsonc), on the same origin, so no page elsewhere is
 // let in through CORS.
 //
@@ -10,10 +10,12 @@
 //   POST /deck   a SavedDeck to merge in; answers with the merged deck
 //   POST /check  a CheckRequest (src/recall/check.ts); answers with Claude's Verdict
 //   POST /associate  an AssociateRequest (src/recall/associate.ts); answers with Claude's Reading
+//   POST /explain  an ExplainRequest (src/recall/explain.ts); answers with Claude's Verdict
 // Every request carries `Authorization: Bearer <RECALL_KEY>`.
 
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
+import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
 import type { Deck } from "../src/recall/deck.ts";
 
 /** Largest deck accepted, in characters of JSON: far above any real deck. */
@@ -54,6 +56,7 @@ export type Decision =
   | { kind: "merge" }
   | { kind: "check" }
   | { kind: "associate" }
+  | { kind: "explain" }
   | Refusal;
 
 export interface Refusal {
@@ -64,7 +67,7 @@ export interface Refusal {
 
 export function decide(asked: Asked, settings: Settings): Decision {
   const claude = CLAUDE_PATHS.find((c) => c.path === asked.path);
-  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check and /associate.");
+  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check, /associate and /explain.");
   const methods = claude ? ["POST"] : ["GET", "POST"];
   if (!methods.includes(asked.method)) return refuse(405, `Use ${methods.join(" or ")}.`);
   if (settings.key.length < MIN_KEY) {
@@ -97,10 +100,17 @@ export const ASSOCIATE_PATH = "/associate";
 /** The same for a free association over MAX_ASSOCIATE_BODY. */
 export const associateTooLarge: Refusal = { kind: "refuse", status: 413, error: "That is too long to read." };
 
+/** Where explanations written on a lesson page are sent to be checked by Claude. */
+export const EXPLAIN_PATH = "/explain";
+
+/** The same for an explanation over MAX_EXPLAIN_BODY. */
+export const explainTooLarge: Refusal = { kind: "refuse", status: 413, error: "That explanation is too long to check." };
+
 /** The paths that call Claude, each paid for, so counted against a tighter rate limit too. */
 export const CLAUDE_PATHS = [
   { path: CHECK_PATH, kind: "check", max: MAX_CHECK_BODY, tooLarge: checkTooLarge, what: "Answer checking" },
   { path: ASSOCIATE_PATH, kind: "associate", max: MAX_ASSOCIATE_BODY, tooLarge: associateTooLarge, what: "Reading free associations" },
+  { path: EXPLAIN_PATH, kind: "explain", max: MAX_EXPLAIN_BODY, tooLarge: explainTooLarge, what: "Checking explanations" },
 ] as const;
 
 /**

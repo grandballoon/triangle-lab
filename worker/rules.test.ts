@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
+import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
 import { CLOCK_SLACK_MS, datedAhead, decide, keyMatches, MAX_BODY, MIN_KEY, type Asked } from "./rules.ts";
 
 const KEY = "k".repeat(MIN_KEY);
@@ -98,6 +99,26 @@ describe("decide, for a free association to read", () => {
     expect(decide(associate({}), { ...settings, claude: false })).toMatchObject({
       status: 503,
       error: expect.stringMatching(/^Reading free associations is off.*ANTHROPIC_API_KEY/),
+    });
+  });
+});
+
+describe("decide, for an explanation to check", () => {
+  const explain = (patch: Partial<Asked>) => asked({ path: "/explain", method: "POST", ...patch });
+
+  it("checks an explanation for a caller with the key, by POST only, guarded as checking is", () => {
+    expect(decide(explain({}), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({ method: "GET" }), settings)).toMatchObject({ status: 405 });
+    expect(decide(explain({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
+    expect(decide(explain({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(explain({ length: MAX_EXPLAIN_BODY }), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({ length: MAX_EXPLAIN_BODY + 1 }), settings)).toMatchObject({ status: 413 });
+  });
+
+  it("says checking explanations is off while the Worker has no Claude API key", () => {
+    expect(decide(explain({}), { ...settings, claude: false })).toMatchObject({
+      status: 503,
+      error: expect.stringMatching(/^Checking explanations is off.*ANTHROPIC_API_KEY/),
     });
   });
 });

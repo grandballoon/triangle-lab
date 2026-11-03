@@ -10,6 +10,11 @@
 // height is the tallest step's, so the figure above keeps its size as the
 // reader pages through (`pagedHeight`, layout.ts).
 //
+// A page may give the column a pane of its own beside the steps (`addPane`),
+// such as the explanation Claude checks (recall/explain-panel.ts): a row of
+// tabs then heads the column, and the pane, when chosen, takes the steps'
+// place. The steps stay current as they were behind it.
+//
 // The shell owns which step is current (shell.ts); this list only reports
 // what the reader picked and shows what the shell decided.
 
@@ -39,6 +44,9 @@ export class StepList {
   private readonly pagerLabel: HTMLElement;
   private readonly prev: HTMLButtonElement;
   private readonly next: HTMLButtonElement;
+  /** The row of tabs and the pane beside the steps, once a pane is added. */
+  private tabs: { row: HTMLElement; steps: HTMLButtonElement; pane: HTMLButtonElement } | null = null;
+  private paneShown = false;
   private paged = false;
   private current = 0;
   /** While the list scrolls itself to a step, the step it is heading for. */
@@ -127,6 +135,49 @@ export class StepList {
   }
 
   /**
+   * Add a pane beside the steps, under a tab named `label`, with a tab back
+   * to the steps. Only one pane is supported. `onShow` hears each time the
+   * pane is chosen.
+   */
+  addPane(label: string, pane: HTMLElement, onShow: () => void = () => {}): void {
+    const column = this.host.parentElement;
+    if (this.tabs || !column) return;
+    const doc = this.host.ownerDocument;
+    const row = doc.createElement("div");
+    row.className = "column-tabs";
+    row.setAttribute("role", "tablist");
+    const tab = (text: string, shows: boolean): HTMLButtonElement => {
+      const b = doc.createElement("button");
+      b.type = "button";
+      b.className = "column-tab";
+      b.textContent = text;
+      b.setAttribute("role", "tab");
+      b.addEventListener("click", () => {
+        this.showPane(shows);
+        if (shows) onShow();
+      });
+      return b;
+    };
+    const steps = tab("Steps", false);
+    const other = tab(label, true);
+    row.append(steps, other);
+    pane.classList.add("column-pane");
+    column.insertBefore(row, column.firstChild);
+    column.append(pane);
+    this.tabs = { row, steps, pane: other };
+    this.showPane(false);
+  }
+
+  /** Show the pane added beside the steps, or the steps. */
+  showPane(shown: boolean): void {
+    if (!this.tabs) return;
+    this.paneShown = shown;
+    this.tabs.steps.setAttribute("aria-selected", String(!shown));
+    this.tabs.pane.setAttribute("aria-selected", String(shown));
+    this.host.parentElement?.toggleAttribute("data-pane", shown);
+  }
+
+  /**
    * Show one step at a time (a phone) or the whole list. The stylesheet does
    * the showing, keyed off the page's layout; this switches the behaviour.
    */
@@ -138,12 +189,15 @@ export class StepList {
   }
 
   /**
-   * The column's height that shows the tallest step whole, with the pager
-   * row, when paged. 0 until laid out.
+   * The column's height that shows the tallest step whole, with the tabs and
+   * the pager row, when paged. 0 until laid out. With the pane shown, as
+   * much as the layout gives: the pane is for writing in.
    */
   pagedHeight(): number {
+    if (this.paneShown) return Infinity;
     const track = this.track.offsetTop + this.track.offsetHeight;
-    return track > 0 ? this.pager.offsetHeight + track + PAGED_BOTTOM_PX : 0;
+    const tabs = this.tabs?.row.offsetHeight ?? 0;
+    return track > 0 ? tabs + this.pager.offsetHeight + track + PAGED_BOTTOM_PX : 0;
   }
 
   /** Show `step` as current, scrolling it into place when `scroll` is set. */

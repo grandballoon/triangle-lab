@@ -358,6 +358,36 @@ describe("StepList, paged", () => {
   });
 });
 
+describe("StepList, with a pane beside the steps", () => {
+  it("heads the column with tabs that swap the steps for the pane, keeping the step", () => {
+    document.body.innerHTML = `<aside id="steps"><div id="step-list"></div></aside>`;
+    const column = document.getElementById("steps")!;
+    const steps = new StepList(document.getElementById("step-list")!, (step) => steps.mark(step, true));
+    steps.show([1, 2].map((n) => ({ title: `Step ${n}`, text: "Look." })), { likes: [], uses: [] });
+    steps.mark(1, false);
+    const pane = document.createElement("section");
+    const shown = vi.fn();
+    steps.addPane("Explain", pane, shown);
+
+    const tabs = [...column.querySelectorAll<HTMLButtonElement>(".column-tab")];
+    expect(column.firstElementChild!.className).toBe("column-tabs");
+    expect(tabs.map((t) => [t.textContent, t.getAttribute("aria-selected")])).toEqual([["Steps", "true"], ["Explain", "false"]]);
+    expect(column.lastElementChild).toBe(pane);
+    expect(column.hasAttribute("data-pane")).toBe(false);
+
+    tabs[1].click();
+    expect(column.hasAttribute("data-pane")).toBe(true);
+    expect(tabs[1].getAttribute("aria-selected")).toBe("true");
+    expect(shown).toHaveBeenCalledOnce();
+    // Stacked on a phone, the pane takes as much room as the layout gives.
+    expect(steps.pagedHeight()).toBe(Infinity);
+
+    tabs[0].click();
+    expect(column.hasAttribute("data-pane")).toBe(false);
+    expect(document.querySelector('[aria-current="step"]')!.textContent).toContain("Step 2");
+  });
+});
+
 describe("PointerBridge", () => {
   const still = { started: false, ended: false, active: false };
   const down = { started: true, ended: false, active: true };

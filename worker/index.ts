@@ -1,8 +1,9 @@
-// The Worker behind /deck, /check and /associate. /deck is the deck of recall
-// questions (src/recall), kept on the web so every device the learner uses
-// holds the same one; /check has Claude read an answer given in a review
-// sitting (check.ts), and /associate a free association, everything the
-// learner can recall of the course (associate.ts). The rest of the site is static assets, served without running
+// The Worker behind /deck, /check, /associate and /explain. /deck is the deck
+// of recall questions (src/recall), kept on the web so every device the
+// learner uses holds the same one; /check has Claude read an answer given in
+// a review sitting (check.ts), /associate a free association, everything the
+// learner can recall of the course (associate.ts), and /explain a learner's
+// explanation of a lesson's idea, written on the lesson page (explain.ts). The rest of the site is static assets, served without running
 // this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
@@ -12,12 +13,13 @@
 // the object one at a time, so two devices syncing at once cannot undo each
 // other.
 //
-// The decisions are in rules.ts, check.ts and associate.ts; this does the I/O.
+// The decisions are in rules.ts, check.ts, associate.ts and explain.ts; this does the I/O.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
 import { MAX_ASSOCIATE_BODY, readAssociateRequest } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY, readCheckRequest } from "../src/recall/check.ts";
+import { MAX_EXPLAIN_BODY, readExplainRequest } from "../src/recall/explain.ts";
 import {
   changedSince,
   EMPTY_DECK,
@@ -31,7 +33,18 @@ import {
 } from "../src/recall/deck.ts";
 import { associateParams, readingOf } from "./associate.ts";
 import { checkParams, claudeFailed, usageLine, verdictOf } from "./check.ts";
-import { associateTooLarge, CLAUDE_PATHS, checkTooLarge, datedAhead, decide, MAX_BODY, tooLarge, type Refusal } from "./rules.ts";
+import { explainParams } from "./explain.ts";
+import {
+  associateTooLarge,
+  CLAUDE_PATHS,
+  checkTooLarge,
+  datedAhead,
+  decide,
+  explainTooLarge,
+  MAX_BODY,
+  tooLarge,
+  type Refusal,
+} from "./rules.ts";
 
 /** There is one learner, so one deck. */
 const DECK_NAME = "deck";
@@ -91,6 +104,14 @@ export default {
         if (!asked) return reply(400, { error: "That is nothing to read." });
         const reading = await askClaude(env, "associate", associateParams(asked), readingOf);
         return "kind" in reading ? reply(reading.status, { error: reading.error }) : reply(200, reading);
+      }
+      case "explain": {
+        const text = await request.text();
+        if (text.length > MAX_EXPLAIN_BODY) return reply(explainTooLarge.status, { error: explainTooLarge.error });
+        const asked = readExplainRequest(parseJson(text));
+        if (!asked) return reply(400, { error: "That is not an explanation to check." });
+        const verdict = await askClaude(env, "explain", explainParams(asked), (m) => verdictOf(m, "explanation"));
+        return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
       }
     }
   },

@@ -2,8 +2,9 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	// The whole site: the built pages from dist/, the recall deck at /deck
 	// (worker/), which keeps questions noted on one device on all the others,
-	// /check, where Claude reads an answer given in a review, and /associate,
-	// where it reads everything the learner can recall of the course. Pages and
+	// /check, where Claude reads an answer given in a review, /associate,
+	// where it reads everything the learner can recall of the course, and
+	// /explain, where it checks a lesson's idea explained on the lesson page. Pages and
 	// Worker share one origin, so the site's storage and the sync key are its
 	// own, and the pages call the Worker without CORS.
 	"name": "triangle-lab",
@@ -14,9 +15,9 @@
 	},
 	"assets": {
 		// Built by `npm run build`. Pages are served as they are, without
-		// running the Worker; only /deck, /check and /associate run it.
+		// running the Worker; only /deck, /check, /associate and /explain run it.
 		"directory": "./dist",
-		"run_worker_first": ["/deck", "/check", "/associate"]
+		"run_worker_first": ["/deck", "/check", "/associate", "/explain"]
 	},
 	"durable_objects": {
 		"bindings": [{ "name": "DECKS", "class_name": "RecallDeck" }]
@@ -27,7 +28,8 @@
 	// to be unique within the Cloudflare account.
 	// Checks are counted again against a tighter limit, since each one is a
 	// paid call to Claude: a learner checks one answer at a time. Free
-	// associations, read at /associate, count against the same limit.
+	// associations, read at /associate, and explanations, checked at /explain,
+	// count against the same limit.
 	"ratelimits": [
 		{ "name": "LIMITER", "namespace_id": "4207", "simple": { "limit": 60, "period": 60 } },
 		{ "name": "CHECK_LIMITER", "namespace_id": "4208", "simple": { "limit": 10, "period": 60 } }
@@ -35,7 +37,7 @@
 	// Set with `npx wrangler secret put <NAME>`, never written here; locally
 	// they come from .dev.vars. A deploy fails while either is unset.
 	// RECALL_KEY: the key every request must carry.
-	// ANTHROPIC_API_KEY: the Claude API key /check and /associate call Claude with.
+	// ANTHROPIC_API_KEY: the Claude API key /check, /associate and /explain call Claude with.
 	"secrets": { "required": ["RECALL_KEY", "ANTHROPIC_API_KEY"] },
 	"vars": {
 		// Where the Claude API is. Tests point it at a stand-in.
@@ -52,7 +54,7 @@
 			"main": "worker/staging.ts",
 			"assets": {
 				"directory": "./dist-staging",
-				"run_worker_first": ["/deck", "/check", "/associate", "/__step-source", "/__ui-feedback"]
+				"run_worker_first": ["/deck", "/check", "/associate", "/explain", "/__step-source", "/__ui-feedback"]
 			},
 			"durable_objects": {
 				"bindings": [

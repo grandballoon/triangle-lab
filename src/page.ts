@@ -7,7 +7,8 @@
 //   - the top bar: the pager, the camera switch (cameraSwitch.ts), the
 //     background photo (backdrop/), then the chapter and the lesson's name;
 //   - the step column on the right, holding the lesson's written directions
-//     (directions.ts);
+//     (directions.ts), with a tab beside them where Claude checks the learner's
+//     explanation of the lesson (recall/explain-panel.ts);
 //   - the formula band along the bottom, for a lesson with live formulas;
 //   - hand input, as synthetic pointers (src/hands).
 //
@@ -36,6 +37,7 @@ import { StepList } from "./lab/steps.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
 import { mountRecall } from "./recall/capture.ts";
+import { mountExplain } from "./recall/explain-panel.ts";
 import { camera } from "./webcam.ts";
 
 function mount(): void {
@@ -77,10 +79,11 @@ function mount(): void {
     history.replaceState(history.state, "", location.pathname + location.search);
   }
 
-  // Questions noted here are asked from this lesson and the step on show.
-  mountRecall(topbar, () =>
-    lesson ? { lesson: slug, step: current, stepTitle: steps[current]?.title ?? "" } : null,
-  );
+  // Questions noted here are asked from this lesson and the step on show,
+  // and explanations are checked against them.
+  const here = () => (lesson ? { lesson: slug, step: current, stepTitle: steps[current]?.title ?? "" } : null);
+  mountRecall(topbar, here);
+  mountExplain(list, here);
 
   const go = (delta: -1 | 1): void => {
     const move = moveBy(current, steps.length, delta, neighbours);

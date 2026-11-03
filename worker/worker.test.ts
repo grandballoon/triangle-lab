@@ -269,6 +269,38 @@ describe("reading a free association", () => {
   });
 });
 
+describe("checking an explanation", () => {
+  const request = { lesson: "medians", step: "Step 2: Find the centroid", text: "The medians meet at the incentre." };
+  const explain = (body: unknown = request, headers: Record<string, string> = {}) => call("POST", body, headers, "/explain");
+
+  it("asks Claude with the lesson and the explanation, and answers with its verdict", async () => {
+    claude.reply = { grade: "shaky", feedback: "Nearly.", remarks: [{ quote: "incentre", note: "The centroid." }] };
+    const response = await explain();
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(claude.reply);
+    expect(claude.asked).toHaveLength(1);
+    const content = JSON.stringify(claude.asked[0].body.messages);
+    expect(content).toContain("Medians (");
+    expect(content).toContain("Step 2: Find the centroid");
+    expect(content).toContain("The medians meet at the incentre.");
+  });
+
+  it("refuses a caller without the key, and nothing to check, without asking Claude", async () => {
+    expect((await explain(request, { Authorization: "Bearer wrong" })).status).toBe(401);
+    expect((await explain({ ...request, text: " " })).status).toBe(400);
+    expect((await explain({ ...request, lesson: "nowhere" })).status).toBe(400);
+    expect(claude.asked).toEqual([]);
+  });
+
+  it("says why there is no check when Claude declines", async () => {
+    claude.stop = "refusal";
+    claude.reply = "";
+    const declined = await explain();
+    expect(declined.status).toBe(502);
+    expect((await declined.json()).error).toBe("Claude declined to check this explanation.");
+  });
+});
+
 describe("two devices syncing through the Worker", () => {
   /** A device: its own browser storage, syncing as a page does. */
   function device() {

@@ -3,7 +3,7 @@
 Triangle Lab is a set of interactive geometry lessons drawn over the learner's webcam.
 The learner moves points with a mouse, a finger, or a hand held up to the camera, and steps through visual proofs.
 It is a static site: Vite builds a handful of HTML pages, and everything runs in the browser.
-The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking and free association, which ask Claude through that Worker; the Worker also serves the pages.
+The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking, free association and checking explanations, which ask Claude through that Worker; the Worker also serves the pages.
 
 # Architecture Overview
 
@@ -88,7 +88,7 @@ It never touches the DOM.
 | `lab/solid.ts` | Orbit camera and helpers for 3D figures. |
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
-| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides. |
+| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides; and a pane beside the steps under a tab of its own. |
 | `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
@@ -210,11 +210,24 @@ The page keeps the deck's copy as it writes, and takes in another device's or ta
 Writing kept by the first version of the page, in `localStorage` alone, is moved into the deck on load (`readLocalAssociation`).
 Whether the tab is on the free association is kept for it, so a reload comes back to it, and a reading under way when the page went is asked for again.
 
+### Explaining on the lesson page
+
+Beside the steps, the step column has a second tab, Explain (`explain-panel.ts`), where the learner explains the lesson's idea in their own words and has Claude check what it shows they understand.
+The column takes it as a pane (`StepList.addPane`): a row of tabs heads the column, and the pane, when chosen, takes the place of the steps and their pager row, which stay as they were behind it; stacked on a phone, the column then takes as much height as the layout gives it.
+Both kinds of page mount it as they mount the recall pill, saying where the learner is.
+Once the browser has the sync key, the page sends the lesson, the step on show and the explanation to the Worker's `/explain`, and what comes back is a check's `Verdict`, shown as understood, partly there or not yet.
+Its remarks are highlighted on the words they quote, from a layer behind the text box, and listed under it, placed afresh as the explanation is corrected, as on a review answer (`remarks.ts`).
+As in a sitting, a check is of the explanation as it was sent (`sent`): editing keeps it, Check again asks afresh, and a reply is taken only if it is to the explanation as last sent (`settleCheck`).
+Each lesson's explanation and Claude's last check of it are kept in `localStorage`, by lesson, so they are there to come back to; a check under way is not kept.
+They stay in this browser rather than the deck: they are the learner's working, not something to be asked back.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `explain.ts` | Having Claude check an explanation on a lesson page: the request as page and Worker read it, the explanation as it is written, checked and corrected, and as it is kept | yes |
+| `explain-panel.ts` | The Explain tab of a lesson's step column | no |
 | `associate.ts` | Having Claude read a free association: the request as page and Worker read it, what a reply means, the writing as it is read and corrected, and as it is kept in the deck | yes |
 | `syllabus.ts`, `syllabus.json` | What each lesson teaches and builds on, written by the `/syllabus` skill or the deploy's API refresh; reading it, what is wrong with it or stale, which lessons are within reach of those known, and the course as Claude is told it | yes (the JSON generated) |
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
@@ -250,10 +263,10 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check` and `/associate` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate` and `/explain` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck`, `/check` and `/associate` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
+In development, Vite sends `/deck`, `/check`, `/associate` and `/explain` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
@@ -281,10 +294,16 @@ That prompt is the same in every request, so it is cached, since a learner reads
 Every call to Claude logs one JSON line of what it used (`usageLine`): the route, model, effort, and tokens uncached, written to and read from the cache, and out; filtering the Worker's logs on `claude_usage` shows what checks and readings cost, and whether the cache is being read.
 It uses Claude Opus 5.5 at medium effort, since what each lesson teaches and builds on is worked out ahead in the syllabus, with structured output whose lessons are an enum of the course's slugs, and the same fallbacks; the reply is read with the page's own `readReading`, which drops any lesson not in the course.
 
+`POST /explain` takes an `ExplainRequest` and answers with Claude's `Verdict` (`src/recall/explain.ts`, shared with the page).
+It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a size limit of its own.
+The call (`explain.ts`) tells Claude the lesson: its chapter, name and what the learner does in it, and what it teaches where the syllabus says, so the explanation is judged against the lesson.
+It asks for the verdict to the same schema as a check, on the same model at the same effort, and reads the reply with the same `verdictOf`.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
 | `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
+| `explain.ts` | The lesson as Claude is told it, and the request to Claude to check an explanation | yes |
 | `associate.ts` | The course as Claude is told it, with the syllabus, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
 | `index.ts` | The fetch handler, the calls to Claude with their token usage logged, and the `RecallDeck` object | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
@@ -343,6 +362,7 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 - `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
 - `Writing`, `Reading`, `Note`, `NextStep` (`src/recall/deck.ts`): the free association as kept in the deck, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
 - `AssociateRequest`, `Association`, `ReadingState` (`src/recall/associate.ts`): a free association sent to be read, the one on show as written, and where it stands on getting Claude's reading.
+- `ExplainRequest`, `Explanation` (`src/recall/explain.ts`): an explanation sent to be checked, and the one on show as written, with where it stands on getting Claude's check.
 - `Syllabus`, `Entry` (`src/recall/syllabus.ts`): what each lesson teaches and builds on, stamped with a hash of the source it was written from.
 
 # Testing

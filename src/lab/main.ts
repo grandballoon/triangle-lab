@@ -12,6 +12,7 @@ import { railInset } from "../curriculum.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash, type Lesson } from "../lessons.ts";
 import { mountPager, type Neighbours } from "../pager.ts";
 import { mountRecall } from "../recall/capture.ts";
+import { mountExplain } from "../recall/explain-panel.ts";
 import { camera, startWebcam } from "../webcam.ts";
 import type { LessonBuilder } from "./scene.ts";
 import { Shell } from "./shell.ts";
@@ -53,12 +54,15 @@ const shell = new Shell(
   railInset,
 );
 
-// Questions noted here are asked from the lesson and step on show now.
-const recall = mountRecall(topbar, () => {
+// Questions noted here are asked from the lesson and step on show now, and
+// explanations are checked against them.
+const here = () => {
   const at = shell.currentStep();
   const slug = slugOfLocation(location);
   return at && lessons.some((l) => l.slug === slug) ? { lesson: slug, step: at.step, stepTitle: at.title } : null;
-});
+};
+const recall = mountRecall(topbar, here);
+const explain = mountExplain(shell, here);
 
 let neighbours: Neighbours = { prev: undefined, next: undefined };
 
@@ -81,6 +85,7 @@ async function show(slug: string): Promise<void> {
   }
   neighbours = mountPager(slug, topbar);
   recall.refresh();
+  explain.refresh();
   document.title = `${lesson.name} · Triangle Lab`;
 }
 
