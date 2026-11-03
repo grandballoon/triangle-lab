@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signed in · Triangle Lab</title>
+    <!-- Opened by "Sign in again" (src/recall/signin.ts) once the site's
+         Cloudflare Access sign-in has run out. Access signs the learner in
+         on the way here; this page only says so, and closes itself. -->
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; background: #0b0f14; color: #e9f0f7; }
+      body {
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+        text-align: center;
+      }
+      h1 { font-size: 20px; margin-bottom: 6px; }
+      p { color: rgba(233, 240, 247, 0.7); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>You're signed in again.</h1>
+      <p>Close this tab and go back to where you were: your work there is kept.</p>
+    </main>
+    <script>
+      window.close();
+    </script>
+  </body>
+</html>

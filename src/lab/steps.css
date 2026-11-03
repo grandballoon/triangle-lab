@@ -228,3 +228,59 @@ html[data-layout="stacked"] .step-text { font-size: 14.5px; line-height: 1.4; }
 html[data-layout="stacked"] .step-spacer { display: none; }
 html[data-layout="stacked"] .aside { display: none; margin-top: 10px; }
 html[data-layout="stacked"] #step-list[data-last] .aside { display: block; }
+
+/* --- Tabs, when the page adds a pane beside the steps (steps.ts addPane) ----
+
+   A row of tabs heads the column; the pane, when chosen, takes the place of
+   the steps and their pager row, which stay as they were behind it. */
+
+.column-tabs {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.column-tab {
+  flex: 1;
+  padding: 7px 8px 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  color: rgba(233, 240, 247, 0.6);
+  font: 600 12px/1 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.column-tab:hover,
+.column-tab.hand-hover { color: #e9f0f7; }
+
+.column-tab[aria-selected="true"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.column-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 6px 6px 0 0;
+}
+
+#steps[data-pane] > .step-pager,
+#steps[data-pane] > #step-list,
+#steps:not([data-pane]) > .column-pane { display: none; }
+
+.column-pane {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+html[data-layout="stacked"] .column-tabs { padding: 4px 6px 0; }
+html[data-layout="stacked"] .column-tab { padding: 6px 6px 7px; }

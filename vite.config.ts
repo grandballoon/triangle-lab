@@ -19,8 +19,8 @@ const mediapipe = JSON.parse(
 // asks back the questions noted in the lessons (src/recall).
 //
 // The built site is served from the root of its own origin by the Worker in
-// wrangler.jsonc, which also holds the recall deck at /deck and checks
-// answers with Claude at /check.
+// wrangler.jsonc, which also holds the recall deck at /deck and calls Claude
+// at /check, /associate and /explain.
 export default defineConfig({
   // The dev tools, on the dev server and in the staging build
   // (tools/staging-mode.ts): Alt-click any element to leave a comment, and
@@ -39,9 +39,14 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
-    // The recall deck, answer checking and free association, from the Worker run by `npm run
+    // The recall deck, and the calls to Claude, from the Worker run by `npm run
     // preview` beside the dev server, so both work in development as on the site.
-    proxy: { "/deck": "http://localhost:8787", "/check": "http://localhost:8787", "/associate": "http://localhost:8787" },
+    proxy: {
+      "/deck": "http://localhost:8787",
+      "/check": "http://localhost:8787",
+      "/associate": "http://localhost:8787",
+      "/explain": "http://localhost:8787",
+    },
   },
   build: {
     rollupOptions: {
@@ -50,6 +55,7 @@ export default defineConfig({
         lab: resolve(__dirname, "lab.html"),
         recall: resolve(__dirname, "recall.html"),
         ar: resolve(__dirname, "ar.html"),
+        signin: resolve(__dirname, "signin.html"),
         angles: resolve(__dirname, "angles.html"),
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),

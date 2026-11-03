@@ -2,7 +2,7 @@
 // Worker read them, and what a reply from /check means.
 
 import { describe, expect, it } from "vitest";
-import { loadReview, readCheckReply, readCheckRequest } from "./check.ts";
+import { loadReview, readCheckReply, readCheckRequest, SIGNED_OUT } from "./check.ts";
 import { MAX_ANSWER, MAX_FEEDBACK, MAX_REMARKS, readVerdict } from "./deck.ts";
 
 const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
@@ -64,7 +64,10 @@ describe("readCheckReply", () => {
 
   it("says why there is no verdict", () => {
     expect(readCheckReply(null)).toEqual({ kind: "failed", error: "Can't reach the server to check this." });
-    expect(readCheckReply({ status: 401, body: null })).toMatchObject({ error: expect.stringContaining("sync key") });
+    expect(readCheckReply({ status: 401, body: { error: "No.", reason: "key" } })).toMatchObject({ error: expect.stringContaining("sync key") });
+    // Access answering for itself, once the site's sign-in has run out.
+    expect(readCheckReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readCheckReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
     expect(readCheckReply({ status: 502, body: { error: "Claude is busy." } })).toEqual({ kind: "failed", error: "Claude is busy." });
     expect(readCheckReply({ status: 500, body: null })).toEqual({ kind: "failed", error: "The server answered 500." });
     expect(readCheckReply({ status: 200, body: { grade: "?" } })).toEqual({ kind: "failed", error: "The check came back unreadable." });

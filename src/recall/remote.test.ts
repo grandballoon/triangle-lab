@@ -27,11 +27,16 @@ function worker(key = "k") {
     sent: 0,
     /** null: as if offline. */
     up: true,
+    /** Whether the site's Access sign-in has run out, so Access answers instead of the Worker. */
+    signedOut: false,
+    headers: [] as Record<string, string>[],
     fetch: (async (_url: string, init: RequestInit) => {
       w.sent++;
+      w.headers.push(init.headers as Record<string, string>);
       if (!w.up) throw new TypeError("Failed to fetch");
+      if (w.signedOut) return new Response(null, { status: 401 });
       if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
-        return Response.json({ error: "That key is not this deck's." }, { status: 401 });
+        return Response.json({ error: "That key is not this deck's.", reason: "key" }, { status: 401 });
       }
       w.deck = mergeDecks(w.deck, loadDeck(JSON.parse(init.body as string))!);
       return Response.json(saveDeck(w.deck));
@@ -232,6 +237,40 @@ describe("RecallSync", () => {
 
     await p.sync.setKey("k");
     expect(p.sync.get()).toEqual({ kind: "synced", last: T0 });
+  });
+
+  it("keeps trying once the site's sign-in has run out, and syncs when it is back", async () => {
+    const server = worker();
+    server.signedOut = true;
+    const p = page(server);
+    p.sync.start();
+    p.store.update((d) => addCard(d, card("a")));
+    await p.settle();
+    p.tick();
+    await p.settle();
+    expect(p.sync.get()).toEqual({ kind: "signed-out", last: null });
+    expect(p.sync.canCheck()).toBe(true);
+    // Asks Access for a 401 rather than a redirect to its sign-in page.
+    expect(server.headers.at(-1)).toMatchObject({ "X-Requested-With": "XMLHttpRequest" });
+
+    // Signed in again in another tab; this one gets the focus back.
+    server.signedOut = false;
+    p.fire("focus");
+    await p.settle();
+    expect(p.sync.get()).toEqual({ kind: "synced", last: T0 });
+    expect(ids(server.deck)).toEqual(["a"]);
+  });
+
+  it("reads a redirect to Access's sign-in page as the sign-in run out", async () => {
+    const server = worker();
+    server.fetch = (async () => {
+      server.sent++;
+      return new Response(null, { status: 302, headers: { Location: "https://team.cloudflareaccess.com/cdn-cgi/access/login" } });
+    }) as unknown as typeof fetch;
+    const p = page(server);
+    p.sync.start();
+    await p.settle();
+    expect(p.sync.get()).toEqual({ kind: "signed-out", last: null });
   });
 
   it("runs one sync at a time, and another after it when asked during it", async () => {

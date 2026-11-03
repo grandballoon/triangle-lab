@@ -17,6 +17,7 @@ import {
   toWriting,
   type Association,
 } from "./associate.ts";
+import { SIGNED_OUT } from "./check.ts";
 import { EMPTY_DECK, MAX_NEXT, MAX_NOTES, MAX_WRITING, newCard, readReading, type Deck, type Reading, type Writing } from "./deck.ts";
 
 const reading: Reading = {
@@ -107,7 +108,10 @@ describe("readAssociateReply", () => {
 
   it("says why there is no reading", () => {
     expect(readAssociateReply(null)).toEqual({ kind: "failed", error: "Can't reach the server to read this." });
-    expect(readAssociateReply({ status: 401, body: null })).toMatchObject({ error: expect.stringContaining("sync key") });
+    expect(readAssociateReply({ status: 401, body: { error: "No.", reason: "key" } })).toMatchObject({ error: expect.stringContaining("sync key") });
+    // Access answering for itself, once the site's sign-in has run out.
+    expect(readAssociateReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readAssociateReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
     expect(readAssociateReply({ status: 502, body: { error: "Claude is busy." } })).toEqual({ kind: "failed", error: "Claude is busy." });
     expect(readAssociateReply({ status: 500, body: null })).toEqual({ kind: "failed", error: "The server answered 500." });
     expect(readAssociateReply({ status: 200, body: {} })).toMatchObject({ error: expect.stringContaining("unreadable") });

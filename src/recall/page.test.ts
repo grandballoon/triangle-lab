@@ -290,7 +290,7 @@ describe("syncing from the recall page", () => {
       asked.push(url);
       expect(url).toBe("/deck");
       if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
-        return Response.json({ error: "No." }, { status: 401 });
+        return Response.json({ error: "No.", reason: "key" }, { status: 401 });
       }
       deck = mergeDecks(deck, loadDeck(JSON.parse(init.body as string))!);
       return Response.json(saveDeck(deck));

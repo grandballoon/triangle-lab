@@ -155,6 +155,11 @@ export class Shell {
     if (c && step >= 0 && step < c.view.steps.length) this.select(step, true);
   }
 
+  /** Add a pane beside the steps in the step column, under a tab of its own (steps.ts `addPane`). */
+  addPane(label: string, pane: HTMLElement, onShow: () => void): void {
+    this.stepList.addPane(label, pane, onShow);
+  }
+
   /** The current step and its title, or null before a lesson has loaded. */
   currentStep(): { step: number; title: string } | null {
     const c = this.current;

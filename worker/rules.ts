@@ -1,7 +1,7 @@
 // What the Worker does with a request, decided from plain values: whether
-// the caller holds the key, is within the rate limit, and what was asked
-// for. index.ts reads the request, follows the decision and does the I/O.
-// Only /deck, /check and /associate reach the Worker; the site's pages are served from
+// the caller came through Cloudflare Access (access.ts), holds the key, is
+// within the rate limit, and what was asked for. index.ts reads the request, follows the decision and does the I/O.
+// Only /deck, /check, /associate and /explain reach the Worker; the site's pages are served from
 // its assets (wrangler.jsonc), on the same origin, so no page elsewhere is
 // let in through CORS.
 //
@@ -10,11 +10,17 @@
 //   POST /deck   a SavedDeck to merge in; answers with the merged deck
 //   POST /check  a CheckRequest (src/recall/check.ts); answers with Claude's Verdict
 //   POST /associate  an AssociateRequest (src/recall/associate.ts); answers with Claude's Reading
-// Every request carries `Authorization: Bearer <RECALL_KEY>`.
+//   POST /explain  an ExplainRequest (src/recall/explain.ts); answers with Claude's Verdict
+// Every request carries `Authorization: Bearer <RECALL_KEY>`, and the token
+// Cloudflare Access forwards for the site's application, so the deck and the
+// calls to Claude, which cost money, are only for someone Access let in.
 
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
+import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
 import type { Deck } from "../src/recall/deck.ts";
+import type { Barred } from "../src/recall/sync.ts";
+import { claimsProblem, waivedLocally, type Access } from "./access.ts";
 
 /** Largest deck accepted, in characters of JSON: far above any real deck. */
 export const MAX_BODY = 5_000_000;
@@ -35,6 +41,10 @@ export const CLOCK_SLACK_MS = 60 * 60 * 1000;
 export interface Asked {
   method: string;
   path: string;
+  /** The hostname the request was made to. */
+  hostname: string;
+  /** The Access token's claims, once its signature is checked; null without a valid one. */
+  claims: Record<string, unknown> | null;
   authorization: string | null;
   /** The Content-Length header, if sent. */
   length: number | null;
@@ -47,6 +57,8 @@ export interface Settings {
   key: string;
   /** Whether the Worker can call Claude: its ANTHROPIC_API_KEY is set. */
   claude: boolean;
+  /** The Access application in front of the site; empty fields when it was never set. */
+  access: Access;
 }
 
 export type Decision =
@@ -54,17 +66,30 @@ export type Decision =
   | { kind: "merge" }
   | { kind: "check" }
   | { kind: "associate" }
+  | { kind: "explain" }
   | Refusal;
 
 export interface Refusal {
   kind: "refuse";
   status: number;
   error: string;
+  /**
+   * On a 401, what the caller lacks: the sync key, or a Cloudflare Access
+   * sign-in. Pages tell the two apart by it (src/recall/sync.ts `barredBy`):
+   * a wrong key is not tried again, while a sign-in that has run out is.
+   */
+  reason?: Barred;
 }
 
-export function decide(asked: Asked, settings: Settings): Decision {
+/** A refusal as the Worker sends it: its error, and why on a 401. */
+export function refusalBody({ error, reason }: Refusal): { error: string; reason?: Barred } {
+  return reason ? { error, reason } : { error };
+}
+
+/** What to do with `asked`, at `now` (ms), which an Access token must be in date for. */
+export function decide(asked: Asked, settings: Settings, now: number): Decision {
   const claude = CLAUDE_PATHS.find((c) => c.path === asked.path);
-  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check and /associate.");
+  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check, /associate and /explain.");
   const methods = claude ? ["POST"] : ["GET", "POST"];
   if (!methods.includes(asked.method)) return refuse(405, `Use ${methods.join(" or ")}.`);
   if (settings.key.length < MIN_KEY) {
@@ -72,14 +97,30 @@ export function decide(asked: Asked, settings: Settings): Decision {
   }
   // Before the key is checked, so guessing it is slowed too.
   if (!asked.withinLimit) return refuse(429, "Too many requests. Try again in a minute.");
+  const screened = accessProblem(asked, settings.access, now);
+  if (screened) return screened;
   if (asked.method === "POST" && asked.length !== null && asked.length > (claude?.max ?? MAX_BODY)) {
     return claude?.tooLarge ?? tooLarge;
   }
-  if (!keyMatches(asked.authorization, settings.key)) return refuse(401, "That key is not this deck's.");
+  if (!keyMatches(asked.authorization, settings.key)) return { ...refuse(401, "That key is not this deck's."), reason: "key" };
   if (claude) {
     return settings.claude ? { kind: claude.kind } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
   }
   return { kind: asked.method === "GET" ? "read" : "merge" };
+}
+
+/**
+ * Why `asked` did not come through Cloudflare Access, or null if it did, or
+ * needs not (`waivedLocally`). Unset, Access refuses everything: a Worker
+ * deployed without it fails closed.
+ */
+function accessProblem(asked: Asked, access: Access, now: number): Refusal | null {
+  if (waivedLocally(asked.hostname)) return null;
+  if (!access.issuer || !access.aud) {
+    return refuse(503, "The Worker's ACCESS_ISSUER or ACCESS_AUD is not set, so it lets no one in.");
+  }
+  const problem = asked.claims ? claimsProblem(asked.claims, access, now) : "There is no valid Cloudflare Access token.";
+  return problem ? { ...refuse(401, problem), reason: "access" } : null;
 }
 
 /** Where answers are sent to be checked by Claude. */
@@ -97,10 +138,17 @@ export const ASSOCIATE_PATH = "/associate";
 /** The same for a free association over MAX_ASSOCIATE_BODY. */
 export const associateTooLarge: Refusal = { kind: "refuse", status: 413, error: "That is too long to read." };
 
+/** Where explanations written on a lesson page are sent to be checked by Claude. */
+export const EXPLAIN_PATH = "/explain";
+
+/** The same for an explanation over MAX_EXPLAIN_BODY. */
+export const explainTooLarge: Refusal = { kind: "refuse", status: 413, error: "That explanation is too long to check." };
+
 /** The paths that call Claude, each paid for, so counted against a tighter rate limit too. */
 export const CLAUDE_PATHS = [
   { path: CHECK_PATH, kind: "check", max: MAX_CHECK_BODY, tooLarge: checkTooLarge, what: "Answer checking" },
   { path: ASSOCIATE_PATH, kind: "associate", max: MAX_ASSOCIATE_BODY, tooLarge: associateTooLarge, what: "Reading free associations" },
+  { path: EXPLAIN_PATH, kind: "explain", max: MAX_EXPLAIN_BODY, tooLarge: explainTooLarge, what: "Checking explanations" },
 ] as const;
 
 /**

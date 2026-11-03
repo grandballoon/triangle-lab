@@ -9,16 +9,18 @@
 // the next sync that works.
 //
 // The same key lets the recall page have Claude check an answer, at /check
-// (check.ts), and read a free association, at /associate (associate.ts), so
+// (check.ts), and read a free association, at /associate (associate.ts), and
+// a lesson page have it check an explanation, at /explain (explain.ts), so
 // those requests are made here too.
 //
 // The rules are in sync.ts; this makes the requests and holds the state.
 
 import { readAssociateReply, type AssociateRequest, type ReadingState } from "./associate.ts";
 import { readCheckReply, type CheckRequest, type Review } from "./check.ts";
+import type { ExplainRequest } from "./explain.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
-import { afterReply, hasNews, lastSynced, readReply, sendWhen, type SyncState } from "./sync.ts";
+import { afterReply, hasNews, lastSynced, readReply, REDIRECTED, sendWhen, type SyncState } from "./sync.ts";
 
 /** Where this browser keeps the sync key it was given. */
 export const SYNC_KEY_STORAGE = "triangle-lab:recall-sync-key";
@@ -40,7 +42,7 @@ type Timer = ReturnType<typeof setTimeout>;
 
 /** What syncing needs from the browser, passed in so a test can stand in for it. */
 export interface SyncDeps {
-  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`, free associations at `${url}/associate`. */
+  /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`, free associations at `${url}/associate`, explanations at `${url}/explain`. */
   url: string;
   keys: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
   fetch: typeof fetch;
@@ -150,6 +152,13 @@ export class RecallSync {
     return readCheckReply(await this.post(key, "/check", request));
   }
 
+  /** Have Claude check an explanation of a lesson's idea, through the Worker. */
+  async explain(request: ExplainRequest): Promise<Review> {
+    const key = this.key();
+    if (!key) return { kind: "failed", error: "This browser has no sync key." };
+    return readCheckReply(await this.post(key, "/explain", request));
+  }
+
   /** Have Claude read a free association, through the Worker. */
   async associate(request: AssociateRequest): Promise<ReadingState> {
     const key = this.key();
@@ -213,9 +222,14 @@ export class RecallSync {
     try {
       const response = await this.deps.fetch(`${this.deps.url}${path}`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        // Asks Cloudflare Access to answer 401 rather than send the page
+        // off to sign in once its sign-in has run out; a redirect it sends
+        // anyway is not followed, but read as the same (sync.ts barredBy).
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+        redirect: "manual",
         body: JSON.stringify(body),
       });
+      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) return { status: REDIRECTED, body: null };
       return { status: response.status, body: await response.json().catch(() => null) };
     } catch {
       return null;

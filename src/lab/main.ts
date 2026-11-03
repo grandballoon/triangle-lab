@@ -14,6 +14,7 @@ import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash, type Lesson } fr
 import { mountPager, type Neighbours } from "../pager.ts";
 import { mountBeside } from "../recall/beside.ts";
 import { mountRecall } from "../recall/capture.ts";
+import { mountExplain } from "../recall/explain-panel.ts";
 import { camera, startWebcam } from "../webcam.ts";
 import type { LessonBuilder } from "./scene.ts";
 import { Shell } from "./shell.ts";
@@ -58,12 +59,15 @@ const shell = new Shell(
   () => recall.refresh(),
 );
 
-// Questions noted here are asked from the lesson and step on show now.
-const recall = mountRecall(topbar, () => {
+// Questions noted here are asked from the lesson and step on show now, and
+// explanations are checked against them.
+const here = () => {
   const at = shell.currentStep();
   const slug = slugOfLocation(location);
   return at && lessons.some((l) => l.slug === slug) ? { lesson: slug, step: at.step, stepTitle: at.title } : null;
-});
+};
+const recall = mountRecall(topbar, here);
+const explain = mountExplain(shell, here);
 // A review sitting taken to the lesson, to check an answer here, beside it.
 mountBeside();
 
@@ -89,6 +93,7 @@ async function show(slug: string): Promise<void> {
   neighbours = mountPager(slug, topbar);
   showArLink(slug);
   recall.refresh();
+  explain.refresh();
   document.title = `${lesson.name} · Triangle Lab`;
 }
 

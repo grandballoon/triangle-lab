@@ -37,7 +37,8 @@ export interface LayoutInput {
   controls: boolean;
   /**
    * Height the stacked step list needs for its tallest step (steps.ts
-   * `pagedHeight`), or 0 before it has been measured.
+   * `pagedHeight`), 0 before it has been measured, or Infinity for as
+   * much as the layout allows.
    */
   steps: number;
 }

@@ -3,7 +3,7 @@
 Triangle Lab is a set of interactive geometry lessons drawn over the learner's webcam.
 The learner moves points with a mouse, a finger, or a hand held up to the camera, and steps through visual proofs.
 It is a static site: Vite builds a handful of HTML pages, and everything runs in the browser.
-The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking and free association, which ask Claude through that Worker; the Worker also serves the pages.
+The exceptions are the recall deck, which a Cloudflare Worker keeps on the web so it is the same on every device, and answer checking, free association and checking explanations, which ask Claude through that Worker; the Worker also serves the pages.
 
 # Architecture Overview
 
@@ -88,7 +88,7 @@ It never touches the DOM.
 | `lab/solid.ts` | Orbit camera and helpers for 3D figures. |
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
-| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides. |
+| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides; and a pane beside the steps under a tab of its own. |
 | `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
@@ -261,20 +261,34 @@ The page keeps the deck's copy as it writes, and takes in another device's or ta
 Writing kept by the first version of the page, in `localStorage` alone, is moved into the deck on load (`readLocalAssociation`).
 Whether the tab is on the free association is kept for it, so a reload comes back to it, and a reading under way when the page went is asked for again.
 
+### Explaining on the lesson page
+
+Beside the steps, the step column has a second tab, Explain (`explain-panel.ts`), where the learner explains the lesson's idea in their own words and has Claude check what it shows they understand.
+The column takes it as a pane (`StepList.addPane`): a row of tabs heads the column, and the pane, when chosen, takes the place of the steps and their pager row, which stay as they were behind it; stacked on a phone, the column then takes as much height as the layout gives it.
+Both kinds of page mount it as they mount the recall pill, saying where the learner is.
+Once the browser has the sync key, the page sends the lesson, the step on show and the explanation to the Worker's `/explain`, and what comes back is a check's `Verdict`, shown as understood, partly there or not yet.
+Its remarks are highlighted on the words they quote, from a layer behind the text box, and listed under it, placed afresh as the explanation is corrected, as on a review answer (`remarks.ts`).
+As in a sitting, a check is of the explanation as it was sent (`sent`): editing keeps it, Check again asks afresh, and a reply is taken only if it is to the explanation as last sent (`settleCheck`).
+Each lesson's explanation and Claude's last check of it are kept in `localStorage`, by lesson, so they are there to come back to; a check under way is not kept.
+They stay in this browser rather than the deck: they are the learner's working, not something to be asked back.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, marks to revisit, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `explain.ts` | Having Claude check an explanation on a lesson page: the request as page and Worker read it, the explanation as it is written, checked and corrected, and as it is kept | yes |
+| `explain-panel.ts` | The Explain tab of a lesson's step column | no |
 | `associate.ts` | Having Claude read a free association: the request as page and Worker read it, what a reply means, the writing as it is read and corrected, and as it is kept in the deck | yes |
 | `syllabus.ts`, `syllabus.json` | What each lesson teaches and builds on, written by the `/syllabus` skill or the deploy's API refresh; reading it, what is wrong with it or stale, which lessons are within reach of those known, and the course as Claude is told it | yes (the JSON generated) |
 | `remarks.ts` | Claude's remarks placed on the words they quote, the answer cut into runs to highlight, the remark under the caret, the margin's stacking | yes |
 | `keys.ts` | What Enter does in the text boxes: saves with a keyboard, a new line on a touch screen, and in the free association, where only Command- or Control-Enter has it read | yes |
 | `labels.ts` | Where a card was asked, when it is due, its question typeset | yes |
 | `frame.ts` | Where a floating sheet goes once moved or sized, kept inside the window | yes |
-| `sync.ts` | What the Worker's replies mean, whether there is anything to send, how syncing stands | yes |
+| `sync.ts` | What the Worker's replies mean, a wrong key told from a sign-in run out, whether there is anything to send, how syncing stands | yes |
 | `store.ts` | The deck in `localStorage`, shared between tabs through the `storage` event | no (storage injected) |
-| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, and a free association to read, with the same key | no (browser injected) |
+| `remote.ts` | Syncing with the Worker: when, the requests, the state; `openRecall` for every page; sending an answer to check, a free association to read, and an explanation to check, with the same key | no (browser injected) |
+| `signin.ts` | The link that signs the learner in to the site again, once its Access sign-in has run out | no |
 | `id.ts` | New card ids | no |
 | `capture.ts` | The pill and sheet on a lesson page | no |
 | `float.ts` | A sheet over a lesson that moves, folds and sizes, its box remembered | no |
@@ -300,6 +314,15 @@ A change to the free association alone, which comes with every key pressed, is s
 Taking a reply in is not itself a change to send, since `hasNews` compares the deck with the Worker's copy as last heard.
 While syncing cannot happen, nothing is lost: the deck is still in `localStorage`, and goes with the next sync that works.
 A key the Worker turns down is not tried again until a key is given again.
+
+The site sits behind Cloudflare Access (see "The Worker"), whose sign-in runs out, after 24 hours as set up.
+Access renews it only when a page is opened, never on a page's own requests: once it has run out, Access answers the requests itself, before the Worker sees them, with a 401 when a request says it is one (`X-Requested-With`, which every request to the Worker sends), or else a redirect to its sign-in page, which the page does not follow.
+Neither is the key's fault, so a page must not stop trying the key on one.
+The Worker therefore says on each 401 what was lacking (`reason`: the key, or an Access sign-in), and only a 401 it marks as the key's is taken as a wrong key; any other 401, or a redirect, means the sign-in has run out (`barredBy` in `sync.ts`).
+Syncing then stands as signed out: the deck is kept here as when offline, and syncing goes on trying at every cause it has.
+A check or reading asked for meanwhile fails saying so (`signIn`).
+Where the page says either, it offers to sign in again (`signin.ts`): a link opening `signin.html` in a new tab, which Access signs the learner in on the way to, without asking while their sign-in to the Access team still holds, and which closes itself once open.
+The tab they came from keeps everything they wrote, syncs when it gets the focus back, and can ask Claude again.
 The recall page can also save the deck to a JSON file and load one back, merged the same way.
 A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background, and because that is how the sitting goes to the lesson and back (see "The review beside the lesson").
 
@@ -308,14 +331,21 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check` and `/associate` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate` and `/explain` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the site's browser storage, which holds the sync key, belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck`, `/check` and `/associate` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
+In development, Vite sends `/deck`, `/check`, `/associate` and `/explain` on to the Worker that `npm run preview` runs on port 8787, and gives every page that Worker's sync key from `.dev.vars` (`tools/sync-key-plugin.ts`), so syncing and checking work as soon as a page opens.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must carry the `RECALL_KEY` secret as a bearer token.
-The key is all that guards the deck, so the Worker refuses to serve with one under 32 characters, and a rate limit per caller address (`LIMITER`, 60 a minute) is checked before the key so it cannot be guessed at speed.
+The Worker refuses to serve with a key under 32 characters, and a rate limit per caller address (`LIMITER`, 60 a minute) is checked before the key so it cannot be guessed at speed.
+
+Cloudflare Access stands in front of the whole site, as it does staging, so only someone signed in is served a page, and the Worker does not trust that alone (`access.ts`).
+Every request it serves must also carry the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys (`access-keys.ts`), issued by the team (`ACCESS_ISSUER`), for the site's application (`ACCESS_AUD`), and in date.
+It is checked after the rate limit and before the key, so the deck and the calls to Claude, which cost money, stay shut to anyone Access did not let in, even if Access were turned off in front of the site.
+A 401 says which it was (`reason`), so a page whose Access sign-in has run out does not take its key to be wrong (see "Recall").
+With either var unset the Worker answers 503 to everything, so a Worker deployed without Access fails closed, and the deploy refuses to start (`tools/access.ts`).
+The token is not asked for on `localhost` (`waivedLocally`), where `wrangler dev` and the Vite dev server serve the Worker with no Access in front; Cloudflare routes a request to a deployed Worker only by a hostname it serves, so a deployed one never sees that name.
 A deck declared larger than 5 MB is refused before it is read.
 A merge takes the latest change, so a change dated far ahead would win every merge until that time came; the Worker refuses any dated more than an hour ahead of its clock, which leaves room only for a device's clock being a little off.
 
@@ -339,10 +369,18 @@ That prompt is the same in every request, so it is cached, since a learner reads
 Every call to Claude logs one JSON line of what it used (`usageLine`): the route, model, effort, and tokens uncached, written to and read from the cache, and out; filtering the Worker's logs on `claude_usage` shows what checks and readings cost, and whether the cache is being read.
 It uses Claude Opus 5.5 at medium effort, since what each lesson teaches and builds on is worked out ahead in the syllabus, with structured output whose lessons are an enum of the course's slugs, and the same fallbacks; the reply is read with the page's own `readReading`, which drops any lesson not in the course.
 
+`POST /explain` takes an `ExplainRequest` and answers with Claude's `Verdict` (`src/recall/explain.ts`, shared with the page).
+It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a size limit of its own.
+The call (`explain.ts`) tells Claude the lesson: its chapter, name and what the learner does in it, and what it teaches where the syllabus says, so the explanation is judged against the lesson.
+It asks for the verdict to the same schema as a check, on the same model at the same effort, and reads the reply with the same `verdictOf`.
+
 | File | Role | Pure |
 | --- | --- | --- |
-| `rules.ts` | Which request it is, whether the caller holds the key, the rate limit, size and clock checks | yes |
+| `rules.ts` | Which request it is, whether the caller came through Access and holds the key, the rate limit, size and clock checks | yes |
+| `access.ts` | Cloudflare Access tokens taken apart and their claims checked, and where Access is waived | yes |
+| `access-keys.ts` | A token's signature checked against the Access team's published keys | no |
 | `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
+| `explain.ts` | The lesson as Claude is told it, and the request to Claude to check an explanation | yes |
 | `associate.ts` | The course as Claude is told it, with the syllabus, the request to Claude to read a free association, and the reading or failure read from its reply | yes |
 | `index.ts` | The fetch handler, the calls to Claude with their token usage logged, and the `RecallDeck` object | no |
 | `worker-configuration.d.ts` | The Worker's types, generated by `npm run worker:types` | generated |
@@ -415,7 +453,7 @@ It is a Worker of its own, `triangle-lab-staging`: its own deck, sync key and ra
 Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
 
 Cloudflare Access guards the whole staging host, so a page or asset is only served to someone signed in.
-The dev tools' endpoints also check the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
+Its deck and calls to Claude check the token Access forwards as production's do, and the dev tools' endpoints also check it (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
 With either var unset they answer 503, so a misconfigured staging fails closed.
 
 The two tools keep their endpoints and wire formats; only where things land differs.
@@ -431,7 +469,7 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 
 | File | Role |
 | --- | --- |
-| `worker/staging-rules.ts` | Which dev tool and action a request is, the Access token taken apart and its claims checked, and the GitHub requests. Pure. |
+| `worker/staging-rules.ts` | Which dev tool and action a request is, whether its Access token holds up (`access.ts`), and the GitHub requests. Pure. |
 | `worker/staging.ts` | The staging entry point: checks the token's signature, reads and commits through GitHub, and holds the comments (`StagingInbox`). |
 | `tools/staging-mode.ts` | Which builds carry the dev tools (`devTools`). |
 | `tools/staging.ts` | `npm run staging:pull`. Runs in Node. |
@@ -457,6 +495,7 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 - `CheckRequest`, `Review` (`src/recall/check.ts`): an answer sent to be checked, and where a sitting stands on getting Claude's verdict.
 - `Writing`, `Reading`, `Note`, `NextStep` (`src/recall/deck.ts`): the free association as kept in the deck, and Claude's reading of it: feedback, remarks each with the lesson that teaches its point, and the shortest next steps.
 - `AssociateRequest`, `Association`, `ReadingState` (`src/recall/associate.ts`): a free association sent to be read, the one on show as written, and where it stands on getting Claude's reading.
+- `ExplainRequest`, `Explanation` (`src/recall/explain.ts`): an explanation sent to be checked, and the one on show as written, with where it stands on getting Claude's check.
 - `Syllabus`, `Entry` (`src/recall/syllabus.ts`): what each lesson teaches and builds on, stamped with a hash of the source it was written from.
 
 # Testing
@@ -491,17 +530,20 @@ The workflow builds but does not test: an edited step leaves its lesson's syllab
 - `src/recall/frame.test.ts`: where the moved or sized sheet goes, kept inside the window.
 - `src/recall/page.test.ts`: the recall page driven as a learner would, from the overview through a whole sitting, across a reload and on a touch screen, giving it the sync key, and Claude checking answers against a stand-in Worker: remarks highlighted on their words and dealt with as the answer is corrected, reading it again, the outcome suggested, the reading kept with the answer and shown next time and in the history, nothing sent without a written answer or the key, trying again, and reloads; checking in the lesson: the question, the answer and Claude's reading taken to a lesson page and corrected, read again, reworded and added to there, kept across its reload and brought back to the recall page, the browser's Back button and cache, a reading under way asked for again, keys kept from the lesson, and folding; and free associating: opened from the overview, read by Claude with its remarks on the words and lessons linked, corrected and read again from the keyboard, kept across reloads, asked again after one, failures, no key, and starting afresh.
 Each reload takes off what the last load of the page listened to on the window and the document, as closing the tab would, so a sitting from an earlier test cannot hear this one's keys.
-- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline and a refused key.
-- `worker/rules.test.ts`: routing to the deck, to checking and to free association, key check, rate limit, size and clock checks, and checking and reading off without a Claude key.
+- `src/recall/sync.test.ts`, `remote.test.ts`: syncing's rules, and syncing from a page against a stand-in Worker: when it sends, the free association once it pauses, two pages kept the same, offline, a refused key, and the site's sign-in run out, told from a refused key and recovered from.
+- `worker/rules.test.ts`: routing to the deck, to checking, to free association and to explanations, the Access token required on every path (and waived on `localhost` only), key check, rate limit, size and clock checks, and calls to Claude off without a Claude key.
+- `worker/access.test.ts`: Access tokens taken apart, their claims checked, and where Access is waived.
+- `worker/explain.test.ts`: the lesson as Claude is told it, and the request to check an explanation.
+- `tools/access.test.ts`: the deploy guard, which Access vars `wrangler.jsonc` leaves empty.
 - `worker/check.test.ts`: the request to Claude, reading its verdict, a refusal or a failed call, and the usage line logged for each call.
 - `worker/associate.test.ts`: the course as Claude is told it, with what the syllabus says and the lessons within reach, the request to read a free association, and reading its reply or a refusal.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, and free associations read through it.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and all of it behind a stand-in Access team, nothing let in without a token it signed for the site.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
 - `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
 - `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
-- `worker/staging-rules.test.ts`: routing to the dev tools on staging, Access tokens taken apart and their claims checked, and the GitHub requests.
+- `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
 - `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, nothing let in without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/sync-key-plugin.test.ts`: reading the sync key from `.dev.vars`, the script that keeps it in the browser, and every page on a real dev server given it before its own scripts.

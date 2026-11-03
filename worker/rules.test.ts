@@ -1,17 +1,24 @@
 // The Worker's decisions on a request to the recall deck: what it is, and
-// whether it may be made.
+// whether it may be made, from behind Cloudflare Access.
 
 import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
-import { CLOCK_SLACK_MS, datedAhead, decide, keyMatches, MAX_BODY, MIN_KEY, type Asked } from "./rules.ts";
+import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
+import { CLOCK_SLACK_MS, datedAhead, decide as decideAt, keyMatches, MAX_BODY, MIN_KEY, refusalBody, type Asked, type Settings } from "./rules.ts";
 
 const KEY = "k".repeat(MIN_KEY);
-const settings = { key: KEY, claude: true };
+const NOW = 1_700_000_000_000;
+const ACCESS = { issuer: "https://team.cloudflareaccess.com", aud: "aud-tag" };
+const CLAIMS = { iss: ACCESS.issuer, aud: [ACCESS.aud], exp: NOW / 1000 + 600 };
+const settings: Settings = { key: KEY, claude: true, access: ACCESS };
+const decide = (a: Asked, s: Settings) => decideAt(a, s, NOW);
 const asked = (patch: Partial<Asked>): Asked => ({
   method: "GET",
   path: "/deck",
+  hostname: "triangle-lab.example.workers.dev",
+  claims: CLAIMS,
   authorization: `Bearer ${KEY}`,
   length: null,
   withinLimit: true,
@@ -79,6 +86,46 @@ describe("decide, for an answer to check", () => {
   });
 });
 
+describe("decide, behind Cloudflare Access", () => {
+  it("lets in only a caller with a token for the application, on every path", () => {
+    for (const path of ["/deck", "/check", "/associate", "/explain"]) {
+      const method = path === "/deck" ? "GET" : "POST";
+      expect(decide(asked({ path, method }), settings)).not.toMatchObject({ kind: "refuse" });
+      expect(decide(asked({ path, method, claims: null }), settings)).toMatchObject({
+        status: 401,
+        error: "There is no valid Cloudflare Access token.",
+      });
+    }
+    expect(decide(asked({ claims: { ...CLAIMS, aud: ["other"] } }), settings)).toMatchObject({ status: 401, error: "The Access token is for another application." });
+    expect(decide(asked({ claims: { ...CLAIMS, exp: NOW / 1000 - 120 } }), settings)).toMatchObject({ status: 401, error: "The Access token has expired." });
+  });
+
+  it("says which a 401 lacks, the key or an Access sign-in, so a page tells them apart", () => {
+    expect(decide(asked({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401, reason: "key" });
+    expect(decide(asked({ claims: null }), settings)).toMatchObject({ status: 401, reason: "access" });
+    expect(refusalBody({ kind: "refuse", status: 401, error: "No.", reason: "key" })).toEqual({ error: "No.", reason: "key" });
+    expect(refusalBody({ kind: "refuse", status: 429, error: "Slow down." })).toEqual({ error: "Slow down." });
+  });
+
+  it("checks Access before the key, so the key cannot be guessed at from outside it", () => {
+    expect(decide(asked({ claims: null, authorization: "Bearer guess" }), settings)).toMatchObject({ error: "There is no valid Cloudflare Access token." });
+  });
+
+  it("lets no one in while the Access application is not set", () => {
+    for (const access of [{ issuer: "", aud: "" }, { ...ACCESS, aud: "" }, { ...ACCESS, issuer: "" }]) {
+      expect(decide(asked({}), { ...settings, access })).toMatchObject({ status: 503, error: expect.stringContaining("ACCESS_AUD") });
+    }
+  });
+
+  it("waives Access on localhost only, where the Worker runs in development", () => {
+    const unset = { ...settings, access: { issuer: "", aud: "" } };
+    expect(decide(asked({ hostname: "localhost", claims: null }), unset)).toEqual({ kind: "read" });
+    for (const hostname of ["127.0.0.1", "localhost.example.com", "triangle-lab.example.workers.dev"]) {
+      expect(decide(asked({ hostname, claims: null }), settings)).toMatchObject({ status: 401 });
+    }
+  });
+});
+
 describe("decide, for a free association to read", () => {
   const associate = (patch: Partial<Asked>) => asked({ path: "/associate", method: "POST", ...patch });
 
@@ -98,6 +145,26 @@ describe("decide, for a free association to read", () => {
     expect(decide(associate({}), { ...settings, claude: false })).toMatchObject({
       status: 503,
       error: expect.stringMatching(/^Reading free associations is off.*ANTHROPIC_API_KEY/),
+    });
+  });
+});
+
+describe("decide, for an explanation to check", () => {
+  const explain = (patch: Partial<Asked>) => asked({ path: "/explain", method: "POST", ...patch });
+
+  it("checks an explanation for a caller with the key, by POST only, guarded as checking is", () => {
+    expect(decide(explain({}), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({ method: "GET" }), settings)).toMatchObject({ status: 405 });
+    expect(decide(explain({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
+    expect(decide(explain({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(explain({ length: MAX_EXPLAIN_BODY }), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({ length: MAX_EXPLAIN_BODY + 1 }), settings)).toMatchObject({ status: 413 });
+  });
+
+  it("says checking explanations is off while the Worker has no Claude API key", () => {
+    expect(decide(explain({}), { ...settings, claude: false })).toMatchObject({
+      status: 503,
+      error: expect.stringMatching(/^Checking explanations is off.*ANTHROPIC_API_KEY/),
     });
   });
 });
