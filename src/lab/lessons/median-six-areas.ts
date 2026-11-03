@@ -51,6 +51,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a sandwich from a corner",
+        text: "Cut a triangular sandwich from one corner to the middle of the opposite edge. The two halves can look quite different, one long and thin, one short and wide, but they are the same size: both rise to the same corner, so they have the same height, and they stand on equal halves of the edge.",
+      },
+      {
+        title: "Long thin slices and short wide ones",
+        text: "Cut along all three medians and the six slices look unequal. But each one stands on half of an edge and reaches a third of the way up towards the opposite corner, so area $= \\tfrac12 \\cdot$ base $\\cdot$ height comes out the same: a slice on a short edge makes up for it by reaching higher.",
+      },
+    ],
+    uses: [
+      {
+        title: "A triangular cake for six",
+        text: "A triangular tray bake can be shared among six people without measuring anything but the edges. Find the middle of each edge, and cut from each corner to the middle of the opposite edge. The six pieces have different shapes but exactly equal amounts of cake.",
+      },
+      {
+        title: "Three equal plots",
+        text: "To split a triangular field among three owners, find the point $G$ where two medians cross, and run fences from $G$ to the three corners. Each plot is two of the six equal pieces, so each owner gets exactly a third, and each plot keeps a whole side of the field as its frontage.",
+      },
+    ],
+
     draw(g, f) {
       const { D, E, F, G, six } = figure();
 

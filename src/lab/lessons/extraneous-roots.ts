@@ -100,6 +100,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Directions that say how far, not which way",
+        text: "A friend says the café is 200 m from the station, but not in which direction along the street. You go and look both ways, and one of the two spots turns out to be in the river. Squaring an equation forgets signs in the same way: it hands you every answer of the right size, and you have to check which ones actually fit.",
+      },
+      {
+        title: "A reflection in a shop window",
+        text: "You spot a friend's face in a shop window, but the glass shows both the people inside the shop and the reflections of those behind you. Squaring merges the curve $\\sqrt{x + p}$ with its mirror image $-\\sqrt{x + p}$, so some of the meetings it finds are with the reflection. Turning round to look is putting each root back into the original equation.",
+      },
+    ],
+
     uses: [
       {
         title: "A ladder against a wall",

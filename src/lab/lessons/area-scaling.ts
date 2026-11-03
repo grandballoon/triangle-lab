@@ -135,6 +135,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Tiling a bigger floor",
+        text: "A kitchen floor needs a certain number of tiles. A room twice as long and twice as wide needs four times as many, not two: every row is twice as long, and there are twice as many rows. Each length doubles once, but the area feels the doubling twice, once across and once along.",
+      },
+      {
+        title: "Ordering a bigger pizza",
+        text: "A pizza twice as wide across has four times the topping, because its radius doubles and the area $\\pi \\cdot r \\cdot r$ uses the radius twice. The crust round the edge is only a length, so it merely doubles: that is why a big pizza has less crust for each bite.",
+      },
+    ],
+    uses: [
+      {
+        title: "Which pizza is better value?",
+        text: "A 30 cm pizza is $1.5$ times as wide as a 20 cm one, so it has $1.5^2 = 2.25$ times as much pizza. Unless it costs more than $2.25$ times as much, the big one is the better deal, even if its price looks steep.",
+      },
+      {
+        title: "Areas on a map",
+        text: "On a 1:25,000 walking map, 1 cm stands for 250 m. A lake that covers 4 squares of 1 cm by 1 cm on the map is not 4 times 250 m across, but 4 squares of 250 m by 250 m: $4 \\times 62{,}500 = 250{,}000$ square metres, or 25 hectares. Every map area is multiplied by the scale squared.",
+      },
+    ],
+
     draw(g, f) {
       figure(g, f, false);
       figure(g, f, true);

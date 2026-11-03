@@ -26,6 +26,7 @@ import { mountBackdrop } from "./backdrop/index.ts";
 import { mountCameraSwitch } from "./cameraSwitch.ts";
 import { formulaRows, setStep } from "./chrome.ts";
 import { railInset } from "./curriculum.ts";
+import { asides } from "./asides.ts";
 import { directions } from "./directions.ts";
 import { startHands } from "./hands/index.ts";
 import { Arranger } from "./lab/arrange.ts";
@@ -76,7 +77,7 @@ function mount(): void {
     recall.refresh();
   };
   const list = new StepList(host, select);
-  list.show(steps, []);
+  list.show(steps, asides[slug] ?? { likes: [], uses: [] });
   // A link may ask for a step (`#step-3`, as the recall page's do). Once
   // taken, the hash is dropped, so it never disagrees with the step shown.
   const start = stepOfHash(location.hash);

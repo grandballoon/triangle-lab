@@ -68,6 +68,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Pushing a ream of paper over",
+        text: "Push a ream of paper so it leans over and its side becomes a parallelogram. Every sheet is the same size as before and there are just as many of them, so the side's area cannot have changed: only the height of the stack and the length of a sheet matter, not how far it leans. That is the first step, $bh$.",
+      },
+      {
+        title: "Flattening a cardboard box",
+        text: "Squash an open cardboard box sideways: its side panel keeps the same edge lengths $a$ and $b$, yet the space it encloses shrinks as it leans, down to nothing when it is flat. The leaning edge stands only $a\\sin B$ tall, so the area is $ab\\sin B$, largest when $\\angle B = 90^\\circ$ and the box stands square.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Valuing a slanted plot",
+        text: "A plot of land between two parallel roads, $30$ m apart, with $20$ m of frontage on one of them has an area of $20 \\cdot 30 = 600$ square metres, however much its side boundaries slant. A surveyor needs the frontage and the distance straight across between the roads, not the length of the slanting sides.",
+      },
+      {
+        title: "Areas in computer graphics",
+        text: "Game engines and drawing programs describe a triangle by two edge vectors from one corner. The parallelogram they span has area $ab\\sin\\theta$, which is the size of their cross product, and the triangle is half of it. The same calculation's sign also tells the program which way the triangle faces, so it can skip drawing the back of a model.",
+      },
+    ],
+
     draw(g, f) {
       const { b, Cc, E } = measure();
       const leansRight = D.x >= A.x;

@@ -122,12 +122,15 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
     }
   });
 
-  it("has well-formed real-world uses, if any", () => {
-    for (const use of fresh().view.uses ?? []) {
-      expect(use.title.trim()).not.toBe("");
-      expect(use.title).not.toContain("$");
-      expect(use.text.trim()).not.toBe("");
-      richHtml(use.text, true);
+  it("says what its idea is like and what it is for", () => {
+    const { likes, uses } = fresh().view;
+    expect(likes.length).toBeGreaterThan(0);
+    expect(uses.length).toBeGreaterThan(0);
+    for (const aside of [...likes, ...uses]) {
+      expect(aside.title.trim()).not.toBe("");
+      expect(aside.title).not.toContain("$");
+      expect(aside.text.trim()).not.toBe("");
+      richHtml(aside.text, true);
     }
   });
 

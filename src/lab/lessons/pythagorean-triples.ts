@@ -95,6 +95,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Scaling up a recipe",
+        text: "A recipe for 4 people becomes one for 12 when you triple every ingredient: the proportions stay the same, so it tastes the same. Multiplying every side of a right triangle by $n$ works the same way, and it stays a right triangle. Triple only the flour and it goes wrong, just as stretching one side alone spoils the right angle.",
+      },
+      {
+        title: "Walking diagonally across a tiled floor",
+        text: "Walk from one corner of a tile to a corner 3 tiles across and 4 tiles up, and the straight line between them measures exactly 5 tile widths. Try 2 across and 3 up instead, and the diagonal comes to about 3.6, landing awkwardly part way along a tile. Most pairs behave like the second one, which is why the few whole-number triples are worth remembering.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Old 4:3 TV screens",
+        text: "Older TVs and computer monitors had a 4 to 3 shape, and screens are sold by their diagonal. Since $(3, 4, 5)$ is a triple, a 4:3 screen's width, height and diagonal are always in the ratio $4 : 3 : 5$. A 20-inch one is exactly 16 inches wide and 12 tall: the triple scaled by 4.",
+      },
+      {
+        title: "Marking out a sports pitch",
+        text: "Groundskeepers marking a football or rugby pitch need corners that are truly square over long distances. They scale up a triple to suit: 30, 40 and 50 metres, which is $(3, 4, 5)$ times 10. Measuring along longer sides makes a small error in the tape matter much less to the angle.",
+      },
+    ],
+
     draw(g) {
       settle();
       const { unit, aMax, bMax } = zoom();

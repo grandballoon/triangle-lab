@@ -15,7 +15,7 @@ import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
 import { term, type Scene } from "./scene.ts";
-import { StepList, USES_HEADING } from "./steps.ts";
+import { LIKES_HEADING, StepList, USES_HEADING } from "./steps.ts";
 import { Shell, type ShellElements } from "./shell.ts";
 
 let frames: FrameRequestCallback[] = [];
@@ -151,19 +151,31 @@ describe("Shell", () => {
     expect(currentStep(el)).toBe("0");
   });
 
-  it("lists a lesson's real-world uses after its steps", () => {
+  it("lists what a lesson's idea is like, then its real-world uses, after its steps", () => {
     const el = page();
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
       ...build(s),
+      likes: [{ title: "A walk round the block", text: "You turn $360^\\circ$ to face the way you set off." }],
       uses: [{ title: "Surveying", text: "Turns add to $360^\\circ$." }],
     }));
-    const uses = el.steps.querySelector(".uses")!;
+    const [likes, uses] = el.steps.querySelectorAll(".aside");
+    expect(likes.querySelector("summary h2")!.textContent).toBe(LIKES_HEADING);
+    expect(likes.querySelector("h3")!.textContent).toBe("A walk round the block");
     expect(uses.querySelector("summary h2")!.textContent).toBe(USES_HEADING);
-    expect((uses as HTMLDetailsElement).open).toBe(false);
     expect(uses.querySelector("h3")!.textContent).toBe("Surveying");
-    expect(uses.querySelector(".katex")).not.toBeNull();
+    for (const aside of [likes, uses]) {
+      expect((aside as HTMLDetailsElement).open).toBe(false);
+      expect(aside.querySelector(".katex")).not.toBeNull();
+    }
     expect(el.steps.lastElementChild!.previousElementSibling).toBe(uses);
+  });
+
+  it("leaves out an aside a lesson gives nothing for", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({ ...build(s), likes: [] }));
+    expect([...el.steps.querySelectorAll(".aside summary h2")].map((h) => h.textContent)).toEqual([USES_HEADING]);
   });
 
   it("leads from a hovered formula term to its marks on the figure", () => {
@@ -171,6 +183,8 @@ describe("Shell", () => {
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, () => ({
       steps: [{ title: "One", text: "Look at $A$." }],
+      likes: [],
+      uses: [],
       draw: (g) => g.point({ x: 1, y: 1 }, { term: "apex" }),
       readout: () => [{ tex: `${term("apex", "A")} + 1` }],
     }));
@@ -205,6 +219,8 @@ describe("Shell", () => {
     const B = { x: 2, y: 0 };
     shell.load({ eyebrow: "Lines", title: "T", accent: "#f472b6" }, () => ({
       steps: [{ title: "One", text: "Side $AB$ is not $CD$." }],
+      likes: [],
+      uses: [],
       draw: (g) => {
         g.segment(A, B);
         g.along(A, B, "4");
@@ -294,10 +310,10 @@ describe("StepList, paged", () => {
       picks.push(step);
       steps.mark(step, true);
     });
-    steps.show(
-      [1, 2, 3].map((n) => ({ title: `Step ${n}`, text: "Look." })),
-      [{ title: "Bridges", text: "Trusses." }],
-    );
+    steps.show([1, 2, 3].map((n) => ({ title: `Step ${n}`, text: "Look." })), {
+      likes: [{ title: "Stacking chairs", text: "Each rests on the one below." }],
+      uses: [{ title: "Bridges", text: "Trusses." }],
+    });
     steps.setPaged(true);
     return { steps, host, picks };
   }
@@ -320,7 +336,7 @@ describe("StepList, paged", () => {
     expect(document.querySelector('[aria-current="step"]')!.textContent).toContain("Step 3");
   });
 
-  it("marks the last step, which the uses follow", () => {
+  it("marks the last step, which the asides follow", () => {
     const { host } = list();
     expect(host.hasAttribute("data-last")).toBe(false);
     pagerButton("Next step").click();
@@ -337,7 +353,7 @@ describe("StepList, paged", () => {
 
   it("hides the pager for a lesson of one step", () => {
     const { steps } = list();
-    steps.show([{ title: "Explore", text: "Drag." }], []);
+    steps.show([{ title: "Explore", text: "Drag." }], { likes: [], uses: [] });
     expect(document.querySelector<HTMLElement>(".step-pager")!.hidden).toBe(true);
   });
 });

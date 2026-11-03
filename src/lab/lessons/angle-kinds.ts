@@ -68,6 +68,36 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "The minute hand of a clock",
+        text: "The minute hand sweeps a full turn, $360^\\circ$, every hour. A quarter of an hour is a right angle and half an hour a straight angle. Twenty minutes is a third of a turn, $120^\\circ$, which is obtuse, and forty minutes is past halfway: a reflex angle.",
+      },
+      {
+        title: "Swapping cups for millilitres",
+        text: "A recipe in cups and the same recipe in millilitres ask for the same amount of flour; only the unit is different, and you convert by multiplying by a fixed rate. Degrees and radians are two units for the same turn: a full turn is $360^\\circ$ or $2\\pi$ radians, so you multiply degrees by $\\frac{2\\pi}{360^\\circ}$.",
+      },
+      {
+        title: "Splitting an hour",
+        text: "A degree breaks into $60$ minutes and each minute into $60$ seconds, just like an hour. So $20.5^\\circ$ is $20^\\circ\\,30'$, the same way $2.5$ hours is $2$ hours $30$ minutes.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Spinning tricks",
+        text: "Skateboarders and snowboarders name spins by how far they turn: a 180 lands you riding backwards, a 360 brings you round to face the way you started, and a 540 is one and a half turns.",
+      },
+      {
+        title: "Reading a GPS position",
+        text: "Latitude and longitude are angles, often written in degrees, minutes and seconds. One minute of latitude is about $1852$ metres, a nautical mile, so one second is about $31$ metres: a position to the nearest second pins down a spot about the size of a house plot.",
+      },
+      {
+        title: "Turning a sprite in a game",
+        text: "Most programming languages measure angles in radians: in JavaScript, Math.cos(90) is the cosine of $90$ radians, not of $90^\\circ$. To turn a sprite a quarter turn, a game programmer passes $\\frac{\\pi}{2}$, converting with $90 \\cdot \\frac{2\\pi}{360} = \\frac{\\pi}{2}$.",
+      },
+    ],
+
     draw(g, f) {
       const theta = swept();
       const deg = toDeg(theta);

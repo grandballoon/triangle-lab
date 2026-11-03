@@ -172,6 +172,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Splitting sweets between two bowls",
+        text: "Pour 30 sweets into two bowls, $x$ in one and $y$ in the other. Any split passes the test $x + y = 30$, so there are many solutions, not one. Move a sweet across and one count goes up by exactly as much as the other goes down, so the splits step along steadily: a straight line.",
+      },
+      {
+        title: "Laying tiles in a rectangle",
+        text: "Now lay 24 square tiles in a rectangle: 1 by 24, 2 by 12, 3 by 8 or 4 by 6, the solutions of $xy = 24$. Here a longer side does not take a fixed amount off the other; it shrinks it by a share, so doubling the length halves the width. The steps are uneven and the solutions bend into a curve, the mark of a term of degree two.",
+      },
+    ],
+
     uses: [
       {
         title: "Making change",

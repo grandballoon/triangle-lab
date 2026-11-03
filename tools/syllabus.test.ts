@@ -9,10 +9,10 @@ import { ABOUT, problems, stale } from "../src/recall/syllabus.ts";
 import { hashes, hashOf, load, sourcesOf, SYLLABUS_PATH, teachingText } from "./syllabus.ts";
 
 describe("the syllabus tool", () => {
-  it("finds the module of a lab lesson, and of a standalone page as its HTML names it, with its directions", () => {
+  it("finds the module of a lab lesson, and of a standalone page as its HTML names it, with its directions and asides", () => {
     expect(sourcesOf("linear-balance")).toEqual(["src/lab/lessons/linear-balance.ts"]);
-    expect(sourcesOf("medians")).toEqual(["src/medians.ts", "src/directions.ts"]);
-    expect(sourcesOf("angles")).toEqual(["src/main.ts", "src/directions.ts"]);
+    expect(sourcesOf("medians")).toEqual(["src/medians.ts", "src/directions.ts", "src/asides.ts"]);
+    expect(sourcesOf("angles")).toEqual(["src/main.ts", "src/directions.ts", "src/asides.ts"]);
     expect(() => sourcesOf("nowhere")).toThrow("not a lesson");
   });
 
@@ -23,6 +23,11 @@ describe("the syllabus tool", () => {
       uses: [{ title: \`Trim\`, text: \`You have \${n} cm.\` }],
       label: "Not teaching", tex: "x^2",`;
     expect(teachingText(source)).toEqual(['"Each side is a line"', '"Set $a$ and \\"b\\"."', "`Trim`", "`You have ${n} cm.`"]);
+  });
+
+  it("takes the teaching text of a standalone page's entry, written out as JSON", () => {
+    const entry = JSON.stringify({ likes: [{ title: "A see-saw", text: "It balances." }] }, null, 2);
+    expect(teachingText(entry)).toEqual(['"A see-saw"', '"It balances."']);
   });
 
   it("hashes every lesson in the course, each from its own source", () => {

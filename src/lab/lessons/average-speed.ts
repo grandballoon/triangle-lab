@@ -111,6 +111,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Mixing hot and cool water",
+        text: "Pour one cup of water at 40 degrees in with two cups at 20 degrees, and the mix is not 30 degrees but about 26.7, because there is twice as much of the cool water. A round trip mixes speeds the same way: one hour at 40 mph with two hours at 20 mph, so the slow speed comes in the bigger cup. Averaging the two speeds pretends the cups were the same size.",
+      },
+      {
+        title: "Glancing at the speedometer",
+        text: "On a drive out and back you remember two speeds, but the clock remembers the minutes. Glance at the speedometer at random moments of the trip and two glances in every three show 20 mph, because the slow leg lasts twice as long. Average speed is that average over the time, not over the two legs.",
+      },
+    ],
+
     uses: [
       {
         title: "A hilly commute",

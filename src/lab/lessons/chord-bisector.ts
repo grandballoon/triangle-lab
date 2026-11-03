@@ -61,6 +61,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Finding the middle of a pizza",
+        text: "To cut a round pizza fairly you need its centre. Lay a knife across it anywhere, as a chord, and find the middle of that cut: the line through it at a right angle runs straight through the centre. Do it with a second cut, and the two lines cross at the centre.",
+      },
+      {
+        title: "Spacing chairs round a table",
+        text: "Hold a piece of string between neighbouring chairs set round a round table, and keep it the same length each time. Because equal chords cut off equal arcs, the chairs are also equally spaced around the edge. The straight-line gap and the curved gap always match.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Finding the centre of a wooden disc",
+        text: "Woodturners need the exact centre of a round blank before mounting it on the lathe. Draw any two chords across it, mark each one's midpoint, and draw the line at right angles through each midpoint. Both lines pass through the centre, so it lies where they cross.",
+      },
+      {
+        title: "Setting out a curved arch",
+        text: "A builder wants a shallow arch over a doorway 2 metres wide, rising 0.5 metres in the middle. The line from the centre of the circle through the top of the arch is perpendicular to the span and halves it, which makes a right triangle with legs 1 and $R - 0.5$ and hypotenuse $R$. So $R^2 = 1^2 + (R - 0.5)^2$, giving $R = 1.25$ metres: they swing a string that long from a peg to draw the curve.",
+      },
+      {
+        title: "Bolt holes round a circle",
+        text: "Machinists marking holes evenly round a flange often set a pair of dividers to the right chord length and step it round the circle. Equal chords cut equal arcs, so the holes come out evenly spaced. For six holes the chord is exactly the radius, which is also how you draw a hexagon with a pair of compasses.",
+      },
+    ],
+
     draw(g, f) {
       const M = mid(A, B);
       const N = polar(O, R, angleOf(sub(M, O)));

@@ -167,6 +167,17 @@ export default lesson((s) => {
       return rows;
     },
 
+    likes: [
+      {
+        title: "Weighing the cat on a bathroom scale",
+        text: "A cat will not sit still on the scale, so you weigh yourself holding it, 72 kg, then on your own, 66 kg. Subtracting one reading from the other cancels you, the unknown in both, and leaves the cat at 6 kg. Elimination adds or subtracts two equations so that one unknown drops out in just this way.",
+      },
+      {
+        title: "Doubling a recipe",
+        text: "Doubling every amount in a recipe makes more of it, but the same dish. Multiplying both sides of an equation by a number is the same: more of everything, the same solutions, the same line. That is why you may scale each equation freely until their $y$ terms match, ready to cancel.",
+      },
+    ],
+
     uses: [
       {
         title: "Two receipts",

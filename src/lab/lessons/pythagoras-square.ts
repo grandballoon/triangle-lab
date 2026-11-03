@@ -55,6 +55,17 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Laying a pinwheel patio",
+        text: "Picture paving a square patio with four identical triangular slabs, each one laid along an edge and tipping into the next like the arms of a pinwheel. Their corners fit snugly because the two sharp corners of each slab make a right angle together. A small square gap is left in the middle, and you fill it with one square tile. The patio's area is simply the four slabs plus that tile, which is the whole proof.",
+      },
+      {
+        title: "Cutting across a field",
+        text: "You can walk $a$ metres along one edge of a field and $b$ along the next, or cut straight across the corner, $c$ metres. The shortcut is always shorter, but by how much? Lengths do not add up, squares do: $c^2 = a^2 + b^2$ tells you exactly how long the shortcut is.",
+      },
+    ],
+
     uses: [
       {
         title: "Is the deck square?",

@@ -70,6 +70,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Shrinking on a photocopier",
+        text: "Shrink triangle $ABC$ to half size on a photocopier, keeping corner $B$ where it was, and the side across from $B$ becomes $EF$: pointing the same way as $AC$ and half as long. Shrink triangle $ACD$ about $D$ and $AC$ becomes $HG$, another half-size copy of the same segment. Two copies of one segment must be parallel and equal, so $EFGH$ is a parallelogram, however lopsided $ABCD$ is.",
+      },
+      {
+        title: "Trimming the corners of a pastry",
+        text: "Roll out any four-sided sheet of pastry, then trim its four corners by cutting straight between the middles of neighbouring sides. The trimmings at $B$ and $D$ are half-scale copies of triangles $ABC$ and $ACD$, each with a quarter of its area, so together they are a quarter of the sheet; the trimmings at $A$ and $C$ are another quarter. The scraps and the piece you keep weigh the same.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Finding the centre of a mesh cell",
+        text: "Simulation programs often split a surface into four-sided cells and take each cell's centre to be the average of its four corners. That point is where the two lines joining midpoints of opposite sides cross, since they are the diagonals of $EFGH$ and bisect each other. For corners $(0, 0)$, $(4, 0)$, $(5, 3)$ and $(1, 2)$ both lines meet at $(2.5, 1.25)$.",
+      },
+      {
+        title: "A diamond panel from a board",
+        text: "A woodworker who joins the midpoints of a rectangular board's sides gets a diamond, since a rectangle's diagonals are equal and so are the sides of $EFGH$. Whatever the board's size, the diamond uses exactly half of it, and the four corner offcuts make up the other half.",
+      },
+    ],
+
     draw(g, f) {
       const { E, F, G, H, X, right } = measure();
       const inner = [E, F, G, H];

@@ -54,6 +54,26 @@ export default lesson((s) => {
         text: "Adding, $\\dfrac{z}{x} + \\dfrac{z}{y} = \\dfrac{n + m}{m + n} = 1$. Divide by $z$ to get $\\dfrac1x + \\dfrac1y = \\dfrac1z$. The spacing $m + n$ has cancelled: only the heights matter.",
       },
     ],
+    likes: [
+      {
+        title: "Two taps filling a bath",
+        text: "If one tap fills a bath in $x$ minutes and the other in $y$, together they take $z$ minutes, where $\\tfrac1x + \\tfrac1y = \\tfrac1z$. The crossing height follows exactly that rule, so it is always lower than the shorter post, just as two taps together are faster than either alone. Only the arithmetic matches here, not the picture.",
+      },
+      {
+        title: "Driving there and back",
+        text: "Drive somewhere at $x$ km/h and back at $y$ km/h. Your average speed for the round trip is not halfway between, but $\\frac{2}{1/x + 1/y}$, which is $2z$: twice the height where the ladders cross. The slow leg takes longer, so it pulls the average down, much as the shorter post pulls the crossing down.",
+      },
+    ],
+    uses: [
+      {
+        title: "Focusing a camera",
+        text: "A camera lens obeys $\\tfrac1f = \\tfrac1u + \\tfrac1v$: object distance $u$ and image distance $v$ combine just like $x$ and $y$, with the focal length $f$ in the role of $z$. A $50$ mm lens focused on someone $2$ m away needs $\\tfrac1v = \\tfrac{1}{50} - \\tfrac{1}{2000}$, so $v \\approx 51.3$ mm: the lens moves out about $1.3$ mm.",
+      },
+      {
+        title: "Resistors side by side",
+        text: "Two resistors connected side by side, in parallel, act like one whose resistance $z$ satisfies $\\tfrac1z = \\tfrac1x + \\tfrac1y$. A $6$ ohm and a $3$ ohm resistor together act like $2$ ohms. The crossed-ladders drawing has even been used as a chart for this: draw two scales upright, join the tops to the opposite feet, and read the answer at the crossing.",
+      },
+    ],
 
     draw(g, f) {
       const { X, F, x, y, z } = figure();

@@ -75,6 +75,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Walking up a hill",
+        text: "On a straight hill, how steep it feels is how much you climb for each step forward: the rise over the run. Going downhill you climb a negative amount, on the flat you climb nothing, and a cliff face gives you nowhere to step forward at all.",
+      },
+      {
+        title: "Climbing stairs",
+        text: "Each stair has a riser (how far up) and a tread (how far across), and its slope is riser over tread. Climb three stairs at once and both the rise and the run triple, so the ratio stays the same. That is why any two points on a straight line give the same slope.",
+      },
+    ],
+    uses: [
+      {
+        title: "Road gradient signs",
+        text: "Road signs warning of a steep hill show its slope as a percentage. A 10% hill climbs about 10 metres for every 100 metres you travel across, a slope of $\\frac{1}{10}$. Lorry drivers and cyclists read the number to know how hard the climb or the braking will be.",
+      },
+      {
+        title: "Wheelchair ramps",
+        text: "Building rules commonly limit a wheelchair ramp to a slope of 1 in 12: one unit of rise for every 12 of run. To climb a 30 cm step, the ramp must run at least $30 \\times 12 = 360$ cm, so a builder knows straight away it needs 3.6 metres of space.",
+      },
+    ],
+
     draw(g, f) {
       reseat();
       const sliding = f.step >= 2;

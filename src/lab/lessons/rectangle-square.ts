@@ -73,6 +73,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Crossing a rectangular park",
+        text: "A rectangular park with two diagonal footpaths: whichever corner you set off from, the path across is the same length. Each path is the hypotenuse of a right triangle with the park's length and width as legs, so both are $\\sqrt{l^2 + w^2}$.",
+      },
+      {
+        title: "Folding napkin corners to the middle",
+        text: "Fold all four corners of a square napkin into the centre and you get a smaller square standing on its point, with its corners at the middles of the old sides. Each fold lays a corner triangle exactly over an inside one, so the new square is two layers thick and has half the napkin's area.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Squaring a deck by its diagonals",
+        text: "Builders laying out a deck or a concrete form check it is square by measuring both diagonals. Once opposite sides are equal, it is a parallelogram, and equal diagonals make it a rectangle: for a $3$ m by $4$ m deck, both should be $\\sqrt{9 + 16} = 5$ m. If one is longer, they push that pair of corners together until the two agree.",
+      },
+      {
+        title: "Screen sizes",
+        text: "Televisions and monitors are sold by their diagonal. A $55$-inch screen in the usual $16:9$ shape has sides $16k$ and $9k$ with $\\sqrt{(16k)^2 + (9k)^2} = 55$, so $k \\approx 3$ and the screen is about $48$ inches wide and $27$ inches tall.",
+      },
+      {
+        title: "Square in a square",
+        text: "Quilters call the last figure a square-in-a-square block: a square set on its point inside a bigger one, its corners at the middles of the sides. The four corner triangles are cut as isosceles right triangles, and together they take up exactly half the block.",
+      },
+    ],
+
     draw(g, f) {
       settle(f.step);
       const { A, B, D, l, w, E, F, G, H } = measure();

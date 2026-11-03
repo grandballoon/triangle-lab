@@ -51,6 +51,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting a cake into equal slices",
+        text: "Cut a round cake into $n$ equal slices from the centre and the cuts meet the edge at the corners of a regular $n$-gon. The centre of the cake is $O$, each cut is a circumradius $R$, and each slice's point is $\\tfrac{360^\\circ}{n}$. Halve a slice down its middle and you get one of the lesson's right triangles, with angle $\\tfrac{180^\\circ}{n}$ at $O$.",
+      },
+      {
+        title: "Laying the slices in a row",
+        text: "Take the $n$ triangular slices of a regular polygon and lay them in a row, alternately point up and point down. They fit together into a parallelogram whose height is the apothem $r$ and whose length is half the perimeter, so the area is $\\tfrac12 (nl) r$. This works neatly when $n$ is even, though the area is the same either way.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Cutting mitres for an octagonal frame",
+        text: "To make an eight-sided frame, each corner must be $\\tfrac{180^\\circ \\cdot 6}{8} = 135^\\circ$, so the frame turns through an exterior angle of $45^\\circ$ there, and each of the two pieces meeting at it is cut $22.5^\\circ$ off square. That is the angle set on the mitre saw; for any regular $n$-sided frame it is $\\tfrac{180^\\circ}{n}$.",
+      },
+      {
+        title: "Flooring an octagonal gazebo",
+        text: "A regular octagonal gazebo floor with sides of $1.5$ m has apothem $r = \\tfrac{0.75}{\\tan 22.5^\\circ} \\approx 1.81$ m and perimeter $12$ m. Its area is $\\tfrac12 \\cdot 12 \\cdot 1.81 \\approx 10.9$ square metres, which is how much decking to order before allowing for waste.",
+      },
+    ],
+
     draw(g, f) {
       const { n, pts, B, X, R, r } = figure();
 

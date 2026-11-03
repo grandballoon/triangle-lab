@@ -108,5 +108,27 @@ export default lesson((s) => {
       }
       return rows;
     },
+
+    likes: [
+      {
+        title: "Rearranging a rectangle of tiles",
+        text: "Lay 24 tiles as 4 by 6, or as 3 by 8: one side shorter, the other longer, the area the same. The two pieces of each chord through $E$ behave like that: whichever chord you take, $AE \\cdot EB$ is the area of a rectangle of the same size. A shorter piece on one side of $E$ is always paid for by a longer one on the other.",
+      },
+      {
+        title: "Enlarging a photo",
+        text: "Triangle $EDB$ is triangle $EAC$ turned over and printed at a different size, like a photo and its enlargement. In an enlargement every length grows by the same factor, so matching sides keep the same ratio, $\\dfrac{AE}{DE} = \\dfrac{CE}{BE}$, and cross-multiplying gives the equal products.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Sizing a broken plate",
+        text: "A piece of a round plate's rim is enough to tell how big the whole plate was. Lay a ruler across the curved edge as a chord, say 16 cm long, and measure how far the curve bulges out from the ruler's midpoint, say 2 cm. The line through that midpoint at right angles to the ruler is a diameter $D$, cut into 2 cm and $D - 2$, so $8 \\cdot 8 = 2(D - 2)$ and the plate was $D = 34$ cm across. The same works for any arc: a broken wheel, a round tabletop, a pipe.",
+      },
+      {
+        title: "Setting out an arch",
+        text: "A builder wants a round-topped arch 2 m wide that rises 0.5 m above the level where the curve starts, and needs its radius to cut the curved former it is built on. The span is a chord halved by the arch's centre line, which is a diameter, so $1 \\cdot 1 = 0.5\\,(2R - 0.5)$. That gives $2R = 2.5$, a radius of 1.25 m.",
+      },
+    ],
   };
 });

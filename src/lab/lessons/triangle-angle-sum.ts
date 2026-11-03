@@ -36,6 +36,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Tearing off the corners",
+        text: "Cut any triangle out of paper, tear off its three corners and fit them together point to point. They always line up along a straight edge, however you cut the triangle: the three angles make a straight angle, $180^\\circ$.",
+      },
+      {
+        title: "Turning a pencil round a triangle",
+        text: "Lay a pencil along one side of a paper triangle. At each corner, turn it through that corner's angle so it lies along the next side. After all three corners it lies on the first side again but pointing the other way: it has turned a half turn, $180^\\circ$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "The peak of a roof",
+        text: "A simple roof truss is a triangle. If the roof rises at $35^\\circ$ at each eave, the angle at the ridge must be $180^\\circ - 2 \\cdot 35^\\circ = 110^\\circ$, which tells the carpenter how to cut the rafters where they meet.",
+      },
+      {
+        title: "Spotting a fire from two towers",
+        text: "Two fire lookouts $5$ km apart both sight the same smoke, one at $60^\\circ$ and the other at $70^\\circ$ from the line joining the towers. The angle at the fire must be $180^\\circ - 60^\\circ - 70^\\circ = 50^\\circ$, so the whole triangle is known and the distance to the fire can be worked out.",
+      },
+    ],
+
     draw(g, f) {
       const along = normalize(sub(B, A));
       const E = sub(P, scale(along, 3)); // on A's side of C

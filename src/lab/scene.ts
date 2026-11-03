@@ -22,12 +22,28 @@ export interface Step {
 }
 
 /**
+ * An everyday activity that works like the lesson's idea, for the "What is
+ * this like?" section after the steps: scaffolding that ties the idea to
+ * something the reader already knows from life. Text may hold `$…$` LaTeX.
+ */
+export interface Likeness {
+  title: string;
+  text: string;
+}
+
+/**
  * A real-world use of the lesson's idea, for the "What will we use this for?"
  * section after the steps. Text may hold `$…$` LaTeX.
  */
 export interface Use {
   title: string;
   text: string;
+}
+
+/** What a lesson says around its steps: what its idea is like, and what it is for. */
+export interface Asides {
+  likes: Likeness[];
+  uses: Use[];
 }
 
 /**
@@ -65,13 +81,11 @@ export interface Frame {
   hands: readonly HandPoints[];
 }
 
-export interface LessonView {
+export interface LessonView extends Asides {
   /** At least one step: what to do, then (for a proof) why it is true. */
   steps: Step[];
   draw(g: Draw, f: Frame): void;
   readout?(f: Frame): Readout[];
-  /** Where people use this idea outside the classroom. */
-  uses?: Use[];
 }
 
 export type LessonBuilder = (s: Scene) => LessonView;

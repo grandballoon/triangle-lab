@@ -48,6 +48,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Six coins round one",
+        text: "Lay one coin on the table and push six identical coins round it: they fit exactly, each touching the middle one and its two neighbours. Their centres are the vertices of a regular hexagon, and the middle coin's centre is $O$. Every centre-to-centre distance is two radii, so the side $s$ equals the circumradius $R$, and the hexagon is six equilateral triangles.",
+      },
+      {
+        title: "Folding in every other corner",
+        text: "Cut out a paper hexagon and fold corners $B$, $D$ and $F$ inwards along $AC$, $CE$ and $EA$. All three tips meet exactly at the centre $O$, because $ABCO$ is a rhombus with all sides $s$. What is left uncovered is triangle $ACE$, equilateral and exactly half the hexagon.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Choosing a spanner",
+        text: "A hex nut is sized by its width across the flats, which is the short diagonal $s\\sqrt3$. A $13$ mm nut therefore has sides of $\\tfrac{13}{\\sqrt3} \\approx 7.5$ mm and measures $2s \\approx 15$ mm across the corners, so a socket for it must grip $13$ mm flats while leaving room for $15$ mm corners to turn inside it.",
+      },
+      {
+        title: "Ordering hexagonal floor tiles",
+        text: "A hexagonal tile with $10$ cm sides covers $\\tfrac{3\\sqrt3}{2} \\cdot 10^2 \\approx 260$ square centimetres, so a square metre of floor takes about $\\tfrac{10000}{260} \\approx 38.5$ tiles. Tilers work from that figure and add a margin for the cut pieces at the edges.",
+      },
+    ],
+
     draw(g, f) {
       const pts = corners();
       const [, B, Cc, D, E, F] = pts;

@@ -61,6 +61,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Lanes on a hill",
+        text: "The lanes of a straight road climbing a hill are parallel, and each one rises by the same amount for every metre you drive forward: equal slopes. Lanes with different slopes would drift into each other.",
+      },
+      {
+        title: "Turning a phone on its side",
+        text: "Lay a phone on a table with its long side running 2 across and 1 up. Turn it a quarter turn anticlockwise and that side now runs 1 back and 2 up: the two numbers swap places and one becomes negative. Slope $\\frac12$ becomes $\\frac{2}{-1} = -2$, and $\\frac12 \\cdot (-2) = -1$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Bouncing off a wall in a game",
+        text: "Game engines often need the direction straight out from a wall, to bounce a ball or slide a character along it. They get it with this lesson's quarter turn: swap the wall's “across” and “up” and negate one. A wall running 3 across and 1 up has slope $\\frac13$, and straight out from it runs $-1$ across and 3 up, slope $-3$.",
+      },
+      {
+        title: "The shortest way to a road",
+        text: "The shortest path from a house to a straight road meets the road at a right angle. If the road has slope $\\frac12$ on a map's grid, the path to build has slope $-2$, which lets a planner find where it joins the road.",
+      },
+    ],
+
     draw(g, f) {
       // B rides along when A is dragged, keeping line 1's direction.
       B.x += A.x - lastA.x;

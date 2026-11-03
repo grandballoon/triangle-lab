@@ -178,6 +178,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Two coins touching",
+        text: "Slide two coins together on a table until they just touch. The touching point lies on the straight line between their centres, so the distance between the centres is one radius plus the other. Slip a small coin inside a ring until it touches the inside edge, and the distance is the difference of the radii instead.",
+      },
+      {
+        title: "Three plates pushed together",
+        text: "Push three round plates together so each touches the other two. The gap between any two centres is the sum of their radii, so once those three gaps are fixed so are the sizes: you cannot swap in a bigger plate without pushing the others apart.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Meshing gears",
+        text: "Two gears mesh as if two circles, their pitch circles, were touching from outside, so the axles must be the sum of the pitch radii apart: gears of radius $3$ cm and $5$ cm sit $8$ cm apart. When a small gear runs inside a ring gear, as in a planetary gearbox, the circles touch from inside and the axles are the difference apart.",
+      },
+      {
+        title: "Sizing a ball bearing",
+        text: "In a ball bearing each ball touches the inner ring from outside and the outer ring from inside. With an inner ring of radius $10$ mm and balls of radius $3$ mm, the ball centres sit $10 + 3 = 13$ mm from the axle, so the outer ring must have radius $13 + 3 = 16$ mm.",
+      },
+    ],
+
     draw(g, f) {
       settle(f.step);
       const joined = f.at(3);

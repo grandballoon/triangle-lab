@@ -56,6 +56,26 @@ export default lesson((s) => {
         text: "One pyramid: $\\tfrac13 \\cdot s^2 \\cdot \\tfrac{\\sqrt2}{2}s = \\tfrac{\\sqrt2}{6}s^3$. The octahedron is two of them: $V = \\tfrac{\\sqrt2}{3}s^3$.",
       },
     ],
+    likes: [
+      {
+        title: "Two pyramid tents, floor to floor",
+        text: "Picture two identical pyramid tents, one turned upside down under the other, with their square floors pressed together. That is the octahedron: the shared floor is the square $ABCD$ and each tent pole is a height $PO$. So the space inside is just twice one tent.",
+      },
+      {
+        title: "Rolling an eight-sided die",
+        text: "An eight-sided die looks the same whichever corner points up. So the distance from the centre to the top corner, $PO$, has to match the distance from the centre to a corner round the middle, $OA$. That is why the upright slice $APCQ$ turns out to be a square, just like $ABCD$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Eight-sided dice",
+        text: "The eight-sided die in tabletop games is a regular octahedron. One with $2$ cm edges takes up $\\tfrac{\\sqrt2}{3} \\cdot 2^3 \\approx 3.8$ cubic centimetres, which is how much plastic or resin it needs if it is solid.",
+      },
+      {
+        title: "Weighing a diamond crystal",
+        text: "Rough diamonds often grow as octahedra. An octahedral crystal with $5$ mm edges has volume $\\tfrac{\\sqrt2}{3} \\cdot 125 \\approx 59$ cubic millimetres, and diamond weighs about $3.5$ milligrams per cubic millimetre. That gives roughly $207$ mg, just over $1$ carat ($200$ mg), estimated from the edge alone.",
+      },
+    ],
 
     draw(g, f) {
       const { A, B, Cc, D, P, Q, O } = model();

@@ -72,6 +72,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Opening a door",
+        text: "The hinge is $C$, the door is one side and the wall is the other, and $c$ is the gap between the edge of the door and the far end of the wall. As you swing the door wider, that gap grows. At exactly a right angle its square is $a^2 + b^2$, so a gap any bigger means the door is open past square, and any smaller means it is not open that far.",
+      },
+      {
+        title: "Bending your elbow",
+        text: "Your upper arm and forearm never change length, and your elbow is the angle between them. The straighter your arm, the farther your wrist is from your shoulder. So that one distance is enough to tell whether the elbow is bent more or less than a right angle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Setting out a square corner",
+        text: "Builders laying out a foundation or a shed base stretch two string lines from a corner peg. They mark 3 metres along one and 4 along the other, then move the second string until the marks are exactly 5 metres apart. The converse guarantees the corner is now a right angle. If the gap is more than 5 metres, the corner is too wide, so they swing the string in; less than 5, and they swing it out.",
+      },
+      {
+        title: "A rope with twelve knots",
+        text: "Gardeners can make a right-angle tool with no ruler at all: tie knots in a loop of rope to make twelve equal spaces. Peg it into a triangle with sides of 3, 4 and 5 spaces and pull it taut. Because $3^2 + 4^2 = 5^2$, the corner between the 3 and the 4 is square, ready for edging a bed or laying a path.",
+      },
+      {
+        title: "Is the enemy in front of you?",
+        text: "A game can check whether something is within a quarter turn of where a character faces without measuring any angle. Take the character at $C$, a point straight ahead at $B$, and the enemy at $A$. If $a^2 + b^2$ is bigger than $c^2$, the angle at $C$ is acute and the enemy is in front; if it is smaller, the enemy is behind.",
+      },
+    ],
+
     draw(g, f) {
       A.set(A);
       const { x, kind, sign, D } = measure();

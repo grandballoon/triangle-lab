@@ -31,6 +31,26 @@ export default lesson((s) => {
         text: "In triangle $ACG$: $AG^2 = AC^2 + h^2 = l^2 + w^2 + h^2$. The space diagonal is $\\sqrt{l^2 + w^2 + h^2}$.",
       },
     ],
+    likes: [
+      {
+        title: "Hanging bunting across a room",
+        text: "Run a string of bunting from a floor corner $A$ of a room to the opposite ceiling corner $G$. Look down from above and the string follows the floor diagonal $AC$, the long way across the rug. Then it also climbs the height $h$, so the string is the hypotenuse of an upright triangle standing on that floor line: Pythagoras twice.",
+      },
+      {
+        title: "Giving directions in two steps",
+        text: "Ask the way to a flat and you might hear: across the square, then up three floors. The straight-line distance to the door does not care about the order. Fold the two flat directions into one first, the floor diagonal, and then combine that with the climb, just as $l^2 + w^2$ becomes $AC^2$ before $h^2$ is added.",
+      },
+    ],
+    uses: [
+      {
+        title: "Packing a tripod in a suitcase",
+        text: "A cabin suitcase measuring $55 \\times 40 \\times 20$ cm has no edge long enough for a $70$ cm tripod. Its space diagonal is $\\sqrt{55^2 + 40^2 + 20^2} \\approx 70.9$ cm, though, so a thin tripod laid from one corner to the opposite one just fits.",
+      },
+      {
+        title: "Distances in a 3D game",
+        text: "A game engine stores every object's position as three coordinates. The straight-line distance between two of them is $\\sqrt{\\Delta x^2 + \\Delta y^2 + \\Delta z^2}$, exactly the box diagonal with the differences as $l$, $w$ and $h$. To check whether an enemy is within $10$ metres, engines often skip the square root and compare the sum of squares with $100$.",
+      },
+    ],
 
     draw(g, f) {
       const l = length.value / 2;

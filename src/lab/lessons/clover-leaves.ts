@@ -47,6 +47,27 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Rugs that overlap",
+        text: "Lay four rugs on a floor so that together they cover it, overlapping in places. Add up the rugs' areas and you get the floor once, plus every overlap a second time. So the overlaps are the rugs' total minus the floor, which is exactly how the leaves come out: four semicircles minus the square.",
+      },
+      {
+        title: "Wrapping a present",
+        text: "Wrapping paper covers the whole box, and where the edges overlap, those strips are covered twice. The paper you used is the box's surface plus the overlaps once more. Knowing any two of those amounts tells you the third.",
+      },
+    ],
+    uses: [
+      {
+        title: "Sprinklers on a square lawn",
+        text: "Put a half-circle sprinkler at the middle of each side of a 4 m square lawn, each reaching 2 m inward. Together they water the whole lawn, but the four leaf-shaped patches get watered twice: $\\left(\\frac{\\pi}{2} - 1\\right) \\cdot 4^2 \\approx 9.1$ square metres, more than half the lawn. Gardeners plan overlap like this on purpose, so no patch is missed.",
+      },
+      {
+        title: "Phone-mast coverage",
+        text: "Phone networks place masts so that their coverage areas overlap, letting a call hand over from one mast to the next without dropping. Planners keep the same books as this lesson: the area covered is the sum of the masts' areas with every overlap counted only once, and the overlap is what is left when you take the covered area from that sum.",
+      },
+    ],
+
     draw(g, f) {
       const { r, centers, corners, leaves } = figure();
 

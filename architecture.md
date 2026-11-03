@@ -63,7 +63,7 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 **Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
-They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts`, and, for a lesson with live numbers, the formula band.
+They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts` and then its asides from `src/asides.ts`, and, for a lesson with live numbers, the formula band.
 The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
 Where they go comes from the same layout the lab uses (see "Fitting the window" below); `page.ts` publishes the box left for the canvas as `--stage-left`, `--stage-top`, `--stage-width` and `--stage-height`, which each page's `#stage` rule reads, and fires `resize`.
 
@@ -77,7 +77,7 @@ Each standalone figure sizes itself for anything from a phone to a desktop.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
-A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show and, optionally, the real-world uses of its idea.
+A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`).
 It never touches the DOM.
 
 | File | Role |
@@ -88,7 +88,7 @@ It never touches the DOM.
 | `lab/solid.ts` | Orbit camera and helpers for 3D figures. |
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
-| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's uses. |
+| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides. |
 | `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
@@ -353,7 +353,7 @@ To pick next steps well, Claude needs to know what each lesson teaches and what 
 The syllabus says it: for each lesson, a few statements of what it establishes and the lessons it builds on directly, written from the lesson's source by one guide (`tools/syllabus-guide.md`).
 The file is generated: it is changed only through `tools/syllabus.ts`, never by hand.
 
-Each entry is stamped with a hash of its lesson's teaching text: its name, place and description, and the `title` and `text` strings of its steps and uses (`teachingText`), with a standalone page's own directions.
+Each entry is stamped with a hash of its lesson's teaching text: its name, place and description, and the `title` and `text` strings of its steps, likes and uses (`teachingText`), with a standalone page's own directions and asides.
 A change to how a lesson draws or moves leaves its entry as it was; a change to what it says makes it stale.
 Keeping it current needs no one to remember anything, in two layers:
 

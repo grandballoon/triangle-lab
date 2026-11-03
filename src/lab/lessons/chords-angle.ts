@@ -52,6 +52,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Opening scissors inside a hoop",
+        text: "Open a pair of scissors inside a hoop so the blade tips and the handle ends all touch it. The blades cut off one arc and the handles the opposite one, and the angle at the screw is the average of the two. Slide the screw nearer the blade tips and their arc shrinks while the handles' arc grows, keeping the same average.",
+      },
+      {
+        title: "Standing in a round courtyard",
+        text: "Stand anywhere in a round courtyard and point your arms along two lines. They point at one stretch of wall in front of you, and the same lines carried on behind you point at another. At the centre both stretches match the angle between your arms; step towards the front wall and the stretch in front shrinks while the one behind grows.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "A projector in a dome",
+        text: "In a round dome, a projector set away from the centre throws its picture across a fixed angle, say $60^\\circ$. The arc of screen it covers in front, plus the arc on the same lines behind it, always totals $120^\\circ$, so moving the projector back towards the rear wall makes one picture cover more of the front screen.",
+      },
+      {
+        title: "A camera in a round lobby",
+        text: "A security camera with a $90^\\circ$ view, mounted away from the centre of a round lobby, sees an arc of wall in front; the arc behind it on the same lines makes the two total $180^\\circ$. Mounted near one wall, it sees well over a quarter of the far wall.",
+      },
+    ],
+
     draw(g, f) {
       const m = measure();
 

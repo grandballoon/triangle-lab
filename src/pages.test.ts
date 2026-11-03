@@ -2,9 +2,10 @@
 // its canvas's box, and a canvas only fills the window when its stylesheet
 // says so: insets alone leave it at the 300x150 default, which jsdom cannot
 // show because it does no layout. Each also carries the chrome page.ts builds,
-// with written directions for its step column.
+// with written directions for its step column, and its asides after them.
 
 import { describe, expect, it } from "vitest";
+import { asides } from "./asides.ts";
 import { directions } from "./directions.ts";
 import { linkTex } from "./lab/link.ts";
 import { richHtml } from "./lab/math.ts";
@@ -51,6 +52,18 @@ describe("standalone pages", () => {
     }
   });
 
+  it.each(slugs)("%s says what its idea is like and what it is for", (slug) => {
+    const { likes, uses } = asides[slug] ?? { likes: [], uses: [] };
+    expect(likes.length).toBeGreaterThan(0);
+    expect(uses.length).toBeGreaterThan(0);
+    for (const aside of [...likes, ...uses]) {
+      expect(aside.title.trim()).not.toBe("");
+      expect(aside.title).not.toContain("$");
+      expect(aside.text.trim()).not.toBe("");
+      richHtml(aside.text, true);
+    }
+  });
+
   it("brings in the Pythagoras proof at the step that scrubs it", () => {
     // pythagoras.ts PROOF_STEP.
     expect(directions.pythagoras[2].title).toBe("Scrub the proof");
@@ -64,8 +77,9 @@ describe("standalone pages", () => {
     expect(steps[4].title).toContain("SSA");
   });
 
-  it("has directions only for standalone lessons", () => {
+  it("has directions and asides only for standalone lessons", () => {
     expect(Object.keys(directions).sort()).toEqual([...slugs].sort());
+    expect(Object.keys(asides).sort()).toEqual([...slugs].sort());
   });
 });
 

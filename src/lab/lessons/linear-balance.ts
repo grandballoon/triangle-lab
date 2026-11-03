@@ -165,6 +165,17 @@ export default lesson((s) => {
       ];
     },
 
+    likes: [
+      {
+        title: "Weighing parcels on a pan balance",
+        text: "A pan balance sits level when its two pans hold the same weight, just as an equation holds when its two sides are equal. Lift the same 100 g weight off both pans, or halve what is on each, and it stays level; do it to one pan alone and it tips. Taking the same number of identical unknown parcels off each pan keeps it level too, and that is the move that gathers the $x$ terms. Solving is a run of such fair moves, until one pan holds a single parcel $x$ and the other says what it weighs.",
+      },
+      {
+        title: "Two candles burning down",
+        text: "Light a tall candle that burns quickly and a short one that burns slowly. Each height falls steadily with time, so each is a straight line, and the moment they stand equally tall is where the lines cross. Stand both on a 10 cm block and both heights go up by 10 cm, but they still match at the same moment: adding or taking the same from both sides moves the crossing up or down, never sideways.",
+      },
+    ],
+
     uses: [
       {
         title: "Trim round a planter",

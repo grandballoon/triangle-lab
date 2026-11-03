@@ -107,6 +107,26 @@ export default lesson((s) => {
         text: "Congruent triangles give $\\angle OP'A' = \\angle OPA$ and $\\angle OP'B' = \\angle OPB$. At $P$ those two angles make a straight line, so they add to $180^\\circ$ at $P'$ too: $A'$, $P'$, $B'$ are collinear.",
       },
     ],
+    likes: [
+      {
+        title: "Opening a door",
+        text: "Seen from above, the hinge is the centre $O$ and how far the door swings open is the angle $\\theta$. The handle and a point near the hinge both swing through the same angle, each staying as far from the hinge as it was, though the handle travels a longer arc. The door stays straight and the same width throughout, just as the rotated triangle keeps every length and every straight line.",
+      },
+      {
+        title: "Turning a map to face the street",
+        text: "When you turn a paper map round so that its streets point the same way as the real ones, every street on the map turns through the same angle. If you turn the map by $30^\\circ$, each street's new direction makes exactly $30^\\circ$ with its old one, which is why a line and its image cross at the angle of rotation. If you spun the map about a pin pushed through it, the pin would be the one point that stays put.",
+      },
+    ],
+    uses: [
+      {
+        title: "Reading the angle on a clock",
+        text: "The minute hand rotates about the centre of the clock face, a full $360^\\circ$ every hour, so it turns $6^\\circ$ each minute. In $20$ minutes it turns $120^\\circ$. The hour hand turns only $30^\\circ$ an hour, half a degree a minute, which is how you can work out that at $3{:}00$ the hands are exactly $90^\\circ$ apart.",
+      },
+      {
+        title: "Rotating a photo",
+        text: "When a photo app turns a picture a quarter-turn anticlockwise, it moves each pixel by the rotation rule $(x, y) \\to (-y, x)$ about the centre of the picture. The pixel at $(4, 1)$ goes to $(-1, 4)$, still the same distance from the centre. Because a rotation keeps every length, nothing in the photo is squashed or stretched; it is simply turned.",
+      },
+    ],
 
     draw(g, f) {
       turned.set(turn(A));

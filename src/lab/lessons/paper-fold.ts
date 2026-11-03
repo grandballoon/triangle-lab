@@ -94,6 +94,26 @@ export default lesson((s) => {
         text: "Choose “on the far side”. If $AE = x$, the fold gives $EA' = x$ and leaves $EB = w - x$. Triangle $EBA'$ has a right angle at $B$, so $x^2 = (w - x)^2 + t^2$ with $t = BA'$, giving $x = \\frac{w^2 + t^2}{2w}$.",
       },
     ],
+    likes: [
+      {
+        title: "Looking in a mirror",
+        text: "Your reflection stands as far behind the mirror as you stand in front, and the line from you to it meets the glass square on. A fold works the same way, with the crease as the mirror: $A'$ is the reflection of $A$, so the crease is the perpendicular bisector of $AA'$. The only difference is that the paper actually moves to where the image is.",
+      },
+      {
+        title: "Meeting a friend halfway",
+        text: "Every spot that is equally far from you and a friend lies on one straight line: through the halfway point between you, at right angles to the line joining you. Every point of the crease stays where it is when you fold, so it is equally far from $A$ and from where $A$ lands, $A'$. The crease has to be that halfway line.",
+      },
+    ],
+    uses: [
+      {
+        title: "Finding fractions by folding",
+        text: "Origami folders find exact fractions of a square without a ruler by folding a corner onto a chosen point, a method known as Haga's theorems. On a $20$ cm square, folding the corner $A$ onto the midpoint of the far side ($t = 10$) puts the crease at $x = \\frac{20^2 + 10^2}{2 \\cdot 20} = 12.5$ cm, which is $\\tfrac58$ of the side. The same fold also makes the flap's edge cross the next side exactly a third of the way along, which is how folders find thirds.",
+      },
+      {
+        title: "Cutting fabric on the fold",
+        text: "Dressmakers cut symmetrical pieces, like the back of a shirt, by folding the fabric and cutting half the shape through both layers. Unfolded, the two halves are mirror images in the fold line, so they match exactly in every length and angle, just as the flap matches its dashed outline.",
+      },
+    ],
 
     draw(g, f) {
       const { M, E, F, stays, moved, flap, farSide } = figure();

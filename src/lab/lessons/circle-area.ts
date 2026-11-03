@@ -40,6 +40,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Dealing out pizza slices",
+        text: "Cut a pizza into many thin slices and lay them in a row, alternately point up and point down. The crust runs along the top and the bottom, half of it each, so the row is about $\\pi r$ long, and it is one slice, $r$, tall. Nothing was eaten or added, so the pizza's area is about $\\pi r \\cdot r$, and thinner slices make it exact.",
+      },
+      {
+        title: "Pushing a loop of string into shapes",
+        text: "Lay a loop of string on a table and push it into different shapes. A long thin shape holds almost nothing, a square holds more, and the rounder you make it the more table it covers. The circle is the best you can do with that length.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Comparing pizza sizes",
+        text: "A $30$ cm pizza has area $\\pi \\cdot 15^2 \\approx 707$ square centimetres, while a $20$ cm one has $\\pi \\cdot 10^2 \\approx 314$. One large pizza is more than two small ones, because the area grows with the square of the radius.",
+      },
+      {
+        title: "Watering a lawn",
+        text: "A sprinkler that throws water $4$ metres wets a circle of $\\pi \\cdot 4^2 \\approx 50$ square metres. One that throws $8$ metres waters four times as much lawn, not twice.",
+      },
+      {
+        title: "Round water tanks",
+        text: "For the same length of wall, a round tank holds $\\frac{4}{\\pi} \\approx 1.27$ times as much as a square one of the same height. Using less wall for the same water is one reason tanks, silos and paddling pools are so often round.",
+      },
+    ],
+
     draw(g, f) {
       const n = wedges.value;
       const r = radius.value;

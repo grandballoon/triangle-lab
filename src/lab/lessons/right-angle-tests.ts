@@ -100,6 +100,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Tearing off the corners",
+        text: "Cut a right-angled triangle from paper and tear off its two sharp corners. Put them side by side and together they make a perfect square corner, exactly as big as the one left behind. Try it with any other triangle and the two smaller corners will not make a square corner together.",
+      },
+      {
+        title: "Looking across a round table",
+        text: "Sit anywhere at the edge of a round table and point at two people sitting directly opposite each other. Your arms always make a right angle. Pull your chair back from the table and the angle narrows; lean in past the edge and it opens wider.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Are the diagonals equal?",
+        text: "Carpenters check that a frame, a drawer or a door opening is truly rectangular by measuring both diagonals with a tape. The diagonals of a four-sided frame with parallel opposite sides cut each other in half. If they are equal too, their crossing point is equally far from all four corners, which is the median test: every corner is a right angle.",
+      },
+      {
+        title: "Finding a diameter with a set square",
+        text: "Put the square corner of a set square or a sheet of paper on the edge of a round plate or a disc of wood, and mark where its two edges cross the rim. Because the right angle sits on the circle, those two marks are the ends of a diameter. Do it twice, and the diameters cross at the centre.",
+      },
+    ],
+
     draw(g, f) {
       const { R, P, Q, M, long, right, largest } = read();
       const verdict = right ? YES : C.ink;

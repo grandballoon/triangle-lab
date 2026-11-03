@@ -278,23 +278,24 @@ The menu (`src/index.ts`) and the pager (`src/pager.ts`) both render from that o
 
 ### Adding a lab lesson
 
-1. Create `src/lab/lessons/<slug>.ts`, default-exporting `lesson((s) => ({ steps, draw, readout }))`.
+1. Create `src/lab/lessons/<slug>.ts`, default-exporting `lesson((s) => ({ steps, likes, uses, draw, readout }))`.
 2. Add an entry with `lab: true` to the chapter's file in `src/chapters/`.
 
 That is all: the menu card, the pager links and the page appear on their own, and `npm test` exercises the new lesson automatically.
 `src/lab/lessons/triangle-angle-sum.ts` is a good model for a stepped proof, and `src/lab/lessons/box-diagonal.ts` for a 3D figure with sliders.
 
-A lesson can also return `uses`, its real-world applications, shown after the steps.
+Every lesson says, after its steps, what its idea is like (`likes`: an everyday activity whose structure matches it, saying which part is which) and what it is for (`uses`: concrete real-world applications, with small worked numbers where they help).
 Names, angles, variables and numbers in the step text and formulas lead to the figure on their own: pointing at `AB` draws a line to segment AB, as long as the figure labels its points A and B.
 Where that is not enough, a lesson can mark a symbol in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks it stands for, so pointing at it also highlights those marks.
 And it can set pictures on the figure with `g.sprite(src, at)`.
-`src/lab/lessons/exterior-angle.ts` has uses and terms.
+`src/lab/lessons/exterior-angle.ts` has likes, uses and terms.
 
 ### Adding a standalone lesson
 
 1. Add an entry (without `lab`) to a chapter file in `src/chapters/`.
 2. Create `<slug>.html` next to `index.html`, loading `src/<slug>.ts` and then `src/page.ts`, with a `#stage` rule that fills the box `page.ts` publishes as `--stage-left`, `--stage-top`, `--stage-width` and `--stage-height` (copy one of the existing pages).
 3. Write its numbered directions in `src/directions.ts`.
+   Say what its idea is like and what it is for in its entry in `src/asides.ts`.
 4. Register the slug in `vite.config.ts`.
 
 A standalone lesson with live numbers calls `formulaBand()` from `src/chrome.ts` once at start-up and passes it fresh rows each frame; its rows are best built in `src/readouts.ts`, where they can be tested.

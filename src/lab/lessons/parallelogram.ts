@@ -57,6 +57,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Turning a playing card upside down",
+        text: "A court card in a pack looks the same after half a turn about its centre. A parallelogram has that symmetry too, about the point $E$ where the diagonals cross: half a turn swaps $A$ with $C$ and $B$ with $D$. Everything the lesson proves falls out of it: $AB$ lands on $CD$, $\\angle B$ lands on $\\angle D$, and $AE$ lands on $CE$.",
+      },
+      {
+        title: "Stretching a garden trellis",
+        text: "An expanding wooden trellis is a lattice of slats pinned where they cross, so every gap is a parallelogram. Pull it wider and each gap leans over: its opposite sides stay equal and parallel, its sharp corners get sharper and its blunt corners blunter, but a sharp corner and its blunt neighbour always make a straight line, $180^\\circ$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Parallel rulers on a chart",
+        text: "Navigators move a bearing across a paper chart with parallel rulers: two straight edges joined by two equal hinged links. The edges and links form a parallelogram, so however far you walk the rulers across the chart, the edges stay parallel to where they started, carrying a direction from the compass rose to the ship's position.",
+      },
+      {
+        title: "A cantilever toolbox",
+        text: "The trays of a cantilever toolbox swing out on pairs of equal arms. Each pair of arms, the tray and the box form a parallelogram, so the tray's edge stays parallel to the box's edge: the trays stay level as they open and nothing slides out.",
+      },
+    ],
+
     draw(g, f) {
       const Cc = corner();
       const E = lineLine(A, Cc, B, D) ?? mid(A, Cc);

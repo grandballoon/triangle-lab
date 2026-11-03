@@ -40,6 +40,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Shaking hands round a table",
+        text: "At a round table of $n$ people, everyone shakes hands with everyone except themselves and the two people beside them: $n - 3$ handshakes each. Ask each person to count theirs and the counts add to $n(n - 3)$, but every handshake was counted by both people in it, so there were $\\tfrac{n(n-3)}{2}$. The people are the vertices, neighbours are the sides, and handshakes across the table are the diagonals.",
+      },
+      {
+        title: "Counting friendships in a group",
+        text: "If each of $6$ friends says they are close to $3$ others in the group, there are not $18$ friendships but $9$, because each one is reported from both ends. Counting from every point and then halving is exactly how the lesson counts diagonals.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Planning a round-robin tournament",
+        text: "In a round robin every team plays every other team once. Each of $8$ teams has $7$ matches, which adds to $56$, but each match was counted for both teams, so there are $28$ to schedule. That is the $8$ sides plus the $\\tfrac{8 \\cdot 5}{2} = 20$ diagonals of an octagon.",
+      },
+      {
+        title: "Wiring every office to every other",
+        text: "A network that links each of $10$ sites directly to each of the others needs $\\tfrac{10 \\cdot 9}{2} = 45$ links. Since that grows roughly with the square of the number of sites, large networks instead route traffic through hubs.",
+      },
+    ],
+
     draw(g, f) {
       chosen.set(chosen); // follow its corner when n changes
       const pts = corners();

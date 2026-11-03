@@ -89,6 +89,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "A ladder that narrows to the top",
+        text: "Picture a ladder whose sides lean in evenly, $50$ cm apart at the foot and $30$ cm apart at the top. The rungs are all parallel to the top and bottom, and the rung halfway up is exactly $40$ cm wide, the average of the two ends: going up, the width shrinks by the same amount for every step, so halfway up it has lost half the difference. The sides of the ladder are the legs, the top and bottom rungs are the bases, and the middle rung is the median.",
+      },
+      {
+        title: "Levelling a sloping trough of sand",
+        text: "Seen from the side, sand in a trough that slopes evenly from $10$ cm deep at one end to $30$ cm at the other is a trapezoid whose parallel sides are the two ends. Rake it level and the sand from the deep half fills the shallow half exactly, leaving it $20$ cm deep everywhere, the depth it had in the middle. That is the last step: the area is the trough's length times the median.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Digging a ditch",
+        text: "A drainage ditch is often dug with sloping sides, say $1.2$ m wide at the top, $0.6$ m wide at the bottom and $1$ m deep. Its cross-section is a trapezoid of area $\\tfrac12(1.2 + 0.6) \\cdot 1 = 0.9$ square metres, so each metre of ditch means $0.9$ cubic metres of soil to dig out and carry away.",
+      },
+      {
+        title: "Tiling a hipped roof",
+        text: "On a hipped roof the two long faces are trapezoids: the eaves along the bottom, the ridge along the top. If the eaves are $10$ m long, the ridge $6$ m and the slope from eaves to ridge $4$ m, a roofer orders tiles for $\\tfrac12(10 + 6) \\cdot 4 = 32$ square metres on each face, before adding a margin for cuts.",
+      },
+      {
+        title: "Measuring an irregular plot",
+        text: "To find the area of land along a curving stream, surveyors run a straight baseline and measure how far the stream is from it at regular intervals. Each strip between two measurements is close to a trapezoid, so a strip $10$ m wide with offsets of $6$ m and $8$ m counts as $10 \\cdot \\tfrac12(6 + 8) = 70$ square metres. This is called the trapezoidal rule.",
+      },
+    ],
+
     draw(g, f) {
       const { X, Y, E, F, W, Z } = measure();
       const proof = 1 - f.at(5);

@@ -12,7 +12,7 @@
 //   node tools/syllabus.ts refresh           describe every stale lesson through the Claude API
 //
 // A lesson's hash is of its teaching text only: its name, place and
-// description, and the title and text of its steps and uses. A change to
+// description, and the title and text of its steps, likes and uses. A change to
 // how it draws or moves leaves its entry as it was.
 //
 // Runs on Node 22 or later, which runs TypeScript as it is.
@@ -22,6 +22,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { asides } from "../src/asides.ts";
 import { directions } from "../src/directions.ts";
 import { lessons } from "../src/lessons.ts";
 import { course, problems, readSyllabus, saveSyllabus, stale, type Syllabus } from "../src/recall/syllabus.ts";
@@ -41,8 +42,9 @@ const AT_ONCE = 4;
 
 /**
  * The files a lesson is taught from, relative to the project: a lab lesson's
- * module, or the module a standalone page loads (named in <slug>.html) and
- * its directions (src/directions.ts, of which only its own steps count).
+ * module, or the module a standalone page loads (named in <slug>.html), its
+ * directions (src/directions.ts) and its asides (src/asides.ts), of both of
+ * which only its own entry counts.
  */
 export function sourcesOf(slug: string): string[] {
   const lesson = lessons.find((l) => l.slug === slug);
@@ -50,20 +52,25 @@ export function sourcesOf(slug: string): string[] {
   if (lesson.lab) return [`src/lab/lessons/${slug}.ts`];
   const page = readFileSync(join(ROOT, `${slug}.html`), "utf8");
   const modules = [...page.matchAll(/<script[^>]*src="\/(src\/[^"]+\.ts)"/g)].map((m) => m[1]).filter((m) => m !== "src/page.ts");
-  return [...modules, "src/directions.ts"];
+  return [...modules, "src/directions.ts", "src/asides.ts"];
 }
 
-/** The lesson's files as sent to Claude: a standalone page's directions as its own steps alone. */
+/** The lesson's files as sent to Claude: of a standalone page's directions and asides, its own entries alone. */
 function filesOf(slug: string): LessonFile[] {
-  return sourcesOf(slug).map((path) => ({
-    path,
-    text: path === "src/directions.ts" ? JSON.stringify(directions[slug] ?? [], null, 2) : readFileSync(join(ROOT, path), "utf8"),
-  }));
+  const entry = (path: string): unknown =>
+    path === "src/directions.ts" ? (directions[slug] ?? []) : path === "src/asides.ts" ? (asides[slug] ?? {}) : undefined;
+  return sourcesOf(slug).map((path) => {
+    const own = entry(path);
+    return { path, text: own === undefined ? readFileSync(join(ROOT, path), "utf8") : JSON.stringify(own, null, 2) };
+  });
 }
 
-/** Every `title` and `text` a module gives as a string, in order: its steps' and uses' words. */
+/**
+ * Every `title` and `text` a module, or an entry of one as JSON, gives as a
+ * string, in order: its steps', likes' and uses' words.
+ */
 export function teachingText(source: string): string[] {
-  return [...source.matchAll(/\b(?:title|text)\s*:\s*("(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)/g)].map((m) => m[1]);
+  return [...source.matchAll(/\b(?:title|text)"?\s*:\s*("(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)/g)].map((m) => m[1]);
 }
 
 /** A short hash of what a lesson teaches, as its source now stands. */

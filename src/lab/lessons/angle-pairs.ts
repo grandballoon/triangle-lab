@@ -65,6 +65,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Opening scissors",
+        text: "The two blades of a pair of scissors carry straight on through the screw to become the handles, so they are two straight lines crossing. Open the handles wider and the blades open by exactly the same amount: the angle between the handles and the angle between the blades are vertical angles.",
+      },
+      {
+        title: "A side road off a straight road",
+        text: "Where a side road meets a straight main road, it makes two angles with it, one on each side. Swing the side road round and one angle grows by exactly what the other loses, because together they always fill the straight road's $180^\\circ$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Measuring an angle you cannot stand in",
+        text: "Two straight streets cross, and a surveyor needs the angle on the corner where a building stands. They measure the opposite angle across the crossing instead: vertical angles are equal, and the neighbouring angles are each $180^\\circ$ minus it.",
+      },
+      {
+        title: "Cutting a picture frame",
+        text: "The corner of a picture frame is a right angle made from two mitred pieces, so the two cut angles must be complementary. For an ordinary frame each piece is cut at $45^\\circ$, and if one were cut at $40^\\circ$ the other would need $50^\\circ$ to close the corner.",
+      },
+    ],
+
     draw(g, f) {
       const { P2, Q2, alpha } = figure();
       const exploring = f.step === 0;

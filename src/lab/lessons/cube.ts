@@ -55,6 +55,30 @@ export default lesson((s) => {
         text: "$L$, $M$, $N$ are the midpoints of the edges at $A$. Each side of $LMN$ is the hypotenuse of a right triangle with legs $\\tfrac{s}{2}$, so each is $\\tfrac{s\\sqrt2}{2}$: equilateral again, with $60^\\circ$ angles.",
       },
     ],
+    likes: [
+      {
+        title: "Wrapping a box versus filling it",
+        text: "To wrap a cube-shaped present you cover six square faces, so the paper grows like $s^2$. To fill it with sugar cubes you stack whole layers, so the count grows like $s^3$. Double the edge and you need four times the paper but eight times the sugar.",
+      },
+      {
+        title: "A fly crossing a room",
+        text: "A fly in a cube-shaped room goes from a floor corner $A$ to the opposite ceiling corner $G$. Its shadow on the floor runs along the floor diagonal, $s\\sqrt2$, and the fly also has to rise the height $s$. The flight path is the hypotenuse of the upright triangle standing on that shadow, $s\\sqrt3$.",
+      },
+      {
+        title: "Cutting a corner off a cube of cheese",
+        text: "Slice a corner off a cube of cheese through the three corners next to it, $B$, $D$ and $E$. Each edge of the cut runs straight across a face, so all three are face diagonals of the same length, and the cut face is an equilateral triangle. Cut closer to the corner, through the midpoints $L$, $M$, $N$, and you get a smaller equilateral triangle.",
+      },
+    ],
+    uses: [
+      {
+        title: "Will it fit in the box?",
+        text: "The longest straight thing that fits in a box runs along the space diagonal. A cube-shaped box with $50$ cm edges is too short for an $80$ cm umbrella along any edge, and even across a face ($50\\sqrt2 \\approx 70.7$ cm). But from corner to opposite corner it has $50\\sqrt3 \\approx 86.6$ cm, so the umbrella fits.",
+      },
+      {
+        title: "Why crushed ice cools faster",
+        text: "Cut an ice cube of edge $s$ into eight cubes of edge $\\tfrac{s}{2}$. The ice is the same, $s^3$, but the surface becomes $8 \\cdot 6\\left(\\tfrac{s}{2}\\right)^2 = 12s^2$, twice the $6s^2$ you started with. More surface touches the drink, so crushed ice cools it faster and melts sooner.",
+      },
+    ],
 
     draw(g, f) {
       const { A, B, Cc, D, E, F, G, H } = corners();

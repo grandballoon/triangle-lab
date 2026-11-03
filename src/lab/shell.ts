@@ -136,7 +136,7 @@ export class Shell {
     this.el.title.textContent = header.title;
     document.documentElement.style.setProperty("--accent", header.accent);
     this.renderControls();
-    this.stepList.show(this.current.view.steps, this.current.view.uses ?? []);
+    this.stepList.show(this.current.view.steps, this.current.view);
   }
 
   /** Move through the steps. Returns false when there was nowhere to go. */

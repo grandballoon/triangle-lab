@@ -104,6 +104,30 @@ export default lesson((s) => {
         text: "For an independent check, slice the lens into thin strips across the line of centres and add up their areas. With thousands of strips the total in the panel matches the formula.",
       },
     ],
+    likes: [
+      {
+        title: "Trimming a slice of pizza",
+        text: "Take a slice of pizza and cut straight across from one end of the crust to the other. You are left with a triangle and a thin curved strip of crust. That strip is a circular segment: the slice (a sector) minus the triangle, just as each half of the lens is.",
+      },
+      {
+        title: "Two torches on a wall",
+        text: "Shine two round torch beams on a wall so they overlap: the patch lit by both is the lens. Draw a line through the two points where the circles of light cross. It cuts the bright patch into two pieces, each the edge of one torch's circle trimmed off by that shared line, so you can measure each piece using only its own circle.",
+      },
+    ],
+    uses: [
+      {
+        title: "Overlapping sprinklers",
+        text: "Two lawn sprinklers that each reach $5$ m, set $6$ m apart, water a lens twice. Here each central angle is $2\\cos^{-1}\\tfrac35 \\approx 1.85$ rad, so each segment is $\\tfrac12 \\cdot 25(1.85 - \\sin 1.85) \\approx 11.2$ square metres, and about $22.4$ square metres get a double dose. Gardeners spacing sprinklers trade this overlap against dry gaps.",
+      },
+      {
+        title: "How much of the Sun is covered?",
+        text: "During a partial solar eclipse, the Moon's disc covers a lens-shaped part of the Sun's. Astronomers report the obscuration, the fraction of the Sun's disc covered, which is exactly this lens area divided by the area of the Sun's disc, worked out from the two discs' sizes and how far apart their centres appear.",
+      },
+      {
+        title: "Venn diagrams drawn to scale",
+        text: "In an area-proportional Venn diagram, each circle's area matches the size of a group and the overlap matches the people in both. To draw one, software picks the radii from the group sizes and then adjusts the distance between centres until the lens area equals the overlap.",
+      },
+    ],
 
     draw(g, f) {
       const { R1, R2, d, dir, half1, half2, P, Q } = figure();

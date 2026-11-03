@@ -93,6 +93,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Folding a paper trapezoid in half",
+        text: "Cut an isosceles trapezoid out of paper and fold it along the line through the middles of its two bases. One leg lands exactly on the other, one base angle on the other and one diagonal on the other. That is why the three equalities arrive together: they are all the same fold, and losing any one of them means the halves no longer match.",
+      },
+      {
+        title: "Building a sawhorse",
+        text: "Seen end on, a sawhorse is an isosceles trapezoid: a short top bar, two splayed legs and the floor between their feet. Cut both legs to the same length and they meet the floor at the same angle, and a brace from each top corner to the opposite foot comes out the same length. Cut the legs unequal and all three of those go wrong together.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Checking a tapered frame by its diagonals",
+        text: "A builder setting out an isosceles trapezoid, such as a tapered window frame or raised bed, measures the two diagonals. The last step says this is enough: if the bases are parallel and the diagonals agree, the legs are equal and the base angles match, so the frame is symmetric without a protractor in sight.",
+      },
+      {
+        title: "Cutting the sides of a splayed planter",
+        text: "Each side of a planter that flares out towards the top is an isosceles trapezoid. Because its two base angles are equal, a woodworker can set the saw to one angle and cut both ends of every side panel without changing it, and the panels come out with equal legs that meet cleanly at the corners.",
+      },
+    ],
+
     draw(g, f) {
       settle(f.step);
       const m = measure();

@@ -52,6 +52,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Pointing halfway between two friends",
+        text: "You stand at $A$, with one friend 6 metres away and another 3 metres away. Point your arm exactly halfway between them, and it aims at the spot on the line joining them that is twice as far from the farther friend as from the nearer. The longer side at $A$ always gets the longer piece next to it.",
+      },
+      {
+        title: "Sharing winnings by stake",
+        text: "Two people chip in 3 pounds and 2 pounds and win a prize, and they share it $3 : 2$. The bisector shares out the far side $BC$ in just the same way, in the ratio of the two sides at $A$. Unlike a prize, nobody chose that ratio: the equal angles force it.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Splitting a corner plot",
+        text: "A triangular garden has fences of 12 metres and 8 metres meeting at a corner. A path from that corner that splits it into two equal angles meets the far fence in the ratio $12 : 8 = 3 : 2$. The two beds share the same height from the corner, so their areas are split $3 : 2$ as well, before anyone measures them.",
+      },
+      {
+        title: "Placing a bracket under a corner shelf",
+        text: "A triangular shelf fits a square corner, with edges of 60 and 40 centimetres along the walls and a front edge of about 72 centimetres. A support running straight out from the corner, halfway between the walls, meets the front edge in the ratio $60 : 40$: about 43 centimetres from one end and 29 from the other. You can mark the spot before fixing anything.",
+      },
+    ],
+
     draw(g, f) {
       const { X, E } = figure();
 

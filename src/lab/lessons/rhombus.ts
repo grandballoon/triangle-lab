@@ -66,6 +66,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Stretching chain-link fencing",
+        text: "The holes in chain-link fencing are rhombuses. Pull the fence taller and each diamond gets narrower: one diagonal grows as the other shrinks, but the two always cross at right angles and cut each other in half, because the four sides of the diamond stay the same length.",
+      },
+      {
+        title: "Cutting a diamond from a card",
+        text: "Mark the middle of each side of a rectangular card and cut from mark to mark: you get a diamond whose diagonals are the card's length $d_1$ and width $d_2$. The four corners you cut away are right triangles that fit exactly onto the four inside the diamond, so the diamond is half the card: $\\tfrac12 d_1 d_2$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "A car's scissor jack",
+        text: "A scissor jack is a rhombus of four equal arms. Turning the handle draws the two side hinges together, shortening the horizontal diagonal, and the vertical diagonal grows to lift the car. With arms of $25$ cm and the side hinges $40$ cm apart, the jack stands $2\\sqrt{25^2 - 20^2} = 30$ cm tall; squeeze the side hinges to $30$ cm apart and it rises to $2\\sqrt{25^2 - 15^2} = 40$ cm.",
+      },
+      {
+        title: "Diamond panes in a leaded window",
+        text: "Old leaded windows are often glazed with diamond-shaped panes. A glazier working out how much glass to cut can use the diagonals: a pane $20$ cm tall and $12$ cm across has area $\\tfrac12 \\cdot 20 \\cdot 12 = 120$ square centimetres.",
+      },
+    ],
+
     draw(g, f) {
       const { Cc, E } = measure();
       const sides: [Vec, Vec][] = [[A, B], [B, Cc], [Cc, D], [D, A]];

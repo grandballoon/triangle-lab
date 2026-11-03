@@ -191,6 +191,17 @@ export default lesson((s) => {
       ];
     },
 
+    likes: [
+      {
+        title: "Walking a footpath to a road",
+        text: "You are on a footpath and want the spot where it crosses a road. While you stay on the path, your position is told by how far along you are: one number instead of two. Solving the first equation for $x$ puts you on its path, described by $y$ alone, and substituting into the second asks how far along to walk before the road's condition holds too.",
+      },
+      {
+        title: "A recipe in proportions",
+        text: "A recipe asks for twice as much flour as sugar, and 600 g of the two together. Rather than juggle two unknowns, read the flour as “two sugars”: then three sugars weigh 600 g, so the sugar is 200 g. Going back to the first rule gives the flour, 400 g, just as the expression for $x$ does once $y$ is known.",
+      },
+    ],
+
     uses: [
       {
         title: "Boards for a raised bed",

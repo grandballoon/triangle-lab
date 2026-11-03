@@ -57,6 +57,26 @@ export default lesson((s) => {
         text: "$V = \\tfrac13 \\cdot \\tfrac{\\sqrt3}{4}s^2 \\cdot \\tfrac{\\sqrt6}{3}s = \\tfrac{\\sqrt{18}}{36}s^3 = \\tfrac{\\sqrt2}{12}s^3$. Slide $s$: doubling the edge multiplies the volume by eight.",
       },
     ],
+    likes: [
+      {
+        title: "Stacking four oranges",
+        text: "Set three oranges in a triangle and rest a fourth on top. Their centres make a regular tetrahedron. The top orange leans equally on all three, so it settles right above the middle of the triangle, the point $G$, not above any one orange.",
+      },
+      {
+        title: "Setting up a tripod with equal legs",
+        text: "Spread a tripod's three equal legs evenly and its head sits straight above the centre of the triangle its feet make. The lesson's reasoning is the same: equal legs give equal distances from the centre, $GA = GB = GC$. In a regular tetrahedron the legs are as long as the gaps between the feet, which a real tripod need not be.",
+      },
+    ],
+    uses: [
+      {
+        title: "A one-litre tetrahedral carton",
+        text: "Some of the earliest Tetra Pak milk cartons were tetrahedra. A regular tetrahedron that holds one litre, $1000$ cubic centimetres, needs $\\tfrac{\\sqrt2}{12}s^3 = 1000$, so an edge of about $20.4$ cm. Doubling the edge would hold eight litres.",
+      },
+      {
+        title: "How tall is a stack of oranges?",
+        text: "Greengrocers stack oranges in triangular layers, each one resting in the dip between three below. Every new layer raises the stack by the height of a regular tetrahedron whose edge is one orange's width. For oranges $8$ cm across that is $\\tfrac{\\sqrt6}{3} \\cdot 8 \\approx 6.5$ cm per layer, a little less than the oranges' width.",
+      },
+    ],
 
     draw(g, f) {
       const { A, B, Cc, D, G, M } = model();

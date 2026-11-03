@@ -71,6 +71,32 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Opening a laptop",
+        text: "The hinge is $C$, the keyboard is one side and the screen is the other. How high the top of the screen sits above the desk is $b \\sin C$, so the triangle they make is biggest when the screen stands upright at $90^\\circ$. Push it back to $120^\\circ$ and the top is as high as it was at $60^\\circ$: an angle and its supplement have the same sine.",
+      },
+      {
+        title: "Pitching a ridge tent",
+        text: "A ridge tent has two equal sloping walls of length $s$ meeting at the ridge. The space inside, seen end on, is $\\frac12 s^2 \\sin C$, where $C$ is the angle at the ridge. Pull the walls too flat or too steep and you lose room; it is roomiest when the walls meet at a right angle.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Measuring a plot from one corner",
+        text: "A surveyor standing at one corner of a triangular plot can measure two sides, 40 and 30 metres, and the angle between them, $50^\\circ$, without walking to the far side. The area is $\\frac12 \\cdot 40 \\cdot 30 \\cdot \\sin 50^\\circ \\approx 460$ square metres. No height needs to be found.",
+      },
+      {
+        title: "How much a hexagon tile covers",
+        text: "A regular hexagon splits into six equilateral triangles. A hexagonal floor tile with 20 centimetre sides therefore covers $6 \\cdot \\frac{\\sqrt3}{4} \\cdot 20^2 \\approx 1039$ square centimetres, which is how you work out how many to order for a room.",
+      },
+      {
+        title: "Triangles in 3D graphics",
+        text: "Game engines and 3D modelling software describe every surface as triangles, and often need their areas, for lighting or for scattering grass evenly over terrain. They get them with the cross product of two sides, whose length is $ab \\sin C$: twice the area, from two sides and the angle between them.",
+      },
+    ],
+
     draw(g, f) {
       const { X, obtuse, equilateral } = measure();
       const beyond = vec(O.x - 1.2, O.y); // a point on CB extended past C

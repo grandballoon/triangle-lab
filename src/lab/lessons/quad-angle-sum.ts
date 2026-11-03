@@ -51,6 +51,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Cutting toast corner to corner",
+        text: "Cut a slice of toast from one corner to the opposite one and you get two triangular halves, each with corners totalling $180^\\circ$. Put the halves back together and the two pieces at each end of the cut join into one corner of the slice, so the four corners of the whole slice make $180^\\circ + 180^\\circ = 360^\\circ$. It works however wonky the slice is, as long as you cut from the corner that is pushed in.",
+      },
+      {
+        title: "Laying lopsided tiles",
+        text: "Cut four identical tiles in the same lopsided four-sided shape and you can always lay them flat round a single point with no gap, each tile offering a different one of its corners. The space round that point is one full turn, and it is filled by exactly the tile's four angles, so they add up to $360^\\circ$.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Fitting a worktop into a wonky corner",
+        text: "Walls in old houses are rarely square. A kitchen fitter who measures three corners of a four-sided worktop piece as $90^\\circ$, $92^\\circ$ and $95^\\circ$ knows the fourth must be $360^\\circ - 277^\\circ = 83^\\circ$, without having to reach the awkward one behind the cooker.",
+      },
+      {
+        title: "Checking a survey of a field",
+        text: "A surveyor who measures all four corner angles of a four-sided field expects them to total $360^\\circ$. If they come to $360^\\circ\\,2'$, the two extra minutes of angle are measurement error, and the usual practice is to share the correction out among the corners before drawing the plan.",
+      },
+    ],
+
     draw(g, f) {
       const k = cutFrom();
       const [P, U, R, V] = [Q[k], Q[k + 1], Q[k + 2], Q[(k + 3) % 4]];

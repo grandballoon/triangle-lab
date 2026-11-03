@@ -9,7 +9,7 @@ description: Write src/recall/syllabus.json, what each Triangle Lab lesson teach
 The Worker gives it to Claude when reading a free association (`worker/associate.ts`), so Claude picks next steps from what the lessons actually establish, and from their real prerequisites.
 Writing it here, in Claude Code, costs no Claude API tokens; `npm run deploy` describes through the API only what is still stale when it runs.
 
-Each entry is stamped with a hash of its lesson's teaching text: its name, place and description, and the titles and texts of its steps and uses.
+Each entry is stamped with a hash of its lesson's teaching text: its name, place and description, and the titles and texts of its steps, likes and uses.
 A test fails while any lesson is undescribed or its teaching text has changed since; this skill is how to fix it.
 Never write or change a `source` hash yourself, and never edit the file's other parts by hand: `tools/syllabus.ts` does the bookkeeping.
 
@@ -34,7 +34,7 @@ export PATH=$HOME/.nvm/versions/node/v22.22.3/bin:$PATH
 2. Read `tools/syllabus-guide.md`: it says how to write an entry, and the API refresh follows the same guide, so entries read alike whichever wrote them.
    Read `src/lessons.ts` once for the reading order, the chapters, and the results each chapter lists as its axioms.
 
-3. For each lesson listed, read its source files: the steps and uses of a lab lesson, or the page module and its entry in `src/directions.ts` for a standalone page.
+3. For each lesson listed, read its source files: the steps, likes and uses of a lab lesson, or the page module and its entries in `src/directions.ts` and `src/asides.ts` for a standalone page.
    With many lessons, work a chapter at a time; chapters can be read in parallel by subagents, each given the guide and returning entries for you to write.
 
 4. Write each lesson's entry under `lessons` in `src/recall/syllabus.json`, keyed by its slug, with `source` set to `""`, `teaches` and `builds_on` as the guide says.

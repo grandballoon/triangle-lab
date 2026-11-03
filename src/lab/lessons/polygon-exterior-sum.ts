@@ -60,6 +60,28 @@ export default lesson((s) => {
       },
     ],
 
+    likes: [
+      {
+        title: "Walking round the block",
+        text: "Walk once round a block and turn at every corner to follow the next street. You end up back where you started facing the same way, so all your turns together make exactly one full turn, $360^\\circ$, whether the block has $4$ corners or $9$. Each turn is an exterior angle; this only works if every turn is the same way, as it is for a convex block.",
+      },
+      {
+        title: "Zooming out on a map",
+        text: "Zoom out on a map of the block and it shrinks towards a dot, but every street keeps its direction, so every turn keeps its size. When the block is a single point, the turns sit side by side round it and fill one full turn: that is the last step of the lesson.",
+      },
+    ],
+
+    uses: [
+      {
+        title: "Drawing a polygon with a turtle",
+        text: "In turtle graphics, a common first programming exercise, a cursor walks forward and turns. To draw a regular pentagon it repeats “forward 100, turn $72^\\circ$” five times, because five equal turns must add to $360^\\circ$. For any regular $n$-gon the turn is $\\tfrac{360^\\circ}{n}$.",
+      },
+      {
+        title: "Bending a frame from one strip",
+        text: "A metalworker bending a single flat strip into a closed frame knows the bends must add to one full turn. For a regular hexagon that is six bends of $60^\\circ$ each; for a regular octagon, eight of $45^\\circ$.",
+      },
+    ],
+
     draw(g, f) {
       polygon.setDraggable(shrink.value === 0);
       const full = polygon.corners();

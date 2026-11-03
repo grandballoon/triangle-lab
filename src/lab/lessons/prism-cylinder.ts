@@ -100,6 +100,30 @@ export default lesson((s) => {
         text: "Unroll the wall. $B$ lies half a circumference along from $A$, so the route is the hypotenuse of a right triangle with legs $h$ and $\\pi r$. A straight line is shortest: $\\sqrt{h^2 + (\\pi r)^2}$.",
       },
     ],
+    likes: [
+      {
+        title: "A stack of coins",
+        text: "A stack of identical coins is a cylinder built one layer at a time. Each coin is a copy of the base, and the height counts how many layers there are, so the volume is the area of one coin times the height: $V = Bh$. Swap the coins for square crackers and the same reasoning gives a prism.",
+      },
+      {
+        title: "The seam on a kitchen roll tube",
+        text: "Peel open the cardboard tube from a kitchen roll and its spiral seam turns out to be a straight line on the flat card. Rolled up, a straight line on the card becomes a spiral round the tube. That is why the ant's shortest route from $A$ to $B$ is easy to find unrolled: it is a straight line, the hypotenuse with legs $h$ and $\\pi r$.",
+      },
+    ],
+    uses: [
+      {
+        title: "Printing a label for a tin",
+        text: "A tin $7.4$ cm across needs a label as wide as its circumference, $2\\pi \\cdot 3.7 \\approx 23.2$ cm, plus a little overlap for the glue. The label's height is the tin's height. This is the unrolled wall, a rectangle $2\\pi r$ by $h$, cut from a flat sheet.",
+      },
+      {
+        title: "Concrete for a round column",
+        text: "A builder pouring a round column $0.6$ m across and $3$ m tall orders $V = Bh = \\pi \\cdot 0.3^2 \\cdot 3 \\approx 0.85$ cubic metres of concrete. The same base-times-height rule works for square or hexagonal columns, with $B$ the area of their cross-section.",
+      },
+      {
+        title: "The handrail of a spiral staircase",
+        text: "The handrail of a spiral staircase is a spiral on a cylinder. If the rail rises $3$ m in one full turn at a radius of $0.8$ m, unrolling the cylinder turns it into the hypotenuse of a right triangle with legs $3$ and $2\\pi \\cdot 0.8$. So the rail is about $\\sqrt{3^2 + 5.03^2} \\approx 5.85$ m long.",
+      },
+    ],
 
     draw(g, f) {
       const { round, n, h, step } = model();

@@ -57,6 +57,30 @@ export default lesson((s) => {
         text: "A fixed point would need $(x + a,\\, y + b) = (x,\\, y)$, which forces $a = b = 0$. Bring $A'$ back onto $A$: only the zero slide fixes any point — and then it fixes them all.",
       },
     ],
+    likes: [
+      {
+        title: "Riding an escalator",
+        text: "Everyone standing on an escalator is carried the same distance in the same direction: so far along, so far up, like the $a$ across and $b$ up of the arrow. So the gap between any two people stays exactly as it was, and nobody ends up facing a new way, which is why the image is a congruent copy facing the same way. And nobody stays where they started, unless the escalator is switched off.",
+      },
+      {
+        title: "Sliding a tray across a table",
+        text: "Push a tray of cups across the table without twisting it and every cup moves along the same arrow as the tray. Two cups and their new places make a parallelogram, just like $ABB'A'$, so the line from one cup to the other keeps its length and its direction. The moment you twist the tray, the cups move by different arrows and it is no longer a translation.",
+      },
+    ],
+    uses: [
+      {
+        title: "Hanging wallpaper",
+        text: "Patterned wallpaper repeats: the printer draws one motif and prints it again and again, each copy slid the same distance, called the pattern repeat, down the roll. When you hang the next strip beside the first, you slide it up or down until its pattern lines up with its neighbour's. Because every copy is a translation of the first, matching one flower along the join matches them all.",
+      },
+      {
+        title: "Moving a character in a video game",
+        text: "A game stores where each character is as a pair of coordinates and, every frame, adds the same step to it. A character at $(100, 40)$ walking with step $(3, -2)$ is drawn at $(103, 38)$, then $(106, 36)$. Every pixel of its picture is shifted by that same step, which is why it glides across the screen without turning or changing size.",
+      },
+      {
+        title: "Drawing parallel lines with a set square",
+        text: "Draughtsmen and carpenters hold a ruler still and slide a set square along it, drawing a line against the set square's edge at each stop. Sliding along the ruler is a translation, so every line drawn is the image of the first and runs parallel to it, just as $A'B'$ runs parallel to $AB$.",
+      },
+    ],
 
     draw(g, f) {
       arrow.follow();
