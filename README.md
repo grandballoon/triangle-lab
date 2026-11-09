@@ -279,16 +279,16 @@ The staging workflow uses the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUN
 
 ## Lessons
 
-130 lessons in fourteen chapters, read in order.
-The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
-Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
+132 lessons in fourteen chapters, read in order.
+Thirteen of the original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
+Both kinds share the step column, and the standalone pages with live numbers (the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
 In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
 
 | Chapter | Lessons |
 | --- | --- |
 | Circles (4) | Parts of a Circle · Rolling Out Pi · Area of a Circle · Tangent Circles |
 | Angles (12) | Kinds of Angle · Your Hand, a Protractor · Vertical Angles · Parallels and a Transversal · Angles of a Triangle · The Exterior Angle · Arcs, Sectors, Segments · The Inscribed Angle · The Angle in a Semicircle · Where Two Chords Cross · Two Secants From Outside · Tangent Meets Chord |
-| Triangles (33) | Angles · Equilateral · Isosceles · Scalene · Perimeter & Semiperimeter · Medians · Angle Bisectors · The Incircle · The Circumcircle · Altitudes · The Triangle Inequality · The Pythagorean Theorem · Four Triangles in a Square · Too Big, Too Small · Pythagorean Triples · Congruent Triangles · AAS, HL, LL and SA · Base Angles · Chords and the Centre · Similar Triangles · Three Tests for Similarity · Altitude to the Hypotenuse · The Angle Bisector Theorem · Naming the Ratios · Folding the Square · Folding the Equilateral · The Whole Table · Identities from One Triangle · Half Base Times Height · Two Sides and an Angle · Inradius Times Semiperimeter · Spotting a Right Triangle · The Parallel Line Trick |
+| Triangles (35) | Angles · Equilateral · Isosceles · Scalene · Perimeter · Semiperimeter · Medians · Centroid · Angle Bisectors · The Incircle · The Circumcircle · Altitudes · The Triangle Inequality · The Pythagorean Theorem · Four Triangles in a Square · Too Big, Too Small · Pythagorean Triples · Congruent Triangles · AAS, HL, LL and SA · Base Angles · Chords and the Centre · Similar Triangles · Three Tests for Similarity · Altitude to the Hypotenuse · The Angle Bisector Theorem · Naming the Ratios · Folding the Square · Folding the Equilateral · The Whole Table · Identities from One Triangle · Half Base Times Height · Two Sides and an Angle · Inradius Times Semiperimeter · Spotting a Right Triangle · The Parallel Line Trick |
 | Quadrilaterals (9) | Angles of a Quadrilateral · The Median of a Trapezoid · The Isosceles Trapezoid · Inside a Parallelogram · Area of a Parallelogram · Four Equal Sides · Rectangles and Squares · Diagonals Decide · The Midpoint Parallelogram |
 | Polygons (5) | Counting Diagonals · Interior Angle Sum · Exterior Angle Sum · Apothem and Circumradius · The Regular Hexagon |
 | Angle Chasing (3) | A Chain of Equal Links · Square Meets Triangle · Trisected Corners |

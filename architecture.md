@@ -61,7 +61,8 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 ## Two kinds of lesson
 
-**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
+**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are thirteen of the original triangle lessons.
+Perimeter, medians and angle bisectors started as standalone pages too, and were rebuilt as lab lessons; `public/_redirects` sends their old addresses on to the lab.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
 They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts` and then its asides from `src/asides.ts`, and, for a lesson with live numbers, the formula band.
 The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
@@ -71,7 +72,7 @@ The lesson and `page.ts` are separate scripts and meet only in `src/chrome.ts`, 
 `page.ts` sets the current step there, which a lesson may read to hold part of its figure back (`pythagoras.ts` brings in its proof at the step that scrubs it).
 A lesson with live numbers asks for the formula band there while its module is first evaluated, which is why its script must come first, and hands it fresh rows each frame.
 Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
-The band is used by perimeter, the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
+The band is used by the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
 Each standalone figure sizes itself for anything from a phone to a desktop.
 `src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
@@ -79,6 +80,11 @@ On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`).
 It never touches the DOM.
+
+A lesson that defines terms, one at a time, asks the scene for a row of them with `s.terms`: a `Choice` whose option n is step n.
+Picking a term goes to its step, and moving to a step picks its term (`followStep`), so the pills at the top and the step column always agree, and the lesson draws only the term picked.
+`circle-parts` defines its parts this way, and the triangle-parts lessons (perimeter, semiperimeter, medians, centroid, bisectors) define one term each, with edge cases such as the isosceles apex as further pills.
+Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, over the pure walking and locking in `lab/kit/triangle-parts.ts`.
 
 | File | Role |
 | --- | --- |
@@ -332,6 +338,7 @@ The whole site is one Cloudflare Worker.
 The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the session cookie belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
+The static redirects in `public/_redirects`, copied into the build, send the addresses of lessons that moved into the lab on to them.
 In development, Vite sends `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` on to the Worker that `npm run preview` runs on port 8787; a cookie belongs to a host, not a port, so a sign-in made through either serves both.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.

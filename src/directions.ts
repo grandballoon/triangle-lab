@@ -71,52 +71,6 @@ export const directions: Record<string, Step[]> = {
       text: "Each side shares its colour with the angle opposite it. The longest side always faces the largest angle.",
     },
   ],
-  perimeter: [
-    {
-      title: "Walk the edge",
-      text: "Each triangle has a knob parked on one corner. Drag it along the side to the next corner.",
-    },
-    {
-      title: "Keep a running total",
-      text: "Each side you finish adds its length to that triangle's $p$ in the formulas below.",
-    },
-    {
-      title: "Halfway round",
-      text: "Once the knob has walked half of the way round, a gold mark drops on that spot. The distance walked so far is the semiperimeter $s$.",
-    },
-    {
-      title: "All the way round",
-      text: "Bring the knob back to where it started. The perimeter is $p = a + b + c$, and the semiperimeter is half of it, $s = \\frac{p}{2}$.",
-    },
-  ],
-  medians: [
-    {
-      title: "Pull a knob across",
-      text: "Each corner has a knob on a short stub. Drag one across the triangle toward the midpoint of the opposite side.",
-    },
-    {
-      title: "Lock the median",
-      text: "Land it on the midpoint and it locks into place. A median joins a vertex to the midpoint of the opposite side.",
-    },
-    {
-      title: "Find the centroid",
-      text: "Lock all three medians on a triangle. They cross at a single point, the centroid $G$. Try it on each triangle.",
-    },
-  ],
-  bisectors: [
-    {
-      title: "Slide the knob",
-      text: "On each triangle a line runs from the apex to a knob on the opposite side. Slide the knob along that side.",
-    },
-    {
-      title: "Compare the halves",
-      text: "The line splits the apex angle into two wedges. While they differ, one is warm and one is cool.",
-    },
-    {
-      title: "Bisect the angle",
-      text: "Slide until the two angles are equal. Both wedges turn the same colour and the apex pulses: the line is the angle bisector. Do the same on every triangle.",
-    },
-  ],
   altitudes: [
     {
       title: "Drop a perpendicular",

@@ -11,7 +11,7 @@
 // every decimal on the sides changes, every ratio holds still. That is the
 // whole lesson.
 //
-// Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
+// Self-contained on purpose, matching altitudes.ts / inequality.ts / etc. —
 // only the webcam device, the page's formula band, the small-screen helpers
 // and this file's own little vector helpers are involved.
 

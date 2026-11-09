@@ -26,7 +26,7 @@
 // The page also carries an HTML "Notes & solutions" drawer (see altitudes.html)
 // with the concept write-up and the Example 11-1 / Exercise 11-1..3 proofs.
 //
-// Self-contained on purpose, matching medians.ts / bisectors.ts / etc. — only
+// Self-contained on purpose, matching inequality.ts / congruence.ts / etc. — only
 // the webcam device and this file's own little vector helpers are involved.
 
 import { fillFitted, grabRadius } from "./fit.ts";

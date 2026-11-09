@@ -7,7 +7,6 @@ import {
   fortyFiveReadouts,
   inequalityReadouts,
   matches,
-  perimeterReadout,
   pythagorasReadouts,
   similarReadouts,
   tableReadouts,
@@ -23,37 +22,6 @@ function typesets(rows: readonly Readout[]): void {
     if (row.label) richHtml(row.label, true);
   }
 }
-
-describe("perimeterReadout", () => {
-  const sides = [3.1, 4.2, 5.4] as const;
-  const at = (walked: number, halfway: boolean): Readout =>
-    perimeterReadout({ name: "Large", sides, walked, halfway });
-
-  it("starts at nothing walked", () => {
-    expect(at(0, false)).toEqual({ label: "Large triangle", tex: "p = 0", tone: "dim" });
-  });
-
-  it("adds up the sides walked, as written", () => {
-    expect(at(1, false).tex).toBe("p = 3.1");
-    expect(at(2, false).tex).toBe("p = 3.1 + 4.2 = 7.3");
-  });
-
-  it("names the semiperimeter once the knob is past halfway", () => {
-    expect(at(2, true).tex).toBe("p = 3.1 + 4.2 = 7.3,\\quad \\text{halfway round: } s = 6.35");
-  });
-
-  it("gives p and s in full once the knob is home", () => {
-    expect(at(3, true)).toEqual({
-      label: "Large triangle",
-      tex: "p = 3.1 + 4.2 + 5.4 = 12.7,\\quad s = \\tfrac{p}{2} = 6.35",
-      tone: "good",
-    });
-  });
-
-  it("typesets at every stage", () => {
-    typesets([at(0, false), at(1, false), at(2, true), at(3, true)]);
-  });
-});
 
 describe("inequalityReadouts", () => {
   it("states the inequalities in general before a side is picked", () => {
