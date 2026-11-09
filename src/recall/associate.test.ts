@@ -108,8 +108,8 @@ describe("readAssociateReply", () => {
 
   it("says why there is no reading", () => {
     expect(readAssociateReply(null)).toEqual({ kind: "failed", error: "Can't reach the server to read this." });
-    expect(readAssociateReply({ status: 401, body: { error: "No.", reason: "key" } })).toMatchObject({ error: expect.stringContaining("sync key") });
-    // Access answering for itself, once the site's sign-in has run out.
+    expect(readAssociateReply({ status: 401, body: { error: "Sign in first." } })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    // Access answering for itself on staging, once its sign-in has run out.
     expect(readAssociateReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
     expect(readAssociateReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
     expect(readAssociateReply({ status: 502, body: { error: "Claude is busy." } })).toEqual({ kind: "failed", error: "Claude is busy." });

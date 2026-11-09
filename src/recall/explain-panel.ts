@@ -45,7 +45,7 @@ export const LOCAL_EXPLAIN_KEY = "triangle-lab:explain:";
 /** The page's deck and its sync, as openRecall gives them. */
 interface Recall {
   store: Pick<RecallStore, "get" | "update" | "subscribe">;
-  sync: Pick<RecallSync, "canCheck" | "explain">;
+  sync: Pick<RecallSync, "canCheck" | "explain" | "subscribe">;
 }
 
 /** The step column, which takes the pane under a tab of its own (lab/steps.ts). */
@@ -96,14 +96,11 @@ export function mountExplain(
   const hint = el("span", "explain-hint", touchFirst() ? "" : "⌘↵ or ctrl↵ to check");
   const row = el("div", "explain-row");
   row.append(hint, check);
-  const noKey = el("p", "explain-note explain-key");
-  noKey.append("Give this browser the sync key on ");
-  const recallLink = el("a", "", "your questions page");
-  recallLink.href = "recall.html";
-  noKey.append(recallLink, " to have Claude check it.");
+  const signedOut = el("p", "explain-note explain-signin");
+  signedOut.append(signInLink(document, ""), " to have Claude check it.");
   const said = el("div", "explain-said");
   said.setAttribute("aria-live", "polite");
-  pane.append(ask, note, paper, row, noKey, said);
+  pane.append(ask, note, paper, row, signedOut, said);
 
   /** Each lesson's explanation this page has shown, by slug, read from the deck on first showing. */
   const states = new Map<string, Explanation>();
@@ -169,7 +166,7 @@ export function mountExplain(
     );
     const canCheck = sync.canCheck();
     row.hidden = !canCheck;
-    noKey.hidden = canCheck;
+    signedOut.hidden = canCheck;
     check.textContent = review ? "Check again" : "Check with Claude";
     check.disabled = !field.value.trim() || (checkedAsItStands(state) && review?.kind !== "failed");
     fit();
@@ -238,6 +235,9 @@ export function mountExplain(
       }
     }
   });
+
+  // Signing in or out, here or in another tab, shows or hides the check.
+  sync.subscribe(() => paint());
 
   column.addPane("Explain", pane, () => {
     refresh();

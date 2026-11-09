@@ -1,0 +1,12 @@
+/* The sign-in page (signin.html, page.ts), on the recall page's ground and
+   pieces (page.css, sheet.css). */
+
+#signin { margin-top: 32px; max-width: 480px; }
+
+.si-lead { font-size: 18px; line-height: 1.5; }
+
+.si-lead strong { font-weight: 650; color: #fff; overflow-wrap: anywhere; }
+
+.si-form { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+#signin .rc-row .rc-source { margin-top: 0; }

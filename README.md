@@ -109,7 +109,7 @@ Your answer stays in the same box, open to correct, until you have it right.
 Then say how it went: got it right first time, fixed it once corrected, or still struggling.
 Got right, a question comes back after longer and longer gaps (a day, then 3, 7, 16 and 35 days); fixed, a little sooner than last time, and never before tomorrow; still struggling, in your next review.
 
-On a device with the sync key, a written answer is also read by Claude as you check it.
+Signed in, a written answer is also read by Claude as you check it.
 Claude comments on it as a reviewer does on a document: the words it has something to say about are highlighted in your answer, with each comment beside them on a wide screen, or under the answer on a narrow one, and it says in a sentence or two what was right and what was missing.
 Correct the answer in place, and a comment whose words you have changed is marked as dealt with; press Check again (or Enter) to have Claude read it as it now stands.
 Once Claude reads it as right, it marks the outcome that fits, got it right or fixed it, but the choice is still yours.
@@ -121,47 +121,66 @@ Each question on the recall page has a History button listing every answer you g
 It syncs and is saved to a file with the rest of your questions.
 
 Questions are kept in the browser, like the gesture settings.
-They can also be kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
-Enter the sync key once on each device's recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
-Changes made offline are kept in the browser and sent with the next sync that works, and a question removed on one device stays removed on the others.
+Signed in, they are also kept the same on every device you use, through the site's Worker, which holds them on the web (`worker/`).
+Sign in once on each device, from the link under your questions on the recall page, and from then on every page syncs by itself: when it opens, shortly after each change, when you come back to the tab, and every few minutes.
+Changes made offline or signed out are kept in the browser and sent with the next sync that works, and a question removed on one device stays removed on the others.
 The recall page can still save them to a file and load them back, to keep a copy.
 
-### Setting up sync
+### Signing in
 
-The sync key is the only thing guarding your questions, so make it long and random:
+The site has its own sign-in, by email link, and it is invite only.
+On the sign-in page (`signin.html`), enter your email address; if it is invited, the Worker emails you a link that signs you in on the device you open it on.
+The link works once, for 15 minutes, and the sign-in lasts 30 days.
+The page answers the same whether or not an address is invited, so it never shows who is.
 
-```sh
-npx wrangler secret put RECALL_KEY   # paste the output of `openssl rand -base64 24`
-```
+Who is invited is two of the Worker's secrets: `OWNER_EMAIL`, your own address, and `INVITES`, everyone else's, separated by commas.
+Both are read on every request, so taking an address off `INVITES` signs that learner out everywhere at once.
+Your deck is the one the site has always held; everyone else gets an empty deck of their own, by their address.
 
-The key is never committed: it lives in the Worker's secrets and in each browser you enter it in.
-The Worker serves no one until its key is at least 32 characters.
-It also limits each caller's address to 60 requests a minute, so a key cannot be guessed at speed, and refuses changes dated more than an hour ahead of its clock, which would otherwise win every merge.
+### Setting up signing in
 
-Locally, the key comes from `.dev.vars`, which is gitignored; create it with `echo "RECALL_KEY=$(openssl rand -base64 24)" > .dev.vars`.
-`npm run dev` sends the deck's requests on to the Worker on `localhost:8787`, so to sync while developing, run `npm run preview` in a second terminal.
-Every page on the dev server is given the key from `.dev.vars`, so nothing needs entering there.
+Once:
+
+1. Onboard a domain you own to Cloudflare Email Sending, so the Worker can send from it: `npx wrangler email sending enable <your domain>`, or Email Service in the dashboard.
+   Wait for its DNS records to verify.
+2. Put the address sign-in links come from, on that domain, in `SENDER` under the top-level `vars` in `wrangler.jsonc`, for example `signin@<your domain>`, and the same under `env.staging.vars`.
+   Commit both.
+   Until it is set, a deploy stops before it starts (`tools/deploy-guard.ts`), since no one could sign in.
+3. Give the Worker its invite list and your address: `npx wrangler secret put OWNER_EMAIL`, then `npx wrangler secret put INVITES` (enter `-` to invite no one yet).
+   They are secrets only to keep the addresses out of this public repository.
+
+### Giving someone a demo account
+
+1. Add their email address to `INVITES`: `npx wrangler secret put INVITES`, with the whole list.
+2. Send them the site's sign-in page, `https://<the site>/signin.html`.
+   They enter their address, open the link the site emails them, and start with an empty deck.
+
+To take the account away, remove the address from `INVITES`.
+Their deck stays in its Durable Object, `learner:<email>`, and is theirs again if they are invited back.
+They share the site's Claude key, under the same rate limits as everyone else.
 
 ### Setting up answer checking
 
-The Worker calls Claude with a Claude API key of its own, kept in its secrets like the sync key; browsers never see it:
+The Worker calls Claude with a Claude API key of its own, kept in its secrets; browsers never see it:
 
 ```sh
 npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.com
 ```
 
-It checks only for a caller with the sync key, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
-Without the key, checking is off and the recall page says why.
+It checks only for a signed-in learner, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
+Signed out, checking is off and the page links to signing in.
 
-Locally, the Worker checks with the `ANTHROPIC_API_KEY` in `.dev.vars`, beside the sync key (see "Trying answer checking locally").
+### Trying it locally
 
-### Trying answer checking locally
-
-Once, give the local Worker both its keys in `.dev.vars`, which is gitignored and so never committed:
+Once, give the local Worker its secrets in `.dev.vars`, which is gitignored and so never committed:
 
 ```sh
-echo "RECALL_KEY=$(openssl rand -base64 24)" >> .dev.vars   # skip if it has one
-echo "ANTHROPIC_API_KEY=sk-ant-…" >> .dev.vars              # a key from platform.claude.com, kept for every run
+cat >> .dev.vars <<'VARS'
+ANTHROPIC_API_KEY=sk-ant-…
+OWNER_EMAIL=you@example.com
+INVITES=-
+SENDER=signin@example.com
+VARS
 ```
 
 Then run these in two terminals:
@@ -174,41 +193,33 @@ npm run preview  # the Worker on localhost:8787
 npm run dev
 ```
 
-Open <http://localhost:5173/recall.html> (or the port Vite prints): the page already holds the local sync key, and a written answer is read by Claude while you check it.
-Every page on the dev server is given the sync key from `.dev.vars` before its own scripts run, every time it loads, so forgetting the key on the recall page lasts until a reload.
-A change to `.dev.vars` reaches the pages on their next load, and the Worker when `npm run preview` is started again.
+Open <http://localhost:5173/signin.html> (or the port Vite prints) and ask for a link for your `OWNER_EMAIL`.
+Locally no email is sent: the Worker's log in the first terminal shows the message, link and all, and the file it saved it to, under `.wrangler/tmp/email`.
+Open the link, finish signing in, and the recall page syncs and has Claude read a written answer while you check it.
+A change to `.dev.vars` reaches the Worker when `npm run preview` is started again.
 Each check is a paid call on that Claude key.
 
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`.
-Giving the site an origin of its own keeps its browser storage, and the sync key in it, away from any other site.
-
-The site sits behind Cloudflare Access, so only someone you let in can open it, and above all spend on its Claude key.
-The Worker checks the token Access forwards on every path it serves, besides the sync key, so the deck and the calls to Claude stay shut even if Access were turned off; on `localhost`, under `npm run preview` and `npm run dev`, it does not ask for one.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`, and signing in at `/auth/link` and `/auth/session`.
+Giving the site an origin of its own keeps its session cookie, and its browser storage, away from any other site.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
-A deploy fails until both of the Worker's secrets, `RECALL_KEY` and `ANTHROPIC_API_KEY`, are set, and stops before it starts while `ACCESS_ISSUER` or `ACCESS_AUD` is empty under `vars` in `wrangler.jsonc` (`tools/access.ts`), since the Worker would let no one in.
+A deploy fails until the Worker's secrets, `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`, are set, and stops before it starts while `SENDER` is empty (see "Setting up signing in").
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
-### Putting production behind Access
+### Moving production off Cloudflare Access
 
-Once:
-
-1. In the Cloudflare dashboard, open the `triangle-lab` Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it).
-   Give the application a policy that allows the email addresses of everyone who should use the site.
-2. Copy the application's audience (AUD) tag into `ACCESS_AUD` under the top-level `vars` in `wrangler.jsonc`; `ACCESS_ISSUER` is already the team's, `https://nameless-frog-5ff8.cloudflareaccess.com`, the same as staging's.
-   The dashboard may not show the tag for an application the Worker's toggle made, but every token Access signs carries it.
-   Sign in to the site, copy the `CF_Authorization` cookie from the browser's developer tools, and decode it in the same tab's console, so it never leaves the browser: `JSON.parse(atob(prompt("Paste CF_Authorization").split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).aud`.
-   Run `npm run worker:types`, and commit both.
-3. Deploy. Signed out, the site now shows Access's sign-in page; signed in, it works as before.
+Production used to sit behind Cloudflare Access; the site's own sign-in replaces it.
+Once signing in is set up and deployed, open the `triangle-lab` Worker's Settings, Domains & Routes in the Cloudflare dashboard, turn Cloudflare Access off for its `workers.dev` address, and delete its Access application.
+Until then, Access's sign-in page comes before the site's own.
 
 ## Staging
 
 Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
-It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sync key, behind Cloudflare Access.
+It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sign-ins, behind Cloudflare Access, which guards its dev tools.
 It runs the `staging` branch: `main`, plus the step edits made on staging.
 
 - A step edit saved on staging is committed to the `staging` branch, and the push redeploys staging in a minute or two; the page shows the new text at once.
@@ -226,7 +237,7 @@ git fetch origin && git merge origin/staging
 Once:
 
 1. Make the branch: `git push origin main:staging`.
-2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `RECALL_KEY` (a new key, not production's) and `ANTHROPIC_API_KEY`.
+2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`.
 3. Deploy once by hand to make the Worker: `npm run deploy:staging`. It prints staging's address, `triangle-lab-staging.<your subdomain>.workers.dev`.
 4. Put Cloudflare Access in front of it. In the Cloudflare dashboard, open the Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it). Give the application a policy that allows your email address.
 5. Copy the application's audience (AUD) tag and your team's domain into `ACCESS_AUD` and `ACCESS_ISSUER` (`https://<team>.cloudflareaccess.com`) under `env.staging.vars` in `wrangler.jsonc`, and commit them. Until both are set, the dev tools on staging answer 503.

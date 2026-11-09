@@ -1,20 +1,23 @@
-// The Worker behind /deck, /check, /associate and /explain. /deck is the deck
-// of recall questions (src/recall), kept on the web so every device the
-// learner uses holds the same one; /check has Claude read an answer given in
-// a review sitting (check.ts), /associate a free association, everything the
-// learner can recall of the course (associate.ts), and /explain a learner's
-// explanation of a lesson's idea, written on the lesson page (explain.ts). The rest of the site is static assets, served without running
+// The Worker behind /auth/*, /deck, /check, /associate and /explain. /auth/*
+// signs learners in by email link (auth.ts). /deck is the signed-in
+// learner's deck of recall questions (src/recall), kept on the web so every
+// device they use holds the same one; /check has Claude read an answer given
+// in a review sitting (check.ts), /associate a free association, everything
+// the learner can recall of the course (associate.ts), and /explain a
+// learner's explanation of a lesson's idea, written on the lesson page
+// (explain.ts). The rest of the site is static assets, served without running
 // this (wrangler.jsonc).
 //
-// One Durable Object holds the deck, a row per question in its SQLite
-// storage, and the free association and each lesson's explanation in tables
-// of their own. It merges each deck sent to it with the one it holds, using the
-// same rule the pages do (mergeDecks), so a device can send its whole deck at
-// any time, in any order with the others, and nothing is lost. Requests reach
-// the object one at a time, so two devices syncing at once cannot undo each
-// other.
+// A Durable Object per learner holds their deck (rules.ts `deckFor`), a row
+// per question in its SQLite storage, and the free association and each
+// lesson's explanation in tables of their own. It merges each deck sent to it
+// with the one it holds, using the same rule the pages do (mergeDecks), so a
+// device can send its whole deck at any time, in any order with the others,
+// and nothing is lost. Requests reach the object one at a time, so two
+// devices syncing at once cannot undo each other. Sign-ins are held by
+// another (accounts.ts).
 //
-// The decisions are in rules.ts, check.ts, associate.ts and explain.ts; this does the I/O.
+// The decisions are in auth.ts, rules.ts, check.ts, associate.ts and explain.ts; this does the I/O.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
@@ -33,10 +36,25 @@ import {
   type Deck,
   type SavedDeck,
 } from "../src/recall/deck.ts";
+import { Accounts, ACCOUNTS_NAME, newToken, tokenHash } from "./accounts.ts";
 import { associateParams, readingOf } from "./associate.ts";
+import {
+  afterRedeem,
+  AUTH_PATHS,
+  decideAuth,
+  LINK_PATH,
+  LINK_TTL_MS,
+  MAX_AUTH_BODY,
+  normalEmail,
+  SESSION_TTL_MS,
+  sessionCookie,
+  sessionToken,
+  signedInAs,
+  signInEmail,
+  signInUrl,
+  type AuthSettings,
+} from "./auth.ts";
 import { checkParams, claudeFailed, usageLine, verdictOf } from "./check.ts";
-import { verifiedClaims } from "./access-keys.ts";
-import { waivedLocally, type Access } from "./access.ts";
 import { explainParams } from "./explain.ts";
 import {
   associateTooLarge,
@@ -46,49 +64,92 @@ import {
   decide,
   explainTooLarge,
   MAX_BODY,
-  refusalBody,
   tooLarge,
   type Refusal,
 } from "./rules.ts";
 
-/** There is one learner, so one deck. */
-const DECK_NAME = "deck";
+export { Accounts };
+
+const reply = (status: number, body: unknown, headers: HeadersInit = {}): Response => Response.json(body, { status, headers });
 
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
-    const reply = (status: number, body: unknown): Response => Response.json(body, { status });
-
-    const length = request.headers.get("Content-Length");
-    // Counted by the caller's address, so someone guessing the key slows
-    // only themselves, never the learner's own devices. Calls to Claude,
-    // which cost money, are counted again against a tighter limit of their own.
+    // Counted by the caller's address, so someone guessing slows only
+    // themselves, never the learner's own devices.
     const caller = { key: request.headers.get("CF-Connecting-IP") ?? "unknown" };
     const { success: withinLimit } = await env.LIMITER.limit(caller);
+    const accounts = env.ACCOUNTS.getByName(ACCOUNTS_NAME);
+    const settings: AuthSettings = { sender: env.SENDER ?? "", invites: env.INVITES ?? "", owner: env.OWNER_EMAIL ?? "" };
+    const fromPage = request.headers.get("X-Requested-With") === "XMLHttpRequest";
+    const now = Date.now();
+
+    if (AUTH_PATHS.includes(url.pathname)) {
+      if (!fromPage) return reply(403, { error: "Requests come from the site's own pages only." });
+      const text = request.method === "POST" ? await request.text() : "";
+      if (text.length > MAX_AUTH_BODY) return reply(413, { error: "That is too long." });
+      const body = parseJson(text);
+      // Links are counted again by the address asked for, invited or not, so
+      // nobody's inbox is flooded and the count says nothing of who is invited.
+      const linkLimited =
+        url.pathname === LINK_PATH && !(await env.LINK_LIMITER.limit({ key: normalEmail((body as { email?: unknown } | null)?.email) ?? caller.key })).success;
+      const decision = decideAuth({ method: request.method, path: url.pathname, body, withinLimit: withinLimit && !linkLimited }, settings);
+      const secure = url.protocol === "https:";
+      const token = sessionToken(request.headers.get("Cookie"));
+      switch (decision.kind) {
+        case "refuse":
+          return reply(decision.status, { error: decision.error });
+        case "pretend-sent":
+          return reply(202, { sent: true });
+        case "send-link": {
+          const linkToken = newToken();
+          await accounts.addLink(await tokenHash(linkToken), decision.email, now + LINK_TTL_MS, now);
+          try {
+            await env.EMAIL.send(signInEmail(decision.email, settings.sender, signInUrl(url.origin, linkToken)));
+          } catch (error) {
+            console.error("Sending a sign-in link failed:", error instanceof Error ? error.message : String(error));
+            return reply(502, { error: "The sign-in email could not be sent. Try again in a minute." });
+          }
+          return reply(202, { sent: true });
+        }
+        case "redeem": {
+          const next = afterRedeem(await accounts.redeemLink(await tokenHash(decision.token), now), settings);
+          if (next.kind === "refuse") return reply(next.status, { error: next.error });
+          const session = newToken();
+          await accounts.addSession(await tokenHash(session), next.email, now + SESSION_TTL_MS, now);
+          return reply(200, { email: next.email }, { "Set-Cookie": sessionCookie(session, secure) });
+        }
+        case "who": {
+          const email = token ? signedInAs(await accounts.sessionEmail(await tokenHash(token), now), settings) : null;
+          return email ? reply(200, { email }) : reply(401, { error: "Signed out." });
+        }
+        case "sign-out":
+          if (token) await accounts.endSession(await tokenHash(token));
+          return reply(200, {}, { "Set-Cookie": sessionCookie(null, secure) });
+      }
+    }
+
+    const length = request.headers.get("Content-Length");
+    // Calls to Claude, which cost money, are counted again against a tighter limit of their own.
     const paid = CLAUDE_PATHS.some((c) => c.path === url.pathname);
     const withinCheckLimit = !paid || (await env.CHECK_LIMITER.limit(caller)).success;
-    const access: Access = { issuer: env.ACCESS_ISSUER ?? "", aud: env.ACCESS_AUD ?? "" };
-    // The token's signature is only worth checking where Access is required.
-    const screened = !waivedLocally(url.hostname) && access.issuer !== "";
+    const token = sessionToken(request.headers.get("Cookie"));
     const decision = decide(
       {
         method: request.method,
         path: url.pathname,
-        hostname: url.hostname,
-        claims: screened ? await verifiedClaims(request.headers.get("Cf-Access-Jwt-Assertion"), access.issuer) : null,
-        authorization: request.headers.get("Authorization"),
+        email: token ? signedInAs(await accounts.sessionEmail(await tokenHash(token), now), settings) : null,
+        fromPage,
         length: length === null ? null : Number(length),
         withinLimit: withinLimit && withinCheckLimit,
       },
-      { key: env.RECALL_KEY ?? "", claude: !!env.ANTHROPIC_API_KEY, access },
-      Date.now(),
+      { claude: !!env.ANTHROPIC_API_KEY, owner: settings.owner },
     );
-    const deck = env.DECKS.getByName(DECK_NAME);
     switch (decision.kind) {
       case "refuse":
-        return reply(decision.status, refusalBody(decision));
+        return reply(decision.status, { error: decision.error });
       case "read":
-        return reply(200, await deck.read());
+        return reply(200, await env.DECKS.getByName(decision.deck).read());
       case "merge": {
         // Content-Length was checked in decide(), but a body may come without one.
         const text = await request.text();
@@ -98,7 +159,7 @@ export default {
         if (datedAhead(sent, Date.now())) {
           return reply(400, { error: "A change on this device is dated in the future. Check its date and time." });
         }
-        return reply(200, await deck.merge(sent));
+        return reply(200, await env.DECKS.getByName(decision.deck).merge(sent));
       }
       case "check": {
         const text = await request.text();

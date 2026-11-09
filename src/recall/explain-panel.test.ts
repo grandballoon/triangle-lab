@@ -24,6 +24,7 @@ function mount() {
   const column = { addPane: (_label: string, p: HTMLElement) => void document.body.append((pane = p)) };
   const sync = {
     canCheck: () => canCheck,
+    subscribe: () => {},
     explain: (request: ExplainRequest) => {
       asked.push(request);
       return new Promise<Review>((done) => (answer = done));
@@ -99,11 +100,11 @@ describe("the Explain tab", () => {
     expect(heard).not.toHaveBeenCalled();
   });
 
-  it("says where to give the sync key when this browser has none", () => {
+  it("offers to sign in while signed out", () => {
     canCheck = false;
     mount();
     expect(pane.querySelector<HTMLElement>(".explain-row")!.hidden).toBe(true);
-    expect(pane.querySelector<HTMLElement>(".explain-key")!.hidden).toBe(false);
+    expect(pane.querySelector<HTMLElement>(".explain-signin")!.hidden).toBe(false);
   });
 
   it("keeps each lesson's explanation, across a lesson swap and a reload", () => {

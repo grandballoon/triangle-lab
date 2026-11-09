@@ -8,7 +8,11 @@
 // happen: the deck is still kept in the browser (store.ts), and goes with
 // the next sync that works.
 //
-// The same key lets the recall page have Claude check an answer, at /check
+// Requests carry the learner's session cookie, set by signing in
+// (signin.html, worker/auth.ts); without one the Worker answers 401 and
+// syncing stands as signed out, the deck kept here until they sign in.
+//
+// The same sign-in lets the recall page have Claude check an answer, at /check
 // (check.ts), and read a free association, at /associate (associate.ts), and
 // a lesson page have it check an explanation, at /explain (explain.ts), so
 // those requests are made here too.
@@ -21,9 +25,6 @@ import type { ExplainRequest } from "./explain.ts";
 import { mergeDecks, saveDeck, type Deck } from "./deck.ts";
 import { RecallStore } from "./store.ts";
 import { afterReply, hasNews, lastSynced, readReply, REDIRECTED, sendWhen, type SyncState } from "./sync.ts";
-
-/** Where this browser keeps the sync key it was given. */
-export const SYNC_KEY_STORAGE = "triangle-lab:recall-sync-key";
 
 /** How long after a change to wait for the next before sending them. */
 export const SETTLE_MS = 1500;
@@ -45,13 +46,12 @@ type Timer = ReturnType<typeof setTimeout>;
 export interface SyncDeps {
   /** Where the site is served from, with no trailing slash: the deck is at `${url}/deck`, checks at `${url}/check`, free associations at `${url}/associate`, explanations at `${url}/explain`. */
   url: string;
-  keys: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
   fetch: typeof fetch;
   now: () => number;
   setTimeout: (fn: () => void, ms: number) => Timer;
   clearTimeout: (timer: Timer) => void;
   setInterval: (fn: () => void, ms: number) => unknown;
-  /** Where the window's events (online, focus, storage) arrive. */
+  /** Where the window's events (online, focus) arrive. */
   events: Pick<Window, "addEventListener"> | null;
   /** Where the document's visibilitychange arrives. */
   doc: Pick<Document, "addEventListener"> | null;
@@ -68,17 +68,13 @@ export class RecallSync {
   private pending: Timer | null = null;
   /** Whether the sync waiting to be sent is for questions, which a change to the writing does not put off. */
   private pendingSoon = false;
-  /** A key given while storage was blocked, kept for as long as the page is open. */
-  private memoryKey: string | null = null;
-  /** A key the Worker turned down, not tried again until it is given again. */
-  private refused: string | null = null;
   private readonly listeners = new Set<(state: SyncState) => void>();
 
   constructor(
     private readonly store: RecallStore,
     private readonly deps: SyncDeps,
   ) {
-    this.state = this.key() ? { kind: "syncing", last: null } : { kind: "no-key" };
+    this.state = { kind: "syncing", last: null };
   }
 
   /** Sync now, and from here on whenever there is cause. */
@@ -93,9 +89,6 @@ export class RecallSync {
     // Hidden as well as shown: a phone may stop a page it has put aside
     // before a change made just before is sent.
     this.deps.doc?.addEventListener("visibilitychange", () => void this.sync());
-    events?.addEventListener("storage", (e) => {
-      if (e.key === SYNC_KEY_STORAGE || e.key === null) void this.sync();
-    });
     this.deps.setInterval(() => {
       if (this.deps.visible()) void this.sync();
     }, EVERY_MS);
@@ -110,61 +103,27 @@ export class RecallSync {
     this.listeners.add(fn);
   }
 
-  /** Keep `key` for this browser and sync with it. */
-  setKey(key: string): Promise<void> {
-    const text = key.trim();
-    if (!text) return Promise.resolve();
-    try {
-      this.deps.keys?.setItem(SYNC_KEY_STORAGE, text);
-    } catch {
-      // Storage blocked: the key is lost on reload, like the deck itself.
-    }
-    this.memoryKey = text;
-    this.refused = null;
-    this.server = null;
-    return this.sync();
-  }
-
-  /** Stop syncing from this browser. The deck stays here as it is. */
-  forgetKey(): void {
-    try {
-      this.deps.keys?.removeItem(SYNC_KEY_STORAGE);
-    } catch {
-      // Nothing kept to forget.
-    }
-    this.memoryKey = null;
-    this.server = null;
-    this.set({ kind: "no-key" });
-  }
-
   /**
-   * Whether answers can be sent to be checked: the browser has a key the
-   * Worker has not turned down.
+   * Whether answers can be sent to be checked: the learner is signed in, as
+   * far as the last reply said.
    */
   canCheck(): boolean {
-    const key = this.key();
-    return key !== null && key !== this.refused;
+    return this.state.kind !== "signed-out";
   }
 
   /** Have Claude read an answer, through the Worker. */
   async check(request: CheckRequest): Promise<Review> {
-    const key = this.key();
-    if (!key) return { kind: "failed", error: "This browser has no sync key." };
-    return readCheckReply(await this.post(key, "/check", request));
+    return readCheckReply(await this.post("/check", request));
   }
 
   /** Have Claude check an explanation of a lesson's idea, through the Worker. */
   async explain(request: ExplainRequest): Promise<Review> {
-    const key = this.key();
-    if (!key) return { kind: "failed", error: "This browser has no sync key." };
-    return readCheckReply(await this.post(key, "/explain", request));
+    return readCheckReply(await this.post("/explain", request));
   }
 
   /** Have Claude read a free association, through the Worker. */
   async associate(request: AssociateRequest): Promise<ReadingState> {
-    const key = this.key();
-    if (!key) return { kind: "failed", error: "This browser has no sync key." };
-    return readAssociateReply(await this.post(key, "/associate", request));
+    return readAssociateReply(await this.post("/associate", request));
   }
 
   /** Sync now, or straight after the sync under way. */
@@ -199,16 +158,8 @@ export class RecallSync {
   }
 
   private async once(): Promise<void> {
-    const key = this.key();
-    if (!key) return this.set({ kind: "no-key" });
-    if (key === this.refused) return this.set({ kind: "refused" });
     this.set({ kind: "syncing", last: lastSynced(this.state) });
-
-    const reply = readReply(await this.post(key, "/deck", saveDeck(this.store.get())));
-    // The key was changed while this was under way; the sync for the new
-    // one follows.
-    if (key !== this.key()) return;
-    if (reply.kind === "refused") this.refused = key;
+    const reply = readReply(await this.post("/deck", saveDeck(this.store.get())));
     if (reply.kind === "deck") {
       // Noted first, so the change it makes below does not look like news.
       this.server = reply.deck;
@@ -219,14 +170,17 @@ export class RecallSync {
     this.set(afterReply(reply, lastSynced(this.state), this.deps.now()));
   }
 
-  private async post(key: string, path: string, body: unknown): Promise<{ status: number; body: unknown } | null> {
+  private async post(path: string, body: unknown): Promise<{ status: number; body: unknown } | null> {
     try {
       const response = await this.deps.fetch(`${this.deps.url}${path}`, {
         method: "POST",
-        // Asks Cloudflare Access to answer 401 rather than send the page
-        // off to sign in once its sign-in has run out; a redirect it sends
-        // anyway is not followed, but read as the same (sync.ts barredBy).
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+        // `X-Requested-With` tells the Worker the request is the site's own
+        // (worker/rules.ts), and asks a Cloudflare Access in front, as on
+        // staging, to answer 401 rather than send the page off to sign in;
+        // a redirect it sends anyway is not followed, but read as the same
+        // (sync.ts signedOut).
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+        credentials: "same-origin",
         redirect: "manual",
         body: JSON.stringify(body),
       });
@@ -234,14 +188,6 @@ export class RecallSync {
       return { status: response.status, body: await response.json().catch(() => null) };
     } catch {
       return null;
-    }
-  }
-
-  private key(): string | null {
-    try {
-      return this.deps.keys?.getItem(SYNC_KEY_STORAGE) || this.memoryKey;
-    } catch {
-      return this.memoryKey;
     }
   }
 
@@ -255,7 +201,7 @@ export class RecallSync {
 let opened: { store: RecallStore; sync: RecallSync } | null = null;
 
 /**
- * The page's deck, syncing with the Worker once the browser has the key.
+ * The page's deck, syncing with the Worker while the learner is signed in.
  * Every page holding the deck opens it here, once.
  */
 export function openRecall(): { store: RecallStore; sync: RecallSync } {
@@ -269,16 +215,9 @@ export function openRecall(): { store: RecallStore; sync: RecallSync } {
 }
 
 function browserDeps(): SyncDeps {
-  let keys: SyncDeps["keys"] = null;
-  try {
-    keys = typeof localStorage === "undefined" ? null : localStorage;
-  } catch {
-    keys = null;
-  }
   return {
     // The site's root, as built (vite.config.ts `base`).
     url: import.meta.env.BASE_URL.replace(/\/+$/, ""),
-    keys,
     fetch: (input, init) => fetch(input, init),
     now: () => Date.now(),
     setTimeout: (fn, ms) => setTimeout(fn, ms),

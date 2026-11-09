@@ -54,7 +54,7 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02e
   outline-offset: 2px;
 }
 
-.rc-key-input {
+.rc-input {
   display: block;
   flex: 1 1 220px;
   min-height: 38px;
@@ -69,7 +69,7 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02e
   outline: none;
 }
 
-.rc-key-input:focus { border-color: #38d9a9; }
+.rc-input:focus { border-color: #38d9a9; }
 
 /* --- Overview ------------------------------------------------------------------ */
 
@@ -206,6 +206,8 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02e
 
 .rc-keep .rc-row + .rc-row { margin-top: 12px; }
 
+.rc-keep .rc-row .rc-source { margin-top: 0; }
+
 /* --- A sitting ----------------------------------------------------------------- */
 
 .rc-sitting-top {
@@ -234,7 +236,7 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02e
 .rc-associate .rc-answer,
 .rc-associate .rc-marks { min-height: 240px; }
 
-.rc-associate-key { margin-top: 0; font-size: 14px; }
+.rc-associate-signin { margin-top: 0; font-size: 14px; }
 
 .rc-next { margin-top: 26px; }
 

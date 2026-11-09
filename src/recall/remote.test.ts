@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { addCard, EMPTY_DECK, loadDeck, mergeDecks, newCard, removeCard, saveDeck, setWriting, type Deck } from "./deck.ts";
-import { EVERY_MS, RecallSync, SETTLE_MS, SYNC_KEY_STORAGE, WRITING_SETTLE_MS, type SyncDeps } from "./remote.ts";
+import { EVERY_MS, RecallSync, SETTLE_MS, WRITING_SETTLE_MS, type SyncDeps } from "./remote.ts";
 import { RecallStore } from "./store.ts";
 
 const T0 = 1_800_000_000_000;
@@ -20,24 +20,21 @@ function memory(initial: Record<string, string> = {}) {
   };
 }
 
-/** The Worker as the page sees it: takes a deck with the key, merges, answers. */
-function worker(key = "k") {
+/** The Worker as the page sees it: takes a deck from a signed-in page, merges, answers. */
+function worker() {
   const w = {
     deck: EMPTY_DECK,
     sent: 0,
     /** null: as if offline. */
     up: true,
-    /** Whether the site's Access sign-in has run out, so Access answers instead of the Worker. */
+    /** Whether the learner is signed out, or their sign-in has run out. */
     signedOut: false,
-    headers: [] as Record<string, string>[],
+    requests: [] as RequestInit[],
     fetch: (async (_url: string, init: RequestInit) => {
       w.sent++;
-      w.headers.push(init.headers as Record<string, string>);
+      w.requests.push(init);
       if (!w.up) throw new TypeError("Failed to fetch");
-      if (w.signedOut) return new Response(null, { status: 401 });
-      if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
-        return Response.json({ error: "That key is not this deck's.", reason: "key" }, { status: 401 });
-      }
+      if (w.signedOut) return Response.json({ error: "Sign in first." }, { status: 401 });
       w.deck = mergeDecks(w.deck, loadDeck(JSON.parse(init.body as string))!);
       return Response.json(saveDeck(w.deck));
     }) as unknown as typeof fetch,
@@ -46,9 +43,8 @@ function worker(key = "k") {
 }
 
 /** A page: its own storage and timers, syncing with `server`. */
-function page(server: ReturnType<typeof worker>, opts: { key?: string | null } = {}) {
-  const key = opts.key === undefined ? "k" : opts.key;
-  const storage = memory(key ? { [SYNC_KEY_STORAGE]: key } : {});
+function page(server: ReturnType<typeof worker>) {
+  const storage = memory();
   const timers = new Map<number, () => void>();
   /** How long each timer waiting now was set for. */
   const delays = new Map<number, number>();
@@ -59,7 +55,6 @@ function page(server: ReturnType<typeof worker>, opts: { key?: string | null } =
   let visible = true;
   const deps: SyncDeps = {
     url: "https://triangle-lab.example",
-    keys: storage,
     fetch: server.fetch,
     now: () => T0,
     setTimeout: (fn, ms) => {
@@ -130,21 +125,17 @@ describe("RecallSync, with the free association", () => {
 });
 
 describe("RecallSync", () => {
-  it("waits for a key, then sends what the page holds and takes what other devices sent", async () => {
+  it("sends what the page holds and takes what other devices sent, with the session cookie, as the site's own", async () => {
     const server = worker();
     server.deck = { cards: [card("theirs")], removed: [] };
-    const p = page(server, { key: null });
+    const p = page(server);
     p.store.update((d) => addCard(d, card("mine")));
     p.sync.start();
     await p.settle();
-    expect(server.sent).toBe(0);
-    expect(p.sync.get()).toEqual({ kind: "no-key" });
-
-    await p.sync.setKey("  k ");
-    expect(p.storage.data[SYNC_KEY_STORAGE]).toBe("k");
     expect(p.sync.get()).toEqual({ kind: "synced", last: T0 });
     expect(ids(server.deck)).toEqual(["mine", "theirs"]);
     expect(ids(p.store.get())).toEqual(["mine", "theirs"]);
+    expect(server.requests[0]).toMatchObject({ credentials: "same-origin", headers: { "X-Requested-With": "XMLHttpRequest" } });
   });
 
   it("sends a change once changes settle, and only changes", async () => {
@@ -224,22 +215,7 @@ describe("RecallSync", () => {
     expect(ids(server.deck)).toEqual(["offline"]);
   });
 
-  it("stops trying a key the Worker turned down until a key is given again", async () => {
-    const server = worker();
-    const p = page(server, { key: "wrong" });
-    p.sync.start();
-    await p.settle();
-    expect(p.sync.get()).toEqual({ kind: "refused" });
-    p.fire("focus");
-    p.tick();
-    await p.settle();
-    expect(server.sent).toBe(1);
-
-    await p.sync.setKey("k");
-    expect(p.sync.get()).toEqual({ kind: "synced", last: T0 });
-  });
-
-  it("keeps trying once the site's sign-in has run out, and syncs when it is back", async () => {
+  it("keeps trying while signed out, holding off Claude, and syncs once signed in", async () => {
     const server = worker();
     server.signedOut = true;
     const p = page(server);
@@ -249,19 +225,18 @@ describe("RecallSync", () => {
     p.tick();
     await p.settle();
     expect(p.sync.get()).toEqual({ kind: "signed-out", last: null });
-    expect(p.sync.canCheck()).toBe(true);
-    // Asks Access for a 401 rather than a redirect to its sign-in page.
-    expect(server.headers.at(-1)).toMatchObject({ "X-Requested-With": "XMLHttpRequest" });
+    expect(p.sync.canCheck()).toBe(false);
 
-    // Signed in again in another tab; this one gets the focus back.
+    // Signed in in another tab; this one gets the focus back.
     server.signedOut = false;
     p.fire("focus");
     await p.settle();
     expect(p.sync.get()).toEqual({ kind: "synced", last: T0 });
+    expect(p.sync.canCheck()).toBe(true);
     expect(ids(server.deck)).toEqual(["a"]);
   });
 
-  it("reads a redirect to Access's sign-in page as the sign-in run out", async () => {
+  it("reads a redirect to Access's sign-in page, as staging's sends, as signed out", async () => {
     const server = worker();
     server.fetch = (async () => {
       server.sent++;
@@ -282,21 +257,5 @@ describe("RecallSync", () => {
     await p.settle();
     await p.settle();
     expect(server.sent).toBe(2);
-  });
-
-  it("stops syncing from a browser told to, keeping its deck", async () => {
-    const server = worker();
-    const p = page(server);
-    p.sync.start();
-    p.store.update((d) => addCard(d, card("a")));
-    await p.settle();
-    p.sync.forgetKey();
-    expect(p.storage.data[SYNC_KEY_STORAGE]).toBeUndefined();
-    expect(p.sync.get()).toEqual({ kind: "no-key" });
-    const sent = server.sent;
-    p.fire("focus");
-    await p.settle();
-    expect(server.sent).toBe(sent);
-    expect(ids(p.store.get())).toEqual(["a"]);
   });
 });

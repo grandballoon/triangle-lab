@@ -3,31 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Signed in · Triangle Lab</title>
-    <!-- Opened by "Sign in again" (src/recall/signin.ts) once the site's
-         Cloudflare Access sign-in has run out. Access signs the learner in
-         on the way here; this page only says so, and closes itself. -->
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { height: 100%; background: #0b0f14; color: #e9f0f7; }
-      body {
-        display: grid;
-        place-items: center;
-        padding: 16px;
-        font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
-        text-align: center;
-      }
-      h1 { font-size: 20px; margin-bottom: 6px; }
-      p { color: rgba(233, 240, 247, 0.7); }
-    </style>
+    <title>Sign in · Triangle Lab</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,5 28,27 4,27' fill='none' stroke='%2338d9a9' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
   </head>
   <body>
-    <main>
-      <h1>You're signed in again.</h1>
-      <p>Close this tab and go back to where you were: your work there is kept.</p>
-    </main>
-    <script>
-      window.close();
-    </script>
+    <!-- Signing in by email link (src/auth, worker/auth.ts): opened from a
+         "Sign in" link on any page, and from the link in the email. -->
+    <div class="rc-page">
+      <a class="rc-back" href="index.html">← Lessons</a>
+      <div class="rc-eyebrow">Triangle Lab</div>
+      <h1>Sign in</h1>
+      <main id="signin"></main>
+    </div>
+    <script type="module" src="/src/auth/page.ts"></script>
   </body>
 </html>

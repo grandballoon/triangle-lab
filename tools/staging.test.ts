@@ -17,7 +17,7 @@ describe("devTools", () => {
 
 describe("stagingOf", () => {
   it("reads staging's address and service token", () => {
-    const vars = `RECALL_KEY=x\nSTAGING_URL=https://staging.example.com\nSTAGING_ACCESS_CLIENT_ID="id.access"\nSTAGING_ACCESS_CLIENT_SECRET=secret\n`;
+    const vars = `ANTHROPIC_API_KEY=x\nSTAGING_URL=https://staging.example.com\nSTAGING_ACCESS_CLIENT_ID="id.access"\nSTAGING_ACCESS_CLIENT_SECRET=secret\n`;
     const staging = { url: "https://staging.example.com", clientId: "id.access", clientSecret: "secret" };
     expect(stagingOf(vars)).toEqual(staging);
     expect(accessHeaders(staging)).toEqual({ "CF-Access-Client-Id": "id.access", "CF-Access-Client-Secret": "secret" });
