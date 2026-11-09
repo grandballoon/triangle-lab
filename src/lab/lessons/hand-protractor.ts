@@ -1,15 +1,11 @@
-// Your hand as a protractor. With a hand in view, the angle opens between
-// thumb and index finger; without one, the three points are draggable. Either
-// way the angle is named and measured as it changes.
+// Your hands as a protractor. With both hands in view, heels together, the
+// angle opens between the two index fingers; without them, the three points
+// are draggable. Either way the angle is named and measured as it changes.
 
 import { C } from "../draw.ts";
 import { angleAt, fmt, inBox, toDeg } from "../geo.ts";
 import { lesson } from "../scene.ts";
-
-// MediaPipe landmarks: base of the thumb, tip of the thumb, tip of the index.
-const THUMB_BASE = 1;
-const THUMB_TIP = 4;
-const INDEX_TIP = 8;
+import { protractorOf } from "../kit/two-hands.ts";
 
 const RIGHT_TOLERANCE = 1.5;
 
@@ -25,13 +21,12 @@ export default lesson((s) => {
   const V = s.point(-2, -1.5, { label: "V", constrain: box });
   const P = s.point(3.5, -1.5, { label: "P", constrain: box });
   const Q = s.point(1, 2.8, { label: "Q", constrain: box });
-  const follow = s.toggle("Follow my hand", true);
 
   return {
     steps: [
       {
         title: "Open and close an angle",
-        text: "Hold one hand up to the camera and spread your thumb and index finger: the angle between them is measured live. Open it past a right angle and watch its name change. No camera? Turn off “Follow my hand” and drag the points instead.",
+        text: "Hold both hands up to the camera with the heels of your palms together, index fingers pointing up, and open them like a book: the angle between your two index fingers is measured live. Open it past a right angle and watch its name change, then all the way to a straight line. No camera? Drag the points instead.",
       },
     ],
 
@@ -62,11 +57,13 @@ export default lesson((s) => {
     ],
 
     draw(g, f) {
-      const hand = follow.on ? f.hands[0] : undefined;
-      if (hand) {
-        V.set(hand.points[THUMB_BASE]);
-        P.set(hand.points[THUMB_TIP]);
-        Q.set(hand.points[INDEX_TIP]);
+      const held = protractorOf(f.hands);
+      if (held) {
+        V.set(held.V);
+        P.set(held.P);
+        Q.set(held.Q);
+      } else if (f.hands.length === 1) {
+        g.label({ x: 0, y: 4.4 }, "Hold up your other hand too", { color: C.dim, size: 16 });
       }
       const degrees = toDeg(angleAt(P, V, Q));
       const { name, color } = kind(degrees);

@@ -57,10 +57,10 @@
       "builds_on": []
     },
     "hand-protractor": {
-      "source": "abbcea045730",
+      "source": "3b54c8970b6b",
       "teaches": [
         "The angle between two rays from a common vertex is measured in degrees.",
-        "An angle is acute below $90^\\circ$, right at $90^\\circ$ and obtuse between $90^\\circ$ and $180^\\circ$."
+        "An angle is acute below $90^\\circ$, right at $90^\\circ$, obtuse between $90^\\circ$ and $180^\\circ$, and straight at $180^\\circ$."
       ],
       "builds_on": [
         "angle-kinds"
@@ -78,9 +78,10 @@
       ]
     },
     "parallel-transversal": {
-      "source": "1be168704419",
+      "source": "2a931921d247",
       "teaches": [
-        "When a transversal crosses two parallel lines, corresponding angles are equal.",
+        "A transversal crossing two parallel lines makes eight angles of only two sizes, which add to $180^\\circ$.",
+        "Corresponding angles are equal.",
         "Alternate interior angles are equal.",
         "Same-side interior angles add to $180^\\circ$.",
         "Conversely, if a transversal makes equal corresponding or alternate interior angles, or supplementary same-side angles, the two lines are parallel."
@@ -90,10 +91,10 @@
       ]
     },
     "triangle-angle-sum": {
-      "source": "c3fd79bee9d2",
+      "source": "ebc9f42a635d",
       "teaches": [
         "The angles of any triangle add to $180^\\circ$: $\\alpha + \\beta + \\gamma = 180^\\circ$.",
-        "Proof: draw the parallel to $AB$ through $C$; alternate interior angles carry $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
+        "Proof: draw the parallel to $AB$ through $C$; alternate interior angles copy $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
       ],
       "builds_on": [
         "parallel-transversal"
