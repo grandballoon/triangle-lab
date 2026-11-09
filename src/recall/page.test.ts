@@ -282,16 +282,18 @@ describe("the recall page", () => {
 });
 
 describe("syncing from the recall page", () => {
-  /** The site's Worker, holding `held` and taking only `key`. Returns the requests made of it. */
-  function worker(held: Card[], key = "right"): string[] {
+  /**
+   * The site's Worker, holding `held`, serving the deck to a signed-in page
+   * (its session cookie, which a page's script never sees, is stood in for by
+   * `session.signedIn`). Returns the requests made of it.
+   */
+  function worker(held: Card[], session = { signedIn: true }): RequestInit[] {
     let deck: Deck = { cards: held, removed: [] };
-    const asked: string[] = [];
+    const asked: RequestInit[] = [];
     vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
-      asked.push(url);
+      asked.push(init);
       expect(url).toBe("/deck");
-      if ((init.headers as Record<string, string>).Authorization !== `Bearer ${key}`) {
-        return Response.json({ error: "No.", reason: "key" }, { status: 401 });
-      }
+      if (!session.signedIn) return Response.json({ error: "Sign in first." }, { status: 401 });
       deck = mergeDecks(deck, loadDeck(JSON.parse(init.body as string))!);
       return Response.json(saveDeck(deck));
     });
@@ -302,65 +304,58 @@ describe("syncing from the recall page", () => {
     for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
   };
 
-  const keyBox = (root: HTMLElement) => root.querySelector<HTMLInputElement>(".rc-key-input");
+  const signIn = (root: HTMLElement) => [...root.querySelectorAll<HTMLAnchorElement>(".rc-keep a")].find((a) => a.textContent?.startsWith("Sign in"));
 
-  function enterKey(root: HTMLElement, key: string): void {
-    keyBox(root)!.value = key;
-    root.querySelector<HTMLFormElement>(".rc-key")!.requestSubmit();
-  }
-
-  it("keeps the questions in this browser, sending nothing, until given the key", async () => {
-    const asked = worker([]);
+  it("keeps the questions in this browser while signed out, and links to signing in", async () => {
+    worker([card("phone", "Noted on the phone?")], { signedIn: false });
     const root = await open([card("a", "Mine?")]);
     await settle();
     expect(root.querySelector(".rc-sync")!.textContent).toContain("kept in this browser only");
-    expect(keyBox(root)).not.toBeNull();
-    expect(asked).toEqual([]);
+    expect(signIn(root)).toMatchObject({ target: "_blank" });
+    expect(signIn(root)!.getAttribute("href")).toBe("signin.html");
+    expect([...root.querySelectorAll(".rc-question")].map((q) => q.textContent)).toEqual(["Mine?"]);
   });
 
-  it("takes the sync key, then shows the questions noted on other devices", async () => {
-    worker([card("phone", "Noted on the phone?")]);
+  it("shows the questions noted on other devices once signed in, from the tab left open", async () => {
+    const session = { signedIn: false };
+    worker([card("phone", "Noted on the phone?")], session);
     const root = await open([card("here", "Noted here?")]);
     await settle();
-    expect(root.querySelector(".rc-sync")!.textContent).toContain("Enter your sync key");
 
-    enterKey(root, "right");
+    // Signed in in the tab the link opened; this one gets the focus back.
+    session.signedIn = true;
+    window.dispatchEvent(new Event("focus"));
     await settle();
     expect(root.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
-    expect(keyBox(root)).toBeNull();
+    expect(signIn(root)).toBeUndefined();
     expect([...root.querySelectorAll(".rc-question")].map((q) => q.textContent).sort()).toEqual([
       "Noted here?",
       "Noted on the phone?",
     ]);
-    expect(localStorage.getItem("triangle-lab:recall-sync-key")).toBe("right");
-
-    // The key is kept: a reload syncs straight away.
-    const again = await reload();
-    await settle();
-    expect(again.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
   });
 
-  it("says so when the key is wrong, and takes another", async () => {
-    worker([]);
+  it("syncs as the site's own, with the session cookie, and links to the account", async () => {
+    const asked = worker([]);
     const root = await open([]);
     await settle();
-    enterKey(root, "wrong");
+    expect(asked[0]).toMatchObject({ credentials: "same-origin", headers: { "X-Requested-With": "XMLHttpRequest" } });
+    const account = [...root.querySelectorAll<HTMLAnchorElement>(".rc-keep a")].find((a) => a.textContent === "Account")!;
+    expect(account.getAttribute("href")).toBe("signin.html");
+    buttonNamed(root, "Sync now").click();
     await settle();
-    expect(root.querySelector(".rc-sync")!.textContent).toContain("doesn't take that key");
-    enterKey(root, "right");
-    await settle();
-    expect(root.querySelector(".rc-sync")!.textContent).toBe("Synced with your other devices just now.");
+    expect(asked).toHaveLength(2);
   });
 
-  it("stops syncing from this browser on a second press, keeping the questions", async () => {
-    worker([card("a", "Kept?")]);
-    localStorage.clear();
-    localStorage.setItem("triangle-lab:recall-sync-key", "right");
-    const root = await reload();
+  it("says so when the sign-in runs out, keeping the questions", async () => {
+    const session = { signedIn: true };
+    worker([card("a", "Kept?")], session);
+    const root = await open([]);
     await settle();
-    buttonNamed(root, "Stop syncing here").click();
-    buttonNamed(root, "Stop syncing here").click();
-    expect(keyBox(root)).not.toBeNull();
+    session.signedIn = false;
+    buttonNamed(root, "Sync now").click();
+    await settle();
+    expect(root.querySelector(".rc-sync")!.textContent).toContain("You're signed out.");
+    expect(signIn(root)).toBeDefined();
     expect(root.querySelector(".rc-question")!.textContent).toBe("Kept?");
   });
 });
@@ -373,12 +368,12 @@ describe("Claude checking an answer", () => {
    * `answers` in turn: a verdict, Claude being busy, or no answer ever, as
    * for a page closed while waiting. Returns the checks asked for.
    */
-  function worker(answers: Answer[]): unknown[] {
+  function worker(answers: Answer[], session = { signedIn: true }): unknown[] {
     const checks: unknown[] = [];
     vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      if (!session.signedIn) return Response.json({ error: "Sign in first." }, { status: 401 });
       if (url === "/deck") return new Response(init.body, { status: 200 });
       expect(url).toBe("/check");
-      expect((init.headers as Record<string, string>).Authorization).toBe("Bearer right");
       checks.push(JSON.parse(init.body as string));
       const answer = answers.shift();
       if (answer === "never") return new Promise<Response>(() => undefined);
@@ -396,7 +391,6 @@ describe("Claude checking an answer", () => {
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards, removed: [] })));
-    localStorage.setItem("triangle-lab:recall-sync-key", "right");
     return reload();
   }
 
@@ -542,8 +536,9 @@ describe("Claude checking an answer", () => {
     expect([...last.querySelectorAll(".rc-said mark")].map((m) => m.textContent)).toEqual(["the incentre", "halfway"]);
   });
 
-  it("asks nothing for an answer given in the head until it is written, or without the sync key", async () => {
-    const checks = worker([{ grade: "recalled", feedback: "Yes." }]);
+  it("asks nothing for an answer given in the head until it is written, or while signed out", async () => {
+    const session = { signedIn: true };
+    const checks = worker([{ grade: "recalled", feedback: "Yes." }], session);
     let root = await openSynced([card("a", "First?")]);
     answerWith(root, "");
     await settle();
@@ -554,7 +549,9 @@ describe("Claude checking an answer", () => {
     await settle();
     expect(checks).toHaveLength(1);
 
+    session.signedIn = false;
     root = await open([card("a", "First?")]);
+    await settle();
     answerWith(root, "Written down");
     await settle();
     expect(review(root)).toBeNull();
@@ -902,12 +899,12 @@ describe("free associating", () => {
   type Answer = Record<string, unknown> | "busy" | "never";
 
   /** The site's Worker: the deck kept as sent, and free associations read with `answers` in turn. Returns what was asked. */
-  function worker(answers: Answer[]): unknown[] {
+  function worker(answers: Answer[], session = { signedIn: true }): unknown[] {
     const asked: unknown[] = [];
     vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      if (!session.signedIn) return Response.json({ error: "Sign in first." }, { status: 401 });
       if (url === "/deck") return new Response(init.body, { status: 200 });
       expect(url).toBe("/associate");
-      expect((init.headers as Record<string, string>).Authorization).toBe("Bearer right");
       asked.push(JSON.parse(init.body as string));
       const answer = answers.shift();
       if (answer === "never") return new Promise<Response>(() => undefined);
@@ -921,11 +918,10 @@ describe("free associating", () => {
     for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
   };
 
-  async function openSynced(cards: Card[], key = "right"): Promise<HTMLElement> {
+  async function openSynced(cards: Card[]): Promise<HTMLElement> {
     localStorage.clear();
     sessionStorage.clear();
     localStorage.setItem(KEY, JSON.stringify(saveDeck({ cards, removed: [] })));
-    if (key) localStorage.setItem("triangle-lab:recall-sync-key", key);
     return reload();
   }
 
@@ -1070,16 +1066,17 @@ describe("free associating", () => {
     expect(marked(root)).toEqual(["the incentre", "halfway"]);
   });
 
-  it("asks nothing without the sync key, and says where to give it", async () => {
-    const asked = worker([read]);
-    const root = await openSynced([], "");
+  it("asks nothing while signed out, and says where to sign in", async () => {
+    const asked = worker([read], { signedIn: false });
+    const root = await openSynced([]);
+    await settle();
     buttonNamed(root, "Free associate").click();
     write(root, writing);
     pressWith(field(root), { key: "Enter", metaKey: true });
     await settle();
     expect(asked).toEqual([]);
     expect(buttonNamed(root, "Have Claude read it")).toBeUndefined();
-    expect(root.querySelector(".rc-associate-key")!.textContent).toContain("sync key");
+    expect(root.querySelector(".rc-associate-signin")!.textContent).toContain("Sign in");
   });
 
   it("shows the free association as another device last left it, once it arrives", async () => {

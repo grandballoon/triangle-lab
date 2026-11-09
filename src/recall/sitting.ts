@@ -82,7 +82,7 @@ export class HeldSitting {
     return this.kept && currentCard(this.kept.session, this.store.get());
   }
 
-  /** Whether Claude can read answers: the browser has the sync key. */
+  /** Whether Claude can read answers: the learner is signed in. */
   canCheck(): boolean {
     return this.sync.canCheck();
   }
@@ -218,7 +218,7 @@ export class HeldSitting {
 
   /**
    * Have Claude read the answer being checked, as it now stands, unless it
-   * has already been, or is being. Nothing is asked without the sync key.
+   * has already been, or is being. Nothing is asked while signed out.
    * The reply is heard as a change.
    */
   private review(): void {

@@ -1,6 +1,6 @@
 // Reading the project's .dev.vars, where the local Worker's secrets are kept
-// (wrangler.jsonc): the dev server's sync key (sync-key-plugin.ts) and the
-// Claude API key the syllabus refresh uses (syllabus.ts).
+// (wrangler.jsonc): the Claude API key the syllabus refresh uses
+// (syllabus.ts), and where staging is (staging.ts).
 
 /** The value `name` is given in `text`, a .dev.vars file, or null if none. */
 export function devVar(text: string, name: string): string | null {

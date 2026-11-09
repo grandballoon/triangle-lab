@@ -1,13 +1,14 @@
 // The staging Worker running for real, in the local Workers runtime, from
 // `env.staging` in wrangler.jsonc, against a stand-in for GitHub's contents
 // API and for the Access team's signing keys: the production Worker's deck
-// served beside the dev tools, nothing let in without a signed Access token,
+// served beside the dev tools, to a learner signed in as on production,
+// nothing let into the dev tools without a signed Access token,
 // a page's steps listed from the branch, an edit committed over the file it
 // was made on (and made again when the branch moved), and UI comments kept
 // until pulled.
 
 import { generateKeyPairSync, createSign, type KeyObject } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -19,7 +20,6 @@ import type { FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import type { StepEdit } from "../src/dev/steps/wire.ts";
 import { decodeContent, encodeContent } from "./staging-rules.ts";
 
-const KEY = "a-test-key-long-enough-to-be-served";
 const AUD = "staging-aud-tag";
 const ROOT = resolve(__dirname, "..");
 const LESSON = `export default lesson(() => ({
@@ -85,7 +85,7 @@ beforeAll(async () => {
   const assets = join(dir, "assets");
   await mkdir(assets);
   await writeFile(join(assets, "index.html"), "<title>Lessons</title>");
-  await writeFile(join(dir, ".dev.vars"), `RECALL_KEY=${KEY}\nANTHROPIC_API_KEY=k\nGITHUB_TOKEN=gh-token\n`);
+  await writeFile(join(dir, ".dev.vars"), `ANTHROPIC_API_KEY=k\nOWNER_EMAIL=owner@example.com\nINVITES=-\nGITHUB_TOKEN=gh-token\n`);
   // The real staging configuration, with only the assets and the services swapped in.
   const path = join(ROOT, "wrangler.jsonc");
   const { config, error } = ts.parseConfigFileTextToJson(path, await readFile(path, "utf8"));
@@ -102,7 +102,7 @@ beforeAll(async () => {
           name: "triangle-lab-staging",
           main: join(ROOT, staging.main),
           assets: { ...staging.assets, directory: assets },
-          vars: { ...staging.vars, GITHUB_API_URL: issuer, GITHUB_REPO: "owner/repo", ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
+          vars: { ...staging.vars, SENDER: "signin@example.com", GITHUB_API_URL: issuer, GITHUB_REPO: "owner/repo", ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
         },
       },
     ],
@@ -142,16 +142,36 @@ const call = (method: string, path: string, body?: unknown, jwt: string | null =
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 
+/** What the page's own requests carry (worker/rules.ts). */
+const FROM_PAGE = { "X-Requested-With": "XMLHttpRequest" };
+
+/** The link in the sign-in email the local runtime last wrote out, waiting a moment for it. */
+async function sentLink(): Promise<string | null> {
+  const root = join(dir, ".wrangler", "tmp", "email");
+  for (let i = 0; i < 40; i++) {
+    const files = (await readdir(root, { recursive: true }).catch(() => [] as string[])).filter((f) => f.includes("email-text") && f.endsWith(".txt"));
+    if (files.length) return /https?:\/\/\S+/.exec(await readFile(join(root, files[0]), "utf8"))?.[0] ?? null;
+    await new Promise((done) => setTimeout(done, 25));
+  }
+  return null;
+}
+
 const steps = (page: string, jwt?: string | null) => call("GET", `/__step-source?page=${encodeURIComponent(page)}`, undefined, jwt);
 
 describe("staging", () => {
-  it("serves the site and its own deck as production does, behind Access", async () => {
+  it("serves the site and its own deck as production does, to whoever signed in", async () => {
     expect(await (await fetch(`${base}/`)).text()).toBe("<title>Lessons</title>");
-    const deck = (jwt: string | null) =>
-      fetch(`${base}/deck`, { headers: { Authorization: `Bearer ${KEY}`, ...(jwt ? { "Cf-Access-Jwt-Assertion": jwt } : {}) } });
-    expect((await deck(token())).status).toBe(200);
+    const deck = (cookie: string | null) =>
+      fetch(`${base}/deck`, { headers: { ...FROM_PAGE, ...(cookie ? { Cookie: cookie } : {}) } });
     expect((await deck(null)).status).toBe(401);
-    expect((await deck(token({ aud: ["other"] }))).status).toBe(401);
+
+    const asked = await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: "owner@example.com" }) });
+    expect(asked.status).toBe(202);
+    const link = await sentLink();
+    expect(link).toMatch(new RegExp(`^${base}/signin\\.html\\?token=`));
+    const session = await fetch(`${base}/auth/session`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ token: new URL(link!).searchParams.get("token") }) });
+    expect(session.status).toBe(200);
+    expect((await deck(session.headers.get("Set-Cookie")!.split(";")[0])).status).toBe(200);
   });
 
   it("lets nothing reach the dev tools without a signed Access token for this application", async () => {

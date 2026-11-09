@@ -1,12 +1,11 @@
-// Stops a deploy that would let no one in. The Worker serves its paths only
-// to requests Cloudflare Access let through (worker/access.ts), and while its
-// ACCESS_ISSUER or ACCESS_AUD is empty it refuses everything, so a deploy
-// without them would leave the site's deck and its calls to Claude shut.
-// Both deploy workflows, and `npm run deploy` and `deploy:staging`, run this
-// first:
+// Stops a deploy that would leave the site shut. While SENDER is empty no
+// sign-in link can be sent (worker/auth.ts), so no one could sign in; on
+// staging, while ACCESS_ISSUER or ACCESS_AUD is empty, its dev tools refuse
+// everything (worker/staging-rules.ts). Both deploy workflows, and
+// `npm run deploy` and `deploy:staging`, run this first:
 //
-//   node tools/access.ts               production
-//   node tools/access.ts --env staging
+//   node tools/deploy-guard.ts               production
+//   node tools/deploy-guard.ts --env staging
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -15,14 +14,17 @@ import ts from "typescript";
 
 const ROOT = resolve(import.meta.dirname, "..");
 
-const NAMES = ["ACCESS_ISSUER", "ACCESS_AUD"] as const;
+/** The vars a deploy needs, for production (null) or an environment. */
+export function needed(env: string | null): string[] {
+  return env === "staging" ? ["SENDER", "ACCESS_ISSUER", "ACCESS_AUD"] : ["SENDER"];
+}
 
-/** The Access vars `config`, wrangler.jsonc as parsed, leaves empty for `env` (null for production). */
-export function accessUnset(config: unknown, env: string | null): string[] {
+/** The vars `config`, wrangler.jsonc as parsed, leaves empty that a deploy to `env` (null for production) needs. */
+export function unsetVars(config: unknown, env: string | null): string[] {
   const top = isObject(config) ? config : {};
   const scope = env === null ? top : isObject(top.env) && isObject(top.env[env]) ? top.env[env] : {};
   const vars = isObject(scope.vars) ? scope.vars : {};
-  return NAMES.filter((name) => typeof vars[name] !== "string" || !vars[name].trim());
+  return needed(env).filter((name) => typeof vars[name] !== "string" || !vars[name].trim());
 }
 
 function main(args: string[]): number {
@@ -33,12 +35,12 @@ function main(args: string[]): number {
     console.error(`wrangler.jsonc does not parse: ${String(error.messageText)}`);
     return 1;
   }
-  const unset = accessUnset(config, env);
+  const unset = unsetVars(config, env);
   if (unset.length === 0) return 0;
   const where = env === null ? "vars" : `env.${env}.vars`;
   console.error(
     `Not deploying: ${unset.join(" and ")} ${unset.length === 1 ? "is" : "are"} empty under ${where} in wrangler.jsonc, ` +
-      "so the Worker would let no one in. Put Cloudflare Access in front of the site and set them (README.md).",
+      "so the site would stay shut. Set them (README.md, \"Signing in\" and \"Staging\").",
   );
   return 1;
 }

@@ -8,9 +8,9 @@
     "build": "tsc && tsc -p worker && vite build",
     "preview": "npm run build && wrangler dev",
     "test": "vitest run",
-    "deploy": "node tools/access.ts && node tools/syllabus.ts refresh && npm run build && wrangler deploy",
+    "deploy": "node tools/deploy-guard.ts && node tools/syllabus.ts refresh && npm run build && wrangler deploy",
     "build:staging": "tsc && tsc -p worker && vite build --mode staging --outDir dist-staging",
-    "deploy:staging": "node tools/access.ts --env staging && npm run build:staging && wrangler deploy --env staging",
+    "deploy:staging": "node tools/deploy-guard.ts --env staging && npm run build:staging && wrangler deploy --env staging",
     "staging:pull": "node tools/staging.ts pull",
     "worker:types": "wrangler types worker/worker-configuration.d.ts"
   },

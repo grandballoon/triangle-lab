@@ -4,7 +4,7 @@
 // Out of a sitting, the page lists the questions by lesson, with when each is
 // due, and lets the learner reword, delete or mark them to revisit, or save and restore the
 // whole set as a file, and shows how syncing with the learner's other
-// devices stands, taking the sync key when it has none. In a sitting it asks
+// devices stands, offering to sign in when the learner is not. In a sitting it asks
 // one due question at a time: the learner answers from memory, then checks
 // (their last answer, and a link that opens the lesson at the step the
 // question came from, in this tab, with the card beside it: beside.ts) and
@@ -13,7 +13,7 @@
 // schedules the question's next asking. Any question asked can be marked to
 // revisit, as one the learner blanks out on: the marked ones are listed
 // together at the head of the overview, to practise on their own, until the
-// learner takes the mark off. Once the browser has the sync key,
+// learner takes the mark off. While the learner is signed in,
 // a written answer is also read by Claude as the learner checks it, and again
 // each time they ask as they correct it (check.ts): its remarks are on the
 // words they are about, as comments on a document (remarks.ts), and the
@@ -93,7 +93,7 @@ import { GRADE_LABEL, lessonLink, saidSheet, writingSheet } from "./sheet.ts";
 import { HeldSitting } from "./sitting.ts";
 import { submitsOnEnter, submitsOnModEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
-import { signInLink } from "./signin.ts";
+import { SIGN_IN_PAGE, signInLink } from "./signin.ts";
 import { syncLabel } from "./sync.ts";
 
 /** What each grade means once an answer has been checked and corrected: the learner's three ways out of a card. */
@@ -240,7 +240,7 @@ function associate(): void {
 
 /**
  * Have Claude read the free association, as it now stands, unless it has
- * already been, or is being. Nothing is asked without the sync key. The
+ * already been, or is being. Nothing is asked while signed out. The
  * caller renders; the reply renders when it comes.
  */
 function readWriting(): void {
@@ -480,15 +480,7 @@ function keeping(deck: Deck): HTMLElement {
   const state = sync.get();
   section.append(el("p", "rc-note rc-sync", syncLabel(state, Date.now())));
   if (state.kind === "signed-out") section.append(signInLink(document, "rc-source"));
-  if (state.kind === "no-key" || state.kind === "refused") section.append(keyForm());
-  else {
-    section.append(
-      row(
-        button("Sync now", "rc-small", () => void sync.sync()),
-        confirmButton("Stop syncing here", () => sync.forgetKey()),
-      ),
-    );
-  }
+  else section.append(row(button("Sync now", "rc-small", () => void sync.sync()), accountLink()));
   const file = el("input");
   file.type = "file";
   file.accept = "application/json,.json";
@@ -504,22 +496,11 @@ function keeping(deck: Deck): HTMLElement {
   return section;
 }
 
-/** Where the learner gives this browser the sync key. */
-function keyForm(): HTMLFormElement {
-  const form = el("form", "rc-row rc-key");
-  const input = el("input", "rc-key-input");
-  input.type = "password";
-  input.autocomplete = "off";
-  input.placeholder = "Sync key";
-  input.setAttribute("aria-label", "Sync key");
-  const connect = el("button", "rc-button rc-primary", "Sync");
-  connect.type = "submit";
-  form.append(input, connect);
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    void sync.setKey(input.value);
-  });
-  return form;
+/** The sign-in page, which says who is signed in and signs out. */
+function accountLink(): HTMLAnchorElement {
+  const link = el("a", "rc-source", "Account");
+  link.href = SIGN_IN_PAGE;
+  return link;
 }
 
 function sitting(s: Session, deck: Deck): HTMLElement[] {
@@ -608,7 +589,7 @@ function freeAssociation(a: Association): HTMLElement[] {
   });
   const controls = canRead
     ? row(read, el("span", "rc-hint", "⌘↵ or ctrl↵ to have it read · ↵ new line"))
-    : row(el("span", "rc-note rc-associate-key", "Give this browser the sync key, under your questions, to have Claude read it."));
+    : row(el("span", "rc-note rc-associate-signin", "Sign in, under your questions, to have Claude read it."));
   if (a.text || a.state) controls.append(confirmButton("Start afresh", clearWriting));
 
   const reading = a.state?.kind === "done" ? a.state.reading : null;

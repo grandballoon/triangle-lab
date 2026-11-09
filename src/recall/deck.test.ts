@@ -1,5 +1,5 @@
 // The recall deck's rules: making, rewording and removing cards, the Leitner
-// schedule, the free association kept with the cards, and reading a stored
+// schedule, the free association and explanations kept with the cards, and reading a stored
 // or imported deck back.
 
 import { describe, expect, it } from "vitest";
@@ -10,6 +10,7 @@ import {
   DAY_MS,
   dueAfter,
   dueCards,
+  explanationOf,
   editCard,
   EMPTY_DECK,
   lessonCards,
@@ -21,11 +22,13 @@ import {
   nextBox,
   nextDue,
   setWriting,
+  setExplanation,
   removeCard,
   revisitCards,
   sameDeck,
   saveDeck,
   type Card,
+  type KeptExplanation,
   type Writing,
   type Deck,
 } from "./deck.ts";
@@ -364,5 +367,61 @@ describe("the free association in the deck", () => {
     const saved = { ...saveDeck(deckOf(card("a"))), writing: { text: "Hi", read: { text: "Hi", reading: {} }, updated: T0 } };
     expect(loadDeck(saved)?.writing).toEqual({ text: "Hi", read: null, updated: T0 });
     expect(loadDeck({ ...saved, writing: { text: "Hi" } })?.writing).toBeUndefined();
+  });
+});
+
+describe("explanations in the deck", () => {
+  const verdict = { grade: "shaky" as const, feedback: "Nearly." };
+  const explained = (lesson: string, text: string, updated: number): KeptExplanation => ({ lesson, text, checked: null, updated });
+
+  it("keeps one per lesson, in order of slug", () => {
+    const deck = setExplanation(setExplanation(deckOf(card("a")), explained("medians", "M", T0)), explained("altitudes", "A", T0));
+    expect(deck.explanations!.map((e) => e.lesson)).toEqual(["altitudes", "medians"]);
+    const rewritten = setExplanation(deck, explained("medians", "M2", T0 + 1));
+    expect(explanationOf(rewritten, "medians")?.text).toBe("M2");
+    expect(rewritten.explanations).toHaveLength(2);
+    expect(explanationOf(deckOf(), "medians")).toBeUndefined();
+  });
+
+  it("merges lesson by lesson as the copy changed last, a deck without one undoing nothing, in any order", () => {
+    const base = deckOf(card("a"));
+    const phone = setExplanation(setExplanation(base, explained("medians", "Older", T0 + 1)), explained("altitudes", "A", T0));
+    const laptop = setExplanation(base, explained("medians", "Newer", T0 + 2));
+    const merged = mergeDecks(phone, laptop);
+    expect(merged.explanations).toEqual([explained("altitudes", "A", T0), explained("medians", "Newer", T0 + 2)]);
+    expect(mergeDecks(laptop, phone)).toEqual(merged);
+    expect(mergeDecks(base, phone).explanations).toEqual(phone.explanations);
+    const tie = setExplanation(base, explained("medians", "Tied", T0 + 2));
+    expect(mergeDecks(laptop, tie)).toEqual(mergeDecks(tie, laptop));
+    expect("explanations" in mergeDecks(base, base)).toBe(false);
+  });
+
+  it("counts as a change to compare and to send", () => {
+    const deck = deckOf(card("a"));
+    const kept = explained("medians", "Hi", T0);
+    const both = setExplanation(setExplanation(deck, kept), explained("altitudes", "A", T0));
+    expect(sameDeck(deck, setExplanation(deck, kept))).toBe(false);
+    expect(sameDeck(setExplanation(deck, kept), setExplanation(deck, { ...kept }))).toBe(true);
+    expect(changedSince(setExplanation(deck, kept), both)).toEqual({ cards: [], removed: [], explanations: [explained("altitudes", "A", T0)] });
+    expect(changedSince(both, both)).toEqual({ cards: [], removed: [] });
+  });
+
+  it("is saved and read back with its last check, and a deck saved without any reads as having none", () => {
+    const deck = setExplanation(deckOf(card("a")), { lesson: "medians", text: "Hi there", checked: { text: "Hi", verdict }, updated: T0 });
+    expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(deck))))).toEqual(deck);
+    expect("explanations" in saveDeck(deckOf(card("a")))).toBe(false);
+    expect(loadDeck(saveDeck(deckOf(card("a"))))?.explanations).toBeUndefined();
+  });
+
+  it("drops a check that is not one, and an explanation that is not one", () => {
+    const saved = {
+      ...saveDeck(deckOf(card("a"))),
+      explanations: [
+        { lesson: "medians", text: "Hi", checked: { text: "Hi", verdict: {} }, updated: T0 },
+        { lesson: "altitudes", text: "No time" },
+        { lesson: "", text: "No lesson", checked: null, updated: T0 },
+      ],
+    };
+    expect(loadDeck(saved)?.explanations).toEqual([explained("medians", "Hi", T0)]);
   });
 });

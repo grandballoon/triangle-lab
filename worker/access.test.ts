@@ -1,7 +1,7 @@
 // Cloudflare Access tokens, as the Worker takes them apart and judges their claims.
 
 import { describe, expect, it } from "vitest";
-import { certsUrl, claimsProblem, readJwt, waivedLocally } from "./access.ts";
+import { certsUrl, claimsProblem, readJwt } from "./access.ts";
 
 const ACCESS = { issuer: "https://team.cloudflareaccess.com", aud: "aud-tag" };
 const NOW = 1_700_000_000_000;
@@ -33,14 +33,5 @@ describe("Access tokens", () => {
     expect(claimsProblem({ ...CLAIMS, exp: undefined }, ACCESS, NOW)).toBe("The Access token has expired.");
     expect(claimsProblem({ ...CLAIMS, nbf: NOW / 1000 + 120 }, ACCESS, NOW)).toBe("The Access token is not valid yet.");
     expect(certsUrl(ACCESS.issuer)).toBe("https://team.cloudflareaccess.com/cdn-cgi/access/certs");
-  });
-});
-
-describe("waivedLocally", () => {
-  it("waives Access only for the name the Worker is served on in development", () => {
-    expect(waivedLocally("localhost")).toBe(true);
-    for (const hostname of ["127.0.0.1", "localhost.example.com", "triangle-lab.example.workers.dev", ""]) {
-      expect(waivedLocally(hostname), hostname).toBe(false);
-    }
   });
 });

@@ -27,7 +27,7 @@
 .explain-note[hidden],
 .explain-row[hidden] { display: none; }
 
-.explain-key a { color: var(--accent); }
+.explain-signin a { color: var(--accent); }
 
 .explain-paper {
   position: relative;

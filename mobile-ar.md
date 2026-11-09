@@ -310,7 +310,7 @@ With scene depth, a pinch also has a place in the room, so a learner could reach
 - **Recall.**
   The bundled pages run on the app's own origin, not the Worker's, so the deck, `/check` and `/associate` become cross-origin calls.
   The Worker needs to allow exactly the app's origins (CORS for `capacitor://localhost` on iOS and `https://localhost` on Android), and nothing else.
-  The sync key moves from `localStorage`, which iOS may clear from a WebView, to the Keychain, through a small plugin.
+  The session cookie, which a cross-origin WebView may not keep or send, gives way to a session token kept in the Keychain through a small plugin and sent as a bearer token.
 - **Permissions.**
   Camera always; photo library only when importing.
   No camera frame leaves the device.

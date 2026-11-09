@@ -1,24 +1,13 @@
-// Cloudflare Access, as the Worker checks it: Access stands in front of the
-// site and forwards a signed token (Cf-Access-Jwt-Assertion) with every
-// request it lets through, and the Worker checks that token itself before
-// serving its own paths, so nothing reaches them past Access, even if Access
-// were turned off or bypassed. Production checks it on the deck and the calls
-// to Claude (rules.ts), staging on its dev tools too (staging-rules.ts).
+// Cloudflare Access, as the staging Worker checks it: Access stands in front
+// of staging and forwards a signed token (Cf-Access-Jwt-Assertion) with every
+// request it lets through, and the staging Worker checks that token itself
+// before serving its dev tools' endpoints (staging-rules.ts), so nothing
+// reaches them past Access, even if Access were turned off or bypassed.
+// Production has no Access in front; it signs learners in itself (auth.ts).
 //
 // Pure: a token taken apart, and whether its claims are good for the
 // application now. The signature is checked against the team's published
 // keys in access-keys.ts.
-
-/**
- * Whether a request to `hostname` is let in without Access: only on
- * `localhost`, where `wrangler dev` and the Vite dev server's proxy serve the
- * Worker, with no Access in front. Cloudflare routes a request to a deployed
- * Worker only by a hostname it serves (its workers.dev address or a custom
- * domain), so a deployed Worker never sees this one.
- */
-export function waivedLocally(hostname: string): boolean {
-  return hostname === "localhost";
-}
 
 /** The Access application a Worker sits behind. */
 export interface Access {

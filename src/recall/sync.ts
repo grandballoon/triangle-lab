@@ -2,48 +2,34 @@
 // the site's Worker (worker/), which holds the deck at /deck. Each page sends its whole deck and takes back
 // the Worker's merge of it with every other device's (mergeDecks).
 //
-// The site sits behind Cloudflare Access, whose sign-in runs out. Once it
-// has, Access answers the page's requests itself, before the Worker sees
-// them: a 401 when the request says it is one (`X-Requested-With`), or a
-// redirect to its sign-in page. Either way that is not the key being wrong:
-// the deck is kept here and sent once the learner signs in again, and
-// syncing goes on trying (`barredBy`).
+// The Worker serves the deck of whoever is signed in (worker/auth.ts), and
+// answers 401 to a page with no sign-in, or one that has run out. Staging
+// also sits behind Cloudflare Access, which answers for itself once its own
+// sign-in runs out: a 401 when the request says it is one
+// (`X-Requested-With`), or a redirect to its sign-in page. Either way the
+// deck is kept here and sent once the learner signs in, and syncing goes on
+// trying (`signedOut`).
 //
 // Pure: what a reply means, whether there is anything to send, and how the
 // state of things reads. remote.ts makes the requests and holds the state.
 
 import { mergeDecks, sameDeck, loadDeck, type Deck } from "./deck.ts";
 
-/** What a refused request lacked: the sync key, or a Cloudflare Access sign-in. */
-export type Barred = "key" | "access";
-
 /** Status of a reply that was a redirect, which is only ever Access sending the page to sign in (remote.ts). */
 export const REDIRECTED = 0;
 
-/**
- * What kept a reply from being answered, or null if nothing did. Only a 401
- * the Worker marks as the key's fault is; any other 401, or a redirect, is
- * Access wanting the learner to sign in again, so it is tried again later
- * rather than taken as a wrong key.
- */
-export function barredBy(answer: { status: number; body: unknown }): Barred | null {
-  if (answer.status === REDIRECTED) return "access";
-  if (answer.status !== 401) return null;
-  const { body } = answer;
-  return typeof body === "object" && body !== null && "reason" in body && body.reason === "key" ? "key" : "access";
+/** Whether a reply says the learner is not signed in: a 401, or a redirect to sign in. */
+export function signedOut(answer: { status: number }): boolean {
+  return answer.status === 401 || answer.status === REDIRECTED;
 }
 
 /** How syncing stands, for the page to show. */
 export type SyncState =
-  /** This browser has not been given the key. */
-  | { kind: "no-key" }
   | { kind: "syncing"; last: number | null }
   | { kind: "synced"; last: number }
   /** The Worker could not be reached; changes wait here until it can. */
   | { kind: "unreachable"; last: number | null }
-  /** The Worker does not take this browser's key. */
-  | { kind: "refused" }
-  /** The site's Cloudflare Access sign-in has run out; changes wait here until the learner signs in again. */
+  /** The learner is not signed in, or their sign-in has run out; changes wait here until they sign in. */
   | { kind: "signed-out"; last: number | null }
   /** The Worker answered, but not with a deck. */
   | { kind: "failed"; last: number | null; error: string };
@@ -51,7 +37,6 @@ export type SyncState =
 /** What came back from sending the deck. */
 export type Reply =
   | { kind: "deck"; deck: Deck }
-  | { kind: "refused" }
   | { kind: "signed-out" }
   | { kind: "unreachable" }
   | { kind: "failed"; error: string };
@@ -63,8 +48,7 @@ export type Reply =
 export function readReply(answer: { status: number; body: unknown } | null): Reply {
   if (!answer) return { kind: "unreachable" };
   const { status, body } = answer;
-  const barred = barredBy(answer);
-  if (barred) return { kind: barred === "key" ? "refused" : "signed-out" };
+  if (signedOut(answer)) return { kind: "signed-out" };
   if (status >= 200 && status < 300) {
     const deck = loadDeck(body);
     return deck ? { kind: "deck", deck } : { kind: "failed", error: "The sync server sent back something odd." };
@@ -78,8 +62,6 @@ export function afterReply(reply: Reply, last: number | null, now: number): Sync
   switch (reply.kind) {
     case "deck":
       return { kind: "synced", last: now };
-    case "refused":
-      return { kind: "refused" };
     case "signed-out":
       return { kind: "signed-out", last };
     case "unreachable":
@@ -102,12 +84,13 @@ export function hasNews(deck: Deck, server: Deck | null): boolean {
 
 /**
  * How soon to send what `deck` holds that the Worker's copy lacks: "soon"
- * for questions, "later" when only the free association has changed, since
- * it changes with every key pressed, and null for nothing new.
+ * for questions, "later" when only writing has changed, the free association
+ * or an explanation, since that changes with every key pressed, and null for
+ * nothing new.
  */
 export function sendWhen(deck: Deck, server: Deck | null): "soon" | "later" | null {
   if (!hasNews(deck, server)) return null;
-  const writingOnly = server !== null && !hasNews({ ...deck, writing: server.writing }, server);
+  const writingOnly = server !== null && !hasNews({ ...deck, writing: server.writing, explanations: server.explanations }, server);
   return writingOnly ? "later" : "soon";
 }
 
@@ -115,8 +98,6 @@ export function sendWhen(deck: Deck, server: Deck | null): "soon" | "later" | nu
 export function syncLabel(state: SyncState, now: number): string {
   const since = (last: number | null): string => (last === null ? "" : ` Last synced ${ago(last, now)}.`);
   switch (state.kind) {
-    case "no-key":
-      return "Your questions are kept in this browser only. Enter your sync key to keep them the same on every device you use.";
     // A sync after the first reads as the last success, so the line does
     // not flicker each time the tab is shown.
     case "syncing":
@@ -125,10 +106,10 @@ export function syncLabel(state: SyncState, now: number): string {
       return `Synced with your other devices ${ago(state.last, now)}.`;
     case "unreachable":
       return `Can't reach the sync server. Changes are kept here and sent once it's back.${since(state.last)}`;
-    case "refused":
-      return "The sync server doesn't take that key. Your questions are kept in this browser until you enter the right one.";
     case "signed-out":
-      return `Your sign-in to the site has run out. Changes are kept here and sent once you sign in again.${since(state.last)}`;
+      return state.last === null
+        ? "Your questions are kept in this browser only. Sign in to keep them the same on every device you use."
+        : `You're signed out. Changes are kept here and sent once you sign in again.${since(state.last)}`;
     case "failed":
       return `Syncing went wrong: ${state.error} Changes are kept here.${since(state.last)}`;
   }

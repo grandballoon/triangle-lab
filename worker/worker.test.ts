@@ -1,12 +1,12 @@
 // The site's Worker running for real, in the local Workers runtime, from
-// wrangler.jsonc: pages served from its assets, the recall deck's HTTP
-// contract, the deck surviving the object being evicted, two devices
-// syncing through it from the pages' own sync code, and answers checked and
-// free associations read by a stand-in for the Claude API, all behind a
-// stand-in for Cloudflare Access: nothing is let in without a token it signed.
+// wrangler.jsonc: pages served from its assets, signing in by email link, the
+// recall deck's HTTP contract, a deck for each learner, the deck surviving the
+// object being evicted, two devices syncing through it from the pages' own
+// sync code, and answers checked and free associations read by a stand-in for
+// the Claude API. Sign-in links are read from the mail the local runtime's
+// email binding writes to disk, as a learner would open it.
 
-import { createSign, generateKeyPairSync } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -14,29 +14,31 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setWriting, type Deck } from "../src/recall/deck.ts";
-import { RecallSync, SYNC_KEY_STORAGE } from "../src/recall/remote.ts";
+import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setExplanation, setWriting, type Deck } from "../src/recall/deck.ts";
+import { RecallSync } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
 
-const KEY = "a-test-key-long-enough-to-be-served";
-const AUD = "production-aud-tag";
-/** The stand-in Access team's signing key. */
-const ACCESS_KEYS = generateKeyPairSync("rsa", { modulusLength: 2048 });
+const OWNER = "owner@example.com";
+const DEMO = "demo@example.com";
+const SENDER = "signin@example.com";
 const CLAUDE_KEY = "a-test-claude-key";
 const ROOT = resolve(__dirname, "..");
 const T0 = 1_700_000_000_000;
 const card = (id: string, at = T0) => newCard(id, `Question ${id}?`, { lesson: "medians", step: 0, stepTitle: "" }, at)!;
 const ids = (deck: { cards: { id: string }[] }) => deck.cards.map((c) => c.id);
+const FROM_PAGE = { "X-Requested-With": "XMLHttpRequest" };
 
 let harness: TestHarness;
 let base: string;
 /**
  * Where the harness runs: away from the project, so the developer's own
- * .dev.vars key is not read, with an assets folder standing in for dist/,
+ * .dev.vars is not read, with an assets folder standing in for dist/,
  * which a test run may come before.
  */
 let dir: string;
+/** The owner's session cookie, signed in afresh for each test. */
+let owner: string;
 
 /** What the stand-in Claude API was asked, with its headers, and how it answers next. */
 const claude = {
@@ -46,14 +48,41 @@ const claude = {
   stop: "end_turn",
 };
 let claudeServer: Server;
-/** The stand-in Access team, served by the stand-in Claude API's server. */
-let issuer: string;
 
-/** A token as Access would forward it, signed with the stand-in team's key. */
-function accessToken(claims: Record<string, unknown> = {}): string {
-  const part = (value: unknown) => Buffer.from(JSON.stringify(value)).toString("base64url");
-  const head = `${part({ alg: "RS256", kid: "k1" })}.${part({ iss: issuer, aud: [AUD], exp: Math.floor(Date.now() / 1000) + 600, ...claims })}`;
-  return `${head}.${createSign("RSA-SHA256").update(head).sign(ACCESS_KEYS.privateKey).toString("base64url")}`;
+/** The text of every sign-in email sent so far, by file. */
+async function mailbox(): Promise<Map<string, string>> {
+  const root = join(dir, ".wrangler", "tmp", "email");
+  const files = (await readdir(root, { recursive: true }).catch(() => [] as string[])).filter((f) => f.includes("email-text") && f.endsWith(".txt"));
+  return new Map(await Promise.all(files.map(async (f) => [f, await readFile(join(root, f), "utf8")] as const)));
+}
+
+/** Ask for a sign-in link for `email`, and the link in the email that comes, or null when none does. */
+async function linkFor(email: string): Promise<string | null> {
+  const before = await mailbox();
+  const asked = await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email }) });
+  expect(asked.status).toBe(202);
+  // The binding writes the mail out just after answering.
+  for (let i = 0; i < 40; i++) {
+    const fresh = [...(await mailbox())].filter(([f]) => !before.has(f));
+    if (fresh.length) return /https?:\/\/\S+/.exec(fresh[0][1])?.[0] ?? null;
+    await new Promise((done) => setTimeout(done, 25));
+  }
+  return null;
+}
+
+/** Trade a sign-in link for a session, as signin.html does: the reply. */
+function redeem(link: string): Promise<Response> {
+  const token = new URL(link).searchParams.get("token");
+  return fetch(`${base}/auth/session`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ token }) });
+}
+
+/** Sign `email` in by email link: the session cookie, as the browser would send it. */
+async function signIn(email: string): Promise<string> {
+  const link = await linkFor(email);
+  expect(link).not.toBeNull();
+  const session = await redeem(link!);
+  expect(session.status).toBe(200);
+  return session.headers.get("Set-Cookie")!.split(";")[0];
 }
 
 beforeAll(async () => {
@@ -61,11 +90,6 @@ beforeAll(async () => {
     let text = "";
     req.on("data", (chunk) => (text += chunk));
     req.on("end", () => {
-      if (req.url === "/cdn-cgi/access/certs") {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ keys: [{ ...ACCESS_KEYS.publicKey.export({ format: "jwk" }), kid: "k1", alg: "RS256", use: "sig" }] }));
-        return;
-      }
       claude.asked.push({ headers: req.headers, body: JSON.parse(text) });
       res.writeHead(claude.status, { "Content-Type": "application/json" });
       if (claude.status !== 200) {
@@ -88,7 +112,6 @@ beforeAll(async () => {
   });
   await new Promise<void>((done) => claudeServer.listen(0, "127.0.0.1", done));
   const claudeUrl = `http://127.0.0.1:${(claudeServer.address() as AddressInfo).port}`;
-  issuer = claudeUrl;
 
   dir = await mkdtemp(join(tmpdir(), "triangle-lab-worker-"));
   const assets = join(dir, "assets");
@@ -96,8 +119,8 @@ beforeAll(async () => {
   await writeFile(join(assets, "index.html"), "<title>Lessons</title>");
   await writeFile(join(assets, "recall.html"), "<title>Recall</title>");
   // The secrets wrangler.jsonc requires, as the developer's own .dev.vars gives them.
-  await writeFile(join(dir, ".dev.vars"), `RECALL_KEY=${KEY}\nANTHROPIC_API_KEY=${CLAUDE_KEY}\n`);
-  // The real configuration, with only the assets and where Claude is swapped in.
+  await writeFile(join(dir, ".dev.vars"), `ANTHROPIC_API_KEY=${CLAUDE_KEY}\nOWNER_EMAIL=${OWNER}\nINVITES=${DEMO}, friend@example.com\n`);
+  // The real configuration, with only the assets, where Claude is, and the sender swapped in.
   const path = join(ROOT, "wrangler.jsonc");
   const { config, error } = ts.parseConfigFileTextToJson(path, await readFile(path, "utf8"));
   if (error) throw new Error(String(error.messageText));
@@ -109,7 +132,7 @@ beforeAll(async () => {
           ...config,
           main: join(ROOT, config.main),
           assets: { ...config.assets, directory: assets },
-          vars: { ...config.vars, ANTHROPIC_BASE_URL: claudeUrl, ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
+          vars: { ...config.vars, ANTHROPIC_BASE_URL: claudeUrl, SENDER },
         },
       },
     ],
@@ -121,6 +144,7 @@ beforeEach(async () => {
   Object.assign(claude, { asked: [], status: 200, reply: { grade: "recalled", feedback: "Yes: the centroid." }, stop: "end_turn" });
   await harness.reset();
   base = (await harness.listen()).url.href.replace(/\/$/, "");
+  owner = await signIn(OWNER);
 });
 
 afterAll(async () => {
@@ -132,7 +156,7 @@ afterAll(async () => {
 const call = (method: string, body?: unknown, headers: Record<string, string> = {}, path = "/deck") =>
   fetch(`${base}${path}`, {
     method,
-    headers: { Authorization: `Bearer ${KEY}`, "Cf-Access-Jwt-Assertion": accessToken(), ...headers },
+    headers: { ...FROM_PAGE, Cookie: owner, ...headers },
     body: body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body),
   });
 
@@ -145,24 +169,53 @@ describe("the site", () => {
   });
 });
 
-describe("behind Cloudflare Access", () => {
-  it("lets nothing reach the deck or Claude without a token Access signed for the site", async () => {
-    const forged = `${accessToken().split(".").slice(0, 2).join(".")}.${Buffer.from("forged").toString("base64url")}`;
-    for (const jwt of ["", "not.a.token", forged, accessToken({ aud: ["other"] }), accessToken({ exp: 1 })]) {
-      expect((await call("GET", undefined, { "Cf-Access-Jwt-Assertion": jwt })).status, jwt).toBe(401);
-    }
-    // Fewer here: these count against the calls to Claude's rate limit too.
-    for (const jwt of ["", forged]) {
+describe("signing in", () => {
+  it("emails an invited address a link to the sign-in page, which trades it for a session once", async () => {
+    const link = await linkFor(DEMO);
+    expect(link).toMatch(new RegExp(`^${base}/signin\\.html\\?token=[A-Za-z0-9_-]{43}$`));
+    const first = await redeem(link!);
+    expect(first.status).toBe(200);
+    expect(await first.json()).toEqual({ email: DEMO });
+    expect(first.headers.get("Set-Cookie")).toMatch(/^session=[A-Za-z0-9_-]{43}; Path=\/; HttpOnly; SameSite=Lax; Max-Age=2592000$/);
+    const again = await redeem(link!);
+    expect(again.status).toBe(400);
+    expect((await again.json()).error).toContain("expired or has been used");
+  });
+
+  it("sends nothing to an address not invited, and answers just the same", async () => {
+    expect(await linkFor("stranger@example.com")).toBeNull();
+  });
+
+  it("says who is signed in, and signs out, after which the session opens nothing", async () => {
+    const who = await fetch(`${base}/auth/session`, { headers: { ...FROM_PAGE, Cookie: owner } });
+    expect(await who.json()).toEqual({ email: OWNER });
+    const out = await fetch(`${base}/auth/session`, { method: "DELETE", headers: { ...FROM_PAGE, Cookie: owner } });
+    expect(out.headers.get("Set-Cookie")).toContain("Max-Age=0");
+    expect((await fetch(`${base}/auth/session`, { headers: { ...FROM_PAGE, Cookie: owner } })).status).toBe(401);
+    expect((await call("GET")).status).toBe(401);
+  });
+
+  it("lets nothing reach the deck or Claude without a session", async () => {
+    for (const cookie of ["", "session=" + "x".repeat(43), "session=forged"]) {
+      expect((await call("GET", undefined, { Cookie: cookie })).status, cookie).toBe(401);
       for (const path of ["/check", "/associate", "/explain"]) {
-        expect((await call("POST", {}, { "Cf-Access-Jwt-Assertion": jwt }, path)).status, path).toBe(401);
+        expect((await call("POST", {}, { Cookie: cookie }, path)).status, path).toBe(401);
       }
     }
     expect(claude.asked).toEqual([]);
   });
 
-  it("says a 401 is for the sign-in, not the key, so pages keep the key", async () => {
-    expect(await (await call("GET", undefined, { "Cf-Access-Jwt-Assertion": "" })).json()).toMatchObject({ reason: "access" });
-    expect(await (await call("GET", undefined, { Authorization: "Bearer wrong" })).json()).toMatchObject({ reason: "key" });
+  it("refuses requests no page of the site made, so another site cannot use a learner's session", async () => {
+    expect((await fetch(`${base}/deck`, { headers: { Cookie: owner } })).status).toBe(403);
+    expect((await fetch(`${base}/auth/link`, { method: "POST", body: JSON.stringify({ email: DEMO }) })).status).toBe(403);
+  });
+
+  it("sends at most 3 links a minute to one address", async () => {
+    const statuses: number[] = [];
+    for (let i = 0; i < 4; i++) {
+      statuses.push((await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: "friend@example.com" }) })).status);
+    }
+    expect(statuses).toEqual([202, 202, 202, 429]);
   });
 });
 
@@ -188,13 +241,9 @@ describe("the recall deck", () => {
     expect(ids(await (await call("GET")).json())).toEqual(["kept"]);
   });
 
-  it("refuses a caller without the key", async () => {
-    for (const authorization of [`Bearer wrong`, ""]) {
-      const response = await call("POST", saveDeck({ cards: [card("x")], removed: [] }), {
-        Authorization: authorization,
-      });
-      expect(response.status).toBe(401);
-    }
+  it("refuses a caller who is not signed in", async () => {
+    const response = await call("POST", saveDeck({ cards: [card("x")], removed: [] }), { Cookie: "" });
+    expect(response.status).toBe(401);
     expect(ids(await (await call("GET")).json())).toEqual([]);
   });
 
@@ -216,12 +265,12 @@ describe("the recall deck", () => {
     expect(response.status).toBe(413);
   });
 
-  it("slows a caller making too many requests, before looking at the key", async () => {
+  it("slows a caller making too many requests, signed in or not", async () => {
     const statuses: number[] = [];
     for (let i = 0; i < 70; i++) {
-      statuses.push((await call("GET", undefined, { Authorization: "Bearer guess" })).status);
+      statuses.push((await call("GET", undefined, { Cookie: "" })).status);
     }
-    expect(statuses.slice(0, 60).every((s) => s === 401)).toBe(true);
+    expect(statuses.slice(0, 55).every((s) => s === 401)).toBe(true);
     expect(statuses.at(-1)).toBe(429);
   });
 
@@ -243,8 +292,8 @@ describe("checking an answer", () => {
     expect(JSON.stringify(body.messages)).toContain("At the centroid");
   });
 
-  it("refuses a caller without the key, and what is not an answer, without asking Claude", async () => {
-    expect((await check(request, { Authorization: "Bearer wrong" })).status).toBe(401);
+  it("refuses a caller not signed in, and what is not an answer, without asking Claude", async () => {
+    expect((await check(request, { Cookie: "" })).status).toBe(401);
     expect((await check({ ...request, answer: "" })).status).toBe(400);
     expect((await check("{not json")).status).toBe(400);
     expect(claude.asked).toEqual([]);
@@ -294,8 +343,8 @@ describe("reading a free association", () => {
     expect(JSON.stringify(body.messages)).toContain("Medians meet at the incentre.");
   });
 
-  it("refuses a caller without the key, and nothing to read, without asking Claude", async () => {
-    expect((await associate(request, { Authorization: "Bearer wrong" })).status).toBe(401);
+  it("refuses a caller not signed in, and nothing to read, without asking Claude", async () => {
+    expect((await associate(request, { Cookie: "" })).status).toBe(401);
     expect((await associate({ ...request, text: " " })).status).toBe(400);
     expect((await associate("{not json")).status).toBe(400);
     expect(claude.asked).toEqual([]);
@@ -326,8 +375,8 @@ describe("checking an explanation", () => {
     expect(content).toContain("The medians meet at the incentre.");
   });
 
-  it("refuses a caller without the key, and nothing to check, without asking Claude", async () => {
-    expect((await explain(request, { Authorization: "Bearer wrong" })).status).toBe(401);
+  it("refuses a caller not signed in, and nothing to check, without asking Claude", async () => {
+    expect((await explain(request, { Cookie: "" })).status).toBe(401);
     expect((await explain({ ...request, text: " " })).status).toBe(400);
     expect((await explain({ ...request, lesson: "nowhere" })).status).toBe(400);
     expect(claude.asked).toEqual([]);
@@ -342,10 +391,23 @@ describe("checking an explanation", () => {
   });
 });
 
+describe("a deck for each learner", () => {
+  it("gives an invited demo account an empty deck of its own, leaving the owner's alone", async () => {
+    await call("POST", saveDeck(addCard(EMPTY_DECK, card("mine"))));
+    const demo = await signIn(DEMO);
+
+    expect(ids(await (await call("GET", undefined, { Cookie: demo })).json())).toEqual([]);
+    expect(ids(await (await call("POST", saveDeck(addCard(EMPTY_DECK, card("theirs"))), { Cookie: demo })).json())).toEqual(["theirs"]);
+    expect(ids(await (await call("GET")).json())).toEqual(["mine"]);
+    await harness.getWorker().evictDurableObject("RecallDeck", { name: `learner:${DEMO}` });
+    expect(ids(await (await call("GET", undefined, { Cookie: demo })).json())).toEqual(["theirs"]);
+  });
+});
+
 describe("two devices syncing through the Worker", () => {
   /** A device: its own browser storage, syncing as a page does. */
   function device() {
-    const data: Record<string, string> = { [SYNC_KEY_STORAGE]: KEY };
+    const data: Record<string, string> = {};
     const storage = {
       getItem: (k: string) => data[k] ?? null,
       setItem: (k: string, v: string) => void (data[k] = v),
@@ -354,9 +416,8 @@ describe("two devices syncing through the Worker", () => {
     const store = new RecallStore(storage, null);
     const sync = new RecallSync(store, {
       url: base,
-      keys: storage,
-      // Access adds its token to every request a signed-in browser makes.
-      fetch: (input, init) => fetch(input, { ...init, headers: { ...(init?.headers as Record<string, string>), "Cf-Access-Jwt-Assertion": accessToken() } }),
+      // The browser sends the signed-in learner's session cookie with every request.
+      fetch: (input, init) => fetch(input, { ...init, headers: { ...(init?.headers as Record<string, string>), Cookie: owner } }),
       now: () => Date.now(),
       setTimeout: (fn, ms) => setTimeout(fn, ms),
       clearTimeout: (t) => clearTimeout(t),
@@ -406,5 +467,26 @@ describe("two devices syncing through the Worker", () => {
 
     expect(phone.store.get().writing).toEqual({ text: "Medians meet at G", read: null, updated: T0 + 2 });
     expect(ids(phone.store.get())).toEqual(["p"]);
+  });
+
+  it("ends with each lesson's explanation last changed on either, kept when the object is evicted", async () => {
+    const phone = device();
+    const laptop = device();
+    const verdict = { grade: "shaky" as const, feedback: "Nearly." };
+    phone.store.update((d) => setExplanation(d, { lesson: "medians", text: "Medians", checked: { text: "Medians", verdict }, updated: T0 + 1 }));
+    phone.store.update((d) => setExplanation(d, { lesson: "altitudes", text: "Altitudes", checked: null, updated: T0 + 1 }));
+    await phone.sync.sync();
+    await laptop.sync.sync();
+    expect(laptop.store.get().explanations).toEqual(phone.store.get().explanations);
+
+    laptop.store.update((d) => setExplanation(d, { lesson: "medians", text: "Medians meet at G", checked: null, updated: T0 + 2 }));
+    await laptop.sync.sync();
+    await harness.getWorker().evictDurableObject("RecallDeck", { name: "deck" });
+    await phone.sync.sync();
+
+    expect(phone.store.get().explanations).toEqual([
+      { lesson: "altitudes", text: "Altitudes", checked: null, updated: T0 + 1 },
+      { lesson: "medians", text: "Medians meet at G", checked: null, updated: T0 + 2 },
+    ]);
   });
 });

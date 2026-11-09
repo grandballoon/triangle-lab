@@ -13,7 +13,7 @@
 // the verdict by the same rules.
 
 import { MAX_ANSWER, MAX_QUESTION, readVerdict, type Verdict } from "./deck.ts";
-import { barredBy } from "./sync.ts";
+import { signedOut } from "./sync.ts";
 
 /** What the page sends to have an answer checked. */
 export interface CheckRequest {
@@ -28,11 +28,11 @@ export interface CheckRequest {
 export type Review =
   | { kind: "checking" }
   | { kind: "done"; verdict: Verdict }
-  /** `signIn` when the site's Access sign-in has run out, so the page offers to sign in again. */
+  /** `signIn` when the learner is signed out, so the page offers to sign in. */
   | { kind: "failed"; error: string; signIn?: true };
 
 /** Why a request to Claude failed once the site's Access sign-in has run out. */
-export const SIGNED_OUT = "Your sign-in to the site has run out. Sign in again, then try once more.";
+export const SIGNED_OUT = "You're signed out. Sign in, then try once more.";
 
 const MAX_WHERE = 300;
 
@@ -59,9 +59,7 @@ export function readCheckRequest(raw: unknown): CheckRequest | null {
 export function readCheckReply(answer: { status: number; body: unknown } | null): Review {
   if (!answer) return { kind: "failed", error: "Can't reach the server to check this." };
   const { status, body } = answer;
-  const barred = barredBy(answer);
-  if (barred === "key") return { kind: "failed", error: "The server doesn't take this browser's sync key." };
-  if (barred === "access") return { kind: "failed", error: SIGNED_OUT, signIn: true };
+  if (signedOut(answer)) return { kind: "failed", error: SIGNED_OUT, signIn: true };
   if (status >= 200 && status < 300) {
     const verdict = readVerdict(body);
     return verdict ? { kind: "done", verdict } : { kind: "failed", error: "The check came back unreadable." };

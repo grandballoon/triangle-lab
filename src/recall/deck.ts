@@ -8,7 +8,9 @@
 //
 // The deck also holds the learner's free association (associate.ts), so it
 // too is the same on every device: one piece of writing, and Claude's last
-// reading of it, of which a merge keeps the newer copy.
+// reading of it, of which a merge keeps the newer copy. And it holds each
+// lesson's explanation written on the lesson page (explain.ts), with Claude's
+// last check of it, merged lesson by lesson the same way.
 //
 // Scheduling is a Leitner system. Each card sits in a box; recalling it moves
 // it up a box and further out, a shaky answer moves it down one, and a miss
@@ -87,6 +89,18 @@ export interface Writing {
   updated: number;
 }
 
+/** A lesson's explanation (explain.ts) as kept in the deck, so every device holds the same. */
+export interface KeptExplanation {
+  /** The lesson's slug (lessons.ts). */
+  lesson: string;
+  /** What the learner has written; empty once they clear it. */
+  text: string;
+  /** Claude's last check that came back, and the explanation as it checked it; null before any. */
+  checked: { text: string; verdict: Verdict } | null;
+  /** Its last change, so the newer of two copies wins a merge. */
+  updated: number;
+}
+
 /** Where a question was asked: a lesson and the step it had current. */
 export interface Place {
   /** The lesson's slug (lessons.ts). */
@@ -131,6 +145,8 @@ export interface Deck {
   removed: Removal[];
   /** The free association, once one has been written; absent says nothing, so never undoes another device's. */
   writing?: Writing;
+  /** One per lesson explained, in order of slug; absent until one is written, and says nothing of another device's. */
+  explanations?: KeptExplanation[];
 }
 
 export const EMPTY_DECK: Deck = { cards: [], removed: [] };
@@ -190,6 +206,17 @@ export function newCard(id: string, question: string, place: Place, now: number)
 /** Keep `writing` as the free association, or leave the deck as it is for none, or the same. */
 export function setWriting(deck: Deck, writing: Writing | undefined): Deck {
   return !writing || writing === deck.writing ? deck : { ...deck, writing };
+}
+
+/** The explanation of `lesson` the deck holds, if any. */
+export function explanationOf(deck: Deck, lesson: string): KeptExplanation | undefined {
+  return deck.explanations?.find((e) => e.lesson === lesson);
+}
+
+/** Keep `kept` as its lesson's explanation, in place of any the deck holds. */
+export function setExplanation(deck: Deck, kept: KeptExplanation): Deck {
+  const others = (deck.explanations ?? []).filter((e) => e.lesson !== kept.lesson);
+  return { ...deck, explanations: [...others, kept].sort(byLesson) };
 }
 
 export function addCard(deck: Deck, card: Card): Deck {
@@ -285,7 +312,8 @@ export function lessonCards(deck: Deck, lesson: string): Card[] {
  * device. Each question is taken from whichever deck changed it last: the
  * newer copy of a card, or its removal if that came later still.
  *
- * The free association is taken from whichever changed it last.
+ * The free association is taken from whichever changed it last, and so is
+ * each lesson's explanation.
  *
  * The order of the two decks never matters, and merging again changes
  * nothing, so devices that swap decks in any order end up holding the same.
@@ -303,24 +331,39 @@ export function mergeDecks(ours: Deck, theirs: Deck): Deck {
     else removed.push({ id: entry.id, at: entry.at });
   }
   const merged: Deck = { cards: cards.sort(byCreated), removed: removed.sort((a, b) => a.at - b.at || compare(a.id, b.id)) };
-  const writing = laterWriting(ours.writing, theirs.writing);
-  return writing ? { ...merged, writing } : merged;
+  const writing = laterCopy(ours.writing, theirs.writing);
+  const explanations = mergeExplanations(ours.explanations ?? [], theirs.explanations ?? []);
+  return withExtras(merged, writing, explanations);
 }
 
-/** The later of two copies of the free association. Ties go to the larger copy as text, so the choice is the same whichever deck each came from. */
-function laterWriting(a: Writing | undefined, b: Writing | undefined): Writing | undefined {
+/** Each lesson's later explanation of the two lists, in order of slug. */
+function mergeExplanations(ours: readonly KeptExplanation[], theirs: readonly KeptExplanation[]): KeptExplanation[] {
+  const latest = new Map<string, KeptExplanation>();
+  for (const kept of [...ours, ...theirs]) latest.set(kept.lesson, laterCopy(latest.get(kept.lesson), kept)!);
+  return [...latest.values()].sort(byLesson);
+}
+
+/** `deck` with the free association and explanations given, leaving out what there is none of. */
+function withExtras(deck: Deck, writing: Writing | undefined, explanations: KeptExplanation[]): Deck {
+  const withWriting = writing ? { ...deck, writing } : deck;
+  return explanations.length > 0 ? { ...withWriting, explanations } : withWriting;
+}
+
+/** The later of two copies of the free association, or of one lesson's explanation. Ties go to the larger copy as text, so the choice is the same whichever deck each came from. */
+function laterCopy<T extends { updated: number }>(a: T | undefined, b: T | undefined): T | undefined {
   if (!a || !b) return a ?? b;
   if (a.updated !== b.updated) return a.updated > b.updated ? a : b;
   return JSON.stringify(a) >= JSON.stringify(b) ? a : b;
 }
 
-/** Whether `a` and `b` hold the same questions, in the same states, and the same free association. */
+/** Whether `a` and `b` hold the same questions, in the same states, and the same free association and explanations. */
 export function sameDeck(a: Deck, b: Deck): boolean {
   const keys = (d: Deck): string => entries(d).map(entryKey).sort().join("\n");
-  return keys(a) === keys(b) && JSON.stringify(a.writing ?? null) === JSON.stringify(b.writing ?? null);
+  const extras = (d: Deck): string => JSON.stringify([d.writing ?? null, d.explanations ?? []]);
+  return keys(a) === keys(b) && extras(a) === extras(b);
 }
 
-/** The questions whose state in `after` is not their state in `before`, and the free association if it changed. */
+/** The questions whose state in `after` is not their state in `before`, and the free association and explanations that changed. */
 export function changedSince(before: Deck, after: Deck): Deck {
   const held = new Set(entries(before).map(entryKey));
   const fresh = (e: Entry): boolean => !held.has(entryKey(e));
@@ -329,7 +372,9 @@ export function changedSince(before: Deck, after: Deck): Deck {
     removed: after.removed.filter((r) => fresh({ ...r, card: null })),
   };
   const writing = after.writing && JSON.stringify(after.writing) !== JSON.stringify(before.writing ?? null) ? after.writing : undefined;
-  return writing ? { ...changed, writing } : changed;
+  const explained = new Set((before.explanations ?? []).map((e) => JSON.stringify(e)));
+  const explanations = (after.explanations ?? []).filter((e) => !explained.has(JSON.stringify(e)));
+  return withExtras(changed, writing, explanations);
 }
 
 /** One question's state in a deck: a card, or the time it was removed. */
@@ -370,11 +415,14 @@ export interface SavedDeck {
   removed: Removal[];
   /** Added later still; absent until a free association is written, and dropped unread by a page from before it. */
   writing?: Writing;
+  /** Added later again, in the same way; absent until a lesson is explained. */
+  explanations?: KeptExplanation[];
 }
 
 export function saveDeck(deck: Deck): SavedDeck {
   const saved: SavedDeck = { kind: "triangle-lab/recall", version: 1, cards: deck.cards, removed: deck.removed };
-  return deck.writing ? { ...saved, writing: deck.writing } : saved;
+  const withWriting = deck.writing ? { ...saved, writing: deck.writing } : saved;
+  return deck.explanations?.length ? { ...withWriting, explanations: deck.explanations } : withWriting;
 }
 
 /**
@@ -386,10 +434,27 @@ export function loadDeck(raw: unknown): Deck | null {
   if (!isObject(raw) || raw.kind !== "triangle-lab/recall" || !Array.isArray(raw.cards)) return null;
   const cards = raw.cards.map(loadCard).filter((c): c is Card => c !== null);
   const removed = Array.isArray(raw.removed) ? raw.removed.map(loadRemoval).filter((r) => r !== null) : [];
-  const writing = readWriting(raw.writing);
+  const writing = readWriting(raw.writing) ?? undefined;
+  const explanations = Array.isArray(raw.explanations) ? raw.explanations.flatMap(readKeptExplanation) : [];
   // A deck read back is merged with nothing, so it is in the shape a merge
-  // makes: one state per question, the last one.
-  return mergeDecks(EMPTY_DECK, writing ? { cards, removed, writing } : { cards, removed });
+  // makes: one state per question, the last one, and the same for each
+  // lesson's explanation.
+  return mergeDecks(EMPTY_DECK, withExtras({ cards, removed }, writing, explanations));
+}
+
+/** A kept explanation as one element of a list, or none if `raw` is not one. A check that is not one is dropped. */
+export function readKeptExplanation(raw: unknown): KeptExplanation[] {
+  if (!isObject(raw) || typeof raw.lesson !== "string" || !raw.lesson || typeof raw.text !== "string" || !isTime(raw.updated)) return [];
+  const checked = isObject(raw.checked) && typeof raw.checked.text === "string" ? raw.checked : null;
+  const verdict = checked ? readVerdict(checked.verdict) : null;
+  return [
+    {
+      lesson: raw.lesson,
+      text: raw.text.slice(0, MAX_ANSWER),
+      checked: checked && verdict ? { text: String(checked.text).slice(0, MAX_ANSWER), verdict } : null,
+      updated: raw.updated,
+    },
+  ];
 }
 
 /** Read a free association kept in a deck, or null if `raw` is not one. A reading that is not one is dropped. */
@@ -490,6 +555,8 @@ function mapCard(deck: Deck, id: string, fn: (c: Card) => Card): Deck {
 }
 
 const byDue = (a: Card, b: Card): number => a.due - b.due || a.created - b.created;
+
+const byLesson = (a: KeptExplanation, b: KeptExplanation): number => compare(a.lesson, b.lesson);
 
 const byCreated = (a: Card, b: Card): number => a.created - b.created || compare(a.id, b.id);
 

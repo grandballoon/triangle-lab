@@ -1,59 +1,51 @@
-// The Worker's decisions on a request to the recall deck: what it is, and
-// whether it may be made, from behind Cloudflare Access.
+// The Worker's decisions on a request to the recall deck or to Claude: what
+// it is, whether it may be made, and whose deck it is for.
 
 import { describe, expect, it } from "vitest";
 import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
-import { CLOCK_SLACK_MS, datedAhead, decide as decideAt, keyMatches, MAX_BODY, MIN_KEY, refusalBody, type Asked, type Settings } from "./rules.ts";
+import { CLOCK_SLACK_MS, datedAhead, decide, deckFor, LEGACY_DECK, MAX_BODY, type Asked, type Settings } from "./rules.ts";
 
-const KEY = "k".repeat(MIN_KEY);
-const NOW = 1_700_000_000_000;
-const ACCESS = { issuer: "https://team.cloudflareaccess.com", aud: "aud-tag" };
-const CLAIMS = { iss: ACCESS.issuer, aud: [ACCESS.aud], exp: NOW / 1000 + 600 };
-const settings: Settings = { key: KEY, claude: true, access: ACCESS };
-const decide = (a: Asked, s: Settings) => decideAt(a, s, NOW);
+const OWNER = "owner@example.com";
+const settings: Settings = { claude: true, owner: OWNER };
 const asked = (patch: Partial<Asked>): Asked => ({
   method: "GET",
   path: "/deck",
-  hostname: "triangle-lab.example.workers.dev",
-  claims: CLAIMS,
-  authorization: `Bearer ${KEY}`,
+  email: OWNER,
+  fromPage: true,
   length: null,
   withinLimit: true,
   ...patch,
 });
 
 describe("decide", () => {
-  it("reads or merges the deck for a caller with the key", () => {
-    expect(decide(asked({}), settings)).toEqual({ kind: "read" });
-    expect(decide(asked({ method: "POST" }), settings)).toEqual({ kind: "merge" });
+  it("reads or merges the deck of whoever is signed in", () => {
+    expect(decide(asked({}), settings)).toEqual({ kind: "read", deck: LEGACY_DECK });
+    expect(decide(asked({ method: "POST" }), settings)).toEqual({ kind: "merge", deck: LEGACY_DECK });
+    expect(decide(asked({ email: "demo@example.com" }), settings)).toEqual({ kind: "read", deck: "learner:demo@example.com" });
   });
 
-  it("refuses a wrong key or a missing one", () => {
-    expect(decide(asked({ authorization: "Bearer guess" }), settings)).toMatchObject({ kind: "refuse", status: 401 });
-    expect(decide(asked({ authorization: null }), settings)).toMatchObject({ kind: "refuse", status: 401 });
+  it("asks to sign in when no one is, on every path", () => {
+    for (const path of ["/deck", "/check", "/associate", "/explain"]) {
+      const method = path === "/deck" ? "GET" : "POST";
+      expect(decide(asked({ path, method, email: null }), settings)).toEqual({ kind: "refuse", status: 401, error: "Sign in first." });
+    }
   });
 
-  it("serves no one while its own key is unset or short enough to guess", () => {
-    expect(decide(asked({ authorization: "Bearer " }), { ...settings, key: "" })).toMatchObject({ status: 503 });
-    const short = "k".repeat(MIN_KEY - 1);
-    expect(decide(asked({ authorization: `Bearer ${short}` }), { ...settings, key: short })).toMatchObject({
-      status: 503,
-    });
+  it("refuses a request not made by the site's own pages, so no other site can change a deck", () => {
+    expect(decide(asked({ fromPage: false }), settings)).toMatchObject({ status: 403 });
+    expect(decide(asked({ fromPage: false, method: "POST" }), settings)).toMatchObject({ status: 403 });
   });
 
-  it("refuses a caller over the rate limit before looking at its key", () => {
-    expect(decide(asked({ withinLimit: false }), settings)).toMatchObject({ kind: "refuse", status: 429 });
-    expect(decide(asked({ withinLimit: false, authorization: "Bearer guess" }), settings)).toMatchObject({
-      status: 429,
-    });
+  it("refuses a caller over the rate limit first", () => {
+    expect(decide(asked({ withinLimit: false, email: null }), settings)).toMatchObject({ kind: "refuse", status: 429 });
   });
 
   it("refuses a deck declared too large before it is read", () => {
     expect(decide(asked({ method: "POST", length: MAX_BODY + 1 }), settings)).toMatchObject({ status: 413 });
-    expect(decide(asked({ method: "POST", length: MAX_BODY }), settings)).toEqual({ kind: "merge" });
+    expect(decide(asked({ method: "POST", length: MAX_BODY }), settings)).toEqual({ kind: "merge", deck: LEGACY_DECK });
   });
 
   it("refuses other paths and methods", () => {
@@ -62,81 +54,57 @@ describe("decide", () => {
     expect(decide(asked({ method: "OPTIONS" }), settings)).toMatchObject({ kind: "refuse", status: 405 });
     expect(decide(asked({ path: "/check", method: "GET" }), settings)).toMatchObject({ status: 405 });
   });
+
+  it("serves no deck while the owner is not set, but the calls to Claude, which hold none, still work", () => {
+    expect(decide(asked({}), { ...settings, owner: "" })).toMatchObject({ status: 503, error: expect.stringContaining("OWNER_EMAIL") });
+    expect(decide(asked({ path: "/check", method: "POST" }), { ...settings, owner: "" })).toEqual({ kind: "check" });
+  });
+});
+
+describe("deckFor", () => {
+  it("gives the owner the deck the site held while it had one learner, whatever the case of their email", () => {
+    expect(deckFor(OWNER, OWNER)).toBe(LEGACY_DECK);
+    expect(deckFor(" Owner@Example.COM ", OWNER)).toBe(LEGACY_DECK);
+    expect(deckFor(OWNER, " OWNER@example.com")).toBe(LEGACY_DECK);
+  });
+
+  it("gives everyone else a deck of their own, by their email", () => {
+    expect(deckFor("demo@example.com", OWNER)).toBe("learner:demo@example.com");
+    expect(deckFor("Demo@Example.com", OWNER)).toBe("learner:demo@example.com");
+    expect(deckFor("someone@example.com", OWNER)).not.toBe(deckFor("demo@example.com", OWNER));
+  });
+
+  it("has no deck for anyone while the owner is not set, so the owner's is never handed to someone else", () => {
+    for (const owner of ["", " "]) expect(deckFor(OWNER, owner)).toMatchObject({ status: 503 });
+  });
 });
 
 describe("decide, for an answer to check", () => {
   const check = (patch: Partial<Asked>) => asked({ path: "/check", method: "POST", ...patch });
 
-  it("checks an answer for a caller with the key", () => {
+  it("checks an answer for someone signed in, guarded as the deck is", () => {
     expect(decide(check({}), settings)).toEqual({ kind: "check" });
-  });
-
-  it("guards checking as it guards the deck", () => {
-    expect(decide(check({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
+    expect(decide(check({ email: null }), settings)).toMatchObject({ status: 401 });
     expect(decide(check({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(check({ fromPage: false }), settings)).toMatchObject({ status: 403 });
     expect(decide(check({ length: MAX_CHECK_BODY + 1 }), settings)).toMatchObject({ status: 413 });
-    expect(decide(check({}), { ...settings, key: "" })).toMatchObject({ status: 503 });
   });
 
-  it("says checking is off while the Worker has no Claude API key, but only to a caller with the key", () => {
+  it("says checking is off while the Worker has no Claude API key, but only to someone signed in", () => {
     const off = { ...settings, claude: false };
     expect(decide(check({}), off)).toMatchObject({ status: 503, error: expect.stringContaining("ANTHROPIC_API_KEY") });
-    expect(decide(check({ authorization: null }), off)).toMatchObject({ status: 401 });
-    expect(decide(asked({}), off)).toEqual({ kind: "read" });
-  });
-});
-
-describe("decide, behind Cloudflare Access", () => {
-  it("lets in only a caller with a token for the application, on every path", () => {
-    for (const path of ["/deck", "/check", "/associate", "/explain"]) {
-      const method = path === "/deck" ? "GET" : "POST";
-      expect(decide(asked({ path, method }), settings)).not.toMatchObject({ kind: "refuse" });
-      expect(decide(asked({ path, method, claims: null }), settings)).toMatchObject({
-        status: 401,
-        error: "There is no valid Cloudflare Access token.",
-      });
-    }
-    expect(decide(asked({ claims: { ...CLAIMS, aud: ["other"] } }), settings)).toMatchObject({ status: 401, error: "The Access token is for another application." });
-    expect(decide(asked({ claims: { ...CLAIMS, exp: NOW / 1000 - 120 } }), settings)).toMatchObject({ status: 401, error: "The Access token has expired." });
-  });
-
-  it("says which a 401 lacks, the key or an Access sign-in, so a page tells them apart", () => {
-    expect(decide(asked({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401, reason: "key" });
-    expect(decide(asked({ claims: null }), settings)).toMatchObject({ status: 401, reason: "access" });
-    expect(refusalBody({ kind: "refuse", status: 401, error: "No.", reason: "key" })).toEqual({ error: "No.", reason: "key" });
-    expect(refusalBody({ kind: "refuse", status: 429, error: "Slow down." })).toEqual({ error: "Slow down." });
-  });
-
-  it("checks Access before the key, so the key cannot be guessed at from outside it", () => {
-    expect(decide(asked({ claims: null, authorization: "Bearer guess" }), settings)).toMatchObject({ error: "There is no valid Cloudflare Access token." });
-  });
-
-  it("lets no one in while the Access application is not set", () => {
-    for (const access of [{ issuer: "", aud: "" }, { ...ACCESS, aud: "" }, { ...ACCESS, issuer: "" }]) {
-      expect(decide(asked({}), { ...settings, access })).toMatchObject({ status: 503, error: expect.stringContaining("ACCESS_AUD") });
-    }
-  });
-
-  it("waives Access on localhost only, where the Worker runs in development", () => {
-    const unset = { ...settings, access: { issuer: "", aud: "" } };
-    expect(decide(asked({ hostname: "localhost", claims: null }), unset)).toEqual({ kind: "read" });
-    for (const hostname of ["127.0.0.1", "localhost.example.com", "triangle-lab.example.workers.dev"]) {
-      expect(decide(asked({ hostname, claims: null }), settings)).toMatchObject({ status: 401 });
-    }
+    expect(decide(check({ email: null }), off)).toMatchObject({ status: 401 });
+    expect(decide(asked({}), off)).toEqual({ kind: "read", deck: LEGACY_DECK });
   });
 });
 
 describe("decide, for a free association to read", () => {
   const associate = (patch: Partial<Asked>) => asked({ path: "/associate", method: "POST", ...patch });
 
-  it("reads a free association for a caller with the key, by POST only", () => {
+  it("reads a free association for someone signed in, by POST only, with a size of its own", () => {
     expect(decide(associate({}), settings)).toEqual({ kind: "associate" });
     expect(decide(associate({ method: "GET" }), settings)).toMatchObject({ status: 405 });
-  });
-
-  it("guards reading as it guards checking, with a size of its own", () => {
-    expect(decide(associate({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
-    expect(decide(associate({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(associate({ email: null }), settings)).toMatchObject({ status: 401 });
     expect(decide(associate({ length: MAX_ASSOCIATE_BODY }), settings)).toEqual({ kind: "associate" });
     expect(decide(associate({ length: MAX_ASSOCIATE_BODY + 1 }), settings)).toMatchObject({ status: 413, error: "That is too long to read." });
   });
@@ -152,12 +120,10 @@ describe("decide, for a free association to read", () => {
 describe("decide, for an explanation to check", () => {
   const explain = (patch: Partial<Asked>) => asked({ path: "/explain", method: "POST", ...patch });
 
-  it("checks an explanation for a caller with the key, by POST only, guarded as checking is", () => {
+  it("checks an explanation for someone signed in, by POST only, guarded as checking is", () => {
     expect(decide(explain({}), settings)).toEqual({ kind: "explain" });
     expect(decide(explain({ method: "GET" }), settings)).toMatchObject({ status: 405 });
-    expect(decide(explain({ authorization: "Bearer guess" }), settings)).toMatchObject({ status: 401 });
-    expect(decide(explain({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
-    expect(decide(explain({ length: MAX_EXPLAIN_BODY }), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({ email: null }), settings)).toMatchObject({ status: 401 });
     expect(decide(explain({ length: MAX_EXPLAIN_BODY + 1 }), settings)).toMatchObject({ status: 413 });
   });
 
@@ -166,17 +132,6 @@ describe("decide, for an explanation to check", () => {
       status: 503,
       error: expect.stringMatching(/^Checking explanations is off.*ANTHROPIC_API_KEY/),
     });
-  });
-});
-
-describe("keyMatches", () => {
-  it("takes only the exact key, as a bearer token", () => {
-    expect(keyMatches(`Bearer ${KEY}`, KEY)).toBe(true);
-    const nearly = [KEY.slice(1), `${KEY}!`, `K${KEY.slice(1)}`];
-    for (const header of [KEY, ...nearly.map((k) => `Bearer ${k}`), `Basic ${KEY}`, "", null]) {
-      expect(keyMatches(header, KEY)).toBe(false);
-    }
-    expect(keyMatches("Bearer ", "")).toBe(false);
   });
 });
 
@@ -194,6 +149,13 @@ describe("datedAhead", () => {
   it("checks when the free association last changed too", () => {
     const now = 1_000_000;
     const deck = (updated: number): Deck => ({ cards: [], removed: [], writing: { text: "Hi", read: null, updated } });
+    expect(datedAhead(deck(now + CLOCK_SLACK_MS), now)).toBe(false);
+    expect(datedAhead(deck(now + CLOCK_SLACK_MS + 1), now)).toBe(true);
+  });
+
+  it("checks when each explanation last changed too", () => {
+    const now = 1_000_000;
+    const deck = (updated: number): Deck => ({ cards: [], removed: [], explanations: [{ lesson: "medians", text: "Hi", checked: null, updated }] });
     expect(datedAhead(deck(now + CLOCK_SLACK_MS), now)).toBe(false);
     expect(datedAhead(deck(now + CLOCK_SLACK_MS + 1), now)).toBe(true);
   });

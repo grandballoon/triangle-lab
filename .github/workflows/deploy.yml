@@ -26,7 +26,7 @@ jobs:
           cache: npm
       - run: npm ci
       # Stops here while the Access application is not set in wrangler.jsonc.
-      - run: node tools/access.ts
+      - run: node tools/deploy-guard.ts
       - run: npm test
       - run: npm run build
       # The token needs the "Edit Cloudflare Workers" permissions; both values

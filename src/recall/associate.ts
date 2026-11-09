@@ -20,7 +20,7 @@
 import { lessons } from "../lessons.ts";
 import { SIGNED_OUT } from "./check.ts";
 import { MAX_WRITING, readReading, type Deck, type Reading, type Writing } from "./deck.ts";
-import { barredBy } from "./sync.ts";
+import { signedOut } from "./sync.ts";
 
 /** What the page sends to have a free association read. */
 export interface AssociateRequest {
@@ -34,7 +34,7 @@ export interface AssociateRequest {
 export type ReadingState =
   | { kind: "reading" }
   | { kind: "done"; reading: Reading }
-  /** `signIn` when the site's Access sign-in has run out, so the page offers to sign in again. */
+  /** `signIn` when the learner is signed out, so the page offers to sign in. */
   | { kind: "failed"; error: string; signIn?: true };
 
 /** The free association on show, as written and read so far. */
@@ -74,9 +74,7 @@ export function readAssociateRequest(raw: unknown): AssociateRequest | null {
 export function readAssociateReply(answer: { status: number; body: unknown } | null): ReadingState {
   if (!answer) return { kind: "failed", error: "Can't reach the server to read this." };
   const { status, body } = answer;
-  const barred = barredBy(answer);
-  if (barred === "key") return { kind: "failed", error: "The server doesn't take this browser's sync key." };
-  if (barred === "access") return { kind: "failed", error: SIGNED_OUT, signIn: true };
+  if (signedOut(answer)) return { kind: "failed", error: SIGNED_OUT, signIn: true };
   if (status >= 200 && status < 300) {
     const reading = readReading(body);
     return reading ? { kind: "done", reading } : { kind: "failed", error: "The reading came back unreadable." };

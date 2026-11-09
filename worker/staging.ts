@@ -14,8 +14,7 @@ import { DurableObject } from "cloudflare:workers";
 import { parseEntry, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import { homeOf, listing, rewriteStep, stepsIn } from "../src/dev/steps/source.ts";
 import { parseEdit, type Listing, type SaveReply, type StepEdit } from "../src/dev/steps/wire.ts";
-import production, { RecallDeck } from "./index.ts";
-import { refusalBody } from "./rules.ts";
+import production, { Accounts, RecallDeck } from "./index.ts";
 import { verifiedClaims } from "./access-keys.ts";
 import {
   commitBody,
@@ -31,7 +30,7 @@ import {
   type InboxItem,
 } from "./staging-rules.ts";
 
-export { RecallDeck };
+export { Accounts, RecallDeck };
 
 /** There is one reviewer, so one inbox. */
 const INBOX_NAME = "inbox";
@@ -63,7 +62,7 @@ export default {
 
     switch (decision.kind) {
       case "refuse":
-        return reply(decision.status, refusalBody(decision));
+        return reply(decision.status, { error: decision.error });
       case "list-steps": {
         const home = homeOf(decision.page);
         if (!home) return reply(404, { error: "This page has no steps." });

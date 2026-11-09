@@ -11,8 +11,9 @@
 // Worker's /explain (worker/explain.ts), which tells Claude what the lesson
 // teaches from the syllabus.
 //
-// Each lesson's explanation, and Claude's last check of it, are kept in the
-// browser (explain-panel.ts), to come back to; whether a check is under way
+// Each lesson's explanation, and Claude's last check of it that came back,
+// are kept in the recall deck (deck.ts KeptExplanation), which syncs them to
+// every device the learner uses; a check under way, or one that failed,
 // belongs to the page that asked, and is not kept.
 //
 // Pure, and shared by the page and the Worker, so both read the request by
@@ -20,7 +21,7 @@
 
 import { lessons } from "../lessons.ts";
 import { loadReview, type Review } from "./check.ts";
-import { MAX_ANSWER, type Grade } from "./deck.ts";
+import { explanationOf, MAX_ANSWER, setExplanation, type Deck, type Grade, type KeptExplanation } from "./deck.ts";
 
 /** What the page sends to have an explanation checked. */
 export interface ExplainRequest {
@@ -94,15 +95,51 @@ export function checkedAsItStands(e: Explanation): boolean {
   return e.review !== null && e.sent === e.text;
 }
 
-// --- Kept in the browser ------------------------------------------------------
+// --- Kept in the deck -------------------------------------------------------
 
-/** The explanation as kept: a check still under way is dropped, since its request went with the page. */
-export function keepExplanation(e: Explanation): Explanation {
-  return e.review?.kind === "checking" ? { ...e, review: null, sent: null } : e;
+/** The explanation of `lesson` the deck holds, as the page shows it. */
+export function explanationIn(deck: Deck, lesson: string): Explanation {
+  const kept = explanationOf(deck, lesson);
+  if (!kept) return EMPTY_EXPLANATION;
+  const { text, checked } = kept;
+  return checked ? { text, review: { kind: "done", verdict: checked.verdict }, sent: checked.text } : { text, review: null, sent: null };
 }
 
-/** Read an explanation as kept, or the empty one if `raw` is not one. */
-export function readExplanation(raw: unknown): Explanation {
+/**
+ * Keep `e` as the explanation of `lesson` in the deck, dated `now` if what is
+ * kept changes. Only a check that came back is kept: while one is under way,
+ * or after one has failed, the deck keeps the last that came back.
+ */
+export function keepExplanation(deck: Deck, lesson: string, e: Explanation, now: number): Deck {
+  const held = explanationOf(deck, lesson);
+  const text = e.text.slice(0, MAX_ANSWER);
+  const checked: KeptExplanation["checked"] =
+    e.review?.kind === "done" && e.sent !== null ? { text: e.sent.slice(0, MAX_ANSWER), verdict: e.review.verdict } : (held?.checked ?? null);
+  const same = held ? held.text === text && JSON.stringify(held.checked) === JSON.stringify(checked) : !text && !checked;
+  return same ? deck : setExplanation(deck, { lesson, text, checked, updated: now });
+}
+
+/**
+ * The explanation of `lesson` to show once the deck has changed, as from
+ * another tab or device: `e` while the deck still holds what it keeps of it,
+ * so a check under way goes on, and otherwise the deck's.
+ */
+export function afterDeckChange(deck: Deck, lesson: string, e: Explanation): Explanation {
+  return keepExplanation(deck, lesson, e, 0) === deck ? e : explanationIn(deck, lesson);
+}
+
+/**
+ * Move an explanation an earlier version of the page kept in this browser
+ * alone into the deck, unless the deck holds one for the lesson. It is dated
+ * as early as can be, so any explanation written since, on any device, wins
+ * a merge with it.
+ */
+export function moveLocalExplanation(deck: Deck, lesson: string, raw: unknown): Deck {
+  return explanationOf(deck, lesson) ? deck : keepExplanation(deck, lesson, readLocalExplanation(raw), 0);
+}
+
+/** Read an explanation as an earlier version kept it in this browser, or the empty one if `raw` is not one. */
+export function readLocalExplanation(raw: unknown): Explanation {
   if (!isObject(raw) || typeof raw.text !== "string") return EMPTY_EXPLANATION;
   const review = loadReview(raw.review);
   const sent = review && typeof raw.sent === "string" ? raw.sent : null;

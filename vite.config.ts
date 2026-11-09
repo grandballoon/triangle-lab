@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { uiFeedback } from "./tools/feedback-plugin.ts";
 import { stepEditor } from "./tools/step-editor-plugin.ts";
-import { devSyncKey } from "./tools/sync-key-plugin.ts";
 
 // The hand-tracking WASM runtime is fetched from a CDN at run time and must
 // match the installed library exactly, so its version is read from the
@@ -19,18 +18,13 @@ const mediapipe = JSON.parse(
 // asks back the questions noted in the lessons (src/recall).
 //
 // The built site is served from the root of its own origin by the Worker in
-// wrangler.jsonc, which also holds the recall deck at /deck and calls Claude
-// at /check, /associate and /explain.
+// wrangler.jsonc, which also signs learners in at /auth/*, holds their recall
+// decks at /deck and calls Claude at /check, /associate and /explain.
 export default defineConfig({
   // The dev tools, on the dev server and in the staging build
   // (tools/staging-mode.ts): Alt-click any element to leave a comment, and
-  // "Edit steps" rewrites a lesson's step text in its source. Dev only: every
-  // page holds the local Worker's sync key, from .dev.vars.
-  plugins: [
-    uiFeedback(resolve(__dirname, "ui-feedback.md")),
-    stepEditor(__dirname),
-    devSyncKey(resolve(__dirname, ".dev.vars")),
-  ],
+  // "Edit steps" rewrites a lesson's step text in its source.
+  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md")), stepEditor(__dirname)],
   define: {
     __MEDIAPIPE_VERSION__: JSON.stringify(mediapipe.version),
   },
@@ -39,9 +33,11 @@ export default defineConfig({
     // webcam background works out of the box under `npm run dev`.
     host: "localhost",
     port: 5173,
-    // The recall deck, and the calls to Claude, from the Worker run by `npm run
-    // preview` beside the dev server, so both work in development as on the site.
+    // Signing in, the recall deck, and the calls to Claude, from the Worker run
+    // by `npm run preview` beside the dev server, so all work in development
+    // as on the site. The session cookie the Worker sets is the dev server's.
     proxy: {
+      "/auth": "http://localhost:8787",
       "/deck": "http://localhost:8787",
       "/check": "http://localhost:8787",
       "/associate": "http://localhost:8787",
