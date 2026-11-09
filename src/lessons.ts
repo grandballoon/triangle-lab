@@ -35,7 +35,7 @@ export type { Chapter, Lesson } from "./chapters/types.ts";
 // out here.
 const TRIANGLES_ORDER = [
   "angles", "equilateral", "isosceles", "scalene",
-  "perimeter", "medians", "bisectors", "incircle", "circumcircle", "altitudes",
+  "perimeter", "semiperimeter", "medians", "centroid", "bisectors", "incircle", "circumcircle", "altitudes",
   "inequality",
   "pythagoras", "pythagoras-square", "pythagoras-converse", "pythagorean-triples",
   "congruence", "right-congruence", "isosceles-base-angles", "chord-bisector",

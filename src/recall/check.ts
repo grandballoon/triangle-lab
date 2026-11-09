@@ -12,6 +12,7 @@
 // Pure, and shared by the page and the Worker, so both read the request and
 // the verdict by the same rules.
 
+import { ACCOUNT_STATUS } from "../auth/account.ts";
 import { MAX_ANSWER, MAX_QUESTION, readVerdict, type Verdict } from "./deck.ts";
 import { signedOut } from "./sync.ts";
 
@@ -28,8 +29,17 @@ export interface CheckRequest {
 export type Review =
   | { kind: "checking" }
   | { kind: "done"; verdict: Verdict }
-  /** `signIn` when the learner is signed out, so the page offers to sign in. */
-  | { kind: "failed"; error: string; signIn?: true };
+  | Failed;
+
+/** Where a learner goes to mend a call to Claude that failed: to sign in, or to their account (signin.ts `mendLink`). */
+export type Mend = "sign-in" | "account";
+
+/** A call to Claude that came back without what was asked; `mend` names the page that can fix it, which the page links to. */
+export interface Failed {
+  kind: "failed";
+  error: string;
+  mend?: Mend;
+}
 
 /** Why a request to Claude failed once the site's Access sign-in has run out. */
 export const SIGNED_OUT = "You're signed out. Sign in, then try once more.";
@@ -59,13 +69,20 @@ export function readCheckRequest(raw: unknown): CheckRequest | null {
 export function readCheckReply(answer: { status: number; body: unknown } | null): Review {
   if (!answer) return { kind: "failed", error: "Can't reach the server to check this." };
   const { status, body } = answer;
-  if (signedOut(answer)) return { kind: "failed", error: SIGNED_OUT, signIn: true };
   if (status >= 200 && status < 300) {
     const verdict = readVerdict(body);
     return verdict ? { kind: "done", verdict } : { kind: "failed", error: "The check came back unreadable." };
   }
+  return failedReply(answer);
+}
+
+/** Why a call to Claude answered `status`, not 2xx, with `body`: the Worker's own words, and where to mend it. */
+export function failedReply(answer: { status: number; body: unknown }): Failed {
+  if (signedOut(answer)) return { kind: "failed", error: SIGNED_OUT, mend: "sign-in" };
+  const { status, body } = answer;
   const said = isObject(body) && typeof body.error === "string" ? body.error : "";
-  return { kind: "failed", error: said || `The server answered ${status}.` };
+  const error = said || `The server answered ${status}.`;
+  return status === ACCOUNT_STATUS ? { kind: "failed", error, mend: "account" } : { kind: "failed", error };
 }
 
 /**
@@ -80,7 +97,9 @@ export function loadReview(raw: unknown): Review | null {
     return verdict ? { kind: "done", verdict } : null;
   }
   if (raw.kind === "failed" && typeof raw.error === "string") {
-    return raw.signIn === true ? { kind: "failed", error: raw.error, signIn: true } : { kind: "failed", error: raw.error };
+    // Kept before `mend` was, a review failed for being signed out said `signIn: true`.
+    const mend = raw.mend === "sign-in" || raw.mend === "account" ? raw.mend : raw.signIn === true ? "sign-in" : null;
+    return mend ? { kind: "failed", error: raw.error, mend } : { kind: "failed", error: raw.error };
   }
   return null;
 }

@@ -4,36 +4,6 @@
 
 import type { Readout } from "./lab/scene.ts";
 
-// --- Perimeter ----------------------------------------------------------------
-
-export interface PerimeterWalk {
-  name: string;
-  /** The three side lengths in the order the knob walks them, as written on the figure. */
-  sides: readonly [number, number, number];
-  /** How many sides the knob has finished, 0 to 3. */
-  walked: number;
-  /** Whether the knob has walked half the perimeter. */
-  halfway: boolean;
-}
-
-/**
- * One triangle's row: the sides walked so far adding up to p, the
- * semiperimeter once the knob is past halfway, and both in full once the
- * knob is home. Sums are of the lengths as written, so they add up on screen.
- */
-export function perimeterReadout({ name, sides, walked, halfway }: PerimeterWalk): Readout {
-  const label = `${name} triangle`;
-  const done = sides.slice(0, Math.min(walked, 3));
-  if (done.length === 0) return { label, tex: "p = 0", tone: "dim" };
-  const p = done.reduce((x, y) => x + y, 0);
-  const sum = done.length > 1 ? `${done.map((x) => x.toFixed(1)).join(" + ")} = ` : "";
-  const perimeter = `p = ${sum}${p.toFixed(1)}`;
-  const s = fmt(sides.reduce((x, y) => x + y, 0) / 2);
-  if (walked >= 3) return { label, tex: `${perimeter},\\quad s = \\tfrac{p}{2} = ${s}`, tone: "good" };
-  if (halfway) return { label, tex: `${perimeter},\\quad \\text{halfway round: } s = ${s}` };
-  return { label, tex: perimeter };
-}
-
 // --- The triangle inequality --------------------------------------------------
 
 /** Below this slack (sum of two sides minus the third) a triangle is a straight line. */
@@ -426,9 +396,4 @@ export function tableReadouts(theta: number, snap: number | null): Readout[] {
       }),
     ),
   ];
-}
-
-/** Up to two decimal places, without trailing zeros. */
-function fmt(x: number): string {
-  return String(Math.round(x * 100) / 100);
 }

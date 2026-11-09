@@ -44,37 +44,66 @@ export const trianglesClassic: Lesson[] = [
   {
     slug: "perimeter",
     part: "Parts · One",
-    name: "Perimeter & Semiperimeter",
-    desc: "Drag the knob around the edge and watch p and s add up.",
+    name: "Perimeter",
+    desc: "Walk a knob all the way round the edge.",
     accent: "#60a5fa",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />`,
+    lab: true,
+  },
+  {
+    slug: "semiperimeter",
+    part: "Parts · Two",
+    name: "Semiperimeter",
+    desc: "Walk a knob halfway round the edge.",
+    accent: "#ffd43b",
+    icon: `<polyline points="27,26 5,26 16,6" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+      <line x1="16" y1="6" x2="27" y2="26" stroke="currentColor"
+        stroke-width="1.5" stroke-dasharray="3 3" />
+      <circle cx="16" cy="6" r="2.4" fill="currentColor" />`,
+    lab: true,
   },
   {
     slug: "medians",
-    part: "Parts · Two",
+    part: "Parts · Three",
     name: "Medians",
-    desc: "Pull each vertex to the opposite midpoint until they meet at G.",
+    desc: "Lock a knob on a side's midpoint and join it to the corner opposite.",
     accent: "#c084fc",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />
-      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="2" />
+      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="2" />`,
+    lab: true,
+  },
+  {
+    slug: "centroid",
+    part: "Parts · Four",
+    name: "Centroid",
+    desc: "See the three medians meet at one point, G.",
+    accent: "#fb923c",
+    icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" />
+      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="1.5" />
+      <line x1="5" y1="26" x2="21.5" y2="16" stroke="currentColor" stroke-width="1.5" />
+      <line x1="27" y1="26" x2="10.5" y2="16" stroke="currentColor" stroke-width="1.5" />
       <circle cx="16" cy="19.3" r="2.4" fill="currentColor" />`,
+    lab: true,
   },
   {
     slug: "bisectors",
-    part: "Parts · Three",
+    part: "Parts · Five",
     name: "Angle Bisectors",
-    desc: "Slide each knob until the two half-angles match.",
+    desc: "Slide a knob until the two halves of an angle match.",
     accent: "#22d3ee",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />
       <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor"
         stroke-width="2" stroke-dasharray="3 3" />`,
+    lab: true,
   },
   {
     slug: "altitudes",
-    part: "Parts · Four",
+    part: "Parts · Six",
     name: "Altitudes",
     desc: "Drop a perpendicular from each vertex and find H.",
     accent: "#fb7185",

@@ -29,7 +29,7 @@ describe("step links", () => {
   });
 
   it("lead from a card to its lesson and step", () => {
-    expect(sourceHref({ lesson: "medians", step: 1, stepTitle: "" })).toBe("medians.html#step-2");
+    expect(sourceHref({ lesson: "medians", step: 1, stepTitle: "" })).toBe("lab.html?lesson=medians#step-2");
     expect(sourceHref({ lesson: "gone", step: 1, stepTitle: "" })).toBeNull();
   });
 });

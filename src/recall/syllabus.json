@@ -2,13 +2,14 @@
   "about": "Written by the /syllabus skill in Claude Code (.claude/skills/syllabus/SKILL.md). Do not edit by hand: run /syllabus.",
   "lessons": {
     "circle-parts": {
-      "source": "7cb44f11358f",
+      "source": "5f0c60327e3b",
       "teaches": [
-        "A radius is a segment from the centre to the circle; a diameter is a chord through the centre, two radii end to end.",
-        "A chord is a segment joining two points of the circle; a secant is a line crossing the circle twice.",
-        "A tangent is a line that touches the circle at exactly one point.",
-        "An arc is a piece of the circle; two points split it into a minor and a major arc.",
-        "A sector is the region between two radii and their arc; a circular segment is the region between a chord and its arc."
+        "A radius $r$ joins the centre to the circle; a diameter is a chord through the centre, $d = 2r$.",
+        "The circumference is the distance round the circle, $C = 2\\pi r$; the area inside it is $A = \\pi r^2$.",
+        "A chord joins two points of the circle and is never longer than a diameter; a secant is a line crossing the circle twice; a tangent touches it at exactly one point, at right angles to the radius there.",
+        "An arc is a piece of the circle, and two points split it into a minor and a major arc whose measures add to $360^\\circ$.",
+        "A sector is the region between two radii and their arc; a circular segment is the region between a chord and its arc.",
+        "A central angle has its vertex at the centre; an inscribed angle has its vertex on the circle and its sides as chords."
       ],
       "builds_on": []
     },
@@ -220,30 +221,56 @@
       ]
     },
     "perimeter": {
-      "source": "2a38fd363d7e",
+      "source": "6b833b60ef5a",
       "teaches": [
-        "The perimeter of a triangle is the sum of its sides, $p = a + b + c$.",
-        "The semiperimeter is half the perimeter, $s = \\frac{p}{2}$."
+        "The perimeter of a triangle is the distance all the way round it, the sum of its sides, $p = a + b + c$."
       ],
       "builds_on": []
+    },
+    "semiperimeter": {
+      "source": "11788896334d",
+      "teaches": [
+        "The semiperimeter is half the perimeter, $s = \\frac{a + b + c}{2}$.",
+        "Heron's formula gives a triangle's area from its sides alone: $\\text{Area} = \\sqrt{s(s - a)(s - b)(s - c)}$."
+      ],
+      "builds_on": [
+        "perimeter"
+      ]
     },
     "medians": {
-      "source": "5d97aea3e5e1",
+      "source": "97ecf6ba1a89",
       "teaches": [
         "A median joins a vertex to the midpoint of the opposite side.",
-        "The three medians of a triangle meet at a single point, the centroid $G$."
+        "A median splits a triangle into two pieces of equal area, since they share half the side as base and the same height.",
+        "In an isosceles triangle the median from the apex meets the base at a right angle."
       ],
-      "builds_on": []
+      "builds_on": [
+        "isosceles"
+      ]
+    },
+    "centroid": {
+      "source": "b274bff7e95b",
+      "teaches": [
+        "The three medians of a triangle meet at a single point, the centroid $G$.",
+        "$G$ lies two thirds of the way along each median from its vertex, cutting it in the ratio $2 : 1$.",
+        "The centroid is the triangle's balance point, and its coordinates are the average of the three corners'."
+      ],
+      "builds_on": [
+        "medians"
+      ]
     },
     "bisectors": {
-      "source": "07a5835021c6",
+      "source": "f66ca0df683a",
       "teaches": [
-        "An angle bisector of a triangle runs from a vertex to the opposite side and splits the angle at that vertex into two equal angles."
+        "An angle bisector splits an angle into two equal angles; in a triangle it runs from a vertex to the opposite side.",
+        "In an isosceles triangle the bisector of the apex angle meets the base at a right angle, at its midpoint."
       ],
-      "builds_on": []
+      "builds_on": [
+        "isosceles"
+      ]
     },
     "incircle": {
-      "source": "c5cb118d9cc6",
+      "source": "c9537fc81172",
       "teaches": [
         "Every point on the bisector of an angle is equally far from the angle's two sides, and every point equally far from both sides lies on the bisector.",
         "The three angle bisectors of a triangle meet at a single point $I$, the incenter.",
@@ -270,7 +297,7 @@
       ]
     },
     "altitudes": {
-      "source": "3fd882d7694a",
+      "source": "8b5172d5e3dc",
       "teaches": [
         "An altitude $h$ runs from a vertex perpendicular to the line through the opposite side.",
         "In an obtuse triangle the altitudes from the two acute vertices land on the extensions of the opposite sides, outside the triangle.",

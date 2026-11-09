@@ -19,6 +19,11 @@ export type View =
   | { kind: "redeem"; token: string; error: string | null }
   | { kind: "signed-in"; email: string; justNow: boolean };
 
+/** The page's heading: once signed in, it is the learner's account page. */
+export function headingOf(view: View): string {
+  return view.kind === "signed-in" ? "Your account" : "Sign in";
+}
+
 /** A reply as the page reads it: its status and parsed body, or null when there was none, as offline. */
 export type Answer = { status: number; body: unknown } | null;
 

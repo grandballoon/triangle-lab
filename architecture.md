@@ -61,7 +61,8 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 ## Two kinds of lesson
 
-**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
+**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are thirteen of the original triangle lessons.
+Perimeter, medians and angle bisectors started as standalone pages too, and were rebuilt as lab lessons; `public/_redirects` sends their old addresses on to the lab.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
 They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts` and then its asides from `src/asides.ts`, and, for a lesson with live numbers, the formula band.
 The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
@@ -71,7 +72,7 @@ The lesson and `page.ts` are separate scripts and meet only in `src/chrome.ts`, 
 `page.ts` sets the current step there, which a lesson may read to hold part of its figure back (`pythagoras.ts` brings in its proof at the step that scrubs it).
 A lesson with live numbers asks for the formula band there while its module is first evaluated, which is why its script must come first, and hands it fresh rows each frame.
 Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
-The band is used by perimeter, the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
+The band is used by the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
 Each standalone figure sizes itself for anything from a phone to a desktop.
 `src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
@@ -79,6 +80,11 @@ On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`).
 It never touches the DOM.
+
+A lesson that defines terms, one at a time, asks the scene for a row of them with `s.terms`: a `Choice` whose option n is step n.
+Picking a term goes to its step, and moving to a step picks its term (`followStep`), so the pills at the top and the step column always agree, and the lesson draws only the term picked.
+`circle-parts` defines its parts this way, and the triangle-parts lessons (perimeter, semiperimeter, medians, centroid, bisectors) define one term each, with edge cases such as the isosceles apex as further pills.
+Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, over the pure walking and locking in `lab/kit/triangle-parts.ts`.
 
 | File | Role |
 | --- | --- |
@@ -317,8 +323,9 @@ While syncing cannot happen, nothing is lost: the deck is still in `localStorage
 Every request to the Worker carries the learner's session cookie (see "Signing in"), which a page's script never sees; signed out, or once the sign-in has run out after 30 days, the Worker answers 401.
 On staging, Cloudflare Access may answer first, before the Worker sees the request: with a 401, since every request says it is one (`X-Requested-With`), or else a redirect to its sign-in page, which the page does not follow.
 Any of these stands syncing as signed out (`signedOut` in `sync.ts`): the deck is kept here as when offline, and syncing goes on trying at every cause it has, so it picks up once the learner signs in.
-Until the first reply, syncing stands as under way, and checks and readings may be asked for; once signed out, the pages hide them (`canCheck`), and one asked for meanwhile fails saying so (`signIn`).
+Until the first reply, syncing stands as under way, and checks and readings may be asked for; once signed out, the pages hide them (`canCheck`), and one asked for meanwhile fails saying so (`mend: "sign-in"`).
 Where a page says either, it offers to sign in (`signin.ts`): a link opening `signin.html` in a new tab.
+A call to Claude the Worker refuses with 402, for want of beta credit or of a working key of the learner's own, fails with `mend: "account"`, and the page links to the learner's account on the same page instead (`failedReply` in `check.ts`).
 The tab they came from keeps everything they wrote, syncs when it gets the focus back, and can ask Claude again.
 The recall page can also save the deck to a JSON file and load one back, merged the same way.
 A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background, and because that is how the sitting goes to the lesson and back (see "The review beside the lesson").
@@ -328,10 +335,11 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate`, `/explain` and `/auth/*` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the session cookie belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck`, `/check`, `/associate`, `/explain` and `/auth/*` on to the Worker that `npm run preview` runs on port 8787; a cookie belongs to a host, not a port, so a sign-in made through either serves both.
+The static redirects in `public/_redirects`, copied into the build, send the addresses of lessons that moved into the lab on to them.
+In development, Vite sends `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` on to the Worker that `npm run preview` runs on port 8787; a cookie belongs to a host, not a port, so a sign-in made through either serves both.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must come from the site's own pages, which send `X-Requested-With`, or it is refused with 403: no other site's page can send that header without the Worker's leave, which it never gives, so none can make a signed-in learner's browser call it.
@@ -384,11 +392,29 @@ It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a s
 The call (`explain.ts`) tells Claude the lesson: its chapter, name and what the learner does in it, and what it teaches where the syllabus says, so the explanation is judged against the lesson.
 It asks for the verdict to the same schema as a check, on the same model at the same effort, and reads the reply with the same `verdictOf`.
 
+### Paying for Claude (`billing.ts`, `vault.ts`, `src/auth/account.ts`)
+
+Every call to Claude is paid for in one of three ways, decided afresh on each call (`fund`): with the learner's own Claude API key once they have saved one, unmetered; with the site's key for the owner, unmetered; or with the site's key for anyone else, out of their beta credit.
+Beta credit is the `BETA_CREDIT_USD` var, or the learner's own amount in the `CREDITS` secret, and is counted in micros, millionths of a dollar, so sums never drift.
+What a call cost is worked out from the tokens its reply says it used (`costOf`), at the list price of each model that served it: a reply a fallback served lists each model's run in `usage.iterations`.
+All beta spending together stops at `MONTHLY_CAP_USD` a calendar month (UTC), so a slip in the metering can never run up an open-ended bill.
+With no credit left, or the month's cap reached, the call is refused with 402 before Claude is asked; a learner's own key that Claude turns down is refused with 402 too.
+A call is let through while any credit is left and charged after, so the last call may take a learner a little below nothing; `CHECK_LIMITER` bounds how far.
+
+`GET /account` says how the signed-in learner's calls are paid for (a `ClaudeAccount`), `PUT` saves a key of their own, and `DELETE` forgets it; the sign-in page shows it, once signed in, as the learner's account.
+A key is saved only once Claude takes it (a `GET` of the model it will be asked for), and is kept encrypted with the `VAULT_KEY` secret (AES-GCM, `vault.ts`), bound to the learner's email so it cannot be moved to another's row.
+It is never sent back: the page sees only its last four characters.
+A key that will not decrypt, as after `VAULT_KEY` is replaced, counts as none, and the learner's calls fall back to their credit.
+The `Accounts` object keeps, beside sign-ins, each learner's sealed key and what they have spent, and what beta credit has spent each month; a charge adds to both in one transaction.
+The `claude_usage` log line of every call also says who paid (`paid_by`) and what it cost (`micros`).
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether it is the site's own and signed in, the learner's deck, the rate limit, size and clock checks | yes |
 | `auth.ts` | Signing in: what to do with a request to `/auth/*`, the invite list, the session cookie, and the sign-in email | yes |
-| `accounts.ts` | The `Accounts` object, holding sign-in links and sessions by their tokens' hashes | no |
+| `accounts.ts` | The `Accounts` object, holding sign-in links and sessions by their tokens' hashes, learners' sealed keys, and what beta credit has spent | no |
+| `billing.ts` | Who pays for a call to Claude, what it cost, the credit each learner has, and the key a learner pastes | yes |
+| `vault.ts` | Learners' own Claude API keys, encrypted with `VAULT_KEY` and opened again | no (WebCrypto) |
 | `access.ts` | Cloudflare Access tokens taken apart and their claims checked, for staging's dev tools | yes |
 | `access-keys.ts` | A token's signature checked against the Access team's published keys | no |
 | `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
@@ -550,7 +576,9 @@ Each reload takes off what the last load of the page listened to on the window a
 - `tools/deploy-guard.test.ts`: the deploy guard, which vars `wrangler.jsonc` leaves empty that the Worker cannot run without.
 - `worker/check.test.ts`: the request to Claude, reading its verdict, a refusal or a failed call, and the usage line logged for each call.
 - `worker/associate.test.ts`: the course as Claude is told it, with what the syllabus says and the lessons within reach, the request to read a free association, and reading its reply or a refusal.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and signing in: the link emailed only to an invited address, spent once, the session it makes, who, signing out, a demo account's deck of its own, and nothing served without a session or from another site.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and signing in: the link emailed only to an invited address, spent once, the session it makes, who, signing out, a demo account's deck of its own, and nothing served without a session or from another site; and paying for Claude: calls metered out of beta credit and refused once it is spent, a learner's own key tried, kept, used unmetered, turned down and removed, and the owner unmetered.
+- `worker/billing.test.ts`: what a call cost at each model's rates, cache writes and fallbacks included, the credit each learner has, who pays for a call or why no one can, the account page's account, and reading a pasted key.
+- `worker/vault.test.ts`: a learner's key sealed and opened again, and not opened for another learner, with another `VAULT_KEY`, or once altered.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
@@ -561,6 +589,7 @@ Each reload takes off what the last load of the page listened to on the window a
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/dev-vars.test.ts`: reading a value from `.dev.vars`.
 - `src/auth/signin.test.ts`: the sign-in page's views, from the address it opens at and each answer from `/auth/*`.
+- `src/auth/account.test.ts`: the account page's section on paying for Claude, from each answer from `/account`, and what it says of credit and keys.
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
 

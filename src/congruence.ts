@@ -16,7 +16,7 @@
 // one at a time, at full size: the one the current step is about (the steps
 // in directions.ts go intro, SSS, SAS, ASA, SSA).
 //
-// Self-contained on purpose, matching perimeter.ts / inequality.ts / etc. —
+// Self-contained on purpose, matching altitudes.ts / inequality.ts / etc. —
 // only the webcam device, the shared grid layout, the page's formula band,
 // the small-screen helpers and this file's own little vector helpers are
 // involved.

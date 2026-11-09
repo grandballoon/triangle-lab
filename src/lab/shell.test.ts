@@ -127,6 +127,33 @@ describe("Shell", () => {
     expect(shell.currentStep()?.step).toBe(2);
   });
 
+  it("keeps a row of terms on the term of the step on show, and goes to a term's step when it is picked", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    let shown = "";
+    shell.load({ eyebrow: "Circles", title: "Parts", accent: "#38d9a9" }, (s) => {
+      const part = s.terms("Part", ["radius", "chord", "arc"] as const);
+      return {
+        steps: part.options.map((title) => ({ title, text: title })),
+        likes: [],
+        uses: [],
+        draw: () => void (shown = part.value),
+      };
+    });
+    tick();
+    const chips = () => [...el.controls.querySelectorAll<HTMLButtonElement>(".chip")];
+    const pressed = () => chips().find((c) => c.getAttribute("aria-pressed") === "true")?.textContent;
+    expect(pressed()).toBe("radius");
+
+    shell.stepBy(1);
+    tick();
+    expect([shown, pressed(), currentStep(el)]).toEqual(["chord", "chord", "1"]);
+
+    chips()[2].click();
+    tick();
+    expect([shown, pressed(), currentStep(el)]).toEqual(["arc", "arc", "2"]);
+  });
+
   it("makes a pressed step current and scrolls the list to it", () => {
     const { el } = loaded();
     layOut(el, 200);

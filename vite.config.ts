@@ -19,7 +19,8 @@ const mediapipe = JSON.parse(
 //
 // The built site is served from the root of its own origin by the Worker in
 // wrangler.jsonc, which also signs learners in at /auth/*, holds their recall
-// decks at /deck and calls Claude at /check, /associate and /explain.
+// decks at /deck, calls Claude at /check, /associate and /explain, and says
+// how those calls are paid for at /account.
 export default defineConfig({
   // The dev tools, on the dev server and in the staging build
   // (tools/staging-mode.ts): Alt-click any element to leave a comment, and
@@ -42,6 +43,7 @@ export default defineConfig({
       "/check": "http://localhost:8787",
       "/associate": "http://localhost:8787",
       "/explain": "http://localhost:8787",
+      "/account": "http://localhost:8787",
     },
   },
   build: {
@@ -56,9 +58,6 @@ export default defineConfig({
         equilateral: resolve(__dirname, "equilateral.html"),
         isosceles: resolve(__dirname, "isosceles.html"),
         scalene: resolve(__dirname, "scalene.html"),
-        perimeter: resolve(__dirname, "perimeter.html"),
-        medians: resolve(__dirname, "medians.html"),
-        bisectors: resolve(__dirname, "bisectors.html"),
         altitudes: resolve(__dirname, "altitudes.html"),
         inequality: resolve(__dirname, "inequality.html"),
         pythagoras: resolve(__dirname, "pythagoras.html"),
