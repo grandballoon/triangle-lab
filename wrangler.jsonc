@@ -64,7 +64,7 @@
 		// The address sign-in links are sent from, on a domain onboarded to
 		// Cloudflare Email Sending. While it is empty no one can sign in, and
 		// `npm run deploy` stops (tools/deploy-guard.ts).
-		"SENDER": ""
+		"SENDER": "signin@geometryclub.app"
 	},
 	"env": {
 		// Staging, `npx wrangler deploy --env staging` (the Worker
@@ -103,7 +103,7 @@
 			"secrets": { "required": ["ANTHROPIC_API_KEY", "OWNER_EMAIL", "INVITES", "GITHUB_TOKEN"] },
 			"vars": {
 				"ANTHROPIC_BASE_URL": "https://api.anthropic.com",
-				"SENDER": "",
+				"SENDER": "signin@geometryclub.app",
 				// Where step edits are committed. A push there redeploys
 				// staging (.github/workflows/staging.yml).
 				"GITHUB_API_URL": "https://api.github.com",
