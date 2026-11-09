@@ -2,7 +2,7 @@
 // to send, and how each state reads.
 
 import { describe, expect, it } from "vitest";
-import { editCard, newCard, removeCard, saveDeck, setWriting, type Deck } from "./deck.ts";
+import { editCard, newCard, removeCard, saveDeck, setExplanation, setWriting, type Deck } from "./deck.ts";
 import { afterReply, barredBy, hasNews, readReply, REDIRECTED, sendWhen, syncLabel } from "./sync.ts";
 
 const T0 = 1_800_000_000_000;
@@ -72,6 +72,12 @@ describe("sendWhen", () => {
     expect(sendWhen(setWriting(deck, writing), deck)).toBe("later");
     expect(sendWhen(setWriting(editCard(deck, "a", "Why?", T0 + 1), writing), deck)).toBe("soon");
     expect(sendWhen(setWriting(deck, writing), null)).toBe("soon");
+  });
+
+  it("sends an explanation alone once the writing pauses, as it does the free association", () => {
+    const explained = setExplanation(deck, { lesson: "medians", text: "Hi", checked: null, updated: T0 + 1 });
+    expect(sendWhen(explained, deck)).toBe("later");
+    expect(sendWhen(editCard(explained, "a", "Why?", T0 + 1), deck)).toBe("soon");
   });
 });
 

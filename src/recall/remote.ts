@@ -29,9 +29,10 @@ export const SYNC_KEY_STORAGE = "triangle-lab:recall-sync-key";
 export const SETTLE_MS = 1500;
 
 /**
- * The same for a change to the free association alone, which comes with
- * every key pressed: it is sent once the writing pauses, or the tab is
- * hidden, rather than every second and a half while it goes on.
+ * The same for a change to writing alone, the free association or a lesson's
+ * explanation, which comes with every key pressed: it is sent once the
+ * writing pauses, or the tab is hidden, rather than every second and a half
+ * while it goes on.
  */
 export const WRITING_SETTLE_MS = 10_000;
 

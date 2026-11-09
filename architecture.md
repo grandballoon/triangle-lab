@@ -269,8 +269,8 @@ Both kinds of page mount it as they mount the recall pill, saying where the lear
 Once the browser has the sync key, the page sends the lesson, the step on show and the explanation to the Worker's `/explain`, and what comes back is a check's `Verdict`, shown as understood, partly there or not yet.
 Its remarks are highlighted on the words they quote, from a layer behind the text box, and listed under it, placed afresh as the explanation is corrected, as on a review answer (`remarks.ts`).
 As in a sitting, a check is of the explanation as it was sent (`sent`): editing keeps it, Check again asks afresh, and a reply is taken only if it is to the explanation as last sent (`settleCheck`).
-Each lesson's explanation and Claude's last check of it are kept in `localStorage`, by lesson, so they are there to come back to; a check under way is not kept.
-They stay in this browser rather than the deck: they are the learner's working, not something to be asked back.
+Each lesson's explanation and Claude's last check of it are kept in the deck, by lesson, so they sync to every device and are there to come back to; a check under way is not kept.
+Explanations kept by an earlier version in this browser alone are moved into the deck on load.
 
 | File | Role | Pure |
 | --- | --- | --- |

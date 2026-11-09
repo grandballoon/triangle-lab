@@ -2,19 +2,22 @@
 //
 // The Explain tab on a lesson page, against a DOM stand-in: an explanation is
 // sent with the lesson and step on show, Claude's remarks land on its words,
-// keys typed there never reach the lesson, and each lesson keeps its own.
+// keys typed there never reach the lesson, and each lesson keeps its own in
+// the recall deck, which syncs it.
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SIGNED_OUT, type Review } from "./check.ts";
-import type { Place } from "./deck.ts";
-import { EXPLAIN_STORAGE, mountExplain } from "./explain-panel.ts";
+import { explanationOf, setExplanation, type Place } from "./deck.ts";
+import { LOCAL_EXPLAIN_KEY, mountExplain } from "./explain-panel.ts";
 import type { ExplainRequest } from "./explain.ts";
+import { RecallStore } from "./store.ts";
 
 let place: Place | null;
 let pane: HTMLElement;
 let canCheck: boolean;
 let asked: ExplainRequest[];
 let answer: (review: Review) => void;
+let store: RecallStore;
 
 function mount() {
   document.body.innerHTML = "";
@@ -26,7 +29,8 @@ function mount() {
       return new Promise<Review>((done) => (answer = done));
     },
   };
-  const explain = mountExplain(column, () => place, sync);
+  store = new RecallStore();
+  const explain = mountExplain(column, () => place, { store, sync });
   const field = pane.querySelector("textarea")!;
   const check = pane.querySelector<HTMLButtonElement>(".explain-check")!;
   const type = (text: string): void => {
@@ -111,7 +115,35 @@ describe("the Explain tab", () => {
     place = { lesson: "medians", step: 0, stepTitle: "" };
     explain.refresh();
     expect(field.value).toBe("Medians meet.");
-    expect(JSON.parse(localStorage.getItem(`${EXPLAIN_STORAGE}medians`)!).text).toBe("Medians meet.");
+    expect(explanationOf(new RecallStore().get(), "medians")?.text).toBe("Medians meet.");
     expect(mount().field.value).toBe("Medians meet.");
+  });
+
+  it("keeps Claude's check in the deck, and shows it again after a reload", async () => {
+    const { check, type } = mount();
+    type("The medians meet at the incentre.");
+    check.click();
+    answer({ kind: "done", verdict: { grade: "shaky", feedback: "Nearly.", remarks: [{ quote: "incentre", note: "The centroid." }] } });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(explanationOf(store.get(), "medians")?.checked?.text).toBe("The medians meet at the incentre.");
+    mount();
+    expect(pane.querySelector(".explain-overall h3")!.textContent).toBe("Claude · Partly there");
+    expect(pane.querySelector(".explain-marks mark")!.textContent).toBe("incentre");
+  });
+
+  it("shows an explanation changed in another tab or on another device as it arrives", () => {
+    const { field, type } = mount();
+    type("Medians meet.");
+    store.update((d) => setExplanation(d, { lesson: "medians", text: "Written on the phone.", checked: null, updated: Date.now() + 1 }));
+    expect(field.value).toBe("Written on the phone.");
+  });
+
+  it("moves an explanation an earlier version kept in this browser alone into the deck", () => {
+    localStorage.setItem(`${LOCAL_EXPLAIN_KEY}medians`, JSON.stringify({ text: "Kept the old way.", review: null, sent: null }));
+    const { field } = mount();
+    expect(field.value).toBe("Kept the old way.");
+    expect(explanationOf(store.get(), "medians")?.text).toBe("Kept the old way.");
+    expect(localStorage.getItem(`${LOCAL_EXPLAIN_KEY}medians`)).toBeNull();
   });
 });

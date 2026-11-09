@@ -9,21 +9,25 @@
 // Both kinds of lesson page mount it, as they do the recall pill: page.ts for
 // a standalone lesson, the lab page's main.ts for a lab lesson, each saying
 // where the learner is through `where`. Each lesson's explanation and Claude's
-// last check of it are kept in this browser, so it is there to come back to.
+// last check of it are kept in the recall deck, which syncs them, so they are
+// there to come back to on any device; a change made in another tab or on
+// another device shows here as it arrives.
 //
 // The rules are pure (explain.ts, remarks.ts); this holds the state, renders
 // it and does the I/O.
 
 import "./explain.css";
 import type { Review } from "./check.ts";
-import type { Note, Place } from "./deck.ts";
+import { MAX_ANSWER, type Note, type Place } from "./deck.ts";
 import {
+  afterDeckChange,
   askCheck,
   checkedAsItStands,
   editExplanation,
   EMPTY_EXPLANATION,
+  explanationIn,
   keepExplanation,
-  readExplanation,
+  moveLocalExplanation,
   settleCheck,
   UNDERSTANDING,
   type Explanation,
@@ -33,9 +37,16 @@ import { lessonName, questionHtml, stepLabel } from "./labels.ts";
 import { placeRemarks, remarkAt, runsOf } from "./remarks.ts";
 import { openRecall, type RecallSync } from "./remote.ts";
 import { signInLink } from "./signin.ts";
+import type { RecallStore } from "./store.ts";
 
-/** Where each lesson's explanation is kept, after the lesson's slug. */
-export const EXPLAIN_STORAGE = "triangle-lab:explain:";
+/** Where an earlier version kept each lesson's explanation in this browser alone, after the lesson's slug; moved into the deck on mounting. */
+export const LOCAL_EXPLAIN_KEY = "triangle-lab:explain:";
+
+/** The page's deck and its sync, as openRecall gives them. */
+interface Recall {
+  store: Pick<RecallStore, "get" | "update" | "subscribe">;
+  sync: Pick<RecallSync, "canCheck" | "explain">;
+}
 
 /** The step column, which takes the pane under a tab of its own (lab/steps.ts). */
 interface Column {
@@ -51,8 +62,9 @@ export interface ExplainPane {
 export function mountExplain(
   column: Column,
   where: () => Place | null,
-  sync: Pick<RecallSync, "canCheck" | "explain"> = openRecall().sync,
+  { store, sync }: Recall = openRecall(),
 ): ExplainPane {
+  moveLocalExplanations(store);
   const doc = document;
   const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] => {
     const node = doc.createElement(tag);
@@ -75,6 +87,7 @@ export function mountExplain(
   marks.setAttribute("aria-hidden", "true");
   const field = el("textarea", "explain-text");
   field.rows = 5;
+  field.maxLength = MAX_ANSWER;
   field.setAttribute("aria-label", "Your explanation");
   field.placeholder = "In your own words…";
   paper.append(marks, field);
@@ -92,7 +105,7 @@ export function mountExplain(
   said.setAttribute("aria-live", "polite");
   pane.append(ask, note, paper, row, noKey, said);
 
-  /** Each lesson's explanation this page has shown, by slug, read from storage on first showing. */
+  /** Each lesson's explanation this page has shown, by slug, read from the deck on first showing. */
   const states = new Map<string, Explanation>();
   let slug: string | null = null;
   let places = placeRemarks("", []);
@@ -100,19 +113,16 @@ export function mountExplain(
   const stateOf = (lesson: string): Explanation => {
     let state = states.get(lesson);
     if (!state) {
-      state = readExplanation(readStored(lesson));
+      state = explanationIn(store.get(), lesson);
       states.set(lesson, state);
     }
     return state;
   };
 
+  // Storage blocked: the store keeps it for as long as the page is open.
   const set = (lesson: string, state: Explanation): void => {
     states.set(lesson, state);
-    try {
-      localStorage.setItem(EXPLAIN_STORAGE + lesson, JSON.stringify(keepExplanation(state)));
-    } catch {
-      // Storage blocked: kept for as long as the page is open.
-    }
+    store.update((deck) => keepExplanation(deck, lesson, state, Date.now()));
   };
 
   const current = (): Explanation => (slug ? stateOf(slug) : EMPTY_EXPLANATION);
@@ -216,6 +226,19 @@ export function mountExplain(
     pane.addEventListener(type, (e) => e.stopPropagation());
   }
 
+  // Another tab or device changed an explanation this page has shown.
+  store.subscribe((deck) => {
+    for (const [lesson, state] of states) {
+      const next = afterDeckChange(deck, lesson, state);
+      if (next === state) continue;
+      states.set(lesson, next);
+      if (lesson === slug) {
+        field.value = next.text;
+        paint();
+      }
+    }
+  });
+
   column.addPane("Explain", pane, () => {
     refresh();
     if (!touchFirst()) field.focus();
@@ -275,9 +298,22 @@ function quiet(text: string): HTMLElement {
   return p;
 }
 
-function readStored(lesson: string): unknown {
+/** Move the explanations an earlier version kept in this browser alone into the deck, which syncs them. */
+function moveLocalExplanations(store: Recall["store"]): void {
   try {
-    const text = localStorage.getItem(EXPLAIN_STORAGE + lesson);
+    const keys = Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i) ?? "");
+    for (const key of keys.filter((k) => k.startsWith(LOCAL_EXPLAIN_KEY))) {
+      const lesson = key.slice(LOCAL_EXPLAIN_KEY.length);
+      const raw = readJson(localStorage.getItem(key));
+      if (store.update((deck) => moveLocalExplanation(deck, lesson, raw))) localStorage.removeItem(key);
+    }
+  } catch {
+    // Storage blocked: nothing kept to move.
+  }
+}
+
+function readJson(text: string | null): unknown {
+  try {
     return text ? JSON.parse(text) : null;
   } catch {
     return null;

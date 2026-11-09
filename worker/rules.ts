@@ -158,7 +158,12 @@ export const CLAUDE_PATHS = [
  */
 export function datedAhead(deck: Deck, now: number): boolean {
   const limit = now + CLOCK_SLACK_MS;
-  return deck.cards.some((c) => c.updated > limit) || deck.removed.some((r) => r.at > limit) || (deck.writing?.updated ?? 0) > limit;
+  return (
+    deck.cards.some((c) => c.updated > limit) ||
+    deck.removed.some((r) => r.at > limit) ||
+    (deck.writing?.updated ?? 0) > limit ||
+    (deck.explanations ?? []).some((e) => e.updated > limit)
+  );
 }
 
 /** Whether `authorization` is `Bearer <key>`, compared in constant time. */

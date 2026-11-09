@@ -102,12 +102,13 @@ export function hasNews(deck: Deck, server: Deck | null): boolean {
 
 /**
  * How soon to send what `deck` holds that the Worker's copy lacks: "soon"
- * for questions, "later" when only the free association has changed, since
- * it changes with every key pressed, and null for nothing new.
+ * for questions, "later" when only writing has changed, the free association
+ * or an explanation, since that changes with every key pressed, and null for
+ * nothing new.
  */
 export function sendWhen(deck: Deck, server: Deck | null): "soon" | "later" | null {
   if (!hasNews(deck, server)) return null;
-  const writingOnly = server !== null && !hasNews({ ...deck, writing: server.writing }, server);
+  const writingOnly = server !== null && !hasNews({ ...deck, writing: server.writing, explanations: server.explanations }, server);
   return writingOnly ? "later" : "soon";
 }
 

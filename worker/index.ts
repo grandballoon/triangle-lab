@@ -7,7 +7,8 @@
 // this (wrangler.jsonc).
 //
 // One Durable Object holds the deck, a row per question in its SQLite
-// storage, and the free association in a table of its own. It merges each deck sent to it with the one it holds, using the
+// storage, and the free association and each lesson's explanation in tables
+// of their own. It merges each deck sent to it with the one it holds, using the
 // same rule the pages do (mergeDecks), so a device can send its whole deck at
 // any time, in any order with the others, and nothing is lost. Requests reach
 // the object one at a time, so two devices syncing at once cannot undo each
@@ -25,6 +26,7 @@ import {
   EMPTY_DECK,
   loadDeck,
   mergeDecks,
+  readKeptExplanation,
   readWriting,
   saveDeck,
   type Card,
@@ -161,6 +163,8 @@ export class RecallDeck extends DurableObject<Env> {
     );
     // At most one row: the free association (deck.ts Writing), once written.
     ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS writing (id INTEGER PRIMARY KEY CHECK (id = 0), body TEXT NOT NULL)");
+    // A row per lesson explained: its explanation (deck.ts KeptExplanation).
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS explanations (lesson TEXT PRIMARY KEY, body TEXT NOT NULL)");
   }
 
   read(): SavedDeck {
@@ -179,6 +183,9 @@ export class RecallDeck extends DurableObject<Env> {
       if (changed.writing) {
         this.ctx.storage.sql.exec("INSERT OR REPLACE INTO writing (id, body) VALUES (0, ?)", JSON.stringify(changed.writing));
       }
+      for (const kept of changed.explanations ?? []) {
+        this.ctx.storage.sql.exec("INSERT OR REPLACE INTO explanations (lesson, body) VALUES (?, ?)", kept.lesson, JSON.stringify(kept));
+      }
       return saveDeck(merged);
     });
   }
@@ -191,7 +198,12 @@ export class RecallDeck extends DurableObject<Env> {
     const removed = rows.filter((r) => r.card === null).map(({ id, at }) => ({ id, at }));
     const [kept] = this.ctx.storage.sql.exec<{ body: string }>("SELECT body FROM writing").toArray();
     const writing = kept ? readWriting(JSON.parse(kept.body)) : null;
-    return mergeDecks(EMPTY_DECK, writing ? { cards, removed, writing } : { cards, removed });
+    const explanations = this.ctx.storage.sql
+      .exec<{ body: string }>("SELECT body FROM explanations")
+      .toArray()
+      .flatMap((r) => readKeptExplanation(JSON.parse(r.body)));
+    const deck: Deck = { cards, removed, explanations };
+    return mergeDecks(EMPTY_DECK, writing ? { ...deck, writing } : deck);
   }
 }
 
