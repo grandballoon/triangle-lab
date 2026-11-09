@@ -82,7 +82,7 @@ describe("the Explain tab", () => {
     const { check, type } = mount();
     type("Medians meet.");
     check.click();
-    answer({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    answer({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
     await Promise.resolve();
     await Promise.resolve();
     const link = pane.querySelector<HTMLAnchorElement>(".explain-sign-in")!;

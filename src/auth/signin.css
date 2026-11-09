@@ -10,3 +10,14 @@
 .si-form { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 
 #signin .rc-row .rc-source { margin-top: 0; }
+
+/* How the signed-in learner's calls to Claude are paid for (page.ts drawAccount). */
+.si-account { margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+.si-account h2 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+
+.si-account-lead { margin-top: 10px; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.si-link { color: #38d9a9; text-decoration: none; }
+
+.si-link:hover { text-decoration: underline; }

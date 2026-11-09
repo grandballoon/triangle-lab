@@ -157,7 +157,7 @@ Once:
 
 To take the account away, remove the address from `INVITES`.
 Their deck stays in its Durable Object, `learner:<email>`, and is theirs again if they are invited back.
-They share the site's Claude key, under the same rate limits as everyone else.
+Claude's checks of their work come out of their beta credit (see "Paying for Claude"), under the same rate limits as everyone else.
 
 ### Setting up answer checking
 
@@ -170,6 +170,30 @@ npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.c
 It checks only for a signed-in learner, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
 Signed out, checking is off and the page links to signing in.
 
+### Paying for Claude
+
+Your own calls to Claude go on the site's key, unmetered.
+Everyone else's come out of their beta credit, in dollars, counted from the tokens each call used, until they save a Claude API key of their own on their account page (`signin.html`, once signed in).
+From then on their calls are billed to their key, and nothing is metered.
+When their credit runs out, Claude's checks stop and the page links them to their account page to add a key.
+
+- `BETA_CREDIT_USD` (a var in `wrangler.jsonc`) is the credit each invited learner starts with.
+- `CREDITS` (a secret) gives particular learners another amount, as `learner@example.com=10, other@example.com=2.50`, or `-` for none.
+  To give someone more, run `npx wrangler secret put CREDITS` with the whole list.
+- `MONTHLY_CAP_USD` (a var) caps what all beta credit together may spend on the site's key in a calendar month, so a slip in the metering can never run up an open-ended bill.
+- `VAULT_KEY` (a secret) is what learners' own keys are encrypted with.
+  Replacing it makes every saved key unreadable, and those learners fall back to their credit until they save theirs again.
+
+Once, give the Worker the two secrets:
+
+```sh
+openssl rand -base64 32 | npx wrangler secret put VAULT_KEY
+```
+
+```sh
+npx wrangler secret put CREDITS   # enter - to give no one other than BETA_CREDIT_USD
+```
+
 ### Trying it locally
 
 Once, give the local Worker its secrets in `.dev.vars`, which is gitignored and so never committed:
@@ -179,8 +203,10 @@ cat >> .dev.vars <<'VARS'
 ANTHROPIC_API_KEY=sk-ant-…
 OWNER_EMAIL=you@example.com
 INVITES=-
+CREDITS=-
 SENDER=signin@example.com
 VARS
+echo "VAULT_KEY=$(openssl rand -base64 32)" >> .dev.vars
 ```
 
 Then run these in two terminals:
@@ -201,13 +227,13 @@ Each check is a paid call on that Claude key.
 
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`, and signing in at `/auth/link` and `/auth/session`.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`, signing in at `/auth/link` and `/auth/session`, and the learner's account at `/account`.
 Giving the site an origin of its own keeps its session cookie, and its browser storage, away from any other site.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
-A deploy fails until the Worker's secrets, `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`, are set, and stops before it starts while `SENDER` is empty (see "Setting up signing in").
+A deploy fails until the Worker's secrets, `ANTHROPIC_API_KEY`, `OWNER_EMAIL`, `INVITES`, `CREDITS` and `VAULT_KEY`, are set, and stops before it starts while `SENDER` is empty (see "Setting up signing in").
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ### Moving production off Cloudflare Access
@@ -237,7 +263,7 @@ git fetch origin && git merge origin/staging
 Once:
 
 1. Make the branch: `git push origin main:staging`.
-2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`.
+2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `ANTHROPIC_API_KEY`, `OWNER_EMAIL`, `INVITES`, `CREDITS` and `VAULT_KEY`.
 3. Deploy once by hand to make the Worker: `npm run deploy:staging`. It prints staging's address, `triangle-lab-staging.<your subdomain>.workers.dev`.
 4. Put Cloudflare Access in front of it. In the Cloudflare dashboard, open the Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it). Give the application a policy that allows your email address.
 5. Copy the application's audience (AUD) tag and your team's domain into `ACCESS_AUD` and `ACCESS_ISSUER` (`https://<team>.cloudflareaccess.com`) under `env.staging.vars` in `wrangler.jsonc`, and commit them. Until both are set, the dev tools on staging answer 503.

@@ -13,7 +13,7 @@ import { submitsOnEnter, touchFirst } from "./keys.ts";
 import { placeLabel, questionHtml, stepLabel } from "./labels.ts";
 import { readAsItStands, type Editor } from "./session.ts";
 import { GRADE_LABEL, saidSheet, writingSheet } from "./sheet.ts";
-import { signInLink } from "./signin.ts";
+import { mendLink } from "./signin.ts";
 import type { HeldSitting } from "./sitting.ts";
 
 /** Where the card is shown, and what it hears. */
@@ -140,7 +140,7 @@ function overall(review: Review, stale: boolean): HTMLElement {
   } else {
     box.append(el("h3", "", "Claude's check"));
     box.append(el("p", "rc-said rc-quiet", review.kind === "checking" ? "Reading your answer…" : review.error));
-    if (review.kind === "failed" && review.signIn) box.append(signInLink(document, "rc-source"));
+    if (review.kind === "failed" && review.mend) box.append(mendLink(document, review.mend, "rc-source"));
   }
   return box;
 }

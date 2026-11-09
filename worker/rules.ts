@@ -12,6 +12,9 @@
 //   POST /check  a CheckRequest (src/recall/check.ts); answers with Claude's Verdict
 //   POST /associate  an AssociateRequest (src/recall/associate.ts); answers with Claude's Reading
 //   POST /explain  an ExplainRequest (src/recall/explain.ts); answers with Claude's Verdict
+//   GET  /account  how the learner's calls to Claude are paid for, a ClaudeAccount (src/auth/account.ts)
+//   PUT  /account  {key}: their own Claude API key to keep; answers with the account
+//   DELETE /account  forget it; answers with the account
 // Every request carries the session cookie (auth.ts), so the deck and the
 // calls to Claude, which cost money, are only for someone signed in, and
 // `X-Requested-With`, which a page on another site cannot send without the
@@ -23,6 +26,7 @@
 // owner's is never touched. The owner's deck keeps the name it had while the
 // site had one learner (LEGACY_DECK), so nothing held there moved.
 
+import { ACCOUNT_PATH } from "../src/auth/account.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
@@ -30,6 +34,9 @@ import type { Deck } from "../src/recall/deck.ts";
 
 /** Largest deck accepted, in characters of JSON: far above any real deck. */
 export const MAX_BODY = 5_000_000;
+
+/** Largest body /account reads: an API key, with room to spare. */
+export const MAX_ACCOUNT_BODY = 2_000;
 
 /**
  * How far ahead of the Worker's clock a change may be dated. A merge takes
@@ -61,9 +68,13 @@ export interface Settings {
 export type Decision =
   | { kind: "read"; deck: string }
   | { kind: "merge"; deck: string }
-  | { kind: "check" }
-  | { kind: "associate" }
-  | { kind: "explain" }
+  /** A call to Claude for `email`, paid for as billing.ts `fund` decides. */
+  | { kind: "check" | "associate" | "explain"; email: string }
+  /** Show `email` how their calls are paid for. */
+  | { kind: "account"; email: string }
+  /** Keep the key the body holds as `email`'s own. */
+  | { kind: "save-key"; email: string }
+  | { kind: "remove-key"; email: string }
   | Refusal;
 
 export interface Refusal {
@@ -75,18 +86,22 @@ export interface Refusal {
 /** What to do with `asked`. */
 export function decide(asked: Asked, settings: Settings): Decision {
   const claude = CLAUDE_PATHS.find((c) => c.path === asked.path);
-  if (asked.path !== "/deck" && !claude) return refuse(404, "There is nothing here but /deck, /check, /associate and /explain.");
-  const methods = claude ? ["POST"] : ["GET", "POST"];
+  const account = asked.path === ACCOUNT_PATH;
+  if (asked.path !== "/deck" && !claude && !account) return refuse(404, "There is nothing here but /deck, /check, /associate, /explain and /account.");
+  const methods = claude ? ["POST"] : account ? ["GET", "PUT", "DELETE"] : ["GET", "POST"];
   if (!methods.includes(asked.method)) return refuse(405, `Use ${methods.join(" or ")}.`);
   if (!asked.withinLimit) return refuse(429, "Too many requests. Try again in a minute.");
   if (!asked.fromPage) return refuse(403, "Requests come from the site's own pages only.");
-  if (asked.method === "POST" && asked.length !== null && asked.length > (claude?.max ?? MAX_BODY)) {
-    return claude?.tooLarge ?? tooLarge;
+  const max = claude?.max ?? (account ? MAX_ACCOUNT_BODY : MAX_BODY);
+  if (asked.method !== "GET" && asked.length !== null && asked.length > max) {
+    return claude?.tooLarge ?? (account ? accountTooLarge : tooLarge);
   }
   if (!asked.email) return refuse(401, "Sign in first.");
+  const email = asked.email;
   if (claude) {
-    return settings.claude ? { kind: claude.kind } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
+    return settings.claude ? { kind: claude.kind, email } : refuse(503, `${claude.what} is off: the Worker has no ANTHROPIC_API_KEY.`);
   }
+  if (account) return { kind: asked.method === "GET" ? "account" : asked.method === "PUT" ? "save-key" : "remove-key", email };
   const deck = deckFor(asked.email, settings.owner);
   if (typeof deck !== "string") return deck;
   return { kind: asked.method === "GET" ? "read" : "merge", deck };
@@ -111,6 +126,9 @@ export const CHECK_PATH = "/check";
 
 /** The refusal for a deck over MAX_BODY, whether its size was declared or found on reading. */
 export const tooLarge: Refusal = { kind: "refuse", status: 413, error: "That deck is too large." };
+
+/** The same for a body to /account over MAX_ACCOUNT_BODY. */
+export const accountTooLarge: Refusal = { kind: "refuse", status: 413, error: "That is too long to be a Claude API key." };
 
 /** The same for an answer to check over MAX_CHECK_BODY. */
 export const checkTooLarge: Refusal = { kind: "refuse", status: 413, error: "That answer is too long to check." };

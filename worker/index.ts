@@ -5,8 +5,9 @@
 // in a review sitting (check.ts), /associate a free association, everything
 // the learner can recall of the course (associate.ts), and /explain a
 // learner's explanation of a lesson's idea, written on the lesson page
-// (explain.ts). The rest of the site is static assets, served without running
-// this (wrangler.jsonc).
+// (explain.ts). /account says how the learner's calls to Claude are paid
+// for, and keeps or forgets their own Claude API key (billing.ts). The rest
+// of the site is static assets, served without running this (wrangler.jsonc).
 //
 // A Durable Object per learner holds their deck (rules.ts `deckFor`), a row
 // per question in its SQLite storage, and the free association and each
@@ -17,7 +18,8 @@
 // devices syncing at once cannot undo each other. Sign-ins are held by
 // another (accounts.ts).
 //
-// The decisions are in auth.ts, rules.ts, check.ts, associate.ts and explain.ts; this does the I/O.
+// The decisions are in auth.ts, rules.ts, billing.ts, check.ts, associate.ts
+// and explain.ts; this does the I/O.
 
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
@@ -36,7 +38,7 @@ import {
   type Deck,
   type SavedDeck,
 } from "../src/recall/deck.ts";
-import { Accounts, ACCOUNTS_NAME, newToken, tokenHash } from "./accounts.ts";
+import { Accounts, ACCOUNTS_NAME, newToken, tokenHash, type KeptLedger } from "./accounts.ts";
 import { associateParams, readingOf } from "./associate.ts";
 import {
   afterRedeem,
@@ -54,19 +56,23 @@ import {
   signInUrl,
   type AuthSettings,
 } from "./auth.ts";
-import { checkParams, claudeFailed, usageLine, verdictOf } from "./check.ts";
+import { accountOf, billingSettings, costOf, fund, keyHint, monthOf, readApiKey, type BillingSettings, type Funding, type Ledger } from "./billing.ts";
+import { checkParams, claudeFailed, MODEL, usageLine, verdictOf } from "./check.ts";
 import { explainParams } from "./explain.ts";
 import {
+  accountTooLarge,
   associateTooLarge,
   CLAUDE_PATHS,
   checkTooLarge,
   datedAhead,
   decide,
   explainTooLarge,
+  MAX_ACCOUNT_BODY,
   MAX_BODY,
   tooLarge,
   type Refusal,
 } from "./rules.ts";
+import { open, seal, vaultKey } from "./vault.ts";
 
 export { Accounts };
 
@@ -166,7 +172,7 @@ export default {
         if (text.length > MAX_CHECK_BODY) return reply(checkTooLarge.status, { error: checkTooLarge.error });
         const asked = readCheckRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is not an answer to check." });
-        const verdict = await askClaude(env, "check", checkParams(asked), verdictOf);
+        const verdict = await askClaude(env, decision.email, now, "check", checkParams(asked), verdictOf);
         return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
       }
       case "associate": {
@@ -174,7 +180,7 @@ export default {
         if (text.length > MAX_ASSOCIATE_BODY) return reply(associateTooLarge.status, { error: associateTooLarge.error });
         const asked = readAssociateRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is nothing to read." });
-        const reading = await askClaude(env, "associate", associateParams(asked), readingOf);
+        const reading = await askClaude(env, decision.email, now, "associate", associateParams(asked), readingOf);
         return "kind" in reading ? reply(reading.status, { error: reading.error }) : reply(200, reading);
       }
       case "explain": {
@@ -182,35 +188,99 @@ export default {
         if (text.length > MAX_EXPLAIN_BODY) return reply(explainTooLarge.status, { error: explainTooLarge.error });
         const asked = readExplainRequest(parseJson(text));
         if (!asked) return reply(400, { error: "That is not an explanation to check." });
-        const verdict = await askClaude(env, "explain", explainParams(asked), (m) => verdictOf(m, "explanation"));
+        const verdict = await askClaude(env, decision.email, now, "explain", explainParams(asked), (m) => verdictOf(m, "explanation"));
         return "kind" in verdict ? reply(verdict.status, { error: verdict.error }) : reply(200, verdict);
+      }
+      case "account": {
+        const billing = await billingOf(env, decision.email, now);
+        return "kind" in billing ? reply(billing.status, { error: billing.error }) : reply(200, accountOf(decision.email, billing.ledger, billing.settings));
+      }
+      case "save-key": {
+        const text = await request.text();
+        if (text.length > MAX_ACCOUNT_BODY) return reply(accountTooLarge.status, { error: accountTooLarge.error });
+        const key = readApiKey(parseJson(text));
+        if (!key) return reply(400, { error: "That doesn't look like a Claude API key. Keys start with sk-ant-." });
+        const vault = await vaultKey(env.VAULT_KEY);
+        if (!vault) return reply(503, { error: "Saving keys is off: the Worker's VAULT_KEY is not set." });
+        const turnedDown = await tryKey(env, key);
+        if (turnedDown) return reply(turnedDown.status, { error: turnedDown.error });
+        await accounts.saveKey(decision.email, await seal(vault, decision.email, key), keyHint(key));
+        const billing = await billingOf(env, decision.email, now);
+        return "kind" in billing ? reply(billing.status, { error: billing.error }) : reply(200, accountOf(decision.email, billing.ledger, billing.settings));
+      }
+      case "remove-key": {
+        await accounts.removeKey(decision.email);
+        const billing = await billingOf(env, decision.email, now);
+        return "kind" in billing ? reply(billing.status, { error: billing.error }) : reply(200, accountOf(decision.email, billing.ledger, billing.settings));
       }
     }
   },
 } satisfies ExportedHandler<Env>;
 
+/** The billing settings, `email`'s ledger with their own key opened, and the key; or why they cannot be read. */
+async function billingOf(
+  env: Env,
+  email: string,
+  now: number,
+): Promise<{ settings: BillingSettings; ledger: Ledger; ownKey: string | null } | Refusal> {
+  const settings = billingSettings(env);
+  if (!settings) return { kind: "refuse", status: 503, error: "Claude is off: the Worker's BETA_CREDIT_USD or MONTHLY_CAP_USD is not an amount in dollars." };
+  const kept: KeptLedger = await env.ACCOUNTS.getByName(ACCOUNTS_NAME).ledger(email, monthOf(now));
+  // A key that no longer opens, as after VAULT_KEY is replaced, counts as none.
+  const vault = kept.sealed ? await vaultKey(env.VAULT_KEY) : null;
+  const ownKey = vault && kept.sealed ? await open(vault, email, kept.sealed) : null;
+  return { settings, ownKey, ledger: { ownKey: ownKey !== null, hint: ownKey ? kept.hint : null, spent: kept.spent, monthSpent: kept.monthSpent } };
+}
+
 /**
- * Call Claude with the Worker's key and read its reply with `read`, turning
- * a failed call into a refusal saying why. Each reply's token usage is
- * logged, for the Worker's logs to say what readings cost (usageLine).
+ * Call Claude for `email`, paid for as billing.ts `fund` decides, and read
+ * its reply with `read`, turning a failed call into a refusal saying why.
+ * A call on beta credit is charged what it cost, whatever came of it. Each
+ * reply's token usage is logged, for the Worker's logs to say what readings
+ * cost (usageLine).
  */
 async function askClaude<T>(
   env: Env,
+  email: string,
+  now: number,
   route: string,
   params: Anthropic.Beta.Messages.MessageCreateParamsNonStreaming,
   read: (message: Anthropic.Beta.Messages.BetaMessage) => T | Refusal,
 ): Promise<T | Refusal> {
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
+  const billing = await billingOf(env, email, now);
+  if ("kind" in billing) return billing;
+  const funding: Funding | Refusal = fund(email, billing.ledger, billing.settings);
+  if (funding.kind === "refuse") return funding;
+  const own = funding.kind === "own-key";
+  const client = new Anthropic({ apiKey: own ? billing.ownKey! : env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
   try {
     const message = await client.beta.messages.create(params);
-    console.log(JSON.stringify(usageLine(route, params.output_config?.effort ?? null, message)));
+    const cost = costOf(message, params.model);
+    console.log(JSON.stringify({ ...usageLine(route, params.output_config?.effort ?? null, message), paid_by: funding.kind === "site" && funding.metered ? "credit" : funding.kind, micros: cost }));
+    if (funding.kind === "site" && funding.metered) await env.ACCOUNTS.getByName(ACCOUNTS_NAME).charge(email, cost, monthOf(now));
     return read(message);
   } catch (error) {
     if (error instanceof Anthropic.APIError) {
       console.error("Calling Claude failed:", error.status, error.message);
-      return claudeFailed(error.status);
+      return claudeFailed(error.status, own);
     }
     throw error;
+  }
+}
+
+/**
+ * Whether Claude takes `key`, by asking it about the model the Worker uses,
+ * which costs nothing: null when it does, or the refusal saying why not.
+ */
+async function tryKey(env: Env, key: string): Promise<Refusal | null> {
+  try {
+    await new Anthropic({ apiKey: key, baseURL: env.ANTHROPIC_BASE_URL, maxRetries: 0 }).models.retrieve(MODEL);
+    return null;
+  } catch (error) {
+    if (!(error instanceof Anthropic.APIError)) throw error;
+    if (error.status === 401 || error.status === 403) return { kind: "refuse", status: 400, error: "Claude turned that key down. Check you copied all of it, and that it hasn't been disabled." };
+    console.error("Trying a learner's key failed:", error.status, error.message);
+    return { kind: "refuse", status: 502, error: "Couldn't check that key with Claude just now. Try again in a minute." };
   }
 }
 
