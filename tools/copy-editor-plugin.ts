@@ -16,10 +16,10 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import type { IncomingMessage, ServerResponse } from "node:http";
 import { dirname, join } from "node:path";
 import type { Plugin } from "vite";
 import { devVar } from "./dev-vars.ts";
+import { missing, readJson, reply } from "./http.ts";
 import { devTools } from "./staging-mode.ts";
 import { askCopyCheck } from "../worker/copy-check.ts";
 import { MAX_CHECK_BODY } from "../src/dev/copy/check.ts";
@@ -29,35 +29,6 @@ import { entriesIn, filesOf, homesOf, lessonOf, listing, rewriteFile } from "../
 
 const EDITOR = "/src/dev/copy/pane.ts";
 const MAX_SAVE_BODY = 256 * 1024;
-
-function readBody(req: IncomingMessage, limit: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.setEncoding("utf8");
-    req.on("data", (chunk: string) => {
-      body += chunk;
-      if (body.length > limit) reject(new Error("body too large"));
-    });
-    req.on("end", () => resolve(body));
-    req.on("error", reject);
-  });
-}
-
-async function readJson(req: IncomingMessage, limit: number): Promise<unknown> {
-  try {
-    return JSON.parse(await readBody(req, limit));
-  } catch {
-    return null;
-  }
-}
-
-function reply(res: ServerResponse, status: number, body: unknown): void {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(body));
-}
-
-const missing = (err: unknown) => (err as NodeJS.ErrnoException).code === "ENOENT";
 
 /**
  * Copy is read from and written to the source files under `root`, the

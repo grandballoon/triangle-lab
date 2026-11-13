@@ -14,7 +14,10 @@
 
 import { parse } from "@babel/parser";
 import type * as t from "@babel/types";
+import { lessonOf } from "../lesson.ts";
 import { SECTIONS, type Entry, type EntryEdit, type Field, type Section } from "./wire.ts";
+
+export { lessonOf };
 
 export const DIRECTIONS_FILE = "src/directions.ts";
 export const ASIDES_FILE = "src/asides.ts";
@@ -32,26 +35,6 @@ export interface Home {
 }
 
 export type Homes = Record<Section, Home>;
-
-const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-/** Pages with no copy of their own. */
-const NOT_LESSONS = new Set(["index", "recall", "signin", "ar"]);
-
-/** The lesson `page` (path and query) shows, or null for a page that shows none. */
-export function lessonOf(page: string): { slug: string; lab: boolean } | null {
-  let url: URL;
-  try {
-    url = new URL(page, "http://dev");
-  } catch {
-    return null;
-  }
-  const name = (url.pathname.split("/").pop() ?? "").replace(/\.html$/, "");
-  if (name === "lab") {
-    const slug = url.searchParams.get("lesson") ?? "";
-    return SLUG.test(slug) ? { slug, lab: true } : null;
-  }
-  return SLUG.test(name) && !NOT_LESSONS.has(name) ? { slug: name, lab: false } : null;
-}
 
 /** Where each section of `page`'s copy is written, or null for a page without any. */
 export function homesOf(page: string): Homes | null {

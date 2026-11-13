@@ -49,6 +49,15 @@ The fact-check uses the `ANTHROPIC_API_KEY` in `.dev.vars`.
 The tab exists only on the dev server and on staging (see "Staging"), never in a production build.
 Changed copy makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
 
+### Drafting a lesson's new text
+
+Under `npm run dev` and on staging, every lesson page's step column also has a Draft tab, for writing the lesson's text anew by hand.
+What you have written in the lesson's Explain tab shows above the draft, to write from.
+Write in Markdown, with `$…$` LaTeX: a line starting with `#` is a heading, a blank line starts a new paragraph, and the draft is typeset below as you type.
+The draft is kept in the browser until saved, so a reload loses none.
+Save (or Command-S) writes it to `lesson-drafts/<slug>.md`, and also keeps everything you have written in the Explain tab of every lesson, in `lesson-drafts/<slug>.explanation.md`.
+The tab exists only on the dev server and on staging, never in a production build.
+
 ## Using your hands
 
 Hold a hand up to the camera and a ring cursor follows it.
@@ -247,11 +256,12 @@ Until then, Access's sign-in page comes before the site's own.
 
 ## Staging
 
-Staging is the site with its dev tools in: Alt-click feedback and the Copy tab work there as under `npm run dev`, with no local server.
+Staging is the site with its dev tools in: Alt-click feedback, the Copy tab and the Draft tab work there as under `npm run dev`, with no local server.
 It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sign-ins, behind Cloudflare Access, which guards its dev tools.
-It runs the `staging` branch: `main`, plus the copy edits made on staging.
+It runs the `staging` branch: `main`, plus the copy edits and drafts made on staging.
 
 - Copy saved on staging is committed to the `staging` branch, all of one save in one commit, and the push redeploys staging in a minute or two; the Copy tab shows the copy as committed at once.
+- A draft saved on staging is committed to the `staging` branch with the Explain tab text it keeps, all in one commit.
 - A fact-check on staging calls Claude with staging's own `ANTHROPIC_API_KEY`.
 - A comment left on staging is kept there; `npm run staging:pull` appends it to your local `ui-feedback.md`, as the dev server would have.
 - A push to `main` is merged into `staging` and redeploys it (`.github/workflows/staging.yml`), so staging never falls behind.
@@ -323,6 +333,8 @@ src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
 src/dev/copy/         Dev-only Copy tab: edits a lesson's copy in its source, with Claude's fact-check
+src/dev/drafts/       Dev-only Draft tab: new text for each lesson, kept in lesson-drafts/
+lesson-drafts/        Each lesson's hand-written draft, and the Explain tab text it was written from
 tools/                Vite plugins used by the dev server, and pulling comments from staging
 specs/                Design notes for the original triangle lessons, and the open
                       question of how to draw an equation (equations-display.md)

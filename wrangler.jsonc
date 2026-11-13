@@ -90,7 +90,7 @@
 			"main": "worker/staging.ts",
 			"assets": {
 				"directory": "./dist-staging",
-				"run_worker_first": ["/auth/*", "/deck", "/check", "/associate", "/explain", "/account", "/__copy", "/__copy/check", "/__ui-feedback"]
+				"run_worker_first": ["/auth/*", "/deck", "/check", "/associate", "/explain", "/account", "/__copy", "/__copy/check", "/__drafts", "/__ui-feedback"]
 			},
 			"durable_objects": {
 				"bindings": [

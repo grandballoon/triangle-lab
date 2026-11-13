@@ -501,9 +501,35 @@ Edited copy changes its lesson's teaching text, so its syllabus entry goes stale
 | `worker/copy-check.ts` | The request to Claude to fact-check copy, and what its reply comes to. Pure but for the call it is handed. |
 | `tools/copy-editor-plugin.ts` | Injects the editor, lists a page's copy, writes saves one at a time, and asks Claude for checks. Runs in Node. |
 
+## Dev-only draft tab (`src/dev/drafts`, `tools/drafts-plugin.ts`)
+
+An authoring aid for the dev server and staging, for the text that is to replace the step-based lessons: each lesson's new text written by hand, from what the author has come to understand of it in the Explain tab.
+The plugin injects `pane.ts` into every page under `vite dev` and in the staging build only, as the copy editor's does, so it can never reach a production build.
+
+The tab is a Draft tab in the step column, beside the steps, the Explain tab and the Copy tab, found and kept in step with the lab's lesson swaps as the Copy tab is.
+It shows what the author has written in the lesson's Explain tab, read from the recall deck (`openRecall`) and kept current as the deck changes, above a box for the draft, typed as Markdown with `$…$` LaTeX, and the draft as it reads below it: headings, paragraphs, and the mathematics typeset.
+The draft is kept in `localStorage` per lesson until it is saved, with the saved draft it was written over, so a reload loses none, and text kept over a draft saved since is flagged as such.
+
+A lesson's draft is kept in `lesson-drafts/<slug>.md`.
+A save (`DraftSave`) carries the draft, the draft as it was listed when the author began, and every explanation in the author's deck with something written.
+The server writes the draft, unless it is blank, and each explanation to `lesson-drafts/<slug>.explanation.md`, where they differ from what is there (`draftWrites`, `wire.ts`), so the Explain tab's text, otherwise only in the deck, is kept in the repository beside the drafts written from it.
+A save begun on a draft that has been saved since is refused rather than written over it.
+The dev server writes the files; the staging Worker commits them to the staging branch in one commit, as it commits copy edits (see "Staging").
+Nothing in the page changes with a saved draft, so neither reloads it.
+
+| File | Role |
+| --- | --- |
+| `dev/lesson.ts` | A page → the lesson it shows. Shared by the copy editor and the draft tab; no DOM or Node APIs. |
+| `dev/drafts/wire.ts` | The listing, save and reply wire formats, the files a save keeps, and what it writes. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
+| `dev/drafts/edit.ts` | The tab's state: the draft over the listing, what to keep in the browser, what a save sends, and the draft as preview blocks. Pure. |
+| `dev/drafts/pane.ts` | The Draft tab, and the calls to the server. |
+| `dev/ui.ts` | What the dev-only tabs share in the page: elements, storage, calls and the toast. |
+| `tools/drafts-plugin.ts` | Injects the tab, reads a lesson's draft, and writes saves one at a time. Runs in Node. |
+| `tools/http.ts` | What the dev-only tabs' plugins share: reading a JSON body and answering in JSON. Runs in Node. |
+
 ## Staging (`worker/staging.ts`, `env.staging`, `.github/workflows/staging.yml`)
 
-Staging is the site with the dev tools in, on the web, so the feedback overlay and the copy editor work without a local server.
+Staging is the site with the dev tools in, on the web, so the feedback overlay, the copy editor and the draft tab work without a local server.
 It is a Worker of its own, `triangle-lab-staging`: its own decks, sign-ins and rate limits, so testing never touches the real ones.
 Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
 
@@ -516,11 +542,13 @@ The tools keep their endpoints and wire formats; only where things land differs.
 - **Copy edits** are committed to the `staging` branch through GitHub's Git Data API, with a token scoped to the repository (`GITHUB_TOKEN`).
   The Worker reads the files at the branch's head, rewrites them with the same core the dev server uses, and makes one commit of them on that head; if the branch moved meanwhile GitHub will not move it to the commit, and the edits are made again on the newer files, which still hold the entries only if nobody changed them.
   Listing the copy reads the branch too, so copy edited twice before staging redeploys is found as it now reads.
+- **Drafts** are committed to the `staging` branch the same way, the draft and the explanations a save keeps in one commit, made again on the newer files if the branch moved, and refused if the draft itself was saved since the author began.
+  A save may be larger than the other tools' requests, as it carries every explanation in the deck (`MAX_DRAFT_BODY`).
 - **Fact-checks** call Claude with staging's `ANTHROPIC_API_KEY`, under the same rate limit as the learners' checks.
 - **UI comments** are kept in a Durable Object (`StagingInbox`) until `npm run staging:pull` (`tools/staging.ts`) appends them to the local `ui-feedback.md`, formatted as the dev server formats them, and tells staging to forget them.
   The pull gets past Access with a service token from `.dev.vars`.
 
-A push to `staging` redeploys it; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
+A push to `staging` redeploys it, unless it holds only drafts, which change nothing the site serves; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
 The workflow builds but does not test: edited copy leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
 
 | File | Role |
@@ -604,8 +632,10 @@ Each reload takes off what the last load of the page listened to on the window a
 - `src/dev/copy/history.test.ts`: the changes a save records, a lesson's history started and added to, nothing written for a save that changes nothing, and an unreadable history refused rather than written over.
 - `worker/copy-check.test.ts`: the request to Claude to fact-check copy, a paused search taken up again, and reading the check, a refusal or a cut-short reply.
 - `tools/copy-editor-plugin.test.ts`: the copy editor plugin on a real dev server — editor injection, copy listed from source, a save written to every file it touches or to none, with its history, stale edits refused, and a fact-check through a stand-in Claude.
+- `src/dev/drafts/drafts.test.ts`: reading a draft's save, the files it keeps and what it writes, a blank draft never written, a save over a draft saved since refused, the tab's state as the author writes, keeps and saves, and the draft as preview blocks.
+- `tools/drafts-plugin.test.ts`: the drafts plugin on a real dev server — tab injection, a draft written with the explanations it keeps and read back, and a save over a draft saved since written nowhere.
 - `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
-- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit with its history on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, and comments kept until pulled.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit with its history on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, a draft committed with the explanations it keeps, made again when the branch moved and refused over one saved since, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/dev-vars.test.ts`: reading a value from `.dev.vars`.
 - `src/auth/signin.test.ts`: the sign-in page's views, from the address it opens at and each answer from `/auth/*`.

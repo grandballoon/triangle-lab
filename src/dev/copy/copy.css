@@ -335,24 +335,3 @@
 html[data-layout="stacked"] .copy-head { padding: 8px 10px 0; }
 html[data-layout="stacked"] .copy-body { padding: 4px 10px 12px; }
 html[data-layout="stacked"] .copy-footer { padding: 8px 10px; flex-wrap: wrap; }
-
-.copy-toast {
-  position: fixed;
-  z-index: 2147483647;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  max-width: min(80vw, 560px);
-  padding: 8px 14px;
-  border: 1px solid #24323d;
-  border-radius: 8px;
-  background: #0f161d;
-  color: #e9f0f7;
-  font: 13px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif;
-  opacity: 0;
-  transition: opacity 160ms;
-  pointer-events: none;
-}
-
-.copy-toast.copy-show { opacity: 1; }
-.copy-toast.copy-error { border-color: #ff6b6b; }

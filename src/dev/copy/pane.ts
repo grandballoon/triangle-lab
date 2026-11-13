@@ -42,6 +42,7 @@ import {
   type FieldInfo,
   type Placed,
 } from "./edit.ts";
+import { button, call, el, keepKeys, message, notify, page, post, store, stored } from "../ui.ts";
 import { CHECK_ENDPOINT, COPY_ENDPOINT, SECTIONS, type CopyListing, type SaveReply, type Section } from "./wire.ts";
 
 /** Vite reloads the page once the source is written; this is the fallback. */
@@ -53,68 +54,8 @@ const OPEN_KEY = "copy-editor:open";
 const HEADINGS: Record<Section, string> = { steps: "Steps", likes: LIKES_HEADING, uses: USES_HEADING };
 const ENTRY: Record<Section, string> = { steps: "Step", likes: "Like", uses: "Use" };
 
-const page = (): string => location.pathname + location.search;
-
-function el<K extends keyof HTMLElementTagNameMap>(tag: K, className = "", text?: string): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function button(className: string, text: string, onClick: () => void): HTMLButtonElement {
-  const b = el("button", className, text);
-  b.type = "button";
-  b.addEventListener("click", onClick);
-  return b;
-}
-
 /** Mathematics between dollar signs typeset, leniently: Claude's notes and fixes. */
 const prose = (text: string): string => richHtml(text, false);
-
-function stored(key: string, storage: () => Storage): string | null {
-  try {
-    return storage().getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function store(key: string, value: string | null, storage: () => Storage): void {
-  try {
-    if (value === null) storage().removeItem(key);
-    else storage().setItem(key, value);
-  } catch {
-    // Not kept; drafts then last only as long as the page.
-  }
-}
-
-async function call<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  const body = (await res.json().catch(() => ({ error: `${res.status} ${res.statusText}` }))) as T | { error: string };
-  if (typeof body === "object" && body !== null && "error" in body) throw new Error(body.error);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  return body as T;
-}
-
-const post = <T>(url: string, body: unknown): Promise<T> =>
-  call<T>(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-
-const message = (err: unknown): string => (err instanceof Error ? err.message : String(err));
-
-// --- The toast --------------------------------------------------------------
-
-const toast = el("div", "copy-toast");
-toast.setAttribute("role", "status");
-let toastTimer = 0;
-function notify(text: string, error = false): void {
-  if (!toast.isConnected) document.body.append(toast);
-  toast.textContent = text;
-  toast.classList.toggle("copy-error", error);
-  toast.classList.add("copy-show");
-  clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("copy-show"), error ? 6000 : 2600);
-}
 
 // --- One field --------------------------------------------------------------
 
@@ -230,8 +171,7 @@ const saveButton = button("copy-button copy-primary", "Save", () => void save())
 footer.append(count, discard, checkButton, saveButton);
 pane.append(head, overall, body, footer);
 
-// Keys typed in the pane are the author's, not the lesson's shortcuts.
-for (const type of ["keydown", "keyup", "keypress"] as const) pane.addEventListener(type, (e) => e.stopPropagation());
+keepKeys(pane);
 
 /** The copy open in the pane, for the page it is of. */
 let current: { page: string; state: CopyState; saving: boolean } | null = null;
