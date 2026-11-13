@@ -22,7 +22,7 @@ import { explanationOf, type Deck } from "../../recall/deck.ts";
 import { openRecall } from "../../recall/remote.ts";
 import { lessonOf } from "../lesson.ts";
 import { button, call, el, keepKeys, message, notify, page, post, store, stored } from "../ui.ts";
-import { afterSave, blocksOf, editDraft, explanationsIn, keptOf, openDraft, saveOf, unsaved, type DraftState } from "./edit.ts";
+import { afterSave, blocksOf, canSave, editDraft, explanationsIn, keptOf, openDraft, saveOf, unsaved, type DraftState } from "./edit.ts";
 import { DRAFTS_ENDPOINT, type DraftListing, type DraftReply } from "./wire.ts";
 
 /** Where the unsaved text of lesson `slug` is kept in this browser. */
@@ -119,7 +119,7 @@ function paintReference(): void {
     referenceText.textContent = "Nothing written in this lesson's Explain tab yet. What you write there shows here, to draft from.";
   }
   const n = explanationsIn(deck()).length;
-  keeps.textContent = n ? ` · Saving also keeps your Explain tab text (${n} lesson${n === 1 ? "" : "s"}).` : "";
+  keeps.textContent = n ? ` · Saving a change also keeps your Explain tab text (${n} lesson${n === 1 ? "" : "s"}).` : "";
 }
 
 function paint(): void {
@@ -132,7 +132,7 @@ function paint(): void {
   state.textContent = changed ? "Unsaved" : s.listing.text === null ? "No draft yet" : "Saved";
   state.classList.toggle("draft-unsaved", changed);
   discard.disabled = saving || !changed;
-  saveButton.disabled = saving || (!changed && explanationsIn(deck()).length === 0);
+  saveButton.disabled = saving || !canSave(s);
   saveButton.textContent = saving ? "Saving…" : "Save";
 }
 
@@ -193,8 +193,8 @@ async function load(): Promise<void> {
 async function save(): Promise<void> {
   if (!current || current.saving) return;
   const open = current;
+  if (!canSave(open.state)) return;
   const sent = saveOf(open.state, page(), deck());
-  if (!unsaved(open.state) && sent.explanations.length === 0) return;
   open.saving = true;
   paint();
   try {

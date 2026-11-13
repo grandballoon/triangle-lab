@@ -511,7 +511,7 @@ It shows what the author has written in the lesson's Explain tab, read from the 
 The draft is kept in `localStorage` per lesson until it is saved, with the saved draft it was written over, so a reload loses none, and text kept over a draft saved since is flagged as such.
 
 A lesson's draft is kept in `lesson-drafts/<slug>.md`.
-A save (`DraftSave`) carries the draft, the draft as it was listed when the author began, and every explanation in the author's deck with something written.
+A save (`DraftSave`), offered only once the draft has changed and is not blank (`canSave`), carries the draft, the draft as it was listed when the author began, and every explanation in the author's deck with something written.
 The server writes the draft, unless it is blank, and each explanation to `lesson-drafts/<slug>.explanation.md`, where they differ from what is there (`draftWrites`, `wire.ts`), so the Explain tab's text, otherwise only in the deck, is kept in the repository beside the drafts written from it.
 A save begun on a draft that has been saved since is refused rather than written over it.
 The dev server writes the files; the staging Worker commits them to the staging branch in one commit, as it commits copy edits (see "Staging").

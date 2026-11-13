@@ -55,7 +55,7 @@ Under `npm run dev` and on staging, every lesson page's step column also has a D
 What you have written in the lesson's Explain tab shows above the draft, to write from.
 Write in Markdown, with `$…$` LaTeX: a line starting with `#` is a heading, a blank line starts a new paragraph, and the draft is typeset below as you type.
 The draft is kept in the browser until saved, so a reload loses none.
-Save (or Command-S) writes it to `lesson-drafts/<slug>.md`, and also keeps everything you have written in the Explain tab of every lesson, in `lesson-drafts/<slug>.explanation.md`.
+Once the draft has changed, Save (or Command-S) writes it to `lesson-drafts/<slug>.md`, and also keeps everything you have written in the Explain tab of every lesson, in `lesson-drafts/<slug>.explanation.md`: one file per lesson, rewritten only when its Explain text has changed.
 The tab exists only on the dev server and on staging, never in a production build.
 
 ## Using your hands
