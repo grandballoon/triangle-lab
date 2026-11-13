@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Deck } from "../../recall/deck.ts";
-import { afterSave, blocksOf, editDraft, keptOf, openDraft, saveOf, unsaved } from "./edit.ts";
+import { afterSave, blocksOf, canSave, editDraft, keptOf, openDraft, saveOf, unsaved } from "./edit.ts";
 import {
   draftFile,
   draftWrites,
@@ -121,6 +121,14 @@ describe("the tab's state", () => {
     expect(unsaved(edited)).toBe(true);
     expect(keptOf(edited)).toEqual({ base: "Saved.", text: "New." });
     expect(editDraft(edited, "New.")).toBe(edited);
+  });
+
+  it("has a draft to save only once its text changes, and not when it is blank", () => {
+    const { state } = openDraft(listing);
+    expect(canSave(state)).toBe(false);
+    expect(canSave(editDraft(state, "New."))).toBe(true);
+    expect(canSave(editDraft(state, "  \n"))).toBe(false);
+    expect(canSave(openDraft({ ...listing, text: null }).state)).toBe(false);
   });
 
   it("saves the text over the draft it began on, with every explanation written", () => {

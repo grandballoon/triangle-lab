@@ -37,6 +37,9 @@ export const editDraft = (state: DraftState, text: string): DraftState => (text 
 /** Whether the text differs from the draft as saved. */
 export const unsaved = (state: DraftState): boolean => state.text !== saved(state.listing);
 
+/** Whether there is a draft to save: text that differs from the draft as saved, and is not blank, as a blank draft is never written (wire.ts). */
+export const canSave = (state: DraftState): boolean => unsaved(state) && state.text.trim() !== "";
+
 /** What to keep in this browser: the unsaved text, or nothing. */
 export const keptOf = (state: DraftState): Unsaved | null => (unsaved(state) ? { base: state.listing.text, text: state.text } : null);
 
