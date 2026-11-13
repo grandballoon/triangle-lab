@@ -18,6 +18,7 @@ import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import type { CopyEdit } from "../src/dev/copy/wire.ts";
+import { readHistory } from "../src/dev/copy/history.ts";
 import { encodeContent } from "./staging-rules.ts";
 
 const AUD = "staging-aud-tag";
@@ -285,10 +286,13 @@ describe("the copy editor on staging", () => {
     ],
   };
 
-  it("commits a save to every file it touches in one commit, on the head it was made on", async () => {
+  it("commits a save to every file it touches in one commit, with its history, on the head it was made on", async () => {
     const saved = await call("POST", "/__copy", save);
     const head = github.head;
-    expect(await saved.json()).toEqual({ files: ["src/directions.ts", "src/asides.ts"], commit: `https://github.com/owner/repo/commit/${head}` });
+    expect(await saved.json()).toEqual({
+      files: ["src/directions.ts", "src/asides.ts", "copy-history/angles.json"],
+      commit: `https://github.com/owner/repo/commit/${head}`,
+    });
     expect(github.made).toEqual([
       {
         message: "Edit the copy of angles: step 1, likeness 1\n\nMade with the copy editor on staging.\n",
@@ -296,14 +300,31 @@ describe("the copy editor on staging", () => {
         files: {
           "src/directions.ts": DIRECTIONS.replace(`"Grab it."`, `"Grab $C$."`),
           "src/asides.ts": ASIDES.replace(`"A door"`, `"A swinging door"`),
+          "copy-history/angles.json": expect.any(String),
         },
       },
+    ]);
+    const history = () => readHistory(files().get("copy-history/angles.json")!)!;
+    expect(history().saves.map((s) => s.changes.map((c) => [c.field, c.was, c.now]))).toEqual([
+      [
+        ["steps.0.text", "Grab it.", "Grab $C$."],
+        ["likes.0.title", "A door", "A swinging door"],
+      ],
     ]);
     expect(files().get("README.md")).toBe("Untouched.");
     // The same save again finds the copy already reads so.
     const again = { page: "/angles", edits: [{ ...save.edits[0], was: { title: "Drag the apex", text: "Grab $C$." } }] };
     expect(await (await call("POST", "/__copy", again)).json()).toEqual({ files: [], commit: null });
     expect(github.made).toHaveLength(1);
+    // A later save adds to the history, keeping the original.
+    await call("POST", "/__copy", { page: "/angles", edits: [{ section: "likes", index: 0, was: { title: "A swinging door", text: "It opens." }, to: { title: "A door ajar" } }] });
+    expect(history().saves.map((s) => s.changes.map((c) => [c.was, c.now]))).toEqual([
+      [
+        ["Grab it.", "Grab $C$."],
+        ["A door", "A swinging door"],
+      ],
+      [["A swinging door", "A door ajar"]],
+    ]);
   });
 
   it("makes the save again when the branch moved meanwhile, and refuses it when its copy changed", async () => {

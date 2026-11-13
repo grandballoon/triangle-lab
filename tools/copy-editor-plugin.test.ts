@@ -9,6 +9,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer, type ViteDevServer } from "vite";
 import { afterAll, beforeAll, expect, it } from "vitest";
+import { readHistory } from "../src/dev/copy/history.ts";
 import { CHECK_ENDPOINT, COPY_ENDPOINT, type CopyEdit } from "../src/dev/copy/wire.ts";
 import { copyEditor } from "./copy-editor-plugin.ts";
 
@@ -102,7 +103,7 @@ it("lists a page's copy from its source", async () => {
   expect((await list("/lab.html?lesson=nowhere")).status).toBe(404);
 });
 
-it("writes a save into every file it touches", async () => {
+it("writes a save into every file it touches, and what the copy read before into its history", async () => {
   const lab: CopyEdit = {
     page: "/lab.html?lesson=demo",
     edits: [
@@ -112,7 +113,7 @@ it("writes a save into every file it touches", async () => {
   };
   const saved = await post(COPY_ENDPOINT, lab);
   expect(saved.status).toBe(200);
-  expect(await saved.json()).toEqual({ files: ["src/lab/lessons/demo.ts"], commit: null });
+  expect(await saved.json()).toEqual({ files: ["src/lab/lessons/demo.ts", "copy-history/demo.json"], commit: null });
   // A second save before the first is seen, to the other field of the same step, and one to two files at once.
   const both = await Promise.all([
     post(COPY_ENDPOINT, { page: lab.page, edits: [{ section: "steps", index: 0, was: { title: "Drag", text: "Move $A$." }, to: { title: "Drag it" } }] }),
@@ -125,12 +126,21 @@ it("writes a save into every file it touches", async () => {
     }),
   ]);
   expect(both.map((r) => r.status)).toEqual([200, 200]);
-  expect(await both[1].json()).toEqual({ files: ["src/directions.ts", "src/asides.ts"], commit: null });
+  expect(await both[1].json()).toEqual({ files: ["src/directions.ts", "src/asides.ts", "copy-history/angles.json"], commit: null });
   expect(await readFile(join(dir, "src/lab/lessons/demo.ts"), "utf8")).toBe(
     LESSON.replace(`"See it change."`, `"See $\\\\angle A$ change."`).replace(`"Drag"`, `"Drag it"`).replace(`"A ramp"`, `"A wheelchair ramp"`),
   );
   expect(await readFile(join(dir, "src/directions.ts"), "utf8")).toBe(DIRECTIONS.replace("Drag the apex", "Pull the apex"));
   expect(await readFile(join(dir, "src/asides.ts"), "utf8")).toBe(ASIDES.replace(`"Pitch."`, `"A roof's pitch."`));
+  const history = readHistory(await readFile(join(dir, "copy-history/demo.json"), "utf8"))!;
+  expect(history.lesson).toBe("demo");
+  expect(history.saves.map((save) => save.changes.map((c) => [c.field, c.was, c.now]))).toEqual([
+    [
+      ["steps.1.text", "See it change.", "See $\\angle A$ change."],
+      ["likes.0.title", "A ramp", "A wheelchair ramp"],
+    ],
+    [["steps.0.title", "Drag", "Drag it"]],
+  ]);
 });
 
 it("writes none of a save when one edit in it is stale, and refuses anything that is not a save", async () => {

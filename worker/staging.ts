@@ -1,7 +1,8 @@
 // The staging Worker (`env.staging` in wrangler.jsonc): the production Worker
 // (index.ts), with its own deck, plus the endpoints the dev tools in the
 // staging build talk to. Copy edits are committed to the staging branch on
-// GitHub, all of one save in one commit, which redeploys staging
+// GitHub, all of one save in one commit with what the copy read before
+// (src/dev/copy/history.ts), which redeploys staging
 // (.github/workflows/staging.yml); a fact-check of the copy asks Claude
 // (copy-check.ts); a UI comment is kept in a Durable Object until
 // `npm run staging:pull` appends it to the local ui-feedback.md.
@@ -14,6 +15,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
 import { parseEntry, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
+import { historyFile, recordSave } from "../src/dev/copy/history.ts";
 import { entriesIn, filesOf, homesOf, lessonOf, listing, rewriteFile } from "../src/dev/copy/source.ts";
 import { parseCopyEdit, SECTIONS, type CopyEdit, type CopyListing, type SaveReply } from "../src/dev/copy/wire.ts";
 import production, { Accounts, RecallDeck } from "./index.ts";
@@ -137,6 +139,17 @@ async function headOf(github: GitHub): Promise<string | Failure> {
   return shaOf(ref) ?? { status: 502, error: "GitHub's reply about the branch was unreadable." };
 }
 
+/** `file` as it is at commit `head`, or null when there is none. */
+async function readFile(github: GitHub, file: string, head: string): Promise<string | null | Failure> {
+  if (!github.token) return { status: 503, error: "Staging has no GITHUB_TOKEN, so it cannot reach the lessons' source." };
+  const res = await fetch(contentsUrl(github, file, head), { headers: githubHeaders(github) });
+  if (res.status === 404) return null;
+  const text = res.ok ? readContents(await res.json()) : null;
+  if (text !== null) return text;
+  console.error("Reading from GitHub failed:", res.status, file);
+  return { status: 502, error: `GitHub would not give ${file} (${res.status}).` };
+}
+
 /** Each of `files` as it is at commit `head`. */
 async function readFiles(github: GitHub, files: readonly string[], head: string): Promise<Map<string, string> | Failure> {
   const read = new Map<string, string>();
@@ -189,6 +202,13 @@ async function commitCopy(github: GitHub, edit: CopyEdit): Promise<SaveReply | F
       if (result.changed) written.set(file, result.source);
     }
     if (written.size === 0) return { files: [], commit: null };
+    // What the copy read before, kept beside it in the same commit (history.ts).
+    const kept = historyFile(lesson.slug);
+    const existing = await readFile(github, kept, head);
+    if (isFailure(existing)) return existing;
+    const recorded = recordSave(existing, lesson.slug, edit.edits, new Date().toISOString());
+    if (!recorded.ok) return { status: 409, error: recorded.error };
+    if (recorded.text !== null) written.set(kept, recorded.text);
 
     const base = await getJson(github, commitUrl(github, head), "the head commit");
     if (isFailure(base)) return base;

@@ -473,6 +473,10 @@ A save posts every changed entry at once (`CopyEdit`), each with the entry as it
 Vite sees the change and reloads the page, which comes back to the Copy tab.
 On staging the same request reaches the staging Worker, which commits all of it to the staging branch in one commit and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor reopens on the copy as committed.
 
+Every save also keeps what it replaced: the lesson's history file, `copy-history/<slug>.json`, gains the save's time and, for each field it changed, the text before and after (`history.ts`).
+It is written with the source it records, in the same write on the dev server and the same commit on staging, so a field's original wording stays in the repository beside it: the `was` of the field's first change.
+A history file that cannot be read refuses the save rather than being written over.
+
 A fact-check posts the copy as drafted (`CheckRequest`); the server asks Claude to check it (`worker/copy-check.ts`), told the lesson as an explanation's check tells it and given the copy field by field.
 Claude may search the web for the copy's real-world claims, and answers in a fixed JSON form (`CopyCheck`): a summary, and remarks that each name a field, quote its words, say what is wrong and give the words to put there instead where it can.
 The remarks are placed on the words they quote as the Explain tab's are (`recall/remarks.ts`), afresh as the author edits, so a remark on words since changed shows as dealt with, and a fix is applied by putting it in place of those words.
@@ -490,6 +494,7 @@ Edited copy changes its lesson's teaching text, so its syllabus entry goes stale
 | `dev/copy/wire.ts` | The listing, edit and save wire formats and their validation. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
 | `dev/copy/check.ts` | The fact-check's request and reply, and reading each. Shared likewise. |
 | `dev/copy/draft.ts` | A field as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
+| `dev/copy/history.ts` | A save → what it adds to its lesson's history file of the text it replaced. Shared likewise. |
 | `dev/copy/edit.ts` | The editor's state: drafts over the listing, what a save and a check send, and the check's remarks placed on the copy as it stands. Pure. |
 | `dev/copy/pane.ts` | The Copy tab, and the calls to the server. |
 | `dev/copy/source.ts` | A page → where each section of its copy is written; the entries in a source; a source with entries rewritten. Pure. |
@@ -596,10 +601,11 @@ Each reload takes off what the last load of the page listened to on the window a
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
 - `src/dev/copy/copy.test.ts`: reading a save and a fact-check's request and reply, the editor's drafts and their previews, and the editor's state: drafts kept and dropped, what a save and a check send, and remarks placed and fixed.
 - `src/dev/copy/source.test.ts`: where each section of a page's copy is written, finding entries and rewriting them in small sources, literals that read back as written in every quote, and every real lesson's copy found in its source as the page shows it.
+- `src/dev/copy/history.test.ts`: the changes a save records, a lesson's history started and added to, nothing written for a save that changes nothing, and an unreadable history refused rather than written over.
 - `worker/copy-check.test.ts`: the request to Claude to fact-check copy, a paused search taken up again, and reading the check, a refusal or a cut-short reply.
-- `tools/copy-editor-plugin.test.ts`: the copy editor plugin on a real dev server — editor injection, copy listed from source, a save written to every file it touches or to none, stale edits refused, and a fact-check through a stand-in Claude.
+- `tools/copy-editor-plugin.test.ts`: the copy editor plugin on a real dev server — editor injection, copy listed from source, a save written to every file it touches or to none, with its history, stale edits refused, and a fact-check through a stand-in Claude.
 - `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
-- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, and comments kept until pulled.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit with its history on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/dev-vars.test.ts`: reading a value from `.dev.vars`.
 - `src/auth/signin.test.ts`: the sign-in page's views, from the address it opens at and each answer from `/auth/*`.
