@@ -5,7 +5,8 @@
 // nothing let into the dev tools without a signed Access token, a page's copy
 // listed from the branch, a save committed in one commit on the head it was
 // made on (and made again when the branch moved), a fact-check through
-// Claude, and UI comments kept until pulled.
+// Claude, a lesson's draft committed with the Explain tab text it keeps, and
+// UI comments kept until pulled.
 
 import { generateKeyPairSync, createSign, type KeyObject } from "node:crypto";
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -19,6 +20,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import type { CopyEdit } from "../src/dev/copy/wire.ts";
 import { readHistory } from "../src/dev/copy/history.ts";
+import { explanationContent, type DraftSave } from "../src/dev/drafts/wire.ts";
 import { encodeContent } from "./staging-rules.ts";
 
 const AUD = "staging-aud-tag";
@@ -249,6 +251,7 @@ describe("staging", () => {
       expect((await copy("/angles", jwt)).status, String(jwt)).toBe(401);
       expect((await call("POST", "/__copy/check", { page: "/angles", fields: [{ id: "steps.0.text", text: "x" }] }, jwt)).status).toBe(401);
       expect((await call("GET", "/__ui-feedback", undefined, jwt)).status).toBe(401);
+      expect((await call("POST", "/__drafts", { page: "/slope", was: null, text: "x", explanations: [] }, jwt)).status).toBe(401);
     }
     expect(github.made).toEqual([]);
     expect(claude.asked).toEqual([]);
@@ -351,6 +354,60 @@ describe("the copy editor on staging", () => {
     expect(claude.asked[0].key).toBe("Bearer k");
     expect(JSON.stringify(claude.asked[0].body.messages)).toContain('<field id=\\"likes.0.text\\"');
     expect((await call("POST", "/__copy/check", { page: "/angles", fields: [] })).status).toBe(400);
+  });
+});
+
+describe("the draft tab on staging", () => {
+  const draft = (page: string) => call("GET", `/__drafts?page=${encodeURIComponent(page)}`);
+  const save: DraftSave = {
+    page: "/lab?lesson=slope",
+    was: null,
+    text: "# Slope\n\nRise over run.",
+    explanations: [
+      { lesson: "medians", text: "They meet at the centroid." },
+      { lesson: "angles", text: " " },
+    ],
+  };
+
+  it("commits a draft with the explanations it keeps in one commit, and lists it from the branch", async () => {
+    expect(await (await draft("/slope")).json()).toEqual({ lesson: "slope", file: "lesson-drafts/slope.md", text: null });
+    const saved = await call("POST", "/__drafts", save);
+    expect(await saved.json()).toEqual({
+      files: ["lesson-drafts/slope.md", "lesson-drafts/medians.explanation.md"],
+      commit: `https://github.com/owner/repo/commit/${github.head}`,
+    });
+    expect(github.made).toEqual([
+      {
+        message: "Draft the text of slope, and keep 1 explanation\n\nMade with the draft tab on staging.\n",
+        auth: "Bearer gh-token",
+        files: { "lesson-drafts/slope.md": "# Slope\n\nRise over run.\n", "lesson-drafts/medians.explanation.md": explanationContent("They meet at the centroid.") },
+      },
+    ]);
+    expect(await (await draft("/lab?lesson=slope")).json()).toEqual({ lesson: "slope", file: "lesson-drafts/slope.md", text: save.text });
+    // Saved again as it reads, nothing is committed.
+    expect(await (await call("POST", "/__drafts", { ...save, was: save.text })).json()).toEqual({ files: [], commit: null });
+    expect(github.made).toHaveLength(1);
+    expect((await draft("/")).status).toBe(404);
+  });
+
+  it("makes the commit again when the branch moved meanwhile, and refuses it when the draft was saved since", async () => {
+    github.raceNext = (now) => now.set("README.md", "Edited meanwhile.");
+    expect((await call("POST", "/__drafts", save)).status).toBe(200);
+    expect(files().get("README.md")).toBe("Edited meanwhile.");
+    expect(files().get("lesson-drafts/slope.md")).toBe("# Slope\n\nRise over run.\n");
+
+    const before = github.made.length;
+    const stale = await call("POST", "/__drafts", { ...save, was: null, text: "Mine." });
+    expect(stale.status).toBe(409);
+    expect((await stale.json()).error).toMatch(/saved from elsewhere/);
+    expect(github.made).toHaveLength(before);
+  });
+
+  it("takes a save larger than the other dev tools' bodies", async () => {
+    const long = Array.from({ length: 60 }, (_, i) => ({ lesson: `lesson-${i}`, text: "x".repeat(7000) }));
+    const saved = await call("POST", "/__drafts", { ...save, explanations: long });
+    expect(saved.status).toBe(200);
+    expect((await saved.json()).files).toHaveLength(61);
   });
 });
 

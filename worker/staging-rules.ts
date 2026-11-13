@@ -9,6 +9,8 @@
 //   GET    /__copy?page=          a page's copy from its source (CopyListing, src/dev/copy/wire.ts)
 //   POST   /__copy                a CopyEdit, committed to the staging branch in one commit; answers with a SaveReply
 //   POST   /__copy/check          a CheckRequest (src/dev/copy/check.ts); answers with Claude's CopyCheck
+//   GET    /__drafts?page=        a lesson's draft (DraftListing, src/dev/drafts/wire.ts)
+//   POST   /__drafts              a DraftSave, committed with the explanations it keeps in one commit; answers with a DraftReply
 //   POST   /__ui-feedback         a FeedbackEntry (src/dev/feedback/entry.ts), kept until pulled
 //   GET    /__ui-feedback         the comments kept, oldest first (InboxItem[])
 //   DELETE /__ui-feedback?through=<id>   forget the comments pulled, up to and including `id`
@@ -18,21 +20,24 @@
 
 import { FEEDBACK_ENDPOINT, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import { CHECK_ENDPOINT, COPY_ENDPOINT } from "../src/dev/copy/wire.ts";
+import { DRAFTS_ENDPOINT } from "../src/dev/drafts/wire.ts";
 import { entryName } from "../src/dev/copy/source.ts";
 import type { EntryEdit } from "../src/dev/copy/wire.ts";
 import { claimsProblem, type Access } from "./access.ts";
 import type { Refusal } from "./rules.ts";
 
 /** The paths the staging Worker answers itself; everything else is the production Worker's. */
-export const STAGING_PATHS: readonly string[] = [COPY_ENDPOINT, CHECK_ENDPOINT, FEEDBACK_ENDPOINT];
+export const STAGING_PATHS: readonly string[] = [COPY_ENDPOINT, CHECK_ENDPOINT, DRAFTS_ENDPOINT, FEEDBACK_ENDPOINT];
 
-/** Largest body accepted on these paths, in characters. */
+/** Largest body accepted on these paths, in characters; a draft's save may be larger (MAX_DRAFT_BODY). */
 export const MAX_STAGING_BODY = 256 * 1024;
 
 export type StagingDecision =
   | { kind: "list-copy"; page: string }
   | { kind: "save-copy" }
   | { kind: "check-copy" }
+  | { kind: "list-draft"; page: string }
+  | { kind: "save-draft" }
   | { kind: "add-feedback" }
   | { kind: "list-feedback" }
   | { kind: "clear-feedback"; through: number }
@@ -60,6 +65,11 @@ export function decideStaging(asked: StagingAsked, access: Access, now: number):
   if (url.pathname === COPY_ENDPOINT) {
     if (method === "GET") return { kind: "list-copy", page: url.searchParams.get("page") ?? "" };
     if (method === "POST") return { kind: "save-copy" };
+    return refuse(405, "Use GET or POST.");
+  }
+  if (url.pathname === DRAFTS_ENDPOINT) {
+    if (method === "GET") return { kind: "list-draft", page: url.searchParams.get("page") ?? "" };
+    if (method === "POST") return { kind: "save-draft" };
     return refuse(405, "Use GET or POST.");
   }
   if (url.pathname === CHECK_ENDPOINT) {

@@ -2,12 +2,14 @@ name: Deploy staging
 
 # Staging is the site with its dev tools in, behind Cloudflare Access
 # (`env.staging` in wrangler.jsonc). It runs the staging branch, which is main
-# plus the copy edits committed from staging itself. A push to main is merged
-# into staging first, so staging never falls behind; a push to staging (a
-# copy edit) just redeploys it.
+# plus the copy edits and drafts committed from staging itself. A push to
+# main is merged into staging first, so staging never falls behind; a push to
+# staging (a copy edit) just redeploys it. A push of drafts alone changes
+# nothing the site serves (src/dev/drafts), so it deploys nothing.
 on:
   push:
     branches: [main, staging]
+    paths-ignore: ["lesson-drafts/**"]
   workflow_dispatch:
 
 # Writing to the staging branch, to merge main into it.

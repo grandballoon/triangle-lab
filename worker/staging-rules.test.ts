@@ -30,10 +30,12 @@ const ask = (method: string, path: string, over: { claims?: Record<string, unkno
   decideStaging({ method, url: new URL(path, "https://staging.test"), claims: CLAIMS, withinLimit: true, withinCheckLimit: true, ...over }, ACCESS, NOW);
 
 describe("decideStaging", () => {
-  it("routes the copy editor and the feedback inbox", () => {
+  it("routes the copy editor, the draft tab and the feedback inbox", () => {
     expect(ask("GET", "/__copy?page=%2Fangles")).toEqual({ kind: "list-copy", page: "/angles" });
     expect(ask("POST", "/__copy")).toEqual({ kind: "save-copy" });
     expect(ask("POST", "/__copy/check")).toEqual({ kind: "check-copy" });
+    expect(ask("GET", "/__drafts?page=%2Fslope")).toEqual({ kind: "list-draft", page: "/slope" });
+    expect(ask("POST", "/__drafts")).toEqual({ kind: "save-draft" });
     expect(ask("POST", "/__ui-feedback")).toEqual({ kind: "add-feedback" });
     expect(ask("GET", "/__ui-feedback")).toEqual({ kind: "list-feedback" });
     expect(ask("DELETE", "/__ui-feedback?through=7")).toEqual({ kind: "clear-feedback", through: 7 });
@@ -50,6 +52,8 @@ describe("decideStaging", () => {
     ).toMatchObject({ status: 503 });
     expect(ask("PUT", "/__copy")).toMatchObject({ status: 405 });
     expect(ask("GET", "/__copy/check")).toMatchObject({ status: 405 });
+    expect(ask("DELETE", "/__drafts")).toMatchObject({ status: 405 });
+    expect(ask("GET", "/__drafts", { claims: null })).toMatchObject({ status: 401 });
     expect(ask("PUT", "/__ui-feedback")).toMatchObject({ status: 405 });
     expect(ask("DELETE", "/__ui-feedback")).toMatchObject({ status: 400 });
     expect(ask("DELETE", "/__ui-feedback?through=-1")).toMatchObject({ status: 400 });
