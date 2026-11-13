@@ -2,12 +2,13 @@
    explanation from the Explain tab to write from, the draft as typed, and
    the draft as it reads. It sits in the column (lab/steps.css), so it takes
    the column's colours and --accent, and matches the Copy tab
-   (dev/copy/copy.css). */
+   (dev/copy/copy.css). The pane is the column's .column-pane too, which
+   sizes it to the room under the tabs; a height of its own would push its
+   foot past the column's edge. */
 
 .draft {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
   font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
   color: #e9f0f7;
 }
