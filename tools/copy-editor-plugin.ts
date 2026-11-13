@@ -8,21 +8,24 @@
 // its endpoints instead; a production build never contains it.
 //
 // Writing the files is the whole save: Vite sees the change and reloads the
-// page, which then shows the copy as the source now has it. The fact-check
+// page, which then shows the copy as the source now has it. What the copy
+// read before goes into the lesson's history file in the same write
+// (src/dev/copy/history.ts). The fact-check
 // calls Claude with the ANTHROPIC_API_KEY in .dev.vars, as the local Worker
 // does.
 
 import Anthropic from "@anthropic-ai/sdk";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import type { Plugin } from "vite";
 import { devVar } from "./dev-vars.ts";
 import { devTools } from "./staging-mode.ts";
 import { askCopyCheck } from "../worker/copy-check.ts";
 import { MAX_CHECK_BODY } from "../src/dev/copy/check.ts";
 import { CHECK_ENDPOINT, COPY_ENDPOINT, parseCopyEdit, SECTIONS, type CopyListing, type SaveReply } from "../src/dev/copy/wire.ts";
-import { entriesIn, filesOf, homesOf, listing, rewriteFile } from "../src/dev/copy/source.ts";
+import { historyFile, recordSave } from "../src/dev/copy/history.ts";
+import { entriesIn, filesOf, homesOf, lessonOf, listing, rewriteFile } from "../src/dev/copy/source.ts";
 
 const EDITOR = "/src/dev/copy/pane.ts";
 const MAX_SAVE_BODY = 256 * 1024;
@@ -104,7 +107,8 @@ export function copyEditor(root: string, claude: () => Promise<Anthropic | null>
         const edit = parseCopyEdit(await readJson(req, MAX_SAVE_BODY));
         if (!edit) return reply(res, 400, { error: "Not a set of copy edits." });
         const homes = homesOf(edit.page);
-        if (!homes) return reply(res, 404, { error: "This page has no copy." });
+        const lesson = lessonOf(edit.page);
+        if (!homes || !lesson) return reply(res, 404, { error: "This page has no copy." });
 
         const save = queue.then(async () => {
           // Every file is rewritten before any is written, so a refused edit leaves them all alone.
@@ -114,7 +118,18 @@ export function copyEditor(root: string, claude: () => Promise<Anthropic | null>
             if (!result.ok) return result;
             if (result.changed) written.set(file, result.source);
           }
-          for (const [file, text] of written) await writeFile(join(root, file), text);
+          if (written.size > 0) {
+            // What the copy read before, kept beside it (history.ts).
+            const file = historyFile(lesson.slug);
+            const existing = await readFile(join(root, file), "utf8").catch((err) => (missing(err) ? null : Promise.reject(err)));
+            const recorded = recordSave(existing, lesson.slug, edit.edits, new Date().toISOString());
+            if (!recorded.ok) return recorded;
+            if (recorded.text !== null) written.set(file, recorded.text);
+          }
+          for (const [file, text] of written) {
+            await mkdir(dirname(join(root, file)), { recursive: true });
+            await writeFile(join(root, file), text);
+          }
           return { ok: true as const, files: [...written.keys()] };
         });
         queue = save.catch(() => {});

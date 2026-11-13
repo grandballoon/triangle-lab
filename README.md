@@ -44,6 +44,7 @@ It shows the lesson's copy as its source writes it, `$…$` LaTeX and all: each 
 Edit any field, and the text is typeset below it as the page will show it; drafts are kept in the browser until saved, so a reload loses none.
 Check with Claude (or Command-Enter) has Claude fact-check the copy as it stands, searching the web for its real-world claims: a summary heads the tab, and each remark is highlighted on the words it is about, with a fix to apply where it has one.
 Save (or Command-S) writes every change at once into the lesson's source (`src/directions.ts` and `src/asides.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson), and the page reloads with them.
+Each save also adds what it replaced to `copy-history/<slug>.json`, so the original wording of every edited field stays in the repository.
 The fact-check uses the `ANTHROPIC_API_KEY` in `.dev.vars`.
 The tab exists only on the dev server and on staging (see "Staging"), never in a production build.
 Changed copy makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
