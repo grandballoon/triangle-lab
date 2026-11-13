@@ -1,5 +1,5 @@
 // The staging build: the site as production builds it, plus the dev tools
-// (the UI feedback overlay and the step editor), for the protected staging
+// (the UI feedback overlay and the copy editor), for the protected staging
 // Worker (worker/staging.ts, `env.staging` in wrangler.jsonc). Built by
 // `npm run build:staging`, which runs `vite build --mode staging`.
 

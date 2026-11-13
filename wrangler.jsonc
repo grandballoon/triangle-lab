@@ -90,7 +90,7 @@
 			"main": "worker/staging.ts",
 			"assets": {
 				"directory": "./dist-staging",
-				"run_worker_first": ["/auth/*", "/deck", "/check", "/associate", "/explain", "/account", "/__step-source", "/__ui-feedback"]
+				"run_worker_first": ["/auth/*", "/deck", "/check", "/associate", "/explain", "/account", "/__copy", "/__copy/check", "/__ui-feedback"]
 			},
 			"durable_objects": {
 				"bindings": [
@@ -112,14 +112,15 @@
 			],
 			// As above, plus GITHUB_TOKEN: a fine-grained token for this
 			// repository only, with read and write access to its contents,
-			// which step edits are committed with.
+			// which copy edits are committed with (the Git Data API, so all
+			// of one save lands in one commit).
 			"secrets": { "required": ["ANTHROPIC_API_KEY", "OWNER_EMAIL", "INVITES", "CREDITS", "VAULT_KEY", "GITHUB_TOKEN"] },
 			"vars": {
 				"ANTHROPIC_BASE_URL": "https://api.anthropic.com",
 				"SENDER": "signin@geometryclub.app",
 				"BETA_CREDIT_USD": "5",
 				"MONTHLY_CAP_USD": "50",
-				// Where step edits are committed. A push there redeploys
+				// Where copy edits are committed. A push there redeploys
 				// staging (.github/workflows/staging.yml).
 				"GITHUB_API_URL": "https://api.github.com",
 				"GITHUB_REPO": "grandballoon/triangle-lab",

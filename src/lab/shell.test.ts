@@ -15,7 +15,7 @@ import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
 import { term, type Scene } from "./scene.ts";
-import { LIKES_HEADING, StepList, USES_HEADING } from "./steps.ts";
+import { LIKES_HEADING, StepList, USES_HEADING, whenStepColumn } from "./steps.ts";
 import { Shell, type ShellElements } from "./shell.ts";
 
 let frames: FrameRequestCallback[] = [];
@@ -412,6 +412,34 @@ describe("StepList, with a pane beside the steps", () => {
     tabs[0].click();
     expect(column.hasAttribute("data-pane")).toBe(false);
     expect(document.querySelector('[aria-current="step"]')!.textContent).toContain("Step 2");
+  });
+
+  it("gives each pane a tab of its own, showing one at a time, and tells who asks when it shows a lesson", () => {
+    document.body.innerHTML = `<aside id="steps"><div id="step-list"></div></aside>`;
+    const column = document.getElementById("steps")!;
+    const steps = new StepList(document.getElementById("step-list")!, (step) => steps.mark(step, true));
+    const found = vi.fn();
+    whenStepColumn(found);
+    expect(found).toHaveBeenCalledWith(steps);
+    const explain = document.createElement("section");
+    const copy = document.createElement("section");
+    steps.addPane("Explain", explain);
+    steps.addPane("Copy", copy);
+    const tabs = [...column.querySelectorAll<HTMLButtonElement>(".column-tab")];
+    expect(tabs.map((t) => t.textContent)).toEqual(["Steps", "Explain", "Copy"]);
+    expect([explain.hidden, copy.hidden]).toEqual([true, true]);
+
+    tabs[2].click();
+    expect([explain.hidden, copy.hidden]).toEqual([true, false]);
+    expect(steps.paneShown(copy)).toBe(true);
+    steps.showPane(explain);
+    expect([explain.hidden, copy.hidden]).toEqual([false, true]);
+    expect(tabs.map((t) => t.getAttribute("aria-selected"))).toEqual(["false", "true", "false"]);
+
+    const shown = vi.fn();
+    steps.onShow(shown);
+    steps.show([{ title: "Explore", text: "Drag." }], { likes: [], uses: [] });
+    expect(shown).toHaveBeenCalledOnce();
   });
 });
 

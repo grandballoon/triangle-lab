@@ -1,31 +1,41 @@
 // The staging Worker (`env.staging` in wrangler.jsonc): the production Worker
 // (index.ts), with its own deck, plus the endpoints the dev tools in the
-// staging build talk to. A step edit is committed to the staging branch on
-// GitHub, which redeploys staging (.github/workflows/staging.yml); a UI
-// comment is kept in a Durable Object until `npm run staging:pull` appends it
-// to the local ui-feedback.md.
+// staging build talk to. Copy edits are committed to the staging branch on
+// GitHub, all of one save in one commit, which redeploys staging
+// (.github/workflows/staging.yml); a fact-check of the copy asks Claude
+// (copy-check.ts); a UI comment is kept in a Durable Object until
+// `npm run staging:pull` appends it to the local ui-feedback.md.
 //
 // Cloudflare Access guards the whole staging host; these endpoints also check
 // the token Access forwards, so nothing reaches them past it. The decisions
-// are in staging-rules.ts and the step rewriting in src/dev/steps/source.ts;
-// this does the I/O.
+// are in staging-rules.ts, the rewriting in src/dev/copy/source.ts and the
+// fact-check in copy-check.ts; this does the I/O.
 
+import Anthropic from "@anthropic-ai/sdk";
 import { DurableObject } from "cloudflare:workers";
 import { parseEntry, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
-import { homeOf, listing, rewriteStep, stepsIn } from "../src/dev/steps/source.ts";
-import { parseEdit, type Listing, type SaveReply, type StepEdit } from "../src/dev/steps/wire.ts";
+import { entriesIn, filesOf, homesOf, lessonOf, listing, rewriteFile } from "../src/dev/copy/source.ts";
+import { parseCopyEdit, SECTIONS, type CopyEdit, type CopyListing, type SaveReply } from "../src/dev/copy/wire.ts";
 import production, { Accounts, RecallDeck } from "./index.ts";
 import { verifiedClaims } from "./access-keys.ts";
+import { usageLine } from "./check.ts";
+import { askCopyCheck } from "./copy-check.ts";
 import {
-  commitBody,
   commitLink,
   commitMessage,
+  commitUrl,
+  commitsUrl,
   contentsUrl,
   decideStaging,
   githubHeaders,
   MAX_STAGING_BODY,
   readContents,
+  refUrl,
+  shaOf,
   STAGING_PATHS,
+  treeBody,
+  treeOf,
+  treesUrl,
   type GitHub,
   type InboxItem,
 } from "./staging-rules.ts";
@@ -52,6 +62,7 @@ export default {
         url,
         claims: access.issuer ? await verifiedClaims(request.headers.get("Cf-Access-Jwt-Assertion"), access.issuer) : null,
         withinLimit: (await env.LIMITER.limit(caller)).success,
+        withinCheckLimit: (await env.CHECK_LIMITER.limit(caller)).success,
       },
       access,
       Date.now(),
@@ -63,19 +74,25 @@ export default {
     switch (decision.kind) {
       case "refuse":
         return reply(decision.status, { error: decision.error });
-      case "list-steps": {
-        const home = homeOf(decision.page);
-        if (!home) return reply(404, { error: "This page has no steps." });
-        const file = await readFile(github, home.file);
-        if ("error" in file) return reply(file.status, { error: file.error });
-        const body: Listing = { file: home.file, steps: listing(stepsIn(file.text, home.key)) };
-        return reply(200, body);
+      case "list-copy": {
+        const listed = await listCopy(github, decision.page);
+        return "error" in listed ? reply(listed.status, { error: listed.error }) : reply(200, listed);
       }
-      case "edit-step": {
-        const edit = parseEdit(parseJson(await bodyOf(request)));
-        if (!edit) return reply(400, { error: "Not a step edit." });
-        const saved = await commitEdit(github, edit);
+      case "save-copy": {
+        const edit = parseCopyEdit(parseJson(await bodyOf(request)));
+        if (!edit) return reply(400, { error: "Not a set of copy edits." });
+        const saved = await commitCopy(github, edit);
         return "error" in saved ? reply(saved.status, { error: saved.error }) : reply(200, saved);
+      }
+      case "check-copy": {
+        if (!env.ANTHROPIC_API_KEY) return reply(503, { error: "Staging has no ANTHROPIC_API_KEY, so it cannot ask Claude." });
+        const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL });
+        const outcome = await askCopyCheck(
+          parseJson(await bodyOf(request)),
+          (params) => client.beta.messages.stream(params).finalMessage(),
+          (message) => console.log(JSON.stringify(usageLine("copy-check", "high", message))),
+        );
+        return "check" in outcome ? reply(200, outcome.check) : reply(outcome.status, { error: outcome.error });
       }
       case "add-feedback": {
         const entry = parseEntry(parseJson(await bodyOf(request)));
@@ -99,48 +116,102 @@ async function bodyOf(request: Request): Promise<string> {
   return text.length > MAX_STAGING_BODY ? "" : text;
 }
 
-async function readFile(github: GitHub, file: string): Promise<{ text: string; sha: string } | Failure> {
-  if (!github.token) return { status: 503, error: "Staging has no GITHUB_TOKEN, so it cannot read the lessons' source." };
-  const res = await fetch(contentsUrl(github, file, true), { headers: githubHeaders(github) });
-  if (res.status === 404) return { status: 404, error: `There is no ${file} on ${github.branch}.` };
-  const contents = res.ok ? readContents(await res.json()) : null;
-  if (!contents) {
-    console.error("Reading from GitHub failed:", res.status, file);
-    return { status: 502, error: `GitHub would not give ${file} (${res.status}).` };
-  }
-  return contents;
+async function getJson(github: GitHub, url: string, what: string): Promise<unknown | Failure> {
+  if (!github.token) return { status: 503, error: "Staging has no GITHUB_TOKEN, so it cannot reach the lessons' source." };
+  const res = await fetch(url, { headers: githubHeaders(github) });
+  if (res.ok) return res.json();
+  console.error("Reading from GitHub failed:", res.status, what);
+  return { status: res.status === 404 ? 404 : 502, error: res.status === 404 ? `There is no ${what} on ${github.branch}.` : `GitHub would not give ${what} (${res.status}).` };
 }
 
-/** Times a commit is tried again when the branch moved between reading the file and writing it. */
+async function sendJson(github: GitHub, method: string, url: string, body: unknown): Promise<Response> {
+  return fetch(url, { method, headers: { ...githubHeaders(github), "Content-Type": "application/json" }, body: JSON.stringify(body) });
+}
+
+const isFailure = (v: unknown): v is Failure => typeof v === "object" && v !== null && "error" in v && "status" in v;
+
+/** The commit the branch is at. */
+async function headOf(github: GitHub): Promise<string | Failure> {
+  const ref = await getJson(github, refUrl(github, true), `branch ${github.branch}`);
+  if (isFailure(ref)) return ref;
+  return shaOf(ref) ?? { status: 502, error: "GitHub's reply about the branch was unreadable." };
+}
+
+/** Each of `files` as it is at commit `head`. */
+async function readFiles(github: GitHub, files: readonly string[], head: string): Promise<Map<string, string> | Failure> {
+  const read = new Map<string, string>();
+  for (const file of files) {
+    const body = await getJson(github, contentsUrl(github, file, head), file);
+    if (isFailure(body)) return body;
+    const text = readContents(body);
+    if (text === null) return { status: 502, error: `GitHub's copy of ${file} was unreadable.` };
+    read.set(file, text);
+  }
+  return read;
+}
+
+async function listCopy(github: GitHub, page: string): Promise<CopyListing | Failure> {
+  const homes = homesOf(page);
+  if (!homes) return { status: 404, error: "This page has no copy." };
+  const head = await headOf(github);
+  if (typeof head !== "string") return head;
+  const files = await readFiles(github, filesOf(homes), head);
+  if (files instanceof Map) {
+    const section = (s: (typeof SECTIONS)[number]) => ({ file: homes[s].file, entries: listing(entriesIn(files.get(homes[s].file)!, homes[s], s)) });
+    return { steps: section("steps"), likes: section("likes"), uses: section("uses") };
+  }
+  return files;
+}
+
+/** Times a commit is tried again when the branch moved between reading the files and moving it. */
 const COMMIT_TRIES = 3;
 
 /**
- * Commit `edit` to the branch: read the file, rewrite the step, and write it
- * over the version read. If the file changed meanwhile, GitHub refuses, and
- * the edit is made again on the newer version, which still holds the step
- * only if nobody changed it.
+ * Commit `edit` to the branch, as one commit: read the files at the branch's
+ * head, rewrite them, and make a commit of them on that head. If the branch
+ * moved meanwhile, GitHub will not move it to the commit, and the edits are
+ * made again on the newer files, which still hold the entries only if nobody
+ * changed them.
  */
-async function commitEdit(github: GitHub, edit: StepEdit): Promise<SaveReply | Failure> {
-  const home = homeOf(edit.page);
-  if (!home) return { status: 404, error: "This page has no steps." };
+async function commitCopy(github: GitHub, edit: CopyEdit): Promise<SaveReply | Failure> {
+  const homes = homesOf(edit.page);
+  const lesson = lessonOf(edit.page);
+  if (!homes || !lesson) return { status: 404, error: "This page has no copy." };
   for (let attempt = 0; attempt < COMMIT_TRIES; attempt++) {
-    const file = await readFile(github, home.file);
-    if ("error" in file) return file;
-    const result = rewriteStep(file.text, home.key, edit);
-    if (!result.ok) return { status: 409, error: result.error };
-    if (!result.changed) return { file: home.file, changed: false, commit: null };
-    const res = await fetch(contentsUrl(github, home.file, false), {
-      method: "PUT",
-      headers: { ...githubHeaders(github), "Content-Type": "application/json" },
-      body: JSON.stringify(commitBody(github, result.source, file.sha, commitMessage(edit, home))),
-    });
-    if (res.ok) return { file: home.file, changed: true, commit: commitLink(await res.json()) ?? "" };
-    if (res.status !== 409) {
-      console.error("Committing to GitHub failed:", res.status, home.file);
-      return { status: 502, error: `GitHub would not take the commit (${res.status}).` };
+    const head = await headOf(github);
+    if (typeof head !== "string") return head;
+    const files = await readFiles(github, filesOf(homes), head);
+    if (!(files instanceof Map)) return files;
+    const written = new Map<string, string>();
+    for (const [file, text] of files) {
+      const result = rewriteFile(text, file, homes, edit.edits);
+      if (!result.ok) return { status: 409, error: result.error };
+      if (result.changed) written.set(file, result.source);
     }
+    if (written.size === 0) return { files: [], commit: null };
+
+    const base = await getJson(github, commitUrl(github, head), "the head commit");
+    if (isFailure(base)) return base;
+    const baseTree = treeOf(base);
+    if (!baseTree) return { status: 502, error: "GitHub's reply about the head commit was unreadable." };
+    const tree = await sendJson(github, "POST", treesUrl(github), treeBody(baseTree, written));
+    const treeSha = tree.ok ? shaOf(await tree.json()) : null;
+    if (!treeSha) return gitFailed("tree", tree.status);
+    const commit = await sendJson(github, "POST", commitsUrl(github), { message: commitMessage(lesson.slug, edit.edits), tree: treeSha, parents: [head] });
+    const made = commit.ok ? ((await commit.json()) as unknown) : null;
+    const commitSha = shaOf(made);
+    if (!commitSha) return gitFailed("commit", commit.status);
+    const moved = await sendJson(github, "PATCH", refUrl(github, false), { sha: commitSha, force: false });
+    if (moved.ok) return { files: [...written.keys()], commit: commitLink(made) ?? "" };
+    // 422: not a fast-forward, as the branch has moved on since it was read.
+    if (moved.status !== 422 && moved.status !== 409) return gitFailed("branch move", moved.status);
   }
-  return { status: 409, error: `${home.file} keeps changing on ${github.branch}; try again.` };
+  return { status: 409, error: `The copy keeps changing on ${github.branch}; try again.` };
+}
+
+function gitFailed(what: string, status: number): Failure {
+  console.error(`GitHub would not make the ${what}:`, status);
+  return { status: 502, error: `GitHub would not make the ${what} (${status}).` };
 }
 
 function parseJson(text: string): unknown {

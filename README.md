@@ -37,14 +37,16 @@ The comment is appended to `ui-feedback.md` at the project root, together with t
 That file is gitignored; each entry starts open (`[ ]`) and is marked `[x]` once dealt with.
 The overlay exists only on the dev server and on staging (see "Staging"), and is never part of a production build.
 
-### Editing step text
+### Editing a lesson's copy
 
-Under `npm run dev`, every lesson page has an "Edit steps" button in its bottom-left corner.
-With it on, click a step's title or text to edit it as its source writes it, `$…$` LaTeX and all, with the step text typeset below as you type.
-Press Enter or Save, and the change is written into the lesson's source file (`src/directions.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson); the page then reloads at the same step.
-Escape cancels.
-Edit mode stays on across the reload, and the button exists only on the dev server and on staging (see "Staging").
-A changed step makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
+Under `npm run dev` and on staging, every lesson page's step column has a Copy tab beside its steps.
+It shows the lesson's copy as its source writes it, `$…$` LaTeX and all: each step's title and text, what its idea is like, and what it is used for.
+Edit any field, and the text is typeset below it as the page will show it; drafts are kept in the browser until saved, so a reload loses none.
+Check with Claude (or Command-Enter) has Claude fact-check the copy as it stands, searching the web for its real-world claims: a summary heads the tab, and each remark is highlighted on the words it is about, with a fix to apply where it has one.
+Save (or Command-S) writes every change at once into the lesson's source (`src/directions.ts` and `src/asides.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson), and the page reloads with them.
+The fact-check uses the `ANTHROPIC_API_KEY` in `.dev.vars`.
+The tab exists only on the dev server and on staging (see "Staging"), never in a production build.
+Changed copy makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
 
 ## Using your hands
 
@@ -244,15 +246,16 @@ Until then, Access's sign-in page comes before the site's own.
 
 ## Staging
 
-Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
+Staging is the site with its dev tools in: Alt-click feedback and the Copy tab work there as under `npm run dev`, with no local server.
 It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sign-ins, behind Cloudflare Access, which guards its dev tools.
-It runs the `staging` branch: `main`, plus the step edits made on staging.
+It runs the `staging` branch: `main`, plus the copy edits made on staging.
 
-- A step edit saved on staging is committed to the `staging` branch, and the push redeploys staging in a minute or two; the page shows the new text at once.
+- Copy saved on staging is committed to the `staging` branch, all of one save in one commit, and the push redeploys staging in a minute or two; the Copy tab shows the copy as committed at once.
+- A fact-check on staging calls Claude with staging's own `ANTHROPIC_API_KEY`.
 - A comment left on staging is kept there; `npm run staging:pull` appends it to your local `ui-feedback.md`, as the dev server would have.
 - A push to `main` is merged into `staging` and redeploys it (`.github/workflows/staging.yml`), so staging never falls behind.
 
-To bring staging's step edits to `main`, merge the branch, then run `/syllabus`, since an edited step leaves its lesson's syllabus entry stale and the tests (and so the deploy from `main`) fail until it is described again:
+To bring staging's copy edits to `main`, merge the branch, then run `/syllabus`, since edited copy leaves its lesson's syllabus entry stale and the tests (and so the deploy from `main`) fail until it is described again:
 
 ```bash
 git fetch origin && git merge origin/staging
@@ -318,7 +321,7 @@ worker/               The Cloudflare Worker: serves the site, syncs recall quest
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
-src/dev/steps/        Dev-only editor that writes step text back to its source
+src/dev/copy/         Dev-only Copy tab: edits a lesson's copy in its source, with Claude's fact-check
 tools/                Vite plugins used by the dev server, and pulling comments from staging
 specs/                Design notes for the original triangle lessons, and the open
                       question of how to draw an equation (equations-display.md)

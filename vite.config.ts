@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { uiFeedback } from "./tools/feedback-plugin.ts";
-import { stepEditor } from "./tools/step-editor-plugin.ts";
+import { copyEditor } from "./tools/copy-editor-plugin.ts";
 
 // The hand-tracking WASM runtime is fetched from a CDN at run time and must
 // match the installed library exactly, so its version is read from the
@@ -24,8 +24,8 @@ const mediapipe = JSON.parse(
 export default defineConfig({
   // The dev tools, on the dev server and in the staging build
   // (tools/staging-mode.ts): Alt-click any element to leave a comment, and
-  // "Edit steps" rewrites a lesson's step text in its source.
-  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md")), stepEditor(__dirname)],
+  // the Copy tab edits and fact-checks a lesson's copy in its source.
+  plugins: [uiFeedback(resolve(__dirname, "ui-feedback.md")), copyEditor(__dirname)],
   define: {
     __MEDIAPIPE_VERSION__: JSON.stringify(mediapipe.version),
   },
