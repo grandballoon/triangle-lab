@@ -457,36 +457,48 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 | `dev/feedback/overlay.ts` | The outline, the comment box and the post to the server. |
 | `tools/feedback-plugin.ts` | Injects the overlay and records comments. Runs in Node. |
 
-## Dev-only step editor (`src/dev/steps`, `tools/step-editor-plugin.ts`)
+## Dev-only copy editor (`src/dev/copy`, `tools/copy-editor-plugin.ts`, `worker/copy-check.ts`)
 
-An authoring aid for the dev server and staging: the text of each lesson's steps can be edited on the page, and the edit lands in the source, since the repository is where the text lives.
-A standalone page's steps are its entry in `directions` (`src/directions.ts`); a lab lesson's are the `steps` array of its module.
-Like the feedback overlay, the plugin injects `editor.ts` into every page under `vite dev` and in the staging build only, so no page imports it, it can never reach a production build, and no lesson or `StepList` knows it exists.
+An authoring aid for the dev server and staging: a lesson's copy can be edited on its page, fact-checked by Claude, and saved into the source, since the repository is where the text lives.
+The copy is three sections of entries, each a title and a text: the steps, what the idea is like ("likes"), and what it is used for ("uses").
+A standalone page's steps are its entry in `directions` (`src/directions.ts`) and its likes and uses its entry in `asides` (`src/asides.ts`); a lab lesson's are the `steps`, `likes` and `uses` arrays of its module.
+Like the feedback overlay, the plugin injects `pane.ts` into every page under `vite dev` and in the staging build only, so no page imports it and it can never reach a production build.
 
-The editor adds an "Edit steps" button to any page with a step column.
-In edit mode, a click on a step's title or text is taken in the capture phase before the column sees it, and opens that field as raw source text, with step text typeset below it as the column will show it.
-The editor asks the server for the page's steps as the source writes them, and pairs the clicked step with one of them by its title: the step at the same place when the titles agree, otherwise the only one with that title.
-A save posts the edit with the step as it was listed; the server finds that step in the source again, rewrites only the literal's span, keeping its quote, and writes the file.
-Vite sees the change and reloads the page, which comes back at the same step through its `#step-N` hash; edit mode is remembered for the tab, so it is still on.
-On staging the same request reaches the staging Worker, which commits the edit to the staging branch instead and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor shows the new text in the step itself.
+The editor is a Copy tab in the step column, added with `StepList.addPane` beside the steps (and the Explain tab, where there is one); being injected rather than imported, it finds the column with `whenStepColumn`, and follows the lab's lesson swaps through `onShow`.
+It asks the server for the page's copy as the source writes it (`CopyListing`), and shows every field as raw source text, with step text typeset below as the column will show it and what the lesson tests would refuse in it.
+A field built in code rather than written as a string literal is shown as such, and cannot be edited here.
+Drafts are kept in `localStorage` per page, each with the source text it was written over, so a draft kept across a reload is dropped rather than saved over copy that has changed under it.
 
-The finding and rewriting are a pure core, `src/dev/steps/source.ts`: source text in, source text out, used alike by the dev server and the staging Worker.
+A save posts every changed entry at once (`CopyEdit`), each with the entry as it was listed; the server finds each entry in the source again, rewrites only its literals' spans, keeping their quotes, and writes the files only if every edit applies.
+Vite sees the change and reloads the page, which comes back to the Copy tab.
+On staging the same request reaches the staging Worker, which commits all of it to the staging branch in one commit and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor reopens on the copy as committed.
+
+A fact-check posts the copy as drafted (`CheckRequest`); the server asks Claude to check it (`worker/copy-check.ts`), told the lesson as an explanation's check tells it and given the copy field by field.
+Claude may search the web for the copy's real-world claims, and answers in a fixed JSON form (`CopyCheck`): a summary, and remarks that each name a field, quote its words, say what is wrong and give the words to put there instead where it can.
+The remarks are placed on the words they quote as the Explain tab's are (`recall/remarks.ts`), afresh as the author edits, so a remark on words since changed shows as dealt with, and a fix is applied by putting it in place of those words.
+The dev server calls Claude with the key in `.dev.vars`; the staging Worker with its own, under the check rate limit.
+
+The editor's decisions are a pure core, `edit.ts`: the copy, its drafts and the check as values in, new values and the requests to send out.
+The finding and rewriting are another, `source.ts`: source text in, source text out, used alike by the dev server and the staging Worker.
 It parses the source with Babel's parser rather than matching patterns, so comments, other strings and formatting never confuse it; the parser is small enough for a Worker, where the TypeScript compiler is not.
-A field is editable only where the source writes it as a plain string literal; one built in code, a step that has changed since it was listed, or a step it cannot tell from another is refused, and the source is left alone.
-Every lesson's steps are found this way today, and a test keeps it so.
-An edited step changes its lesson's teaching text, so its syllabus entry goes stale and the syllabus test fails until `/syllabus` describes it again (see "The syllabus").
+A field is editable only where the source writes it as a plain string literal; one built in code, an entry that has changed since it was listed, or an entry it cannot tell from another is refused, and the source is left alone.
+Every lesson's copy is found this way today, and a test keeps it so.
+Edited copy changes its lesson's teaching text, so its syllabus entry goes stale and the syllabus test fails until `/syllabus` describes it again (see "The syllabus").
 
 | File | Role |
 | --- | --- |
-| `dev/steps/wire.ts` | The listing, edit and save wire formats, their validation, and pairing a shown step with a listed one. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
-| `dev/steps/draft.ts` | A draft as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
-| `dev/steps/editor.ts` | The button, the in-place editor, and the calls to the server. |
-| `dev/steps/source.ts` | A page → its source file; the steps in a source; a source with one step rewritten. Pure. |
-| `tools/step-editor-plugin.ts` | Injects the editor, lists a page's steps and writes edits, one at a time. Runs in Node. |
+| `dev/copy/wire.ts` | The listing, edit and save wire formats and their validation. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
+| `dev/copy/check.ts` | The fact-check's request and reply, and reading each. Shared likewise. |
+| `dev/copy/draft.ts` | A field as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
+| `dev/copy/edit.ts` | The editor's state: drafts over the listing, what a save and a check send, and the check's remarks placed on the copy as it stands. Pure. |
+| `dev/copy/pane.ts` | The Copy tab, and the calls to the server. |
+| `dev/copy/source.ts` | A page → where each section of its copy is written; the entries in a source; a source with entries rewritten. Pure. |
+| `worker/copy-check.ts` | The request to Claude to fact-check copy, and what its reply comes to. Pure but for the call it is handed. |
+| `tools/copy-editor-plugin.ts` | Injects the editor, lists a page's copy, writes saves one at a time, and asks Claude for checks. Runs in Node. |
 
 ## Staging (`worker/staging.ts`, `env.staging`, `.github/workflows/staging.yml`)
 
-Staging is the site with the dev tools in, on the web, so the feedback overlay and the step editor work without a local server.
+Staging is the site with the dev tools in, on the web, so the feedback overlay and the copy editor work without a local server.
 It is a Worker of its own, `triangle-lab-staging`: its own decks, sign-ins and rate limits, so testing never touches the real ones.
 Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
 
@@ -494,16 +506,17 @@ Cloudflare Access guards the whole staging host, so a page or asset is only serv
 Its deck and calls to Claude need a sign-in of the site's own, as production's do; the dev tools' endpoints also check the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
 With either var unset they answer 503, so a misconfigured staging fails closed.
 
-The two tools keep their endpoints and wire formats; only where things land differs.
+The tools keep their endpoints and wire formats; only where things land differs.
 
-- **Step edits** are committed to the `staging` branch through GitHub's contents API, with a token scoped to the repository (`GITHUB_TOKEN`).
-  The Worker reads the file from the branch, rewrites the step with the same core the dev server uses, and writes it over the version it read; if the branch moved meanwhile GitHub refuses, and the edit is made again on the newer version, which still holds the step only if nobody changed it.
-  Listing steps reads the branch too, so a step edited twice before staging redeploys is found as it now reads.
+- **Copy edits** are committed to the `staging` branch through GitHub's Git Data API, with a token scoped to the repository (`GITHUB_TOKEN`).
+  The Worker reads the files at the branch's head, rewrites them with the same core the dev server uses, and makes one commit of them on that head; if the branch moved meanwhile GitHub will not move it to the commit, and the edits are made again on the newer files, which still hold the entries only if nobody changed them.
+  Listing the copy reads the branch too, so copy edited twice before staging redeploys is found as it now reads.
+- **Fact-checks** call Claude with staging's `ANTHROPIC_API_KEY`, under the same rate limit as the learners' checks.
 - **UI comments** are kept in a Durable Object (`StagingInbox`) until `npm run staging:pull` (`tools/staging.ts`) appends them to the local `ui-feedback.md`, formatted as the dev server formats them, and tells staging to forget them.
   The pull gets past Access with a service token from `.dev.vars`.
 
 A push to `staging` redeploys it; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
-The workflow builds but does not test: an edited step leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
+The workflow builds but does not test: edited copy leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
 
 | File | Role |
 | --- | --- |
@@ -581,11 +594,12 @@ Each reload takes off what the last load of the page listened to on the window a
 - `worker/vault.test.ts`: a learner's key sealed and opened again, and not opened for another learner, with another `VAULT_KEY`, or once altered.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
-- `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
-- `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
-- `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
+- `src/dev/copy/copy.test.ts`: reading a save and a fact-check's request and reply, the editor's drafts and their previews, and the editor's state: drafts kept and dropped, what a save and a check send, and remarks placed and fixed.
+- `src/dev/copy/source.test.ts`: where each section of a page's copy is written, finding entries and rewriting them in small sources, literals that read back as written in every quote, and every real lesson's copy found in its source as the page shows it.
+- `worker/copy-check.test.ts`: the request to Claude to fact-check copy, a paused search taken up again, and reading the check, a refusal or a cut-short reply.
+- `tools/copy-editor-plugin.test.ts`: the copy editor plugin on a real dev server — editor injection, copy listed from source, a save written to every file it touches or to none, stale edits refused, and a fact-check through a stand-in Claude.
 - `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
-- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/dev-vars.test.ts`: reading a value from `.dev.vars`.
 - `src/auth/signin.test.ts`: the sign-in page's views, from the address it opens at and each answer from `/auth/*`.

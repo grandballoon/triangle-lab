@@ -2,9 +2,9 @@ name: Deploy staging
 
 # Staging is the site with its dev tools in, behind Cloudflare Access
 # (`env.staging` in wrangler.jsonc). It runs the staging branch, which is main
-# plus the step edits committed from staging itself. A push to main is merged
+# plus the copy edits committed from staging itself. A push to main is merged
 # into staging first, so staging never falls behind; a push to staging (a
-# step edit) just redeploys it.
+# copy edit) just redeploys it.
 on:
   push:
     branches: [main, staging]
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 # One deploy at a time. A run waiting behind another is replaced by a newer
-# one, so a burst of step edits deploys once, with all of them.
+# one, so a burst of copy edits deploys once, with all of them.
 concurrency:
   group: staging
   cancel-in-progress: false
@@ -41,7 +41,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # No `npm test`: a step edit leaves its lesson's syllabus entry stale
+      # No `npm test`: a copy edit leaves its lesson's syllabus entry stale
       # until `/syllabus` runs on the way to main, which the syllabus test
       # would refuse. The build still type-checks everything.
       - run: node tools/deploy-guard.ts --env staging

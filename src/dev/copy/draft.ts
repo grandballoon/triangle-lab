@@ -1,7 +1,7 @@
-// What the step editor makes of a draft as it is typed: the text it would
-// save, the step text typeset as the column will show it, and what is wrong
-// with it, if anything. The rules are the lesson tests' (lessons.test.ts):
-// titles are plain text, and step text must typeset strictly.
+// What the copy editor makes of a field as it is typed: the text it would
+// save, the text typeset as the column will show it, and what is wrong with
+// it, if anything. The rules are the lesson tests' (lessons.test.ts): titles
+// are plain text, and texts must typeset strictly.
 
 import { linkTex } from "../../lab/link.ts";
 import { richHtml } from "../../lab/math.ts";
