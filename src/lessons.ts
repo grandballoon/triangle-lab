@@ -26,6 +26,7 @@ import { transformations } from "./chapters/transformations.ts";
 import { trianglesCentres } from "./chapters/triangles-centres.ts";
 import { trianglesClassic } from "./chapters/triangles-classic.ts";
 import { trianglesMeasure } from "./chapters/triangles-measure.ts";
+import { trigonometry } from "./chapters/trigonometry.ts";
 import type { Chapter, Lesson } from "./chapters/types.ts";
 
 export type { Chapter, Lesson } from "./chapters/types.ts";
@@ -40,8 +41,7 @@ const TRIANGLES_ORDER = [
   "pythagoras", "pythagoras-square", "pythagoras-converse", "pythagorean-triples",
   "congruence", "right-congruence", "isosceles-base-angles", "chord-bisector",
   "similar", "similarity-tests", "altitude-on-hypotenuse", "angle-bisector-theorem",
-  "trig", "fortyfive", "thirtysixty", "table", "trig-identities",
-  "area-base-height", "area-sine", "area-inradius",
+  "area-base-height", "area-inradius",
   "right-angle-tests", "parallel-trick",
 ];
 
@@ -105,14 +105,23 @@ export const chapters: Chapter[] = [
       "AA, SAS, SSS similarity",
       "Geometric mean theorem",
       "Angle bisector theorem",
-      "Trigonometric ratios",
-      "45-45-90 and 30-60-90 triangles",
-      "Pythagorean identity",
       "Half base times height",
-      "Sine area formula",
       "Inradius area formula",
     ],
     lessons: inOrder([...trianglesClassic, ...trianglesCentres, ...trianglesMeasure], TRIANGLES_ORDER),
+  },
+  {
+    title: "Trigonometry",
+    blurb: "SOH CAH TOA, then the unit circle that turns the ratios into waves.",
+    axioms: [
+      "Trigonometric ratios",
+      "45-45-90 and 30-60-90 triangles",
+      "Pythagorean identity",
+      "The unit circle",
+      "Sine, cosine and tangent waves",
+      "Sine area formula",
+    ],
+    lessons: trigonometry,
   },
   {
     title: "Quadrilaterals",

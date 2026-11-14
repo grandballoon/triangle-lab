@@ -463,6 +463,60 @@
         "bisectors"
       ]
     },
+    "area-base-height": {
+      "source": "b017945efe67",
+      "teaches": [
+        "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
+        "A right triangle is half a rectangle, so its area is half the product of its legs.",
+        "The proof splits the triangle by the altitude into two right triangles whose areas add (foot inside the base) or subtract (foot on the extension).",
+        "Any side can serve as the base; all three base-height products give the same area."
+      ],
+      "builds_on": [
+        "altitudes"
+      ]
+    },
+    "area-inradius": {
+      "source": "1a45fb25ac87",
+      "teaches": [
+        "The area of a triangle equals $rs$, its inradius times its semiperimeter.",
+        "Proof: the incentre $I$ is at distance $r$ from every side, since a radius meets its tangent at a right angle, so joining $I$ to the vertices gives three triangles of areas $\\frac12 ra$, $\\frac12 rb$, $\\frac12 rc$.",
+        "Rearranged, the inradius is $r = \\text{Area}/s$."
+      ],
+      "builds_on": [
+        "incircle",
+        "area-base-height",
+        "perimeter"
+      ]
+    },
+    "right-angle-tests": {
+      "source": "476f37978ef4",
+      "teaches": [
+        "A right angle can only lie opposite the longest side.",
+        "A triangle is right-angled exactly when its two smaller angles are complementary, adding to $90^\\circ$.",
+        "With $c$ the longest side: $a^2 + b^2 = c^2$ for a right triangle, $a^2 + b^2 > c^2$ for an acute one, and $a^2 + b^2 < c^2$ for an obtuse one.",
+        "A triangle is right-angled exactly when the median to its longest side is half that side.",
+        "The third vertex lies on the circle with the longest side as diameter exactly when its angle is right; outside the circle the angle is acute, inside it is obtuse."
+      ],
+      "builds_on": [
+        "triangle-angle-sum",
+        "pythagoras-converse",
+        "isosceles-base-angles",
+        "thales"
+      ]
+    },
+    "parallel-trick": {
+      "source": "50d1c9f2a362",
+      "teaches": [
+        "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
+        "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
+        "In general, with $AE : EB = 1 : m$ and $CD : DB = 1 : n$, $\\dfrac{AF}{FD} = \\dfrac{n+1}{m}$ and $\\dfrac{EF}{FC} = \\dfrac{n}{m+1}$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "congruence",
+        "parallel-transversal"
+      ]
+    },
     "trig": {
       "source": "07347d44379e",
       "teaches": [
@@ -528,20 +582,24 @@
         "pythagoras"
       ]
     },
-    "area-base-height": {
-      "source": "b017945efe67",
+    "trig-waves": {
+      "source": "aa0c1033e34b",
       "teaches": [
-        "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
-        "A right triangle is half a rectangle, so its area is half the product of its legs.",
-        "The proof splits the triangle by the altitude into two right triangles whose areas add (foot inside the base) or subtract (foot on the extension).",
-        "Any side can serve as the base; all three base-height products give the same area."
+        "On a circle of radius $1$, the radius at angle $\\theta$ is the hypotenuse of a right triangle whose height is $\\sin\\theta$ and width is $\\cos\\theta$, so its tip is the point $(\\cos\\theta, \\sin\\theta)$.",
+        "Plotting the height against $\\theta$ gives the sine wave, and the width gives the cosine wave, the same wave shifted: $\\cos\\theta = \\sin(\\theta + 90^\\circ)$.",
+        "Past $90^\\circ$, $\\sin\\theta$ and $\\cos\\theta$ are the signed coordinates of the tip, so each quadrant has its own pair of signs, e.g. $\\cos 120^\\circ = -\\frac12$.",
+        "$\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}$ is the height where the extended radius meets the tangent line $x = 1$.",
+        "$\\tan\\theta$ is $0$ where $\\sin\\theta$ is and undefined at $90^\\circ$ and $270^\\circ$, where $\\cos\\theta = 0$.",
+        "Sine and cosine repeat every $360^\\circ$; tangent repeats every $180^\\circ$."
       ],
       "builds_on": [
-        "altitudes"
+        "table",
+        "circle-parts",
+        "angle-kinds"
       ]
     },
     "area-sine": {
-      "source": "95917817efef",
+      "source": "125ffbb40781",
       "teaches": [
         "The area of a triangle is $\\frac12 ab \\sin C$, where $C$ is the angle between sides $a$ and $b$.",
         "The altitude onto $a$ is $h = b \\sin C$.",
@@ -552,48 +610,6 @@
         "area-base-height",
         "trig",
         "thirtysixty"
-      ]
-    },
-    "area-inradius": {
-      "source": "0102f41b1460",
-      "teaches": [
-        "The area of a triangle equals $rs$, its inradius times its semiperimeter.",
-        "Proof: the incentre $I$ is at distance $r$ from every side, since a radius meets its tangent at a right angle, so joining $I$ to the vertices gives three triangles of areas $\\frac12 ra$, $\\frac12 rb$, $\\frac12 rc$.",
-        "Rearranged, the inradius is $r = \\text{Area}/s$."
-      ],
-      "builds_on": [
-        "incircle",
-        "area-base-height",
-        "perimeter"
-      ]
-    },
-    "right-angle-tests": {
-      "source": "476f37978ef4",
-      "teaches": [
-        "A right angle can only lie opposite the longest side.",
-        "A triangle is right-angled exactly when its two smaller angles are complementary, adding to $90^\\circ$.",
-        "With $c$ the longest side: $a^2 + b^2 = c^2$ for a right triangle, $a^2 + b^2 > c^2$ for an acute one, and $a^2 + b^2 < c^2$ for an obtuse one.",
-        "A triangle is right-angled exactly when the median to its longest side is half that side.",
-        "The third vertex lies on the circle with the longest side as diameter exactly when its angle is right; outside the circle the angle is acute, inside it is obtuse."
-      ],
-      "builds_on": [
-        "triangle-angle-sum",
-        "pythagoras-converse",
-        "isosceles-base-angles",
-        "thales"
-      ]
-    },
-    "parallel-trick": {
-      "source": "50d1c9f2a362",
-      "teaches": [
-        "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
-        "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
-        "In general, with $AE : EB = 1 : m$ and $CD : DB = 1 : n$, $\\dfrac{AF}{FD} = \\dfrac{n+1}{m}$ and $\\dfrac{EF}{FC} = \\dfrac{n}{m+1}$."
-      ],
-      "builds_on": [
-        "similarity-tests",
-        "congruence",
-        "parallel-transversal"
       ]
     },
     "quad-angle-sum": {
