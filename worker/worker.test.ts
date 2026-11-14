@@ -29,6 +29,19 @@ const card = (id: string, at = T0) => newCard(id, `Question ${id}?`, { lesson: "
 const ids = (deck: { cards: { id: string }[] }) => deck.cards.map((c) => c.id);
 const FROM_PAGE = { "X-Requested-With": "XMLHttpRequest" };
 
+/**
+ * The statuses of `request` made until one is refused (429), at most
+ * 2 × `limit` + 1 times. Local rate limits count in windows aligned to the
+ * clock, so a run that straddles a window's end starts counting again; a run
+ * this short straddles at most one, so within that many requests one window
+ * must fill.
+ */
+async function untilRefused(request: () => Promise<Response>, limit: number): Promise<number[]> {
+  const statuses: number[] = [];
+  while (statuses.length <= 2 * limit && statuses.at(-1) !== 429) statuses.push((await request()).status);
+  return statuses;
+}
+
 let harness: TestHarness;
 let base: string;
 /**
@@ -211,11 +224,11 @@ describe("signing in", () => {
   });
 
   it("sends at most 3 links a minute to one address", async () => {
-    const statuses: number[] = [];
-    for (let i = 0; i < 4; i++) {
-      statuses.push((await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: "friend@example.com" }) })).status);
-    }
-    expect(statuses).toEqual([202, 202, 202, 429]);
+    const link = () => fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: "friend@example.com" }) });
+    const statuses = await untilRefused(link, 3);
+    expect(statuses.at(-1)).toBe(429);
+    expect(statuses.slice(0, -1).every((s) => s === 202)).toBe(true);
+    expect(statuses.length).toBeGreaterThanOrEqual(4);
   });
 });
 
@@ -266,12 +279,10 @@ describe("the recall deck", () => {
   });
 
   it("slows a caller making too many requests, signed in or not", async () => {
-    const statuses: number[] = [];
-    for (let i = 0; i < 70; i++) {
-      statuses.push((await call("GET", undefined, { Cookie: "" })).status);
-    }
-    expect(statuses.slice(0, 55).every((s) => s === 401)).toBe(true);
+    const statuses = await untilRefused(() => call("GET", undefined, { Cookie: "" }), 60);
     expect(statuses.at(-1)).toBe(429);
+    expect(statuses.slice(0, -1).every((s) => s === 401)).toBe(true);
+    expect(statuses.length).toBeGreaterThan(55);
   });
 
 });
@@ -313,11 +324,12 @@ describe("checking an answer", () => {
   });
 
   it("checks at most 10 answers a minute from one caller", async () => {
-    const statuses: number[] = [];
-    for (let i = 0; i < 12; i++) statuses.push((await check()).status);
-    expect(statuses.slice(0, 10).every((s) => s === 200)).toBe(true);
+    const before = claude.asked.length;
+    const statuses = await untilRefused(check, 10);
     expect(statuses.at(-1)).toBe(429);
-    expect(claude.asked.length).toBeLessThanOrEqual(11);
+    expect(statuses.slice(0, -1).every((s) => s === 200)).toBe(true);
+    expect(statuses.length).toBeGreaterThanOrEqual(11);
+    expect(claude.asked.length - before).toBe(statuses.length - 1);
   });
 });
 
