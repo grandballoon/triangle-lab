@@ -1,6 +1,7 @@
-// Triangles, part one: the sixteen standalone lesson pages, in reading order.
-// Each has its own HTML entry point (<slug>.html) and its own bespoke
-// interaction in src/<slug>.ts.
+// Triangles, part one: the nine standalone triangle pages, each with its own
+// HTML entry point (<slug>.html) and bespoke interaction in src/<slug>.ts, and
+// the five triangle-parts lessons rebuilt in the lab. The trigonometry pages
+// are in trigonometry.ts.
 
 import type { Lesson } from "./types.ts";
 
@@ -158,50 +159,5 @@ export const trianglesClassic: Lesson[] = [
       stroke-width="2.5" stroke-linejoin="round" />
       <polygon points="4,26 28,26 28,9" fill="none" stroke="currentColor"
         stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" />`,
-  },
-  {
-    slug: "trig",
-    part: "Trigonometry · One",
-    name: "Naming the Ratios",
-    desc: "sin, cos, tan and their three flips, read live off a triangle in your hand.",
-    accent: "#38bdf8",
-    icon: `<polygon points="4,26 28,26 28,8" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 12 26 A 8 8 0 0 0 10.8 21.7" fill="none" stroke="currentColor"
-        stroke-width="2" />`,
-  },
-  {
-    slug: "fortyfive",
-    part: "Trigonometry · Two",
-    name: "Folding the Square",
-    desc: "Bisect a right angle into 45° + 45° — and every ratio's a cancels.",
-    accent: "#e879f9",
-    icon: `<rect x="6" y="6" width="20" height="20" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-dasharray="3 3" />
-      <polygon points="6,26 26,26 26,6" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linejoin="round" />`,
-  },
-  {
-    slug: "thirtysixty",
-    part: "Trigonometry · Three",
-    name: "Folding the Equilateral",
-    desc: "Congruent halves split the base evenly — 1 : √3 : 2 falls out.",
-    accent: "#4ade80",
-    icon: `<polygon points="16,5 28,27 4,27" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" />
-      <polygon points="16,5 28,27 16,27" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linejoin="round" />`,
-  },
-  {
-    slug: "table",
-    part: "Trigonometry · Four",
-    name: "The Whole Table",
-    desc: "A unit hypotenuse on a dial — snap to 0°, 30°, 45°, 60°, 90° and read what you derived.",
-    accent: "#f43f5e",
-    icon: `<polygon points="4,26 24,26 24,12" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 14 26 A 10 10 0 0 0 12.7 21" fill="none" stroke="currentColor"
-        stroke-width="2" />
-      <circle cx="24" cy="12" r="2.2" fill="currentColor" />`,
   },
 ];

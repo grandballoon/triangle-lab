@@ -61,7 +61,7 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 ## Two kinds of lesson
 
-**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are thirteen of the original triangle lessons.
+**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are thirteen of the original triangle lessons; four of them now open the Trigonometry chapter.
 Perimeter, medians and angle bisectors started as standalone pages too, and were rebuilt as lab lessons; `public/_redirects` sends their old addresses on to the lab.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
 They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts` and then its asides from `src/asides.ts`, and, for a lesson with live numbers, the formula band.
