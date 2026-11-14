@@ -11,7 +11,7 @@ import { hashes, hashOf, load, sourcesOf, SYLLABUS_PATH, teachingText } from "./
 describe("the syllabus tool", () => {
   it("finds the module of a lab lesson, and of a standalone page as its HTML names it, with its directions and asides", () => {
     expect(sourcesOf("linear-balance")).toEqual(["src/lab/lessons/linear-balance.ts"]);
-    expect(sourcesOf("medians")).toEqual(["src/medians.ts", "src/directions.ts", "src/asides.ts"]);
+    expect(sourcesOf("altitudes")).toEqual(["src/altitudes.ts", "src/directions.ts", "src/asides.ts"]);
     expect(sourcesOf("angles")).toEqual(["src/main.ts", "src/directions.ts", "src/asides.ts"]);
     expect(() => sourcesOf("nowhere")).toThrow("not a lesson");
   });

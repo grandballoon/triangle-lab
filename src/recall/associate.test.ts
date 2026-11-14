@@ -108,13 +108,14 @@ describe("readAssociateReply", () => {
 
   it("says why there is no reading", () => {
     expect(readAssociateReply(null)).toEqual({ kind: "failed", error: "Can't reach the server to read this." });
-    expect(readAssociateReply({ status: 401, body: { error: "Sign in first." } })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readAssociateReply({ status: 401, body: { error: "Sign in first." } })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
     // Access answering for itself on staging, once its sign-in has run out.
-    expect(readAssociateReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
-    expect(readAssociateReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readAssociateReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
+    expect(readAssociateReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
     expect(readAssociateReply({ status: 502, body: { error: "Claude is busy." } })).toEqual({ kind: "failed", error: "Claude is busy." });
     expect(readAssociateReply({ status: 500, body: null })).toEqual({ kind: "failed", error: "The server answered 500." });
     expect(readAssociateReply({ status: 200, body: {} })).toMatchObject({ error: expect.stringContaining("unreadable") });
+    expect(readAssociateReply({ status: 402, body: { error: "No credit." } })).toEqual({ kind: "failed", error: "No credit.", mend: "account" });
   });
 });
 

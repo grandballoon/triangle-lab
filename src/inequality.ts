@@ -11,7 +11,7 @@
 // reachable. Side lengths live on the sides themselves, and the formula band
 // below shows a, b, c and all three inequalities as they tighten.
 //
-// Self-contained on purpose, matching perimeter.ts / medians.ts / etc. —
+// Self-contained on purpose, matching altitudes.ts / congruence.ts / etc. —
 // only the webcam device, the shared grid layout, the page's formula band and
 // this file's own little vector helpers are involved.
 

@@ -17,7 +17,7 @@ export const anglesLines: Lesson[] = [
     slug: "hand-protractor",
     part: "Measuring · Two",
     name: "Your Hand, a Protractor",
-    desc: "Spread thumb and finger at the camera and read the angle between them.",
+    desc: "Open both hands at the camera like a book and read the angle between your index fingers.",
     accent: "#38d9a9",
     icon: `<polyline points="26,24 6,24 20,8" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
@@ -45,7 +45,7 @@ export const anglesLines: Lesson[] = [
     slug: "parallel-transversal",
     part: "Parallels · One",
     name: "Parallels and a Transversal",
-    desc: "Swing a line across two parallels, then tilt one and watch the equal angles break.",
+    desc: "Swing a line across two parallels and see its eight angles come in two sizes, until one line tilts.",
     accent: "#c084fc",
     icon: `<line x1="4" y1="10" x2="28" y2="10" stroke="currentColor" stroke-width="2.5"
       stroke-linecap="round" />
@@ -59,7 +59,7 @@ export const anglesLines: Lesson[] = [
     slug: "triangle-angle-sum",
     part: "Parallels · Two",
     name: "Angles of a Triangle",
-    desc: "Carry two angles up to the third along a parallel — they make a straight line.",
+    desc: "Squish a triangle between your hands: its angles, copied up along a parallel, always make a straight line.",
     accent: "#f472b6",
     icon: `<polygon points="5,25 27,25 19,9" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />

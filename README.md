@@ -37,14 +37,26 @@ The comment is appended to `ui-feedback.md` at the project root, together with t
 That file is gitignored; each entry starts open (`[ ]`) and is marked `[x]` once dealt with.
 The overlay exists only on the dev server and on staging (see "Staging"), and is never part of a production build.
 
-### Editing step text
+### Editing a lesson's copy
 
-Under `npm run dev`, every lesson page has an "Edit steps" button in its bottom-left corner.
-With it on, click a step's title or text to edit it as its source writes it, `$…$` LaTeX and all, with the step text typeset below as you type.
-Press Enter or Save, and the change is written into the lesson's source file (`src/directions.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson); the page then reloads at the same step.
-Escape cancels.
-Edit mode stays on across the reload, and the button exists only on the dev server and on staging (see "Staging").
-A changed step makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
+Under `npm run dev` and on staging, every lesson page's step column has a Copy tab beside its steps.
+It shows the lesson's copy as its source writes it, `$…$` LaTeX and all: each step's title and text, what its idea is like, and what it is used for.
+Edit any field, and the text is typeset below it as the page will show it; drafts are kept in the browser until saved, so a reload loses none.
+Check with Claude (or Command-Enter) has Claude fact-check the copy as it stands, searching the web for its real-world claims: a summary heads the tab, and each remark is highlighted on the words it is about, with a fix to apply where it has one.
+Save (or Command-S) writes every change at once into the lesson's source (`src/directions.ts` and `src/asides.ts` for a standalone page, `src/lab/lessons/<slug>.ts` for a lab lesson), and the page reloads with them.
+Each save also adds what it replaced to `copy-history/<slug>.json`, so the original wording of every edited field stays in the repository.
+The fact-check uses the `ANTHROPIC_API_KEY` in `.dev.vars`.
+The tab exists only on the dev server and on staging (see "Staging"), never in a production build.
+Changed copy makes that lesson's syllabus entry stale, so run `/syllabus` before committing.
+
+### Drafting a lesson's new text
+
+Under `npm run dev` and on staging, every lesson page's step column also has a Draft tab, for writing the lesson's text anew by hand.
+What you have written in the lesson's Explain tab shows above the draft, to write from.
+Write in Markdown, with `$…$` LaTeX: a line starting with `#` is a heading, a blank line starts a new paragraph, and the draft is typeset below as you type.
+The draft is kept in the browser until saved, so a reload loses none.
+Once the draft has changed, Save (or Command-S) writes it to `lesson-drafts/<slug>.md`, and also keeps everything you have written in the Explain tab of every lesson, in `lesson-drafts/<slug>.explanation.md`: one file per lesson, rewritten only when its Explain text has changed.
+The tab exists only on the dev server and on staging, never in a production build.
 
 ## Using your hands
 
@@ -157,7 +169,7 @@ Once:
 
 To take the account away, remove the address from `INVITES`.
 Their deck stays in its Durable Object, `learner:<email>`, and is theirs again if they are invited back.
-They share the site's Claude key, under the same rate limits as everyone else.
+Claude's checks of their work come out of their beta credit (see "Paying for Claude"), under the same rate limits as everyone else.
 
 ### Setting up answer checking
 
@@ -170,6 +182,30 @@ npx wrangler secret put ANTHROPIC_API_KEY   # paste a key from platform.claude.c
 It checks only for a signed-in learner, and at most 10 answers a minute from one address, since each check is a paid call to Claude.
 Signed out, checking is off and the page links to signing in.
 
+### Paying for Claude
+
+Your own calls to Claude go on the site's key, unmetered.
+Everyone else's come out of their beta credit, in dollars, counted from the tokens each call used, until they save a Claude API key of their own on their account page (`signin.html`, once signed in).
+From then on their calls are billed to their key, and nothing is metered.
+When their credit runs out, Claude's checks stop and the page links them to their account page to add a key.
+
+- `BETA_CREDIT_USD` (a var in `wrangler.jsonc`) is the credit each invited learner starts with.
+- `CREDITS` (a secret) gives particular learners another amount, as `learner@example.com=10, other@example.com=2.50`, or `-` for none.
+  To give someone more, run `npx wrangler secret put CREDITS` with the whole list.
+- `MONTHLY_CAP_USD` (a var) caps what all beta credit together may spend on the site's key in a calendar month, so a slip in the metering can never run up an open-ended bill.
+- `VAULT_KEY` (a secret) is what learners' own keys are encrypted with.
+  Replacing it makes every saved key unreadable, and those learners fall back to their credit until they save theirs again.
+
+Once, give the Worker the two secrets:
+
+```sh
+openssl rand -base64 32 | npx wrangler secret put VAULT_KEY
+```
+
+```sh
+npx wrangler secret put CREDITS   # enter - to give no one other than BETA_CREDIT_USD
+```
+
 ### Trying it locally
 
 Once, give the local Worker its secrets in `.dev.vars`, which is gitignored and so never committed:
@@ -179,8 +215,10 @@ cat >> .dev.vars <<'VARS'
 ANTHROPIC_API_KEY=sk-ant-…
 OWNER_EMAIL=you@example.com
 INVITES=-
+CREDITS=-
 SENDER=signin@example.com
 VARS
+echo "VAULT_KEY=$(openssl rand -base64 32)" >> .dev.vars
 ```
 
 Then run these in two terminals:
@@ -201,13 +239,13 @@ Each check is a paid call on that Claude key.
 
 ## Deploying
 
-The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`, and signing in at `/auth/link` and `/auth/session`.
+The site is one Cloudflare Worker (`wrangler.jsonc`): the built pages are its static assets, served without running any code, and the recall deck is at `/deck` on the same origin, with the calls to Claude at `/check`, `/associate` and `/explain`, signing in at `/auth/link` and `/auth/session`, and the learner's account at `/account`.
 Giving the site an origin of its own keeps its session cookie, and its browser storage, away from any other site.
 
 A push to `main` tests, builds and deploys it (`.github/workflows/deploy.yml`).
 That needs two repository secrets: `CLOUDFLARE_API_TOKEN`, a token made from the "Edit Cloudflare Workers" template, and `CLOUDFLARE_ACCOUNT_ID`.
 To deploy by hand instead, run `npx wrangler login`, then `npm run deploy`.
-A deploy fails until the Worker's secrets, `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`, are set, and stops before it starts while `SENDER` is empty (see "Setting up signing in").
+A deploy fails until the Worker's secrets, `ANTHROPIC_API_KEY`, `OWNER_EMAIL`, `INVITES`, `CREDITS` and `VAULT_KEY`, are set, and stops before it starts while `SENDER` is empty (see "Setting up signing in").
 The first deploy prints the site's address, `triangle-lab.<your subdomain>.workers.dev`; a custom domain can be added to the Worker later.
 
 ### Moving production off Cloudflare Access
@@ -218,15 +256,17 @@ Until then, Access's sign-in page comes before the site's own.
 
 ## Staging
 
-Staging is the site with its dev tools in: Alt-click feedback and step editing work there as under `npm run dev`, with no local server.
+Staging is the site with its dev tools in: Alt-click feedback, the Copy tab and the Draft tab work there as under `npm run dev`, with no local server.
 It is its own Worker, `triangle-lab-staging` (`env.staging` in `wrangler.jsonc`), with its own deck and sign-ins, behind Cloudflare Access, which guards its dev tools.
-It runs the `staging` branch: `main`, plus the step edits made on staging.
+It runs the `staging` branch: `main`, plus the copy edits and drafts made on staging.
 
-- A step edit saved on staging is committed to the `staging` branch, and the push redeploys staging in a minute or two; the page shows the new text at once.
+- Copy saved on staging is committed to the `staging` branch, all of one save in one commit, and the push redeploys staging in a minute or two; the Copy tab shows the copy as committed at once.
+- A draft saved on staging is committed to the `staging` branch with the Explain tab text it keeps, all in one commit.
+- A fact-check on staging calls Claude with staging's own `ANTHROPIC_API_KEY`.
 - A comment left on staging is kept there; `npm run staging:pull` appends it to your local `ui-feedback.md`, as the dev server would have.
 - A push to `main` is merged into `staging` and redeploys it (`.github/workflows/staging.yml`), so staging never falls behind.
 
-To bring staging's step edits to `main`, merge the branch, then run `/syllabus`, since an edited step leaves its lesson's syllabus entry stale and the tests (and so the deploy from `main`) fail until it is described again:
+To bring staging's copy edits to `main`, merge the branch, then run `/syllabus`, since edited copy leaves its lesson's syllabus entry stale and the tests (and so the deploy from `main`) fail until it is described again:
 
 ```bash
 git fetch origin && git merge origin/staging
@@ -237,7 +277,7 @@ git fetch origin && git merge origin/staging
 Once:
 
 1. Make the branch: `git push origin main:staging`.
-2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `ANTHROPIC_API_KEY`, `OWNER_EMAIL` and `INVITES`.
+2. Make a fine-grained GitHub token for this repository only, with read and write access to Contents, and give staging its secrets: `npx wrangler secret put GITHUB_TOKEN --env staging`, and the same for `ANTHROPIC_API_KEY`, `OWNER_EMAIL`, `INVITES`, `CREDITS` and `VAULT_KEY`.
 3. Deploy once by hand to make the Worker: `npm run deploy:staging`. It prints staging's address, `triangle-lab-staging.<your subdomain>.workers.dev`.
 4. Put Cloudflare Access in front of it. In the Cloudflare dashboard, open the Worker's Settings, Domains & Routes, and turn on Cloudflare Access for its `workers.dev` address (or, on a custom domain, add a self-hosted Access application for it). Give the application a policy that allows your email address.
 5. Copy the application's audience (AUD) tag and your team's domain into `ACCESS_AUD` and `ACCESS_ISSUER` (`https://<team>.cloudflareaccess.com`) under `env.staging.vars` in `wrangler.jsonc`, and commit them. Until both are set, the dev tools on staging answer 503.
@@ -253,16 +293,16 @@ The staging workflow uses the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUN
 
 ## Lessons
 
-130 lessons in fourteen chapters, read in order.
-The sixteen original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
-Both kinds share the step column, and the standalone pages with live numbers (perimeter, the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
+132 lessons in fourteen chapters, read in order.
+Thirteen of the original triangle lessons are standalone pages; the rest are lab lessons with a scrolling column of proof steps and a live formula band.
+Both kinds share the step column, and the standalone pages with live numbers (the triangle inequality, the Pythagorean theorem, congruent and similar triangles, and the four trigonometry pages) show them in the same formula band.
 In a lab lesson, pointing at a symbol in a formula highlights what it stands for in the figure.
 
 | Chapter | Lessons |
 | --- | --- |
 | Circles (4) | Parts of a Circle · Rolling Out Pi · Area of a Circle · Tangent Circles |
 | Angles (12) | Kinds of Angle · Your Hand, a Protractor · Vertical Angles · Parallels and a Transversal · Angles of a Triangle · The Exterior Angle · Arcs, Sectors, Segments · The Inscribed Angle · The Angle in a Semicircle · Where Two Chords Cross · Two Secants From Outside · Tangent Meets Chord |
-| Triangles (33) | Angles · Equilateral · Isosceles · Scalene · Perimeter & Semiperimeter · Medians · Angle Bisectors · The Incircle · The Circumcircle · Altitudes · The Triangle Inequality · The Pythagorean Theorem · Four Triangles in a Square · Too Big, Too Small · Pythagorean Triples · Congruent Triangles · AAS, HL, LL and SA · Base Angles · Chords and the Centre · Similar Triangles · Three Tests for Similarity · Altitude to the Hypotenuse · The Angle Bisector Theorem · Naming the Ratios · Folding the Square · Folding the Equilateral · The Whole Table · Identities from One Triangle · Half Base Times Height · Two Sides and an Angle · Inradius Times Semiperimeter · Spotting a Right Triangle · The Parallel Line Trick |
+| Triangles (35) | Angles · Equilateral · Isosceles · Scalene · Perimeter · Semiperimeter · Medians · Centroid · Angle Bisectors · The Incircle · The Circumcircle · Altitudes · The Triangle Inequality · The Pythagorean Theorem · Four Triangles in a Square · Too Big, Too Small · Pythagorean Triples · Congruent Triangles · AAS, HL, LL and SA · Base Angles · Chords and the Centre · Similar Triangles · Three Tests for Similarity · Altitude to the Hypotenuse · The Angle Bisector Theorem · Naming the Ratios · Folding the Square · Folding the Equilateral · The Whole Table · Identities from One Triangle · Half Base Times Height · Two Sides and an Angle · Inradius Times Semiperimeter · Spotting a Right Triangle · The Parallel Line Trick |
 | Quadrilaterals (9) | Angles of a Quadrilateral · The Median of a Trapezoid · The Isosceles Trapezoid · Inside a Parallelogram · Area of a Parallelogram · Four Equal Sides · Rectangles and Squares · Diagonals Decide · The Midpoint Parallelogram |
 | Polygons (5) | Counting Diagonals · Interior Angle Sum · Exterior Angle Sum · Apothem and Circumradius · The Regular Hexagon |
 | Angle Chasing (3) | A Chain of Equal Links · Square Meets Triangle · Trisected Corners |
@@ -292,7 +332,9 @@ worker/               The Cloudflare Worker: serves the site, syncs recall quest
 src/<slug>.ts         A standalone lesson's entry point
 src/geometry.ts       Pure triangle math — no DOM, no canvas
 src/dev/feedback/     Dev-only overlay for commenting on page elements
-src/dev/steps/        Dev-only editor that writes step text back to its source
+src/dev/copy/         Dev-only Copy tab: edits a lesson's copy in its source, with Claude's fact-check
+src/dev/drafts/       Dev-only Draft tab: new text for each lesson, kept in lesson-drafts/
+lesson-drafts/        Each lesson's hand-written draft, and the Explain tab text it was written from
 tools/                Vite plugins used by the dev server, and pulling comments from staging
 specs/                Design notes for the original triangle lessons, and the open
                       question of how to draw an equation (equations-display.md)

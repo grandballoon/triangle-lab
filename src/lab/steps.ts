@@ -10,10 +10,12 @@
 // height is the tallest step's, so the figure above keeps its size as the
 // reader pages through (`pagedHeight`, layout.ts).
 //
-// A page may give the column a pane of its own beside the steps (`addPane`),
-// such as the explanation Claude checks (recall/explain-panel.ts): a row of
-// tabs then heads the column, and the pane, when chosen, takes the steps'
-// place. The steps stay current as they were behind it.
+// A page may give the column panes of their own beside the steps
+// (`addPane`), such as the explanation Claude checks (recall/explain-panel.ts):
+// a row of tabs then heads the column, and a pane, when chosen, takes the
+// steps' place. The steps stay current as they were behind it. A tool
+// injected into the page rather than imported by it, as the copy editor is
+// (dev/copy/pane.ts), finds the column with `whenStepColumn`.
 //
 // The shell owns which step is current (shell.ts); this list only reports
 // what the reader picked and shows what the shell decided.
@@ -35,6 +37,22 @@ const PAGED_BOTTOM_PX = 10;
 export const LIKES_HEADING = "What is this like?";
 export const USES_HEADING = "What will we use this for?";
 
+/** Who has asked for the page's step column before it was built. */
+const waiting = new Set<(column: StepList) => void>();
+let built: StepList | null = null;
+
+/** Call `listener` with the page's step column, now if it is built and otherwise once it is. */
+export function whenStepColumn(listener: (column: StepList) => void): void {
+  if (built) listener(built);
+  else waiting.add(listener);
+}
+
+/** A pane beside the steps, and its tab. */
+interface Pane {
+  tab: HTMLButtonElement;
+  pane: HTMLElement;
+}
+
 export class StepList {
   private sections: HTMLElement[] = [];
   /** Holds the sections; paged, it stacks them in one cell (steps.css). */
@@ -44,9 +62,12 @@ export class StepList {
   private readonly pagerLabel: HTMLElement;
   private readonly prev: HTMLButtonElement;
   private readonly next: HTMLButtonElement;
-  /** The row of tabs and the pane beside the steps, once a pane is added. */
-  private tabs: { row: HTMLElement; steps: HTMLButtonElement; pane: HTMLButtonElement } | null = null;
-  private paneShown = false;
+  /** The row of tabs and the panes beside the steps, once a pane is added. */
+  private tabs: { row: HTMLElement; steps: HTMLButtonElement; panes: Pane[] } | null = null;
+  /** The pane shown in the steps' place, or null while the steps show. */
+  private shown: HTMLElement | null = null;
+  /** Who hears each time the list is built for a lesson. */
+  private readonly shownListeners: (() => void)[] = [];
   private paged = false;
   private current = 0;
   /** While the list scrolls itself to a step, the step it is heading for. */
@@ -91,6 +112,15 @@ export class StepList {
 
     host.addEventListener("scroll", () => this.onScroll(), { passive: true });
     host.addEventListener("scrollend", () => this.settle());
+
+    built = this;
+    for (const listener of waiting) listener(this);
+    waiting.clear();
+  }
+
+  /** Call `listener` each time the list is built for a lesson, as when the lab swaps lessons in place. */
+  onShow(listener: () => void): void {
+    this.shownListeners.push(listener);
   }
 
   /** Build the list for a lesson, scrolled to its first step. */
@@ -132,21 +162,19 @@ export class StepList {
     this.heading = null;
     this.host.scrollTop = 0;
     this.mark(0, false);
+    for (const listener of this.shownListeners) listener();
   }
 
   /**
-   * Add a pane beside the steps, under a tab named `label`, with a tab back
-   * to the steps. Only one pane is supported. `onShow` hears each time the
-   * pane is chosen.
+   * Add a pane beside the steps, under a tab named `label`, after any added
+   * before it; the first adds a tab back to the steps too. `onShow` hears
+   * each time the pane is chosen.
    */
   addPane(label: string, pane: HTMLElement, onShow: () => void = () => {}): void {
     const column = this.host.parentElement;
-    if (this.tabs || !column) return;
+    if (!column) return;
     const doc = this.host.ownerDocument;
-    const row = doc.createElement("div");
-    row.className = "column-tabs";
-    row.setAttribute("role", "tablist");
-    const tab = (text: string, shows: boolean): HTMLButtonElement => {
+    const tab = (text: string, shows: HTMLElement | null): HTMLButtonElement => {
       const b = doc.createElement("button");
       b.type = "button";
       b.className = "column-tab";
@@ -158,23 +186,38 @@ export class StepList {
       });
       return b;
     };
-    const steps = tab("Steps", false);
-    const other = tab(label, true);
-    row.append(steps, other);
+    if (!this.tabs) {
+      const row = doc.createElement("div");
+      row.className = "column-tabs";
+      row.setAttribute("role", "tablist");
+      const steps = tab("Steps", null);
+      row.append(steps);
+      column.insertBefore(row, column.firstChild);
+      this.tabs = { row, steps, panes: [] };
+    }
+    const other = tab(label, pane);
+    this.tabs.row.append(other);
     pane.classList.add("column-pane");
-    column.insertBefore(row, column.firstChild);
     column.append(pane);
-    this.tabs = { row, steps, pane: other };
-    this.showPane(false);
+    this.tabs.panes.push({ tab: other, pane });
+    this.showPane(this.shown);
   }
 
-  /** Show the pane added beside the steps, or the steps. */
-  showPane(shown: boolean): void {
+  /** Show `pane`, one added beside the steps, in the steps' place; or, for null, the steps. */
+  showPane(pane: HTMLElement | null): void {
     if (!this.tabs) return;
-    this.paneShown = shown;
-    this.tabs.steps.setAttribute("aria-selected", String(!shown));
-    this.tabs.pane.setAttribute("aria-selected", String(shown));
-    this.host.parentElement?.toggleAttribute("data-pane", shown);
+    this.shown = this.tabs.panes.some((p) => p.pane === pane) ? pane : null;
+    this.tabs.steps.setAttribute("aria-selected", String(this.shown === null));
+    for (const p of this.tabs.panes) {
+      p.tab.setAttribute("aria-selected", String(p.pane === this.shown));
+      p.pane.hidden = p.pane !== this.shown;
+    }
+    this.host.parentElement?.toggleAttribute("data-pane", this.shown !== null);
+  }
+
+  /** Whether `pane` is the one shown in the steps' place. */
+  paneShown(pane: HTMLElement): boolean {
+    return this.shown === pane;
   }
 
   /**
@@ -194,7 +237,7 @@ export class StepList {
    * much as the layout gives: the pane is for writing in.
    */
   pagedHeight(): number {
-    if (this.paneShown) return Infinity;
+    if (this.shown) return Infinity;
     const track = this.track.offsetTop + this.track.offsetHeight;
     const tabs = this.tabs?.row.offsetHeight ?? 0;
     return track > 0 ? tabs + this.pager.offsetHeight + track + PAGED_BOTTOM_PX : 0;

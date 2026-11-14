@@ -72,6 +72,9 @@ const HAND: HandPoints = {
   points: Array.from({ length: 21 }, (_, i) => ({ x: -3 + (i % 5) * 1.3, y: -2 + Math.floor(i / 5) })),
 };
 
+// The same hand mirrored, for lessons held between two.
+const OTHER_HAND: HandPoints = { side: "left", points: HAND.points.map((p) => ({ x: -p.x, y: p.y })) };
+
 const PROBES = [
   { x: 0, y: 0 },
   { x: -STAGE.halfWidth, y: -STAGE.halfHeight },
@@ -149,10 +152,11 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
     }
   });
 
-  it("draws every step, with and without a hand in view", () => {
+  it("draws every step, with no hand, one hand or two in view", () => {
     const { view } = fresh();
     showAllSteps(view);
     show(view, frameAt(view.steps.length - 1, [HAND]));
+    show(view, frameAt(view.steps.length - 1, [HAND, OTHER_HAND]));
   });
 
   it("survives every handle being dragged anywhere", () => {

@@ -93,7 +93,7 @@ import { GRADE_LABEL, lessonLink, saidSheet, writingSheet } from "./sheet.ts";
 import { HeldSitting } from "./sitting.ts";
 import { submitsOnEnter, submitsOnModEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
-import { SIGN_IN_PAGE, signInLink } from "./signin.ts";
+import { mendLink, SIGN_IN_PAGE, signInLink } from "./signin.ts";
 import { syncLabel } from "./sync.ts";
 
 /** What each grade means once an answer has been checked and corrected: the learner's three ways out of a card. */
@@ -641,7 +641,7 @@ function readingCard(state: ReadingState, stale: boolean): HTMLElement {
     if (stale) box.append(el("p", "rc-remark-note rc-quiet", "You've changed it since. Have it read again to see it as it stands."));
   } else {
     box.append(el("p", "rc-said rc-quiet", state.kind === "reading" ? "Reading what you wrote…" : state.error));
-    if (state.kind === "failed" && state.signIn) box.append(signInLink(document, "rc-source"));
+    if (state.kind === "failed" && state.mend) box.append(mendLink(document, state.mend, "rc-source"));
   }
   return box;
 }

@@ -1,7 +1,9 @@
-// Two lines cut by a transversal. While the lines are parallel, alternate
-// interior angles and corresponding angles are equal and same-side interior
-// angles are supplementary. Tilting one line breaks all three relationships by
-// exactly the tilt — which is the converse: the angles agree only for parallels.
+// Two lines cut by a transversal, all eight angles shown at once and coloured
+// by measure. While the lines are parallel they come in just two sizes, so
+// alternate interior and corresponding angles share a colour, and a
+// same-side interior pair is one of each colour, adding to 180°. Tilting one
+// line gives the angles at Y sizes, and colours, of their own, off by exactly
+// the tilt — the converse: the angles agree only for parallels.
 
 import { C } from "../draw.ts";
 import { add, angleAt, angleOf, clamp, fmt, lerp, normalize, onSegment, sub, toDeg, vec, type Vec } from "../geo.ts";
@@ -15,11 +17,31 @@ const PIVOT = vec(-6.6, LOW_Y);
 const TILT_X = 6.6;
 const TILT_SNAP = 0.15; // the tilt handle catches on "parallel"
 const EAST = vec(1, 0);
-const EQUAL = C.gold; // the angle at Y and the two at X that match it
-const REST = C.blue; // the same-side angle at X
 
-const PAIRS = ["alternate interior", "corresponding", "same-side interior"] as const;
-type Pair = (typeof PAIRS)[number];
+// One colour per measure. The angles at Y take X's colours while the lines
+// are parallel, and colours of their own once m is tilted.
+const AT_X = { lean: C.gold, open: C.blue } as const;
+const AT_Y_TILTED = { lean: C.green, open: C.orange } as const;
+
+/** The four angles at a crossing, as arms about the vertex, numbered as usual. */
+interface Crossing {
+  at: Vec;
+  /** 1 or 5: above the line, to the west. */
+  upWest: readonly [Vec, Vec];
+  /** 2 or 6: above, to the east. */
+  upEast: readonly [Vec, Vec];
+  /** 3 or 7: below, to the west. */
+  downWest: readonly [Vec, Vec];
+  /** 4 or 8: below, to the east. */
+  downEast: readonly [Vec, Vec];
+}
+
+function crossing(at: Vec, up: Vec, east: Vec): Crossing {
+  const [n, s, e, w] = [add(at, up), sub(at, up), add(at, east), sub(at, east)];
+  return { at, upWest: [n, w], upEast: [n, e], downWest: [s, w], downEast: [s, e] };
+}
+
+const measure = (c: Crossing, arms: readonly [Vec, Vec]): number => toDeg(angleAt(arms[0], c.at, arms[1]));
 
 export default lesson((s) => {
   const tilt = s.point(TILT_X, LOW_Y, {
@@ -38,24 +60,19 @@ export default lesson((s) => {
       () => lerp(PIVOT, tilt, 0.82),
     ),
   });
-  const pair = s.choice("Pair", PAIRS);
 
   const figure = () => {
     Y.set(Y); // stay on the lower line as it tilts
     const up = normalize(sub(X, Y)); // along the transversal, from Y toward X
     const along = normalize(sub(tilt, PIVOT)); // along the lower line
-    const beyond = add(X, up); // past X, outside the two lines
-    const back = sub(X, up); // toward Y, between the lines
-    const mark = (a: Vec, b: Vec) => ({ arms: [a, b] as const, deg: toDeg(angleAt(a, X, b)) });
-    const atX: Record<Pair, ReturnType<typeof mark>> = {
-      "alternate interior": mark(back, sub(X, EAST)),
-      corresponding: mark(beyond, add(X, EAST)),
-      "same-side interior": mark(back, add(X, EAST)),
-    };
+    const x = crossing(X, up, EAST);
+    const y = crossing(Y, up, along);
     return {
-      atX,
-      yArm: add(Y, along),
-      beta: toDeg(angleAt(X, Y, add(Y, along))),
+      x,
+      y,
+      // "lean" is the size of angles 2, 3, 6 and 7; "open" of 1, 4, 5 and 8.
+      lean: { x: measure(x, x.upEast), y: measure(y, y.upEast) },
+      open: { x: measure(x, x.upWest), y: measure(y, y.upWest) },
       turned: toDeg(angleOf(along)),
       parallel: tilt.y === LOW_Y,
     };
@@ -64,16 +81,20 @@ export default lesson((s) => {
   return {
     steps: [
       {
-        title: "A line across two parallels",
-        text: "Lines $\\ell$ and $m$ are parallel. Drag $X$ and $Y$ to swing the transversal, and pick a pair of angles above. Two kinds of pair stay equal; the third always adds up to $180^\\circ$.",
+        title: "Eight angles, two sizes",
+        text: "Lines $\\ell$ and $m$ are parallel, and a transversal crosses both, making four angles at $X$ and four at $Y$. Drag $X$ and $Y$ to swing it: all eight come in just two sizes. Every gold angle equals every other gold one, every blue equals every blue, and a gold and a blue together make $180^\\circ$.",
       },
       {
-        title: "Why the pairs go together",
-        text: "At $X$, the corresponding angle is vertical to the alternate interior one, so both equal the angle at $Y$. The same-side angle is their neighbour along $\\ell$, so it is what remains of $180^\\circ$.",
+        title: "The pairs, by their shapes",
+        text: "Alternate interior angles sit between the parallels on opposite sides of the transversal, in the corners of a Z: same colour, so equal. Corresponding angles sit in the same place at each crossing, as in an F: same colour, so equal. Same-side interior angles sit between the parallels on one side, as in a C: one gold and one blue, so they add to $180^\\circ$.",
+      },
+      {
+        title: "Why two sizes",
+        text: "At each crossing, angles facing each other are vertical angles, so they are equal, and neighbours along a line make $180^\\circ$. That leaves two sizes per crossing. The transversal meets $\\ell$ and $m$ at the same slant because they run the same way, so the two crossings share their sizes.",
       },
       {
         title: "Break the parallels",
-        text: "Now drag the tilt handle to turn $m$. Every relationship fails at once, and by exactly the angle $m$ has turned. Straighten $m$ and they all return.",
+        text: "Now drag the tilt handle to turn $m$. The angles at $Y$ take sizes, and colours, of their own: every relationship fails at once, and by exactly the angle $m$ has turned. Straighten $m$ and the colours match again.",
       },
       {
         title: "Reading it backwards",
@@ -103,8 +124,8 @@ export default lesson((s) => {
       },
     ],
 
-    draw(g, f) {
-      const { atX, yArm, beta, parallel } = figure();
+    draw(g) {
+      const { x, y, parallel } = figure();
 
       g.line(TOP_LEFT, TOP_RIGHT, { color: C.ink });
       g.line(PIVOT, tilt, { color: C.ink });
@@ -116,37 +137,34 @@ export default lesson((s) => {
         g.chevrons(vec(5, LOW_Y), vec(6.2, LOW_Y), 1, { color: C.dim });
       }
 
-      for (const kind of PAIRS) {
-        const { arms, deg } = atX[kind];
-        const color = kind === "same-side interior" ? REST : EQUAL;
-        if (kind === pair.value) {
-          g.angle(arms[0], X, arms[1], { color, fill: true, r: 36, label: `${fmt(deg)}°` });
-        } else if (f.at(1) > 0) {
-          g.angle(arms[0], X, arms[1], { color, r: 28, width: 2, alpha: 0.7 * f.at(1) });
+      const mark = (c: Crossing, colors: { lean: string; open: string }) => {
+        for (const [arms, color] of [
+          [c.upWest, colors.open],
+          [c.upEast, colors.lean],
+          [c.downWest, colors.lean],
+          [c.downEast, colors.open],
+        ] as const) {
+          g.angle(arms[0], c.at, arms[1], { color, fill: true, r: 30, label: `${fmt(measure(c, arms))}°` });
         }
-      }
-      g.angle(X, Y, yArm, { color: EQUAL, fill: true, r: 36, label: `${fmt(beta)}°` });
+      };
+      mark(x, AT_X);
+      mark(y, parallel ? AT_X : AT_Y_TILTED);
     },
 
     readout() {
-      const { atX, beta, turned, parallel } = figure();
-      const alpha = atX[pair.value].deg;
-      const relation =
-        pair.value === "same-side interior"
-          ? { label: "Same-side interior: supplementary?", tex: `\\alpha + \\beta = ${fmt(alpha + beta)}^\\circ` }
-          : {
-              label: pair.value === "corresponding" ? "Corresponding: equal?" : "Alternate interior: equal?",
-              tex: parallel ? "\\alpha = \\beta" : `\\alpha - \\beta = ${fmt(alpha - beta)}^\\circ`,
-            };
+      const { lean, open, turned, parallel } = figure();
+      const deg = (v: number) => `${fmt(v)}^\\circ`;
+      const same = (a: number, b: number) => (parallel ? `${deg(a)} = ${deg(b)}` : `${deg(a)} \\ne ${deg(b)}`);
+      const tone = parallel ? "good" : "warn";
       return [
         {
           label: "The two lines",
           tex: parallel ? "\\ell \\parallel m" : `m \\text{ is turned } ${fmt(turned)}^\\circ`,
-          tone: parallel ? "good" : "warn",
+          tone,
         },
-        { label: "Angle at X", tex: `\\alpha = ${fmt(alpha)}^\\circ` },
-        { label: "Angle at Y", tex: `\\beta = ${fmt(beta)}^\\circ` },
-        { ...relation, tone: parallel ? "good" : "warn" },
+        { label: "Alternate interior: equal?", tex: same(lean.x, lean.y), tone },
+        { label: "Corresponding: equal?", tex: same(open.x, open.y), tone },
+        { label: "Same-side interior: supplementary?", tex: `${deg(lean.x)} + ${deg(open.y)} = ${deg(lean.x + open.y)}`, tone },
       ];
     },
   };

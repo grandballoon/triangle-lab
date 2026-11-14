@@ -6,7 +6,7 @@ import { newCard, removeCard, type Deck } from "../src/recall/deck.ts";
 import { MAX_ASSOCIATE_BODY } from "../src/recall/associate.ts";
 import { MAX_CHECK_BODY } from "../src/recall/check.ts";
 import { MAX_EXPLAIN_BODY } from "../src/recall/explain.ts";
-import { CLOCK_SLACK_MS, datedAhead, decide, deckFor, LEGACY_DECK, MAX_BODY, type Asked, type Settings } from "./rules.ts";
+import { accountTooLarge, CLOCK_SLACK_MS, datedAhead, decide, deckFor, LEGACY_DECK, MAX_ACCOUNT_BODY, MAX_BODY, type Asked, type Settings } from "./rules.ts";
 
 const OWNER = "owner@example.com";
 const settings: Settings = { claude: true, owner: OWNER };
@@ -28,8 +28,8 @@ describe("decide", () => {
   });
 
   it("asks to sign in when no one is, on every path", () => {
-    for (const path of ["/deck", "/check", "/associate", "/explain"]) {
-      const method = path === "/deck" ? "GET" : "POST";
+    for (const path of ["/deck", "/check", "/associate", "/explain", "/account"]) {
+      const method = path === "/deck" || path === "/account" ? "GET" : "POST";
       expect(decide(asked({ path, method, email: null }), settings)).toEqual({ kind: "refuse", status: 401, error: "Sign in first." });
     }
   });
@@ -57,7 +57,30 @@ describe("decide", () => {
 
   it("serves no deck while the owner is not set, but the calls to Claude, which hold none, still work", () => {
     expect(decide(asked({}), { ...settings, owner: "" })).toMatchObject({ status: 503, error: expect.stringContaining("OWNER_EMAIL") });
-    expect(decide(asked({ path: "/check", method: "POST" }), { ...settings, owner: "" })).toEqual({ kind: "check" });
+    expect(decide(asked({ path: "/check", method: "POST" }), { ...settings, owner: "" })).toEqual({ kind: "check", email: OWNER });
+  });
+});
+
+describe("decide, for a learner's account", () => {
+  const account = (patch: Partial<Asked>) => asked({ path: "/account", ...patch });
+
+  it("shows, saves a key to, and removes the key from the account of whoever is signed in", () => {
+    expect(decide(account({}), settings)).toEqual({ kind: "account", email: OWNER });
+    expect(decide(account({ method: "PUT", email: "demo@example.com" }), settings)).toEqual({ kind: "save-key", email: "demo@example.com" });
+    expect(decide(account({ method: "DELETE" }), settings)).toEqual({ kind: "remove-key", email: OWNER });
+    expect(decide(account({ method: "POST" }), settings)).toMatchObject({ status: 405 });
+  });
+
+  it("guards the account as the deck is, and takes no more than a key's worth of body", () => {
+    expect(decide(account({ email: null }), settings)).toMatchObject({ status: 401 });
+    expect(decide(account({ fromPage: false, method: "PUT" }), settings)).toMatchObject({ status: 403 });
+    expect(decide(account({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
+    expect(decide(account({ method: "PUT", length: MAX_ACCOUNT_BODY }), settings)).toMatchObject({ kind: "save-key" });
+    expect(decide(account({ method: "PUT", length: MAX_ACCOUNT_BODY + 1 }), settings)).toEqual(accountTooLarge);
+  });
+
+  it("shows the account while the Worker has no Claude API key, since a learner's own key needs none", () => {
+    expect(decide(account({}), { ...settings, claude: false })).toEqual({ kind: "account", email: OWNER });
   });
 });
 
@@ -83,7 +106,7 @@ describe("decide, for an answer to check", () => {
   const check = (patch: Partial<Asked>) => asked({ path: "/check", method: "POST", ...patch });
 
   it("checks an answer for someone signed in, guarded as the deck is", () => {
-    expect(decide(check({}), settings)).toEqual({ kind: "check" });
+    expect(decide(check({}), settings)).toEqual({ kind: "check", email: OWNER });
     expect(decide(check({ email: null }), settings)).toMatchObject({ status: 401 });
     expect(decide(check({ withinLimit: false }), settings)).toMatchObject({ status: 429 });
     expect(decide(check({ fromPage: false }), settings)).toMatchObject({ status: 403 });
@@ -102,10 +125,10 @@ describe("decide, for a free association to read", () => {
   const associate = (patch: Partial<Asked>) => asked({ path: "/associate", method: "POST", ...patch });
 
   it("reads a free association for someone signed in, by POST only, with a size of its own", () => {
-    expect(decide(associate({}), settings)).toEqual({ kind: "associate" });
+    expect(decide(associate({}), settings)).toEqual({ kind: "associate", email: OWNER });
     expect(decide(associate({ method: "GET" }), settings)).toMatchObject({ status: 405 });
     expect(decide(associate({ email: null }), settings)).toMatchObject({ status: 401 });
-    expect(decide(associate({ length: MAX_ASSOCIATE_BODY }), settings)).toEqual({ kind: "associate" });
+    expect(decide(associate({ length: MAX_ASSOCIATE_BODY }), settings)).toEqual({ kind: "associate", email: OWNER });
     expect(decide(associate({ length: MAX_ASSOCIATE_BODY + 1 }), settings)).toMatchObject({ status: 413, error: "That is too long to read." });
   });
 
@@ -121,7 +144,7 @@ describe("decide, for an explanation to check", () => {
   const explain = (patch: Partial<Asked>) => asked({ path: "/explain", method: "POST", ...patch });
 
   it("checks an explanation for someone signed in, by POST only, guarded as checking is", () => {
-    expect(decide(explain({}), settings)).toEqual({ kind: "explain" });
+    expect(decide(explain({}), settings)).toEqual({ kind: "explain", email: OWNER });
     expect(decide(explain({ method: "GET" }), settings)).toMatchObject({ status: 405 });
     expect(decide(explain({ email: null }), settings)).toMatchObject({ status: 401 });
     expect(decide(explain({ length: MAX_EXPLAIN_BODY + 1 }), settings)).toMatchObject({ status: 413 });

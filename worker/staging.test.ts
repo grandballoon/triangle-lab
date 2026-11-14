@@ -1,11 +1,12 @@
 // The staging Worker running for real, in the local Workers runtime, from
-// `env.staging` in wrangler.jsonc, against a stand-in for GitHub's contents
-// API and for the Access team's signing keys: the production Worker's deck
-// served beside the dev tools, to a learner signed in as on production,
-// nothing let into the dev tools without a signed Access token,
-// a page's steps listed from the branch, an edit committed over the file it
-// was made on (and made again when the branch moved), and UI comments kept
-// until pulled.
+// `env.staging` in wrangler.jsonc, against stand-ins for GitHub's API, the
+// Claude API and the Access team's signing keys: the production Worker's
+// deck served beside the dev tools, to a learner signed in as on production,
+// nothing let into the dev tools without a signed Access token, a page's copy
+// listed from the branch, a save committed in one commit on the head it was
+// made on (and made again when the branch moved), a fact-check through
+// Claude, a lesson's draft committed with the Explain tab text it keeps, and
+// UI comments kept until pulled.
 
 import { generateKeyPairSync, createSign, type KeyObject } from "node:crypto";
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -17,8 +18,10 @@ import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { FeedbackEntry } from "../src/dev/feedback/entry.ts";
-import type { StepEdit } from "../src/dev/steps/wire.ts";
-import { decodeContent, encodeContent } from "./staging-rules.ts";
+import type { CopyEdit } from "../src/dev/copy/wire.ts";
+import { readHistory } from "../src/dev/copy/history.ts";
+import { explanationContent, type DraftSave } from "../src/dev/drafts/wire.ts";
+import { encodeContent } from "./staging-rules.ts";
 
 const AUD = "staging-aud-tag";
 const ROOT = resolve(__dirname, "..");
@@ -27,16 +30,36 @@ const LESSON = `export default lesson(() => ({
     { title: "Drag", text: "Move $A$." },
     { title: "Watch", text: "See it change." },
   ],
+  likes: [{ title: "A ramp", text: "It rises." }],
+  uses: [],
 }));
 `;
+const DIRECTIONS = `export const directions = {\n  angles: [{ title: "Drag the apex", text: "Grab it." }],\n};\n`;
+const ASIDES = `export const asides = {\n  angles: { likes: [{ title: "A door", text: "It opens." }], uses: [] },\n};\n`;
 
-/** The stand-in GitHub branch: files by path, each with its sha, and the commits made to it. */
+type Files = Map<string, string>;
+
+/**
+ * The stand-in GitHub repository, as much of the Git Data API as a commit
+ * needs: commits and trees by sha, the staging branch's head, and the
+ * commits the branch was moved to.
+ */
 const github = {
-  files: new Map<string, { text: string; sha: number }>(),
-  commits: [] as { path: string; body: { message: string; content: string; sha: string; branch: string }; auth: string | undefined }[],
-  /** Change the file under the next commit, as another edit landing first would. */
-  raceNext: null as null | ((text: string) => string),
+  commits: new Map<string, { files: Files; parent: string | null }>(),
+  trees: new Map<string, Files>(),
+  head: "",
+  made: [] as { message: string; files: Record<string, string>; auth: string | undefined }[],
+  /** Change a file on the branch just before it is next moved, as another save landing first would. */
+  raceNext: null as null | ((files: Files) => Files),
+  count: 0,
 };
+const files = (): Files => github.commits.get(github.head)!.files;
+
+/** What the stand-in Claude was asked, and what it says. */
+const claude = { asked: [] as { body: Record<string, unknown>; key: string | undefined }[], reply: "" };
+
+/** The commits made but not yet on the branch, by sha. */
+const pending = new Map<string, (typeof github.made)[number]>();
 
 let keys: { privateKey: KeyObject; publicKey: KeyObject };
 let standIn: Server;
@@ -59,23 +82,64 @@ beforeAll(async () => {
       if (url.pathname === "/cdn-cgi/access/certs") {
         return send(200, { keys: [{ ...keys.publicKey.export({ format: "jwk" }), kid: "k1", alg: "RS256", use: "sig" }] });
       }
-      const path = /^\/repos\/owner\/repo\/contents\/(.+)$/.exec(url.pathname)?.[1];
-      const file = path ? github.files.get(path) : undefined;
-      if (!path || !file) return send(404, { message: "Not Found" });
-      if (req.method === "GET") {
-        if (url.searchParams.get("ref") !== "staging") return send(404, { message: "No such ref" });
-        return send(200, { content: encodeContent(file.text).replace(/(.{60})/g, "$1\n"), sha: String(file.sha), encoding: "base64" });
+      if (url.pathname === "/v1/messages") {
+        claude.asked.push({ body: JSON.parse(text), key: req.headers.authorization });
+        // Streamed, as the check asks for it.
+        const message = { id: "msg", type: "message", role: "assistant", model: "claude-opus-5-5", content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 1, output_tokens: 0 } };
+        const events = [
+          ["message_start", { type: "message_start", message }],
+          ["content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }],
+          ["content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: claude.reply } }],
+          ["content_block_stop", { type: "content_block_stop", index: 0 }],
+          ["message_delta", { type: "message_delta", delta: { stop_reason: "end_turn", stop_sequence: null }, usage: { output_tokens: 1 } }],
+          ["message_stop", { type: "message_stop" }],
+        ] as const;
+        res.writeHead(200, { "Content-Type": "text/event-stream" });
+        return res.end(events.map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join(""));
       }
-      const body = JSON.parse(text);
-      if (github.raceNext) {
-        github.files.set(path, { text: github.raceNext(file.text), sha: file.sha + 1 });
-        github.raceNext = null;
+      const repo = "/repos/owner/repo/";
+      if (!url.pathname.startsWith(repo)) return send(404, { message: "Not Found" });
+      const route = `${req.method} ${url.pathname.slice(repo.length)}`;
+      const body = text ? JSON.parse(text) : null;
+      if (route === "GET git/ref/heads/staging") return send(200, { object: { sha: github.head } });
+      const contents = /^GET contents\/(.+)$/.exec(route);
+      if (contents) {
+        const at = github.commits.get(url.searchParams.get("ref") ?? "");
+        const file = at?.files.get(contents[1]);
+        if (file === undefined) return send(404, { message: "Not Found" });
+        return send(200, { content: encodeContent(file).replace(/(.{60})/g, "$1\n"), encoding: "base64" });
       }
-      const now = github.files.get(path)!;
-      if (body.sha !== String(now.sha)) return send(409, { message: "sha does not match" });
-      github.commits.push({ path, body, auth: req.headers.authorization });
-      github.files.set(path, { text: decodeContent(body.content), sha: now.sha + 1 });
-      return send(200, { commit: { html_url: `https://github.com/owner/repo/commit/${github.commits.length}` } });
+      const commit = /^GET git\/commits\/(.+)$/.exec(route);
+      if (commit) return github.commits.has(commit[1]) ? send(200, { sha: commit[1], tree: { sha: `tree-of-${commit[1]}` } }) : send(404, {});
+      if (route === "POST git/trees") {
+        const base = github.commits.get(String(body.base_tree).replace(/^tree-of-/, ""));
+        if (!base) return send(422, { message: "No base tree" });
+        const tree = new Map(base.files);
+        for (const entry of body.tree) tree.set(entry.path, entry.content);
+        const sha = `t${++github.count}`;
+        github.trees.set(sha, tree);
+        return send(201, { sha });
+      }
+      if (route === "POST git/commits") {
+        const sha = `c${++github.count}`;
+        github.commits.set(sha, { files: github.trees.get(body.tree)!, parent: body.parents[0] });
+        const changed = Object.fromEntries([...github.trees.get(body.tree)!].filter(([path, t]) => github.commits.get(body.parents[0])?.files.get(path) !== t));
+        pending.set(sha, { message: body.message, files: changed, auth: req.headers.authorization });
+        return send(201, { sha, html_url: `https://github.com/owner/repo/commit/${sha}` });
+      }
+      if (route === "PATCH git/refs/heads/staging") {
+        if (github.raceNext) {
+          const sha = `c${++github.count}`;
+          github.commits.set(sha, { files: github.raceNext(new Map(files())), parent: github.head });
+          github.head = sha;
+          github.raceNext = null;
+        }
+        if (body.force !== false || github.commits.get(body.sha)?.parent !== github.head) return send(422, { message: "Update is not a fast forward" });
+        github.head = body.sha;
+        github.made.push(pending.get(body.sha)!);
+        return send(200, { object: { sha: body.sha } });
+      }
+      return send(404, { message: "Not Found" });
     });
   });
   await new Promise<void>((done) => standIn.listen(0, "127.0.0.1", done));
@@ -102,7 +166,7 @@ beforeAll(async () => {
           name: "triangle-lab-staging",
           main: join(ROOT, staging.main),
           assets: { ...staging.assets, directory: assets },
-          vars: { ...staging.vars, SENDER: "signin@example.com", GITHUB_API_URL: issuer, GITHUB_REPO: "owner/repo", ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
+          vars: { ...staging.vars, SENDER: "signin@example.com", ANTHROPIC_BASE_URL: issuer, GITHUB_API_URL: issuer, GITHUB_REPO: "owner/repo", ACCESS_ISSUER: issuer, ACCESS_AUD: AUD },
         },
       },
     ],
@@ -111,12 +175,19 @@ beforeAll(async () => {
 }, 60_000);
 
 beforeEach(async () => {
-  github.files = new Map([
-    ["src/lab/lessons/demo.ts", { text: LESSON, sha: 1 }],
-    ["src/directions.ts", { text: `export const directions = {\n  angles: [{ title: "Drag the apex", text: "Grab it." }],\n};\n`, sha: 1 }],
+  const start = new Map([
+    ["src/lab/lessons/demo.ts", LESSON],
+    ["src/directions.ts", DIRECTIONS],
+    ["src/asides.ts", ASIDES],
+    ["README.md", "Untouched."],
   ]);
-  github.commits = [];
+  github.commits = new Map([["c0", { files: start, parent: null }]]);
+  github.trees = new Map();
+  github.head = "c0";
+  github.made = [];
   github.raceNext = null;
+  pending.clear();
+  claude.asked = [];
   await harness.reset();
   base = (await harness.listen()).url.href.replace(/\/$/, "");
 });
@@ -156,7 +227,7 @@ async function sentLink(): Promise<string | null> {
   return null;
 }
 
-const steps = (page: string, jwt?: string | null) => call("GET", `/__step-source?page=${encodeURIComponent(page)}`, undefined, jwt);
+const copy = (page: string, jwt?: string | null) => call("GET", `/__copy?page=${encodeURIComponent(page)}`, undefined, jwt);
 
 describe("staging", () => {
   it("serves the site and its own deck as production does, to whoever signed in", async () => {
@@ -177,58 +248,166 @@ describe("staging", () => {
   it("lets nothing reach the dev tools without a signed Access token for this application", async () => {
     const forged = token({}, generateKeyPairSync("rsa", { modulusLength: 2048 }).privateKey);
     for (const jwt of [null, "not.a.token", forged, token({ aud: ["other"] }), token({ exp: 1 })]) {
-      expect((await steps("/angles", jwt)).status, String(jwt)).toBe(401);
+      expect((await copy("/angles", jwt)).status, String(jwt)).toBe(401);
+      expect((await call("POST", "/__copy/check", { page: "/angles", fields: [{ id: "steps.0.text", text: "x" }] }, jwt)).status).toBe(401);
       expect((await call("GET", "/__ui-feedback", undefined, jwt)).status).toBe(401);
+      expect((await call("POST", "/__drafts", { page: "/slope", was: null, text: "x", explanations: [] }, jwt)).status).toBe(401);
     }
-    expect(github.commits).toEqual([]);
+    expect(github.made).toEqual([]);
+    expect(claude.asked).toEqual([]);
   });
 });
 
-describe("the step editor on staging", () => {
-  it("lists a page's steps from the staging branch", async () => {
-    expect(await (await steps("/lab?lesson=demo")).json()).toEqual({
-      file: "src/lab/lessons/demo.ts",
-      steps: [
-        { title: "Drag", text: "Move $A$." },
-        { title: "Watch", text: "See it change." },
-      ],
+describe("the copy editor on staging", () => {
+  it("lists a page's copy from the staging branch", async () => {
+    const lab = "src/lab/lessons/demo.ts";
+    expect(await (await copy("/lab?lesson=demo")).json()).toEqual({
+      steps: {
+        file: lab,
+        entries: [
+          { title: "Drag", text: "Move $A$." },
+          { title: "Watch", text: "See it change." },
+        ],
+      },
+      likes: { file: lab, entries: [{ title: "A ramp", text: "It rises." }] },
+      uses: { file: lab, entries: [] },
     });
-    expect(await (await steps("/angles")).json()).toEqual({ file: "src/directions.ts", steps: [{ title: "Drag the apex", text: "Grab it." }] });
-    expect((await steps("/lab?lesson=nowhere")).status).toBe(404);
-    expect((await steps("/")).status).toBe(404);
+    expect(await (await copy("/angles")).json()).toEqual({
+      steps: { file: "src/directions.ts", entries: [{ title: "Drag the apex", text: "Grab it." }] },
+      likes: { file: "src/asides.ts", entries: [{ title: "A door", text: "It opens." }] },
+      uses: { file: "src/asides.ts", entries: [] },
+    });
+    expect((await copy("/lab?lesson=nowhere")).status).toBe(404);
+    expect((await copy("/")).status).toBe(404);
   });
 
-  const edit: StepEdit = { page: "/lab?lesson=demo", step: 1, was: { title: "Watch", text: "See it change." }, field: "text", to: "See $\\angle A$ change." };
+  const save: CopyEdit = {
+    page: "/angles",
+    edits: [
+      { section: "steps", index: 0, was: { title: "Drag the apex", text: "Grab it." }, to: { text: "Grab $C$." } },
+      { section: "likes", index: 0, was: { title: "A door", text: "It opens." }, to: { title: "A swinging door" } },
+    ],
+  };
 
-  it("commits an edit over the file it was made on", async () => {
-    const saved = await call("POST", "/__step-source", edit);
-    expect(await saved.json()).toEqual({ file: "src/lab/lessons/demo.ts", changed: true, commit: "https://github.com/owner/repo/commit/1" });
-    expect(github.commits).toEqual([
+  it("commits a save to every file it touches in one commit, with its history, on the head it was made on", async () => {
+    const saved = await call("POST", "/__copy", save);
+    const head = github.head;
+    expect(await saved.json()).toEqual({
+      files: ["src/directions.ts", "src/asides.ts", "copy-history/angles.json"],
+      commit: `https://github.com/owner/repo/commit/${head}`,
+    });
+    expect(github.made).toEqual([
       {
-        path: "src/lab/lessons/demo.ts",
+        message: "Edit the copy of angles: step 1, likeness 1\n\nMade with the copy editor on staging.\n",
         auth: "Bearer gh-token",
-        body: {
-          message: "Edit the text of step 2 in demo\n\nMade with the step editor on staging.\n",
-          content: encodeContent(LESSON.replace(`"See it change."`, `"See $\\\\angle A$ change."`)),
-          sha: "1",
-          branch: "staging",
+        files: {
+          "src/directions.ts": DIRECTIONS.replace(`"Grab it."`, `"Grab $C$."`),
+          "src/asides.ts": ASIDES.replace(`"A door"`, `"A swinging door"`),
+          "copy-history/angles.json": expect.any(String),
         },
       },
     ]);
-    // The same edit again finds the step already reads so.
-    expect(await (await call("POST", "/__step-source", { ...edit, was: { title: "Watch", text: edit.to } })).json()).toMatchObject({ changed: false });
-    expect(github.commits).toHaveLength(1);
+    const history = () => readHistory(files().get("copy-history/angles.json")!)!;
+    expect(history().saves.map((s) => s.changes.map((c) => [c.field, c.was, c.now]))).toEqual([
+      [
+        ["steps.0.text", "Grab it.", "Grab $C$."],
+        ["likes.0.title", "A door", "A swinging door"],
+      ],
+    ]);
+    expect(files().get("README.md")).toBe("Untouched.");
+    // The same save again finds the copy already reads so.
+    const again = { page: "/angles", edits: [{ ...save.edits[0], was: { title: "Drag the apex", text: "Grab $C$." } }] };
+    expect(await (await call("POST", "/__copy", again)).json()).toEqual({ files: [], commit: null });
+    expect(github.made).toHaveLength(1);
+    // A later save adds to the history, keeping the original.
+    await call("POST", "/__copy", { page: "/angles", edits: [{ section: "likes", index: 0, was: { title: "A swinging door", text: "It opens." }, to: { title: "A door ajar" } }] });
+    expect(history().saves.map((s) => s.changes.map((c) => [c.was, c.now]))).toEqual([
+      [
+        ["Grab it.", "Grab $C$."],
+        ["A door", "A swinging door"],
+      ],
+      [["A swinging door", "A door ajar"]],
+    ]);
   });
 
-  it("makes the edit again when the branch moved meanwhile, and refuses it when its step changed", async () => {
-    github.raceNext = (text) => text.replace(`"Drag"`, `"Drag it"`);
-    expect((await call("POST", "/__step-source", edit)).status).toBe(200);
-    expect(github.files.get("src/lab/lessons/demo.ts")!.text).toBe(LESSON.replace(`"Drag"`, `"Drag it"`).replace(`"See it change."`, `"See $\\\\angle A$ change."`));
+  it("makes the save again when the branch moved meanwhile, and refuses it when its copy changed", async () => {
+    github.raceNext = (now) => now.set("src/asides.ts", now.get("src/asides.ts")!.replace("uses: []", 'uses: [{ title: "Roofs", text: "Pitch." }]'));
+    expect((await call("POST", "/__copy", save)).status).toBe(200);
+    expect(files().get("src/asides.ts")).toBe(ASIDES.replace(`"A door"`, `"A swinging door"`).replace("uses: []", 'uses: [{ title: "Roofs", text: "Pitch." }]'));
+    expect(files().get("src/directions.ts")).toBe(DIRECTIONS.replace(`"Grab it."`, `"Grab $C$."`));
 
-    github.raceNext = (text) => text.replace(`"Move $A$."`, `"Moved by someone else."`);
-    const stale = await call("POST", "/__step-source", { ...edit, step: 0, was: { title: "Drag it", text: "Move $A$." }, to: "Mine." });
+    github.raceNext = (now) => now.set("src/directions.ts", now.get("src/directions.ts")!.replace("Grab $C$.", "Someone else's."));
+    const before = github.made.length;
+    const stale = await call("POST", "/__copy", { page: "/angles", edits: [{ section: "steps", index: 0, was: { title: "Drag the apex", text: "Grab $C$." }, to: { text: "Mine." } }] });
     expect(stale.status).toBe(409);
     expect((await stale.json()).error).toMatch(/changed in the source/);
+    expect(github.made).toHaveLength(before);
+  });
+
+  it("has Claude fact-check the copy, with staging's key", async () => {
+    const check = { summary: "Holds up.", remarks: [] };
+    claude.reply = JSON.stringify(check);
+    const checked = await call("POST", "/__copy/check", { page: "/angles", fields: [{ id: "likes.0.text", text: "It opens." }] });
+    expect(checked.status).toBe(200);
+    expect(await checked.json()).toEqual(check);
+    expect(claude.asked).toHaveLength(1);
+    expect(claude.asked[0].key).toBe("Bearer k");
+    expect(JSON.stringify(claude.asked[0].body.messages)).toContain('<field id=\\"likes.0.text\\"');
+    expect((await call("POST", "/__copy/check", { page: "/angles", fields: [] })).status).toBe(400);
+  });
+});
+
+describe("the draft tab on staging", () => {
+  const draft = (page: string) => call("GET", `/__drafts?page=${encodeURIComponent(page)}`);
+  const save: DraftSave = {
+    page: "/lab?lesson=slope",
+    was: null,
+    text: "# Slope\n\nRise over run.",
+    explanations: [
+      { lesson: "medians", text: "They meet at the centroid." },
+      { lesson: "angles", text: " " },
+    ],
+  };
+
+  it("commits a draft with the explanations it keeps in one commit, and lists it from the branch", async () => {
+    expect(await (await draft("/slope")).json()).toEqual({ lesson: "slope", file: "lesson-drafts/slope.md", text: null });
+    const saved = await call("POST", "/__drafts", save);
+    expect(await saved.json()).toEqual({
+      files: ["lesson-drafts/slope.md", "lesson-drafts/medians.explanation.md"],
+      commit: `https://github.com/owner/repo/commit/${github.head}`,
+    });
+    expect(github.made).toEqual([
+      {
+        message: "Draft the text of slope, and keep 1 explanation\n\nMade with the draft tab on staging.\n",
+        auth: "Bearer gh-token",
+        files: { "lesson-drafts/slope.md": "# Slope\n\nRise over run.\n", "lesson-drafts/medians.explanation.md": explanationContent("They meet at the centroid.") },
+      },
+    ]);
+    expect(await (await draft("/lab?lesson=slope")).json()).toEqual({ lesson: "slope", file: "lesson-drafts/slope.md", text: save.text });
+    // Saved again as it reads, nothing is committed.
+    expect(await (await call("POST", "/__drafts", { ...save, was: save.text })).json()).toEqual({ files: [], commit: null });
+    expect(github.made).toHaveLength(1);
+    expect((await draft("/")).status).toBe(404);
+  });
+
+  it("makes the commit again when the branch moved meanwhile, and refuses it when the draft was saved since", async () => {
+    github.raceNext = (now) => now.set("README.md", "Edited meanwhile.");
+    expect((await call("POST", "/__drafts", save)).status).toBe(200);
+    expect(files().get("README.md")).toBe("Edited meanwhile.");
+    expect(files().get("lesson-drafts/slope.md")).toBe("# Slope\n\nRise over run.\n");
+
+    const before = github.made.length;
+    const stale = await call("POST", "/__drafts", { ...save, was: null, text: "Mine." });
+    expect(stale.status).toBe(409);
+    expect((await stale.json()).error).toMatch(/saved from elsewhere/);
+    expect(github.made).toHaveLength(before);
+  });
+
+  it("takes a save larger than the other dev tools' bodies", async () => {
+    const long = Array.from({ length: 60 }, (_, i) => ({ lesson: `lesson-${i}`, text: "x".repeat(7000) }));
+    const saved = await call("POST", "/__drafts", { ...save, explanations: long });
+    expect(saved.status).toBe(200);
+    expect((await saved.json()).files).toHaveLength(61);
   });
 });
 
@@ -236,8 +415,8 @@ describe("UI comments on staging", () => {
   const entry: FeedbackEntry = {
     comment: "The pill overlaps the rail.",
     page: "/lab?lesson=slope",
-    selector: "button.se-toggle",
-    element: `<button class="se-toggle"> "Edit steps"`,
+    selector: "button.column-tab",
+    element: `<button class="column-tab"> "Copy"`,
     point: { x: 3, y: 4 },
     size: { width: 90, height: 28 },
     viewport: { width: 1280, height: 800 },

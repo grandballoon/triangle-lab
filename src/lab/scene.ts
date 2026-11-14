@@ -208,6 +208,15 @@ export interface Choice<T extends string = string> {
   label: string;
   options: readonly T[];
   value: T;
+  /** Option n is step n: picking it goes to that step, and each step picks it (Scene `terms`). */
+  followsSteps?: true;
+}
+
+/** The value each choice that follows the steps takes at `step`; a step past its options leaves it be. */
+export function followStep(controls: readonly Control[], step: number): void {
+  for (const c of controls) {
+    if (c.kind === "choice" && c.followsSteps && step < c.options.length) c.value = c.options[step];
+  }
 }
 
 /** A chip that runs something once when pressed. */
@@ -257,6 +266,17 @@ export class Scene {
   choice<T extends string>(label: string, options: readonly T[], value: T = options[0]): Choice<T> {
     const c: Choice<T> = { kind: "choice", label, options, value };
     this.controls.push(c as unknown as Choice);
+    return c;
+  }
+
+  /**
+   * The names a lesson defines, one a step, as a pick-one row: option n is
+   * step n, so picking a name goes to its step and stepping picks its name.
+   * Read `.value` each frame for the term on show.
+   */
+  terms<T extends string>(label: string, options: readonly T[]): Choice<T> {
+    const c = this.choice(label, options);
+    c.followsSteps = true;
     return c;
   }
 

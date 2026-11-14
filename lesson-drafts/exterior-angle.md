@@ -1,0 +1,1 @@
+The sum of all three angles in a triangle is 180 degrees; so is the sum of two complementary angles which form a straight line. Add the yellow and blue angles together—you'll see that they form the green one. In other words, The exterior angle of any vertex on a triangle always adds up to the measure of the other two angles.

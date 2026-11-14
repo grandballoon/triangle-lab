@@ -19,6 +19,7 @@ import { SpriteCache } from "./sprites.ts";
 import { StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
 import {
+  followStep,
   Scene,
   STAGE,
   type Frame,
@@ -174,6 +175,7 @@ export class Shell {
     if (changed) {
       c.step = step;
       c.stepShownAt = performance.now();
+      followStep(c.scene.controls, step);
     }
     this.stepList.mark(step, scroll);
     if (changed) this.onStep();
@@ -307,7 +309,9 @@ export class Shell {
         group.append(
           name,
           ...control.options.map((option) =>
-            chip(option, control.value === option, () => (control.value = option)),
+            chip(option, control.value === option, () =>
+              control.followsSteps ? this.select(control.options.indexOf(option), true) : (control.value = option),
+            ),
           ),
         );
         nodes.push(group);

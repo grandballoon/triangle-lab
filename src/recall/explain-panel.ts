@@ -36,7 +36,7 @@ import { submitsOnModEnter, touchFirst } from "./keys.ts";
 import { lessonName, questionHtml, stepLabel } from "./labels.ts";
 import { placeRemarks, remarkAt, runsOf } from "./remarks.ts";
 import { openRecall, type RecallSync } from "./remote.ts";
-import { signInLink } from "./signin.ts";
+import { mendLink, signInLink } from "./signin.ts";
 import type { RecallStore } from "./store.ts";
 
 /** Where an earlier version kept each lesson's explanation in this browser alone, after the lesson's slug; moved into the deck on mounting. */
@@ -265,7 +265,7 @@ function overall(review: Review, stale: boolean): HTMLElement {
     head.textContent = "Claude";
     text.classList.add("explain-quiet");
     text.textContent = review.kind === "checking" ? "Reading your explanation…" : review.error;
-    if (review.kind === "failed" && review.signIn) box.append(signInLink(document, "explain-sign-in"));
+    if (review.kind === "failed" && review.mend) box.append(mendLink(document, review.mend, "explain-sign-in"));
   }
   return box;
 }

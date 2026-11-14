@@ -90,7 +90,7 @@ describe("the recall page", () => {
     ]);
     expect(root.querySelector(".rc-lead")!.textContent).toBe("1 due now");
     expect(root.querySelector(".rc-group h2")!.textContent).toBe("Triangles · Medians");
-    expect(root.querySelector<HTMLAnchorElement>(".rc-group h2 a")!.getAttribute("href")).toBe("medians.html");
+    expect(root.querySelector<HTMLAnchorElement>(".rc-group h2 a")!.getAttribute("href")).toBe("lab.html?lesson=medians");
     const metas = [...root.querySelectorAll(".rc-meta")].map((m) => m.textContent);
     expect(metas[0]).toContain("due now");
     expect(metas[1]).toContain("in 3 days");
@@ -134,7 +134,7 @@ describe("the recall page", () => {
       "Got it right",
     ]);
     const source = root.querySelector<HTMLAnchorElement>(".rc-source")!;
-    expect(source.getAttribute("href")).toBe("medians.html#step-2");
+    expect(source.getAttribute("href")).toBe("lab.html?lesson=medians#step-2");
     // In this tab, taking the sitting along (beside.ts).
     expect(source.target).toBe("");
     const hints = [...root.querySelectorAll(".rc-grade-when")].map((h) => h.textContent);
@@ -212,7 +212,7 @@ describe("the recall page", () => {
       "Where do the medians meet?",
       "What is a median?",
     ]);
-    expect(revisit.querySelector<HTMLAnchorElement>(".rc-meta a")!.getAttribute("href")).toBe("medians.html#step-2");
+    expect(revisit.querySelector<HTMLAnchorElement>(".rc-meta a")!.getAttribute("href")).toBe("lab.html?lesson=medians#step-2");
     expect(root.querySelector(".rc-all")!.textContent).toBe("All your questions · 3");
   });
 
@@ -754,7 +754,7 @@ describe("Claude checking an answer", () => {
       answerWith(root, "At the incentre, halfway down each median");
       await settle();
       const link = root.querySelector<HTMLAnchorElement>(".rc-source")!;
-      expect(link.getAttribute("href")).toBe("medians.html#step-2");
+      expect(link.getAttribute("href")).toBe("lab.html?lesson=medians#step-2");
       follow(link);
       expect(kept()).toMatchObject({ inLesson: true, session: { phase: "check" } });
 
@@ -987,12 +987,12 @@ describe("free associating", () => {
     expect(reading(root)!.querySelector(".rc-feedback")!.textContent).toBe(read.feedback);
     expect(marked(root)).toEqual(["the incentre", "halfway"]);
     expect(remarks(root)).toEqual([
-      { quote: "the incentre", lesson: "medians.html", gone: false },
+      { quote: "the incentre", lesson: "lab.html?lesson=medians", gone: false },
       { quote: "halfway", lesson: null, gone: false },
     ]);
     expect(root.querySelector(".rc-remark-note .katex")).not.toBeNull();
     expect(root.querySelector(".rc-next h3")!.textContent).toBe("Shortest next step");
-    expect(steps(root)).toEqual([{ lesson: "Triangles · Angle Bisectors ↗", href: "bisectors.html", why: read.next[0].why }]);
+    expect(steps(root)).toEqual([{ lesson: "Triangles · Angle Bisectors ↗", href: "lab.html?lesson=bisectors", why: read.next[0].why }]);
     expect(root.querySelector<HTMLAnchorElement>(".rc-next a")!.target).toBe("_blank");
     expect(buttonNamed(root, "Read again").disabled).toBe(true);
   });

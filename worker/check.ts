@@ -9,6 +9,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { CheckRequest } from "../src/recall/check.ts";
 import { GRADES, readVerdict, type Verdict } from "../src/recall/deck.ts";
+import { ACCOUNT_STATUS } from "./billing.ts";
 import type { Refusal } from "./rules.ts";
 
 type Params = Anthropic.Beta.Messages.MessageCreateParamsNonStreaming;
@@ -109,8 +110,16 @@ export function usageLine(route: string, effort: string | null, message: Message
   };
 }
 
-/** The refusal for a call to Claude that failed with HTTP `status`, or never got an answer. */
-export function claudeFailed(status: number | undefined): Refusal {
+/**
+ * The refusal for a call to Claude that failed with HTTP `status`, or never
+ * got an answer, made with the learner's own key when `ownKey`. Their key
+ * turned down is theirs to mend, on their account page (billing.ts
+ * ACCOUNT_STATUS).
+ */
+export function claudeFailed(status: number | undefined, ownKey = false): Refusal {
+  if ((status === 401 || status === 403) && ownKey) {
+    return { kind: "refuse", status: ACCOUNT_STATUS, error: "Claude turned down your API key. Replace it on your account page." };
+  }
   if (status === 401 || status === 403) return failed("The Worker's ANTHROPIC_API_KEY was turned down.");
   if (status === 429) return failed("Claude is busy. Try again in a minute.");
   if (status === undefined) return failed("Couldn't reach Claude.");

@@ -273,7 +273,7 @@ html[data-layout="stacked"] #step-list[data-last] .aside { display: block; }
 
 #steps[data-pane] > .step-pager,
 #steps[data-pane] > #step-list,
-#steps:not([data-pane]) > .column-pane { display: none; }
+.column-pane[hidden] { display: none; }
 
 .column-pane {
   flex: 1;
