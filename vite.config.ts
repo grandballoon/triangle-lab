@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -43,6 +44,13 @@ export default defineConfig({
       "/associate": "http://localhost:8787",
       "/explain": "http://localhost:8787",
     },
+  },
+  test: {
+    // Vitest's on-disk module cache keys a file by its own text, so a test that
+    // lists files with import.meta.glob (every lesson, say) keeps the list from
+    // when it was cached and misses a lesson added since. Cold starts are fast
+    // enough without it.
+    fsModuleCache: false,
   },
   build: {
     rollupOptions: {
