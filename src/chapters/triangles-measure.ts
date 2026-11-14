@@ -26,18 +26,6 @@ export const trianglesMeasure: Lesson[] = [
     lab: true,
   },
   {
-    slug: "trig-identities",
-    part: "Trigonometry · Five",
-    name: "Identities from One Triangle",
-    desc: "Turn one angle in a hypotenuse-1 triangle and read off the identities it forces.",
-    accent: "#facc15",
-    icon: `<polygon points="5,25 25,25 25,9" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 13 25 A 8 8 0 0 0 11.2 20" fill="none" stroke="currentColor" stroke-width="2" />
-      <polyline points="21,25 21,21 25,21" fill="none" stroke="currentColor" stroke-width="1.8" />`,
-    lab: true,
-  },
-  {
     slug: "area-base-height",
     part: "Area · One",
     name: "Half Base Times Height",
@@ -50,20 +38,8 @@ export const trianglesMeasure: Lesson[] = [
     lab: true,
   },
   {
-    slug: "area-sine",
-    part: "Area · Two",
-    name: "Two Sides and an Angle",
-    desc: "Swing one side about a corner and get the area from two sides and the sine between them.",
-    accent: "#38bdf8",
-    icon: `<polygon points="5,25 27,25 16,7" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 12 25 A 7 7 0 0 0 8.7 19" fill="currentColor" fill-opacity="0.35"
-        stroke="currentColor" stroke-width="2" />`,
-    lab: true,
-  },
-  {
     slug: "area-inradius",
-    part: "Area · Three",
+    part: "Area · Two",
     name: "Inradius Times Semiperimeter",
     desc: "Cut a triangle into three from its incentre, then run the formula backwards to find r.",
     accent: "#a3e635",

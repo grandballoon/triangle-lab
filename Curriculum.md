@@ -7,8 +7,8 @@ Update it whenever a lesson is added or a gap is closed.
 
 ### Lessons that teach trig directly
 
-These six lessons are the minimum set that covers the trig we teach today.
-They live in the Triangles chapter.
+These seven lessons are the minimum set that covers the trig we teach today.
+They make up the Trigonometry chapter, which follows Triangles.
 
 | # | Lesson | Slug | Covers |
 | --- | --- | --- | --- |
@@ -17,9 +17,10 @@ They live in the Triangles chapter.
 | 3 | Folding the Equilateral | `thirtysixty` | 1 : √3 : 2 and the exact values for 30° and 60° |
 | 4 | The Whole Table | `table` | Hypotenuse fixed at 1, the 0°–90° table, tan 90° undefined |
 | 5 | Identities from One Triangle | `trig-identities` | Cofunctions and all three Pythagorean identities |
-| 6 | Two Sides and an Angle | `area-sine` | Area = ½ab·sin C |
+| 6 | From Circle to Waves | `trig-waves` | The unit circle: (cos θ, sin θ) as the tip of a turning radius, signs in each quadrant, tan θ on the tangent line x = 1, and the sine, cosine and tangent waves traced out together |
+| 7 | Two Sides and an Angle | `area-sine` | Area = ½ab·sin C |
 
-Together they cover right-triangle trig for acute angles and nothing past that.
+Together they cover right-triangle trig for acute angles, and a first look at the unit circle and the three graphs over a full turn.
 
 ### Related lessons
 
@@ -49,10 +50,12 @@ Grouped by the course that usually teaches them.
 
 **Algebra 2 (trig functions)**
 
-- [ ] The unit circle past 90°: reference angles, signs in each quadrant, coterminal and negative angles.
-  [specs/07-introduction-to-trigonometry.md](specs/07-introduction-to-trigonometry.md) already lists extending the dial past 90° as future work.
-- [ ] Graphs of sine and cosine: amplitude, period, phase shift, midline.
-- [ ] Graph of tan with its asymptotes, and the reciprocal-function graphs.
+- [ ] The unit circle past 90°: reference angles, coterminal and negative angles.
+  From Circle to Waves (`trig-waves`) covers the circle itself and the signs in each quadrant.
+- [ ] Graphs of sine and cosine: amplitude, phase shift, midline.
+  From Circle to Waves draws both graphs over one period and shows cosine as sine shifted by 90°, but never stretches or moves them.
+- [ ] The reciprocal-function graphs.
+  From Circle to Waves covers the graph of tan with its asymptotes.
 - [ ] Modeling with sinusoids.
 - [ ] Angular and linear speed.
 
