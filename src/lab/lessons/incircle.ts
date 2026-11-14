@@ -50,7 +50,7 @@ export default lesson((s) => {
       },
       {
         title: "Two bisectors cross",
-        text: "Let the bisectors from $A$ and $B$ meet at $I$. Being on the first, $I$ is equally far from $AB$ and $AC$. Being on the second, it is equally far from $AB$ and $BC$.",
+        text: "What held for $P$ holds for every point on every bisector. Draw the bisector from $B$ as well, and call the point where it crosses the bisector from $A$ by the name $I$. Like $P$, $I$ is on the bisector from $A$, so it is equally far from $AB$ and $AC$. It is also on the bisector from $B$, so it is equally far from $AB$ and $BC$.",
       },
       {
         title: "The third has no choice",

@@ -61,7 +61,8 @@ The bridge dispatches a grab's events straight at the element it started on, whi
 
 ## Two kinds of lesson
 
-**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are the original sixteen triangle lessons.
+**Standalone lessons** (`<slug>.html` + `src/<slug>.ts`) are thirteen of the original triangle lessons; four of them now open the Trigonometry chapter.
+Perimeter, medians and angle bisectors started as standalone pages too, and were rebuilt as lab lessons; `public/_redirects` sends their old addresses on to the lab.
 Each is its own Vite entry point with bespoke geometry, drawing and interaction, sharing `geometry.ts`, `render.ts` and `webcam.ts`.
 They gain the lab page's chrome by loading `src/page.ts` as an extra module script, after their own: the top bar with the pager and the lesson's name, hand input, the step column, filled with the lesson's numbered directions from `src/directions.ts` and then its asides from `src/asides.ts`, and, for a lesson with live numbers, the formula band.
 The column and the band reuse the lab's `StepList` and `FormulaBand` and their stylesheets, so both kinds of lesson read alike, but the directions mostly only describe the figure; they do not draw it in step by step.
@@ -71,7 +72,7 @@ The lesson and `page.ts` are separate scripts and meet only in `src/chrome.ts`, 
 `page.ts` sets the current step there, which a lesson may read to hold part of its figure back (`pythagoras.ts` brings in its proof at the step that scrubs it).
 A lesson with live numbers asks for the formula band there while its module is first evaluated, which is why its script must come first, and hands it fresh rows each frame.
 Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
-The band is used by perimeter, the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
+The band is used by the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
 Each standalone figure sizes itself for anything from a phone to a desktop.
 `src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
@@ -79,6 +80,11 @@ On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`).
 It never touches the DOM.
+
+A lesson that defines terms, one at a time, asks the scene for a row of them with `s.terms`: a `Choice` whose option n is step n.
+Picking a term goes to its step, and moving to a step picks its term (`followStep`), so the pills at the top and the step column always agree, and the lesson draws only the term picked.
+`circle-parts` defines its parts this way, and the triangle-parts lessons (perimeter, semiperimeter, medians, centroid, bisectors) define one term each, with edge cases such as the isosceles apex as further pills.
+Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, over the pure walking and locking in `lab/kit/triangle-parts.ts`.
 
 | File | Role |
 | --- | --- |
@@ -317,8 +323,9 @@ While syncing cannot happen, nothing is lost: the deck is still in `localStorage
 Every request to the Worker carries the learner's session cookie (see "Signing in"), which a page's script never sees; signed out, or once the sign-in has run out after 30 days, the Worker answers 401.
 On staging, Cloudflare Access may answer first, before the Worker sees the request: with a 401, since every request says it is one (`X-Requested-With`), or else a redirect to its sign-in page, which the page does not follow.
 Any of these stands syncing as signed out (`signedOut` in `sync.ts`): the deck is kept here as when offline, and syncing goes on trying at every cause it has, so it picks up once the learner signs in.
-Until the first reply, syncing stands as under way, and checks and readings may be asked for; once signed out, the pages hide them (`canCheck`), and one asked for meanwhile fails saying so (`signIn`).
+Until the first reply, syncing stands as under way, and checks and readings may be asked for; once signed out, the pages hide them (`canCheck`), and one asked for meanwhile fails saying so (`mend: "sign-in"`).
 Where a page says either, it offers to sign in (`signin.ts`): a link opening `signin.html` in a new tab.
+A call to Claude the Worker refuses with 402, for want of beta credit or of a working key of the learner's own, fails with `mend: "account"`, and the page links to the learner's account on the same page instead (`failedReply` in `check.ts`).
 The tab they came from keeps everything they wrote, syncs when it gets the focus back, and can ask Claude again.
 The recall page can also save the deck to a JSON file and load one back, merged the same way.
 A sitting under way is kept in the tab's `sessionStorage`, with the answer being written, because a phone often reloads a tab left in the background, and because that is how the sitting goes to the lesson and back (see "The review beside the lesson").
@@ -328,10 +335,11 @@ Every change to the store is read-modify-write against storage, so two tabs cann
 ## The Worker (`worker/`, `wrangler.jsonc`)
 
 The whole site is one Cloudflare Worker.
-The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate`, `/explain` and `/auth/*` run the Worker (`run_worker_first`).
+The built pages (`dist/`) are its static assets, served without running any code; only `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` run the Worker (`run_worker_first`).
 Pages and deck sharing one origin is a security boundary, not just tidiness: the session cookie belongs to no other site, and the pages call the deck without any CORS, so no page elsewhere can read its answers.
 Asset requests go through Cloudflare's default HTML handling, so `recall.html` redirects to `/recall`, and query strings such as `?lesson=` survive the redirect; `slugOfLocation` reads either form.
-In development, Vite sends `/deck`, `/check`, `/associate`, `/explain` and `/auth/*` on to the Worker that `npm run preview` runs on port 8787; a cookie belongs to a host, not a port, so a sign-in made through either serves both.
+The static redirects in `public/_redirects`, copied into the build, send the addresses of lessons that moved into the lab on to them.
+In development, Vite sends `/deck`, `/check`, `/associate`, `/explain`, `/account` and `/auth/*` on to the Worker that `npm run preview` runs on port 8787; a cookie belongs to a host, not a port, so a sign-in made through either serves both.
 
 The Worker serves one resource, `/deck`: `GET` answers with the deck held, and `POST` merges the deck sent into it with `mergeDecks` and answers with the result.
 Every request must come from the site's own pages, which send `X-Requested-With`, or it is refused with 403: no other site's page can send that header without the Worker's leave, which it never gives, so none can make a signed-in learner's browser call it.
@@ -384,11 +392,29 @@ It is guarded as `/check` is, counted against the same `CHECK_LIMITER`, with a s
 The call (`explain.ts`) tells Claude the lesson: its chapter, name and what the learner does in it, and what it teaches where the syllabus says, so the explanation is judged against the lesson.
 It asks for the verdict to the same schema as a check, on the same model at the same effort, and reads the reply with the same `verdictOf`.
 
+### Paying for Claude (`billing.ts`, `vault.ts`, `src/auth/account.ts`)
+
+Every call to Claude is paid for in one of three ways, decided afresh on each call (`fund`): with the learner's own Claude API key once they have saved one, unmetered; with the site's key for the owner, unmetered; or with the site's key for anyone else, out of their beta credit.
+Beta credit is the `BETA_CREDIT_USD` var, or the learner's own amount in the `CREDITS` secret, and is counted in micros, millionths of a dollar, so sums never drift.
+What a call cost is worked out from the tokens its reply says it used (`costOf`), at the list price of each model that served it: a reply a fallback served lists each model's run in `usage.iterations`.
+All beta spending together stops at `MONTHLY_CAP_USD` a calendar month (UTC), so a slip in the metering can never run up an open-ended bill.
+With no credit left, or the month's cap reached, the call is refused with 402 before Claude is asked; a learner's own key that Claude turns down is refused with 402 too.
+A call is let through while any credit is left and charged after, so the last call may take a learner a little below nothing; `CHECK_LIMITER` bounds how far.
+
+`GET /account` says how the signed-in learner's calls are paid for (a `ClaudeAccount`), `PUT` saves a key of their own, and `DELETE` forgets it; the sign-in page shows it, once signed in, as the learner's account.
+A key is saved only once Claude takes it (a `GET` of the model it will be asked for), and is kept encrypted with the `VAULT_KEY` secret (AES-GCM, `vault.ts`), bound to the learner's email so it cannot be moved to another's row.
+It is never sent back: the page sees only its last four characters.
+A key that will not decrypt, as after `VAULT_KEY` is replaced, counts as none, and the learner's calls fall back to their credit.
+The `Accounts` object keeps, beside sign-ins, each learner's sealed key and what they have spent, and what beta credit has spent each month; a charge adds to both in one transaction.
+The `claude_usage` log line of every call also says who paid (`paid_by`) and what it cost (`micros`).
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `rules.ts` | Which request it is, whether it is the site's own and signed in, the learner's deck, the rate limit, size and clock checks | yes |
 | `auth.ts` | Signing in: what to do with a request to `/auth/*`, the invite list, the session cookie, and the sign-in email | yes |
-| `accounts.ts` | The `Accounts` object, holding sign-in links and sessions by their tokens' hashes | no |
+| `accounts.ts` | The `Accounts` object, holding sign-in links and sessions by their tokens' hashes, learners' sealed keys, and what beta credit has spent | no |
+| `billing.ts` | Who pays for a call to Claude, what it cost, the credit each learner has, and the key a learner pastes | yes |
+| `vault.ts` | Learners' own Claude API keys, encrypted with `VAULT_KEY` and opened again | no (WebCrypto) |
 | `access.ts` | Cloudflare Access tokens taken apart and their claims checked, for staging's dev tools | yes |
 | `access-keys.ts` | A token's signature checked against the Access team's published keys | no |
 | `check.ts` | The request to Claude to check an answer, the verdict or failure read from its reply, and what a call used (`usageLine`) | yes |
@@ -431,36 +457,79 @@ The overlay takes Alt-clicks in the capture phase before a lesson sees them, and
 | `dev/feedback/overlay.ts` | The outline, the comment box and the post to the server. |
 | `tools/feedback-plugin.ts` | Injects the overlay and records comments. Runs in Node. |
 
-## Dev-only step editor (`src/dev/steps`, `tools/step-editor-plugin.ts`)
+## Dev-only copy editor (`src/dev/copy`, `tools/copy-editor-plugin.ts`, `worker/copy-check.ts`)
 
-An authoring aid for the dev server and staging: the text of each lesson's steps can be edited on the page, and the edit lands in the source, since the repository is where the text lives.
-A standalone page's steps are its entry in `directions` (`src/directions.ts`); a lab lesson's are the `steps` array of its module.
-Like the feedback overlay, the plugin injects `editor.ts` into every page under `vite dev` and in the staging build only, so no page imports it, it can never reach a production build, and no lesson or `StepList` knows it exists.
+An authoring aid for the dev server and staging: a lesson's copy can be edited on its page, fact-checked by Claude, and saved into the source, since the repository is where the text lives.
+The copy is three sections of entries, each a title and a text: the steps, what the idea is like ("likes"), and what it is used for ("uses").
+A standalone page's steps are its entry in `directions` (`src/directions.ts`) and its likes and uses its entry in `asides` (`src/asides.ts`); a lab lesson's are the `steps`, `likes` and `uses` arrays of its module.
+Like the feedback overlay, the plugin injects `pane.ts` into every page under `vite dev` and in the staging build only, so no page imports it and it can never reach a production build.
 
-The editor adds an "Edit steps" button to any page with a step column.
-In edit mode, a click on a step's title or text is taken in the capture phase before the column sees it, and opens that field as raw source text, with step text typeset below it as the column will show it.
-The editor asks the server for the page's steps as the source writes them, and pairs the clicked step with one of them by its title: the step at the same place when the titles agree, otherwise the only one with that title.
-A save posts the edit with the step as it was listed; the server finds that step in the source again, rewrites only the literal's span, keeping its quote, and writes the file.
-Vite sees the change and reloads the page, which comes back at the same step through its `#step-N` hash; edit mode is remembered for the tab, so it is still on.
-On staging the same request reaches the staging Worker, which commits the edit to the staging branch instead and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor shows the new text in the step itself.
+The editor is a Copy tab in the step column, added with `StepList.addPane` beside the steps (and the Explain tab, where there is one); being injected rather than imported, it finds the column with `whenStepColumn`, and follows the lab's lesson swaps through `onShow`.
+It asks the server for the page's copy as the source writes it (`CopyListing`), and shows every field as raw source text, with step text typeset below as the column will show it and what the lesson tests would refuse in it.
+A field built in code rather than written as a string literal is shown as such, and cannot be edited here.
+Drafts are kept in `localStorage` per page, each with the source text it was written over, so a draft kept across a reload is dropped rather than saved over copy that has changed under it.
 
-The finding and rewriting are a pure core, `src/dev/steps/source.ts`: source text in, source text out, used alike by the dev server and the staging Worker.
+A save posts every changed entry at once (`CopyEdit`), each with the entry as it was listed; the server finds each entry in the source again, rewrites only its literals' spans, keeping their quotes, and writes the files only if every edit applies.
+Vite sees the change and reloads the page, which comes back to the Copy tab.
+On staging the same request reaches the staging Worker, which commits all of it to the staging branch in one commit and answers with the commit (`SaveReply`); the page goes on running its build until staging redeploys, so the editor reopens on the copy as committed.
+
+Every save also keeps what it replaced: the lesson's history file, `copy-history/<slug>.json`, gains the save's time and, for each field it changed, the text before and after (`history.ts`).
+It is written with the source it records, in the same write on the dev server and the same commit on staging, so a field's original wording stays in the repository beside it: the `was` of the field's first change.
+A history file that cannot be read refuses the save rather than being written over.
+
+A fact-check posts the copy as drafted (`CheckRequest`); the server asks Claude to check it (`worker/copy-check.ts`), told the lesson as an explanation's check tells it and given the copy field by field.
+Claude may search the web for the copy's real-world claims, and answers in a fixed JSON form (`CopyCheck`): a summary, and remarks that each name a field, quote its words, say what is wrong and give the words to put there instead where it can.
+The remarks are placed on the words they quote as the Explain tab's are (`recall/remarks.ts`), afresh as the author edits, so a remark on words since changed shows as dealt with, and a fix is applied by putting it in place of those words.
+The dev server calls Claude with the key in `.dev.vars`; the staging Worker with its own, under the check rate limit.
+
+The editor's decisions are a pure core, `edit.ts`: the copy, its drafts and the check as values in, new values and the requests to send out.
+The finding and rewriting are another, `source.ts`: source text in, source text out, used alike by the dev server and the staging Worker.
 It parses the source with Babel's parser rather than matching patterns, so comments, other strings and formatting never confuse it; the parser is small enough for a Worker, where the TypeScript compiler is not.
-A field is editable only where the source writes it as a plain string literal; one built in code, a step that has changed since it was listed, or a step it cannot tell from another is refused, and the source is left alone.
-Every lesson's steps are found this way today, and a test keeps it so.
-An edited step changes its lesson's teaching text, so its syllabus entry goes stale and the syllabus test fails until `/syllabus` describes it again (see "The syllabus").
+A field is editable only where the source writes it as a plain string literal; one built in code, an entry that has changed since it was listed, or an entry it cannot tell from another is refused, and the source is left alone.
+Every lesson's copy is found this way today, and a test keeps it so.
+Edited copy changes its lesson's teaching text, so its syllabus entry goes stale and the syllabus test fails until `/syllabus` describes it again (see "The syllabus").
 
 | File | Role |
 | --- | --- |
-| `dev/steps/wire.ts` | The listing, edit and save wire formats, their validation, and pairing a shown step with a listed one. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
-| `dev/steps/draft.ts` | A draft as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
-| `dev/steps/editor.ts` | The button, the in-place editor, and the calls to the server. |
-| `dev/steps/source.ts` | A page → its source file; the steps in a source; a source with one step rewritten. Pure. |
-| `tools/step-editor-plugin.ts` | Injects the editor, lists a page's steps and writes edits, one at a time. Runs in Node. |
+| `dev/copy/wire.ts` | The listing, edit and save wire formats and their validation. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
+| `dev/copy/check.ts` | The fact-check's request and reply, and reading each. Shared likewise. |
+| `dev/copy/draft.ts` | A field as typed → the text a save writes, its preview, and what the lesson tests would refuse in it. Pure. |
+| `dev/copy/history.ts` | A save → what it adds to its lesson's history file of the text it replaced. Shared likewise. |
+| `dev/copy/edit.ts` | The editor's state: drafts over the listing, what a save and a check send, and the check's remarks placed on the copy as it stands. Pure. |
+| `dev/copy/pane.ts` | The Copy tab, and the calls to the server. |
+| `dev/copy/source.ts` | A page → where each section of its copy is written; the entries in a source; a source with entries rewritten. Pure. |
+| `worker/copy-check.ts` | The request to Claude to fact-check copy, and what its reply comes to. Pure but for the call it is handed. |
+| `tools/copy-editor-plugin.ts` | Injects the editor, lists a page's copy, writes saves one at a time, and asks Claude for checks. Runs in Node. |
+
+## Dev-only draft tab (`src/dev/drafts`, `tools/drafts-plugin.ts`)
+
+An authoring aid for the dev server and staging, for the text that is to replace the step-based lessons: each lesson's new text written by hand, from what the author has come to understand of it in the Explain tab.
+The plugin injects `pane.ts` into every page under `vite dev` and in the staging build only, as the copy editor's does, so it can never reach a production build.
+
+The tab is a Draft tab in the step column, beside the steps, the Explain tab and the Copy tab, found and kept in step with the lab's lesson swaps as the Copy tab is.
+It shows what the author has written in the lesson's Explain tab, read from the recall deck (`openRecall`) and kept current as the deck changes, above a box for the draft, typed as Markdown with `$…$` LaTeX, and the draft as it reads below it: headings, paragraphs, and the mathematics typeset.
+The draft is kept in `localStorage` per lesson until it is saved, with the saved draft it was written over, so a reload loses none, and text kept over a draft saved since is flagged as such.
+
+A lesson's draft is kept in `lesson-drafts/<slug>.md`.
+A save (`DraftSave`), offered only once the draft has changed and is not blank (`canSave`), carries the draft, the draft as it was listed when the author began, and every explanation in the author's deck with something written.
+The server writes the draft, unless it is blank, and each explanation to `lesson-drafts/<slug>.explanation.md`, where they differ from what is there (`draftWrites`, `wire.ts`), so the Explain tab's text, otherwise only in the deck, is kept in the repository beside the drafts written from it.
+A save begun on a draft that has been saved since is refused rather than written over it.
+The dev server writes the files; the staging Worker commits them to the staging branch in one commit, as it commits copy edits (see "Staging").
+Nothing in the page changes with a saved draft, so neither reloads it.
+
+| File | Role |
+| --- | --- |
+| `dev/lesson.ts` | A page → the lesson it shows. Shared by the copy editor and the draft tab; no DOM or Node APIs. |
+| `dev/drafts/wire.ts` | The listing, save and reply wire formats, the files a save keeps, and what it writes. Shared by page, dev server and staging Worker; no DOM or Node APIs. |
+| `dev/drafts/edit.ts` | The tab's state: the draft over the listing, what to keep in the browser, what a save sends, and the draft as preview blocks. Pure. |
+| `dev/drafts/pane.ts` | The Draft tab, and the calls to the server. |
+| `dev/ui.ts` | What the dev-only tabs share in the page: elements, storage, calls and the toast. |
+| `tools/drafts-plugin.ts` | Injects the tab, reads a lesson's draft, and writes saves one at a time. Runs in Node. |
+| `tools/http.ts` | What the dev-only tabs' plugins share: reading a JSON body and answering in JSON. Runs in Node. |
 
 ## Staging (`worker/staging.ts`, `env.staging`, `.github/workflows/staging.yml`)
 
-Staging is the site with the dev tools in, on the web, so the feedback overlay and the step editor work without a local server.
+Staging is the site with the dev tools in, on the web, so the feedback overlay, the copy editor and the draft tab work without a local server.
 It is a Worker of its own, `triangle-lab-staging`: its own decks, sign-ins and rate limits, so testing never touches the real ones.
 Production cannot grow the dev tools by accident: they are only in the staging build (`npm run build:staging`, `vite build --mode staging`, into `dist-staging/`), and their endpoints only in the staging Worker's entry point, which wraps the production one (`index.ts`) and passes every other request to it.
 
@@ -468,16 +537,19 @@ Cloudflare Access guards the whole staging host, so a page or asset is only serv
 Its deck and calls to Claude need a sign-in of the site's own, as production's do; the dev tools' endpoints also check the token Access forwards (`Cf-Access-Jwt-Assertion`): signed with one of the team's published keys, issued by the team (`ACCESS_ISSUER`), for the application (`ACCESS_AUD`), and in date.
 With either var unset they answer 503, so a misconfigured staging fails closed.
 
-The two tools keep their endpoints and wire formats; only where things land differs.
+The tools keep their endpoints and wire formats; only where things land differs.
 
-- **Step edits** are committed to the `staging` branch through GitHub's contents API, with a token scoped to the repository (`GITHUB_TOKEN`).
-  The Worker reads the file from the branch, rewrites the step with the same core the dev server uses, and writes it over the version it read; if the branch moved meanwhile GitHub refuses, and the edit is made again on the newer version, which still holds the step only if nobody changed it.
-  Listing steps reads the branch too, so a step edited twice before staging redeploys is found as it now reads.
+- **Copy edits** are committed to the `staging` branch through GitHub's Git Data API, with a token scoped to the repository (`GITHUB_TOKEN`).
+  The Worker reads the files at the branch's head, rewrites them with the same core the dev server uses, and makes one commit of them on that head; if the branch moved meanwhile GitHub will not move it to the commit, and the edits are made again on the newer files, which still hold the entries only if nobody changed them.
+  Listing the copy reads the branch too, so copy edited twice before staging redeploys is found as it now reads.
+- **Drafts** are committed to the `staging` branch the same way, the draft and the explanations a save keeps in one commit, made again on the newer files if the branch moved, and refused if the draft itself was saved since the author began.
+  A save may be larger than the other tools' requests, as it carries every explanation in the deck (`MAX_DRAFT_BODY`).
+- **Fact-checks** call Claude with staging's `ANTHROPIC_API_KEY`, under the same rate limit as the learners' checks.
 - **UI comments** are kept in a Durable Object (`StagingInbox`) until `npm run staging:pull` (`tools/staging.ts`) appends them to the local `ui-feedback.md`, formatted as the dev server formats them, and tells staging to forget them.
   The pull gets past Access with a service token from `.dev.vars`.
 
-A push to `staging` redeploys it; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
-The workflow builds but does not test: an edited step leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
+A push to `staging` redeploys it, unless it holds only drafts, which change nothing the site serves; a push to `main` is merged into `staging` first, so staging is always `main` plus the edits made there.
+The workflow builds but does not test: edited copy leaves its lesson's syllabus entry stale, which the syllabus test refuses until `/syllabus` runs on the way to `main`.
 
 | File | Role |
 | --- | --- |
@@ -550,17 +622,24 @@ Each reload takes off what the last load of the page listened to on the window a
 - `tools/deploy-guard.test.ts`: the deploy guard, which vars `wrangler.jsonc` leaves empty that the Worker cannot run without.
 - `worker/check.test.ts`: the request to Claude, reading its verdict, a refusal or a failed call, and the usage line logged for each call.
 - `worker/associate.test.ts`: the course as Claude is told it, with what the syllabus says and the lessons within reach, the request to read a free association, and reading its reply or a refusal.
-- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and signing in: the link emailed only to an invited address, spent once, the session it makes, who, signing out, a demo account's deck of its own, and nothing served without a session or from another site.
+- `worker/worker.test.ts`: the real Worker in the local Workers runtime (wrangler's test harness), from `wrangler.jsonc` with stand-in assets: pages served beside the deck, the deck's HTTP contract and refusals, the rate limit, the deck kept across eviction, two devices syncing questions and the free association through it, answers checked through a stand-in Claude API: the Worker's key and request, refusals, and the check rate limit, free associations read and explanations checked through it, and signing in: the link emailed only to an invited address, spent once, the session it makes, who, signing out, a demo account's deck of its own, and nothing served without a session or from another site; and paying for Claude: calls metered out of beta credit and refused once it is spent, a learner's own key tried, kept, used unmetered, turned down and removed, and the owner unmetered.
+- `worker/billing.test.ts`: what a call cost at each model's rates, cache writes and fallbacks included, the credit each learner has, who pays for a call or why no one can, the account page's account, and reading a pasted key.
+- `worker/vault.test.ts`: a learner's key sealed and opened again, and not opened for another learner, with another `VAULT_KEY`, or once altered.
 - `src/dev/feedback/feedback.test.ts`: element selectors and descriptions, and the feedback entry format.
 - `tools/feedback-plugin.test.ts`: the feedback plugin on a real dev server — overlay injection and comments written to file.
-- `src/dev/steps/steps.test.ts`: reading a step edit, pairing a shown step with its source, and the editor's drafts and their previews.
-- `src/dev/steps/source.test.ts`: which file holds a page's steps, finding steps and rewriting one in small sources, literals that read back as written in every quote, and every real lesson's steps found in its source as the page shows them.
-- `tools/step-editor-plugin.test.ts`: the step editor plugin on a real dev server — editor injection, steps listed from source, edits written to file, and stale edits refused.
+- `src/dev/copy/copy.test.ts`: reading a save and a fact-check's request and reply, the editor's drafts and their previews, and the editor's state: drafts kept and dropped, what a save and a check send, and remarks placed and fixed.
+- `src/dev/copy/source.test.ts`: where each section of a page's copy is written, finding entries and rewriting them in small sources, literals that read back as written in every quote, and every real lesson's copy found in its source as the page shows it.
+- `src/dev/copy/history.test.ts`: the changes a save records, a lesson's history started and added to, nothing written for a save that changes nothing, and an unreadable history refused rather than written over.
+- `worker/copy-check.test.ts`: the request to Claude to fact-check copy, a paused search taken up again, and reading the check, a refusal or a cut-short reply.
+- `tools/copy-editor-plugin.test.ts`: the copy editor plugin on a real dev server — editor injection, copy listed from source, a save written to every file it touches or to none, with its history, stale edits refused, and a fact-check through a stand-in Claude.
+- `src/dev/drafts/drafts.test.ts`: reading a draft's save, the files it keeps and what it writes, a blank draft never written, a save over a draft saved since refused, the tab's state as the author writes, keeps and saves, and the draft as preview blocks.
+- `tools/drafts-plugin.test.ts`: the drafts plugin on a real dev server — tab injection, a draft written with the explanations it keeps and read back, and a save over a draft saved since written nowhere.
 - `worker/staging-rules.test.ts`: routing to the dev tools on staging behind Access, and the GitHub requests.
-- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, steps listed from the branch, an edit committed over the file it was made on and made again when the branch moved, and comments kept until pulled.
+- `worker/staging.test.ts`: the real staging Worker in the local Workers runtime, from `env.staging`, against stand-ins for GitHub and the Access team's keys: production's deck beside the dev tools, served to a learner signed in by email link, nothing let into the dev tools without a signed token for the application, copy listed from the branch, a save committed in one commit with its history on the head it was made on and made again when the branch moved, a fact-check through a stand-in Claude API, a draft committed with the explanations it keeps, made again when the branch moved and refused over one saved since, and comments kept until pulled.
 - `tools/staging.test.ts`: which builds carry the dev tools, finding staging in `.dev.vars`, and pulled comments written as the dev server writes them.
 - `tools/dev-vars.test.ts`: reading a value from `.dev.vars`.
 - `src/auth/signin.test.ts`: the sign-in page's views, from the address it opens at and each answer from `/auth/*`.
+- `src/auth/account.test.ts`: the account page's section on paying for Claude, from each answer from `/account`, and what it says of credit and keys.
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
 

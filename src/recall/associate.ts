@@ -18,9 +18,8 @@
 // the reading by the same rules.
 
 import { lessons } from "../lessons.ts";
-import { SIGNED_OUT } from "./check.ts";
+import { failedReply, type Failed } from "./check.ts";
 import { MAX_WRITING, readReading, type Deck, type Reading, type Writing } from "./deck.ts";
-import { signedOut } from "./sync.ts";
 
 /** What the page sends to have a free association read. */
 export interface AssociateRequest {
@@ -34,8 +33,7 @@ export interface AssociateRequest {
 export type ReadingState =
   | { kind: "reading" }
   | { kind: "done"; reading: Reading }
-  /** `signIn` when the learner is signed out, so the page offers to sign in. */
-  | { kind: "failed"; error: string; signIn?: true };
+  | Failed;
 
 /** The free association on show, as written and read so far. */
 export interface Association {
@@ -74,13 +72,11 @@ export function readAssociateRequest(raw: unknown): AssociateRequest | null {
 export function readAssociateReply(answer: { status: number; body: unknown } | null): ReadingState {
   if (!answer) return { kind: "failed", error: "Can't reach the server to read this." };
   const { status, body } = answer;
-  if (signedOut(answer)) return { kind: "failed", error: SIGNED_OUT, signIn: true };
   if (status >= 200 && status < 300) {
     const reading = readReading(body);
     return reading ? { kind: "done", reading } : { kind: "failed", error: "The reading came back unreadable." };
   }
-  const said = isObject(body) && typeof body.error === "string" ? body.error : "";
-  return { kind: "failed", error: said || `The server answered ${status}.` };
+  return failedReply(answer);
 }
 
 // --- The association, as the learner writes and corrects it -------------------

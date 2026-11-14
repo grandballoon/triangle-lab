@@ -1,0 +1,23 @@
+/* What the dev-only tabs (dev/copy, dev/drafts) share: the toast that says
+   how a save or a check went (ui.ts). */
+
+.dev-toast {
+  position: fixed;
+  z-index: 2147483647;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: min(80vw, 560px);
+  padding: 8px 14px;
+  border: 1px solid #24323d;
+  border-radius: 8px;
+  background: #0f161d;
+  color: #e9f0f7;
+  font: 13px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  opacity: 0;
+  transition: opacity 160ms;
+  pointer-events: none;
+}
+
+.dev-toast.dev-show { opacity: 1; }
+.dev-toast.dev-error { border-color: #ff6b6b; }

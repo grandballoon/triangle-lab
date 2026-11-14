@@ -64,13 +64,18 @@ describe("readCheckReply", () => {
 
   it("says why there is no verdict", () => {
     expect(readCheckReply(null)).toEqual({ kind: "failed", error: "Can't reach the server to check this." });
-    expect(readCheckReply({ status: 401, body: { error: "Sign in first." } })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readCheckReply({ status: 401, body: { error: "Sign in first." } })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
     // Access answering for itself on staging, once its sign-in has run out.
-    expect(readCheckReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
-    expect(readCheckReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, signIn: true });
+    expect(readCheckReply({ status: 401, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
+    expect(readCheckReply({ status: 0, body: null })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
     expect(readCheckReply({ status: 502, body: { error: "Claude is busy." } })).toEqual({ kind: "failed", error: "Claude is busy." });
     expect(readCheckReply({ status: 500, body: null })).toEqual({ kind: "failed", error: "The server answered 500." });
     expect(readCheckReply({ status: 200, body: { grade: "?" } })).toEqual({ kind: "failed", error: "The check came back unreadable." });
+  });
+
+  it("sends the learner to their account page when the Worker says that is where to mend it", () => {
+    const error = "You've used all $5.00 of your beta credit. Add your own Claude API key on your account page to keep going.";
+    expect(readCheckReply({ status: 402, body: { error } })).toEqual({ kind: "failed", error, mend: "account" });
   });
 });
 
@@ -80,5 +85,11 @@ describe("loadReview", () => {
     expect(loadReview(done)).toEqual(done);
     expect(loadReview({ kind: "failed", error: "Offline." })).toEqual({ kind: "failed", error: "Offline." });
     for (const raw of [null, { kind: "checking" }, { kind: "done" }, { kind: "failed" }]) expect(loadReview(raw)).toBeNull();
+  });
+
+  it("keeps where a failed review is mended, reading reviews kept before as signing in", () => {
+    expect(loadReview({ kind: "failed", error: "No credit.", mend: "account" })).toEqual({ kind: "failed", error: "No credit.", mend: "account" });
+    expect(loadReview({ kind: "failed", error: SIGNED_OUT, signIn: true })).toEqual({ kind: "failed", error: SIGNED_OUT, mend: "sign-in" });
+    expect(loadReview({ kind: "failed", error: "Odd.", mend: "elsewhere" })).toEqual({ kind: "failed", error: "Odd." });
   });
 });

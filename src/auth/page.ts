@@ -1,16 +1,24 @@
-// The sign-in page (signin.html): draws the view signin.ts decides, and makes
-// its requests to the Worker's /auth/* (worker/auth.ts).
+// The sign-in page (signin.html), which is the learner's account page once
+// they are signed in: draws the views signin.ts and account.ts decide, and
+// makes their requests to the Worker's /auth/* (worker/auth.ts) and /account
+// (worker/billing.ts).
 
 import "../recall/sheet.css";
 import "../recall/page.css";
 import "./signin.css";
-import { afterLink, afterRedeem, afterSignOut, afterWho, initialView, type Answer, type View } from "./signin.ts";
+import { ACCOUNT_PATH, accountText, afterAccount, afterKeyChange, type AccountView } from "./account.ts";
+import { afterLink, afterRedeem, afterSignOut, afterWho, headingOf, initialView, type Answer, type View } from "./signin.ts";
 
 const root = document.getElementById("signin")!;
+const heading = document.querySelector("h1")!;
+/** Where to make a Claude API key. */
+const CONSOLE_KEYS = "https://console.anthropic.com/settings/keys";
 // The site's root, as built (vite.config.ts `base`).
 const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "");
 
 let view: View = initialView(location.search);
+/** How the signed-in learner's calls to Claude are paid for; read afresh on each signing in. */
+let account: AccountView = { kind: "loading" };
 // The token is in the address only to reach this page; keep it out of history.
 if (view.kind === "redeem") history.replaceState(null, "", location.pathname);
 
@@ -29,9 +37,21 @@ async function ask(method: string, path: string, body?: unknown): Promise<Answer
 }
 
 function show(next: View): void {
+  const signingIn = next.kind === "signed-in" && view.kind !== "signed-in";
   view = next;
+  if (signingIn) {
+    account = { kind: "loading" };
+    void ask("GET", ACCOUNT_PATH).then((answer) => showAccount(afterAccount(answer)));
+  }
+  heading.textContent = headingOf(next);
+  document.title = `${headingOf(next)} · Triangle Lab`;
   root.replaceChildren(...draw(next));
   root.querySelector<HTMLElement>("[data-focus]")?.focus();
+}
+
+function showAccount(next: AccountView): void {
+  account = next;
+  if (view.kind === "signed-in") root.querySelector(".si-account")?.replaceWith(drawAccount(next));
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""): HTMLElementTagNameMap[K] {
@@ -108,9 +128,71 @@ function draw(v: View): HTMLElement[] {
           void ask("DELETE", "/auth/session").then((answer) => show(afterSignOut(answer, v.email)));
         }),
       );
-      return [lead, note, row];
+      return [lead, note, row, drawAccount(account)];
     }
   }
+}
+
+/** How calls to Claude are paid for, and the form to save or remove a key of the learner's own. */
+function drawAccount(a: AccountView): HTMLElement {
+  const section = el("section", "si-account");
+  section.setAttribute("aria-labelledby", "si-account-head");
+  const head = el("h2", "", "Claude");
+  head.id = "si-account-head";
+  section.append(head);
+  if (a.kind === "loading") {
+    section.append(el("p", "rc-note", "Loading…"));
+    return section;
+  }
+  if (a.kind === "failed") {
+    section.append(...error(a.error));
+    return section;
+  }
+  const { lead, note } = accountText(a.account);
+  section.append(el("p", "si-account-lead", lead), el("p", "rc-note", note));
+
+  const form = el("form", "si-form");
+  const input = el("input", "rc-input");
+  input.type = "password";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+  input.required = true;
+  input.placeholder = "sk-ant-…";
+  input.setAttribute("aria-label", "Your Claude API key");
+  const save = el("button", "rc-button rc-primary", a.account.kind === "own-key" ? "Replace key" : "Save key");
+  save.type = "submit";
+  save.disabled = a.busy;
+  input.disabled = a.busy;
+  form.append(input, save);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const before: AccountView = { ...a, busy: false };
+    showAccount({ ...a, busy: true, error: null });
+    void ask("PUT", ACCOUNT_PATH, { key: input.value }).then((answer) => showAccount(afterKeyChange(answer, before)));
+  });
+  section.append(form);
+
+  const where = el("p", "rc-note");
+  const make = el("a", "si-link", "Claude Console");
+  make.href = CONSOLE_KEYS;
+  make.target = "_blank";
+  make.rel = "noopener";
+  where.append("Make a key in the ", make, ". It's kept encrypted, and never shown again.");
+  section.append(where);
+
+  if (a.account.kind === "own-key") {
+    const row = el("div", "rc-row");
+    const remove = button("Remove key", "rc-small", () => {
+      const before: AccountView = { ...a, busy: false };
+      showAccount({ ...a, busy: true, error: null });
+      void ask("DELETE", ACCOUNT_PATH).then((answer) => showAccount(afterKeyChange(answer, before)));
+    });
+    remove.disabled = a.busy;
+    row.append(remove);
+    section.append(row);
+  }
+  section.append(...error(a.error));
+  return section;
 }
 
 show(view);

@@ -2,13 +2,14 @@
   "about": "Written by the /syllabus skill in Claude Code (.claude/skills/syllabus/SKILL.md). Do not edit by hand: run /syllabus.",
   "lessons": {
     "circle-parts": {
-      "source": "7cb44f11358f",
+      "source": "5f0c60327e3b",
       "teaches": [
-        "A radius is a segment from the centre to the circle; a diameter is a chord through the centre, two radii end to end.",
-        "A chord is a segment joining two points of the circle; a secant is a line crossing the circle twice.",
-        "A tangent is a line that touches the circle at exactly one point.",
-        "An arc is a piece of the circle; two points split it into a minor and a major arc.",
-        "A sector is the region between two radii and their arc; a circular segment is the region between a chord and its arc."
+        "A radius $r$ joins the centre to the circle; a diameter is a chord through the centre, $d = 2r$.",
+        "The circumference is the distance round the circle, $C = 2\\pi r$; the area inside it is $A = \\pi r^2$.",
+        "A chord joins two points of the circle and is never longer than a diameter; a secant is a line crossing the circle twice; a tangent touches it at exactly one point, at right angles to the radius there.",
+        "An arc is a piece of the circle, and two points split it into a minor and a major arc whose measures add to $360^\\circ$.",
+        "A sector is the region between two radii and their arc; a circular segment is the region between a chord and its arc.",
+        "A central angle has its vertex at the centre; an inscribed angle has its vertex on the circle and its sides as chords."
       ],
       "builds_on": []
     },
@@ -56,10 +57,10 @@
       "builds_on": []
     },
     "hand-protractor": {
-      "source": "abbcea045730",
+      "source": "3b54c8970b6b",
       "teaches": [
         "The angle between two rays from a common vertex is measured in degrees.",
-        "An angle is acute below $90^\\circ$, right at $90^\\circ$ and obtuse between $90^\\circ$ and $180^\\circ$."
+        "An angle is acute below $90^\\circ$, right at $90^\\circ$, obtuse between $90^\\circ$ and $180^\\circ$, and straight at $180^\\circ$."
       ],
       "builds_on": [
         "angle-kinds"
@@ -77,9 +78,10 @@
       ]
     },
     "parallel-transversal": {
-      "source": "1be168704419",
+      "source": "2a931921d247",
       "teaches": [
-        "When a transversal crosses two parallel lines, corresponding angles are equal.",
+        "A transversal crossing two parallel lines makes eight angles of only two sizes, which add to $180^\\circ$.",
+        "Corresponding angles are equal.",
         "Alternate interior angles are equal.",
         "Same-side interior angles add to $180^\\circ$.",
         "Conversely, if a transversal makes equal corresponding or alternate interior angles, or supplementary same-side angles, the two lines are parallel."
@@ -89,10 +91,10 @@
       ]
     },
     "triangle-angle-sum": {
-      "source": "c3fd79bee9d2",
+      "source": "ebc9f42a635d",
       "teaches": [
         "The angles of any triangle add to $180^\\circ$: $\\alpha + \\beta + \\gamma = 180^\\circ$.",
-        "Proof: draw the parallel to $AB$ through $C$; alternate interior angles carry $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
+        "Proof: draw the parallel to $AB$ through $C$; alternate interior angles copy $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
       ],
       "builds_on": [
         "parallel-transversal"
@@ -220,30 +222,56 @@
       ]
     },
     "perimeter": {
-      "source": "2a38fd363d7e",
+      "source": "6b833b60ef5a",
       "teaches": [
-        "The perimeter of a triangle is the sum of its sides, $p = a + b + c$.",
-        "The semiperimeter is half the perimeter, $s = \\frac{p}{2}$."
+        "The perimeter of a triangle is the distance all the way round it, the sum of its sides, $p = a + b + c$."
       ],
       "builds_on": []
+    },
+    "semiperimeter": {
+      "source": "11788896334d",
+      "teaches": [
+        "The semiperimeter is half the perimeter, $s = \\frac{a + b + c}{2}$.",
+        "Heron's formula gives a triangle's area from its sides alone: $\\text{Area} = \\sqrt{s(s - a)(s - b)(s - c)}$."
+      ],
+      "builds_on": [
+        "perimeter"
+      ]
     },
     "medians": {
-      "source": "5d97aea3e5e1",
+      "source": "97ecf6ba1a89",
       "teaches": [
         "A median joins a vertex to the midpoint of the opposite side.",
-        "The three medians of a triangle meet at a single point, the centroid $G$."
+        "A median splits a triangle into two pieces of equal area, since they share half the side as base and the same height.",
+        "In an isosceles triangle the median from the apex meets the base at a right angle."
       ],
-      "builds_on": []
+      "builds_on": [
+        "isosceles"
+      ]
+    },
+    "centroid": {
+      "source": "b274bff7e95b",
+      "teaches": [
+        "The three medians of a triangle meet at a single point, the centroid $G$.",
+        "$G$ lies two thirds of the way along each median from its vertex, cutting it in the ratio $2 : 1$.",
+        "The centroid is the triangle's balance point, and its coordinates are the average of the three corners'."
+      ],
+      "builds_on": [
+        "medians"
+      ]
     },
     "bisectors": {
-      "source": "07a5835021c6",
+      "source": "f66ca0df683a",
       "teaches": [
-        "An angle bisector of a triangle runs from a vertex to the opposite side and splits the angle at that vertex into two equal angles."
+        "An angle bisector splits an angle into two equal angles; in a triangle it runs from a vertex to the opposite side.",
+        "In an isosceles triangle the bisector of the apex angle meets the base at a right angle, at its midpoint."
       ],
-      "builds_on": []
+      "builds_on": [
+        "isosceles"
+      ]
     },
     "incircle": {
-      "source": "c5cb118d9cc6",
+      "source": "c9537fc81172",
       "teaches": [
         "Every point on the bisector of an angle is equally far from the angle's two sides, and every point equally far from both sides lies on the bisector.",
         "The three angle bisectors of a triangle meet at a single point $I$, the incenter.",
@@ -270,7 +298,7 @@
       ]
     },
     "altitudes": {
-      "source": "3fd882d7694a",
+      "source": "8b5172d5e3dc",
       "teaches": [
         "An altitude $h$ runs from a vertex perpendicular to the line through the opposite side.",
         "In an obtuse triangle the altitudes from the two acute vertices land on the extensions of the opposite sides, outside the triangle.",
@@ -435,6 +463,60 @@
         "bisectors"
       ]
     },
+    "area-base-height": {
+      "source": "b017945efe67",
+      "teaches": [
+        "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
+        "A right triangle is half a rectangle, so its area is half the product of its legs.",
+        "The proof splits the triangle by the altitude into two right triangles whose areas add (foot inside the base) or subtract (foot on the extension).",
+        "Any side can serve as the base; all three base-height products give the same area."
+      ],
+      "builds_on": [
+        "altitudes"
+      ]
+    },
+    "area-inradius": {
+      "source": "1a45fb25ac87",
+      "teaches": [
+        "The area of a triangle equals $rs$, its inradius times its semiperimeter.",
+        "Proof: the incentre $I$ is at distance $r$ from every side, since a radius meets its tangent at a right angle, so joining $I$ to the vertices gives three triangles of areas $\\frac12 ra$, $\\frac12 rb$, $\\frac12 rc$.",
+        "Rearranged, the inradius is $r = \\text{Area}/s$."
+      ],
+      "builds_on": [
+        "incircle",
+        "area-base-height",
+        "perimeter"
+      ]
+    },
+    "right-angle-tests": {
+      "source": "476f37978ef4",
+      "teaches": [
+        "A right angle can only lie opposite the longest side.",
+        "A triangle is right-angled exactly when its two smaller angles are complementary, adding to $90^\\circ$.",
+        "With $c$ the longest side: $a^2 + b^2 = c^2$ for a right triangle, $a^2 + b^2 > c^2$ for an acute one, and $a^2 + b^2 < c^2$ for an obtuse one.",
+        "A triangle is right-angled exactly when the median to its longest side is half that side.",
+        "The third vertex lies on the circle with the longest side as diameter exactly when its angle is right; outside the circle the angle is acute, inside it is obtuse."
+      ],
+      "builds_on": [
+        "triangle-angle-sum",
+        "pythagoras-converse",
+        "isosceles-base-angles",
+        "thales"
+      ]
+    },
+    "parallel-trick": {
+      "source": "50d1c9f2a362",
+      "teaches": [
+        "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
+        "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
+        "In general, with $AE : EB = 1 : m$ and $CD : DB = 1 : n$, $\\dfrac{AF}{FD} = \\dfrac{n+1}{m}$ and $\\dfrac{EF}{FC} = \\dfrac{n}{m+1}$."
+      ],
+      "builds_on": [
+        "similarity-tests",
+        "congruence",
+        "parallel-transversal"
+      ]
+    },
     "trig": {
       "source": "07347d44379e",
       "teaches": [
@@ -500,20 +582,24 @@
         "pythagoras"
       ]
     },
-    "area-base-height": {
-      "source": "b017945efe67",
+    "trig-waves": {
+      "source": "aa0c1033e34b",
       "teaches": [
-        "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
-        "A right triangle is half a rectangle, so its area is half the product of its legs.",
-        "The proof splits the triangle by the altitude into two right triangles whose areas add (foot inside the base) or subtract (foot on the extension).",
-        "Any side can serve as the base; all three base-height products give the same area."
+        "On a circle of radius $1$, the radius at angle $\\theta$ is the hypotenuse of a right triangle whose height is $\\sin\\theta$ and width is $\\cos\\theta$, so its tip is the point $(\\cos\\theta, \\sin\\theta)$.",
+        "Plotting the height against $\\theta$ gives the sine wave, and the width gives the cosine wave, the same wave shifted: $\\cos\\theta = \\sin(\\theta + 90^\\circ)$.",
+        "Past $90^\\circ$, $\\sin\\theta$ and $\\cos\\theta$ are the signed coordinates of the tip, so each quadrant has its own pair of signs, e.g. $\\cos 120^\\circ = -\\frac12$.",
+        "$\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}$ is the height where the extended radius meets the tangent line $x = 1$.",
+        "$\\tan\\theta$ is $0$ where $\\sin\\theta$ is and undefined at $90^\\circ$ and $270^\\circ$, where $\\cos\\theta = 0$.",
+        "Sine and cosine repeat every $360^\\circ$; tangent repeats every $180^\\circ$."
       ],
       "builds_on": [
-        "altitudes"
+        "table",
+        "circle-parts",
+        "angle-kinds"
       ]
     },
     "area-sine": {
-      "source": "95917817efef",
+      "source": "125ffbb40781",
       "teaches": [
         "The area of a triangle is $\\frac12 ab \\sin C$, where $C$ is the angle between sides $a$ and $b$.",
         "The altitude onto $a$ is $h = b \\sin C$.",
@@ -524,48 +610,6 @@
         "area-base-height",
         "trig",
         "thirtysixty"
-      ]
-    },
-    "area-inradius": {
-      "source": "0102f41b1460",
-      "teaches": [
-        "The area of a triangle equals $rs$, its inradius times its semiperimeter.",
-        "Proof: the incentre $I$ is at distance $r$ from every side, since a radius meets its tangent at a right angle, so joining $I$ to the vertices gives three triangles of areas $\\frac12 ra$, $\\frac12 rb$, $\\frac12 rc$.",
-        "Rearranged, the inradius is $r = \\text{Area}/s$."
-      ],
-      "builds_on": [
-        "incircle",
-        "area-base-height",
-        "perimeter"
-      ]
-    },
-    "right-angle-tests": {
-      "source": "476f37978ef4",
-      "teaches": [
-        "A right angle can only lie opposite the longest side.",
-        "A triangle is right-angled exactly when its two smaller angles are complementary, adding to $90^\\circ$.",
-        "With $c$ the longest side: $a^2 + b^2 = c^2$ for a right triangle, $a^2 + b^2 > c^2$ for an acute one, and $a^2 + b^2 < c^2$ for an obtuse one.",
-        "A triangle is right-angled exactly when the median to its longest side is half that side.",
-        "The third vertex lies on the circle with the longest side as diameter exactly when its angle is right; outside the circle the angle is acute, inside it is obtuse."
-      ],
-      "builds_on": [
-        "triangle-angle-sum",
-        "pythagoras-converse",
-        "isosceles-base-angles",
-        "thales"
-      ]
-    },
-    "parallel-trick": {
-      "source": "50d1c9f2a362",
-      "teaches": [
-        "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
-        "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
-        "In general, with $AE : EB = 1 : m$ and $CD : DB = 1 : n$, $\\dfrac{AF}{FD} = \\dfrac{n+1}{m}$ and $\\dfrac{EF}{FC} = \\dfrac{n}{m+1}$."
-      ],
-      "builds_on": [
-        "similarity-tests",
-        "congruence",
-        "parallel-transversal"
       ]
     },
     "quad-angle-sum": {

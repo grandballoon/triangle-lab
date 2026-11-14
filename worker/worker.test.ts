@@ -3,7 +3,8 @@
 // recall deck's HTTP contract, a deck for each learner, the deck surviving the
 // object being evicted, two devices syncing through it from the pages' own
 // sync code, and answers checked and free associations read by a stand-in for
-// the Claude API. Sign-in links are read from the mail the local runtime's
+// the Claude API, and paid for out of a learner's beta credit or with a
+// Claude API key of their own. Sign-in links are read from the mail the local runtime's
 // email binding writes to disk, as a learner would open it.
 
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -21,6 +22,8 @@ import { MAX_BODY } from "./rules.ts";
 
 const OWNER = "owner@example.com";
 const DEMO = "demo@example.com";
+/** Invited, but given no beta credit (CREDITS). */
+const FRIEND = "friend@example.com";
 const SENDER = "signin@example.com";
 const CLAUDE_KEY = "a-test-claude-key";
 const ROOT = resolve(__dirname, "..");
@@ -42,11 +45,16 @@ let owner: string;
 
 /** What the stand-in Claude API was asked, with its headers, and how it answers next. */
 const claude = {
-  asked: [] as { headers: Record<string, string | string[] | undefined>; body: Record<string, unknown> }[],
+  asked: [] as { method: string; url: string; headers: Record<string, string | string[] | undefined>; body: Record<string, unknown> | null }[],
   status: 200,
   reply: { grade: "recalled", feedback: "Yes: the centroid." } as unknown,
   stop: "end_turn",
+  /** The tokens each reply says it used. */
+  usage: { input_tokens: 1, output_tokens: 1 } as Record<string, number>,
+  /** API keys Claude turns down, as it would a disabled one. */
+  refused: new Set<string>(),
 };
+const CALM = () => ({ asked: [], status: 200, reply: { grade: "recalled", feedback: "Yes: the centroid." }, stop: "end_turn", usage: { input_tokens: 1, output_tokens: 1 }, refused: new Set<string>() });
 let claudeServer: Server;
 
 /** The text of every sign-in email sent so far, by file. */
@@ -90,10 +98,17 @@ beforeAll(async () => {
     let text = "";
     req.on("data", (chunk) => (text += chunk));
     req.on("end", () => {
-      claude.asked.push({ headers: req.headers, body: JSON.parse(text) });
-      res.writeHead(claude.status, { "Content-Type": "application/json" });
-      if (claude.status !== 200) {
+      claude.asked.push({ method: req.method!, url: req.url!, headers: req.headers, body: text ? JSON.parse(text) : null });
+      const key = String(req.headers.authorization ?? "").replace(/^Bearer /, "");
+      const status = claude.refused.has(key) ? 401 : claude.status;
+      res.writeHead(status, { "Content-Type": "application/json" });
+      if (status !== 200) {
         res.end(JSON.stringify({ type: "error", error: { type: "authentication_error", message: "invalid API key" } }));
+        return;
+      }
+      if (req.method === "GET") {
+        // A key being tried: the model it will be asked for.
+        res.end(JSON.stringify({ type: "model", id: "claude-opus-5-5", display_name: "Claude Opus 5.5", created_at: "2026-10-01T00:00:00Z" }));
         return;
       }
       res.end(
@@ -105,7 +120,7 @@ beforeAll(async () => {
           content: [{ type: "text", text: JSON.stringify(claude.reply) }],
           stop_reason: claude.stop,
           stop_sequence: null,
-          usage: { input_tokens: 1, output_tokens: 1 },
+          usage: claude.usage,
         }),
       );
     });
@@ -119,7 +134,17 @@ beforeAll(async () => {
   await writeFile(join(assets, "index.html"), "<title>Lessons</title>");
   await writeFile(join(assets, "recall.html"), "<title>Recall</title>");
   // The secrets wrangler.jsonc requires, as the developer's own .dev.vars gives them.
-  await writeFile(join(dir, ".dev.vars"), `ANTHROPIC_API_KEY=${CLAUDE_KEY}\nOWNER_EMAIL=${OWNER}\nINVITES=${DEMO}, friend@example.com\n`);
+  await writeFile(
+    join(dir, ".dev.vars"),
+    [
+      `ANTHROPIC_API_KEY=${CLAUDE_KEY}`,
+      `OWNER_EMAIL=${OWNER}`,
+      `INVITES=${DEMO}, ${FRIEND}`,
+      `VAULT_KEY=${btoa(String.fromCharCode(...new Uint8Array(32).fill(7)))}`,
+      `CREDITS=${FRIEND}=0`,
+      "",
+    ].join("\n"),
+  );
   // The real configuration, with only the assets, where Claude is, and the sender swapped in.
   const path = join(ROOT, "wrangler.jsonc");
   const { config, error } = ts.parseConfigFileTextToJson(path, await readFile(path, "utf8"));
@@ -141,7 +166,7 @@ beforeAll(async () => {
 }, 60_000);
 
 beforeEach(async () => {
-  Object.assign(claude, { asked: [], status: 200, reply: { grade: "recalled", feedback: "Yes: the centroid." }, stop: "end_turn" });
+  Object.assign(claude, CALM());
   await harness.reset();
   base = (await harness.listen()).url.href.replace(/\/$/, "");
   owner = await signIn(OWNER);
@@ -213,7 +238,7 @@ describe("signing in", () => {
   it("sends at most 3 links a minute to one address", async () => {
     const statuses: number[] = [];
     for (let i = 0; i < 4; i++) {
-      statuses.push((await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: "friend@example.com" }) })).status);
+      statuses.push((await fetch(`${base}/auth/link`, { method: "POST", headers: FROM_PAGE, body: JSON.stringify({ email: FRIEND }) })).status);
     }
     expect(statuses).toEqual([202, 202, 202, 429]);
   });
@@ -388,6 +413,86 @@ describe("checking an explanation", () => {
     const declined = await explain();
     expect(declined.status).toBe(502);
     expect((await declined.json()).error).toBe("Claude declined to check this explanation.");
+  });
+});
+
+describe("paying for Claude", () => {
+  const OWN_KEY = `sk-ant-api03-${"o".repeat(40)}wxyz`;
+  const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
+  const check = (cookie: string) => call("POST", request, { Cookie: cookie }, "/check");
+  const account = (cookie: string, method = "GET", body?: unknown) => call(method, body, { Cookie: cookie }, "/account");
+
+  it("meters a learner's calls out of their beta credit, by what each one cost", async () => {
+    const demo = await signIn(DEMO);
+    expect(await (await account(demo)).json()).toEqual({ kind: "credit", granted: 5_000_000, spent: 0 });
+    // 1,000 in and 500 out on claude-opus-5-5, at $4 and $20 a million: $0.014.
+    claude.usage = { input_tokens: 1_000, output_tokens: 500 };
+    expect((await check(demo)).status).toBe(200);
+    expect(await (await account(demo)).json()).toEqual({ kind: "credit", granted: 5_000_000, spent: 14_000 });
+  });
+
+  it("stops asking Claude once a learner's credit is spent, and says where to add a key", async () => {
+    const demo = await signIn(DEMO);
+    claude.usage = { input_tokens: 1_250_000, output_tokens: 0 };
+    expect((await check(demo)).status).toBe(200);
+    const spent = await check(demo);
+    expect(spent.status).toBe(402);
+    expect((await spent.json()).error).toBe("You've used all $5.00 of your beta credit. Add your own Claude API key on your account page to keep going.");
+    expect(claude.asked).toHaveLength(1);
+
+    const friend = await signIn(FRIEND);
+    expect(await (await account(friend)).json()).toEqual({ kind: "credit", granted: 0, spent: 0 });
+    expect((await check(friend)).status).toBe(402);
+    expect(claude.asked).toHaveLength(1);
+  });
+
+  it("keeps a learner's own key once Claude takes it, and pays for their calls with it, unmetered", async () => {
+    const demo = await signIn(DEMO);
+    expect((await account(demo, "PUT", { key: "sk-proj-not-claude" })).status).toBe(400);
+    claude.refused.add(OWN_KEY);
+    const turnedDown = await account(demo, "PUT", { key: OWN_KEY });
+    expect(turnedDown.status).toBe(400);
+    expect((await turnedDown.json()).error).toContain("turned that key down");
+    claude.refused.clear();
+    expect(claude.asked.map((a) => a.method)).toEqual(["GET"]);
+
+    const saved = await account(demo, "PUT", { key: ` ${OWN_KEY}\n` });
+    expect(saved.status).toBe(200);
+    expect(await saved.json()).toEqual({ kind: "own-key", hint: "wxyz" });
+    expect(await (await account(demo)).text()).not.toContain(OWN_KEY);
+
+    claude.asked = [];
+    claude.usage = { input_tokens: 10_000_000, output_tokens: 0 };
+    expect((await check(demo)).status).toBe(200);
+    expect((await check(demo)).status).toBe(200);
+    expect(claude.asked.map((a) => a.headers.authorization)).toEqual([`Bearer ${OWN_KEY}`, `Bearer ${OWN_KEY}`]);
+
+    const removed = await account(demo, "DELETE");
+    expect(await removed.json()).toEqual({ kind: "credit", granted: 5_000_000, spent: 0 });
+  });
+
+  it("sends a learner to their account page when Claude turns their own key down", async () => {
+    const demo = await signIn(DEMO);
+    expect((await account(demo, "PUT", { key: OWN_KEY })).status).toBe(200);
+    claude.refused.add(OWN_KEY);
+    const refused = await check(demo);
+    expect(refused.status).toBe(402);
+    expect((await refused.json()).error).toBe("Claude turned down your API key. Replace it on your account page.");
+  });
+
+  it("puts the owner's calls on the site's key, unmetered", async () => {
+    expect(await (await account(owner)).json()).toEqual({ kind: "owner" });
+    claude.usage = { input_tokens: 10_000_000, output_tokens: 0 };
+    expect((await check(owner)).status).toBe(200);
+    expect((await check(owner)).status).toBe(200);
+    expect(claude.asked.map((a) => a.headers.authorization)).toEqual([`Bearer ${CLAUDE_KEY}`, `Bearer ${CLAUDE_KEY}`]);
+    expect(await (await account(owner)).json()).toEqual({ kind: "owner" });
+  });
+
+  it("shows an account only to whoever is signed in", async () => {
+    expect((await account("")).status).toBe(401);
+    expect((await account("", "PUT", { key: OWN_KEY })).status).toBe(401);
+    expect(claude.asked).toEqual([]);
   });
 });
 

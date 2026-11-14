@@ -1,0 +1,9 @@
+# Lessons that moved from a page of their own into the lab. Cloudflare serves
+# these from the built assets (wrangler.jsonc "assets"), so old links and
+# bookmarks still land on the lesson.
+/perimeter.html /lab?lesson=perimeter 301
+/perimeter /lab?lesson=perimeter 301
+/medians.html /lab?lesson=medians 301
+/medians /lab?lesson=medians 301
+/bisectors.html /lab?lesson=bisectors 301
+/bisectors /lab?lesson=bisectors 301

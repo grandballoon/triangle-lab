@@ -1,6 +1,7 @@
-// Triangles, part one: the sixteen standalone lesson pages, in reading order.
-// Each has its own HTML entry point (<slug>.html) and its own bespoke
-// interaction in src/<slug>.ts.
+// Triangles, part one: the nine standalone triangle pages, each with its own
+// HTML entry point (<slug>.html) and bespoke interaction in src/<slug>.ts, and
+// the five triangle-parts lessons rebuilt in the lab. The trigonometry pages
+// are in trigonometry.ts.
 
 import type { Lesson } from "./types.ts";
 
@@ -44,37 +45,66 @@ export const trianglesClassic: Lesson[] = [
   {
     slug: "perimeter",
     part: "Parts · One",
-    name: "Perimeter & Semiperimeter",
-    desc: "Drag the knob around the edge and watch p and s add up.",
+    name: "Perimeter",
+    desc: "Walk a knob all the way round the edge.",
     accent: "#60a5fa",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />`,
+    lab: true,
+  },
+  {
+    slug: "semiperimeter",
+    part: "Parts · Two",
+    name: "Semiperimeter",
+    desc: "Walk a knob halfway round the edge.",
+    accent: "#ffd43b",
+    icon: `<polyline points="27,26 5,26 16,6" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+      <line x1="16" y1="6" x2="27" y2="26" stroke="currentColor"
+        stroke-width="1.5" stroke-dasharray="3 3" />
+      <circle cx="16" cy="6" r="2.4" fill="currentColor" />`,
+    lab: true,
   },
   {
     slug: "medians",
-    part: "Parts · Two",
+    part: "Parts · Three",
     name: "Medians",
-    desc: "Pull each vertex to the opposite midpoint until they meet at G.",
+    desc: "Lock a knob on a side's midpoint and join it to the corner opposite.",
     accent: "#c084fc",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />
-      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="2" />
+      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="2" />`,
+    lab: true,
+  },
+  {
+    slug: "centroid",
+    part: "Parts · Four",
+    name: "Centroid",
+    desc: "See the three medians meet at one point, G.",
+    accent: "#fb923c",
+    icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" />
+      <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor" stroke-width="1.5" />
+      <line x1="5" y1="26" x2="21.5" y2="16" stroke="currentColor" stroke-width="1.5" />
+      <line x1="27" y1="26" x2="10.5" y2="16" stroke="currentColor" stroke-width="1.5" />
       <circle cx="16" cy="19.3" r="2.4" fill="currentColor" />`,
+    lab: true,
   },
   {
     slug: "bisectors",
-    part: "Parts · Three",
+    part: "Parts · Five",
     name: "Angle Bisectors",
-    desc: "Slide each knob until the two half-angles match.",
+    desc: "Slide a knob until the two halves of an angle match.",
     accent: "#22d3ee",
     icon: `<polygon points="16,6 27,26 5,26" fill="none" stroke="currentColor"
       stroke-width="2.5" stroke-linejoin="round" />
       <line x1="16" y1="6" x2="16" y2="26" stroke="currentColor"
         stroke-width="2" stroke-dasharray="3 3" />`,
+    lab: true,
   },
   {
     slug: "altitudes",
-    part: "Parts · Four",
+    part: "Parts · Six",
     name: "Altitudes",
     desc: "Drop a perpendicular from each vertex and find H.",
     accent: "#fb7185",
@@ -129,50 +159,5 @@ export const trianglesClassic: Lesson[] = [
       stroke-width="2.5" stroke-linejoin="round" />
       <polygon points="4,26 28,26 28,9" fill="none" stroke="currentColor"
         stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" />`,
-  },
-  {
-    slug: "trig",
-    part: "Trigonometry · One",
-    name: "Naming the Ratios",
-    desc: "sin, cos, tan and their three flips, read live off a triangle in your hand.",
-    accent: "#38bdf8",
-    icon: `<polygon points="4,26 28,26 28,8" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 12 26 A 8 8 0 0 0 10.8 21.7" fill="none" stroke="currentColor"
-        stroke-width="2" />`,
-  },
-  {
-    slug: "fortyfive",
-    part: "Trigonometry · Two",
-    name: "Folding the Square",
-    desc: "Bisect a right angle into 45° + 45° — and every ratio's a cancels.",
-    accent: "#e879f9",
-    icon: `<rect x="6" y="6" width="20" height="20" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-dasharray="3 3" />
-      <polygon points="6,26 26,26 26,6" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linejoin="round" />`,
-  },
-  {
-    slug: "thirtysixty",
-    part: "Trigonometry · Three",
-    name: "Folding the Equilateral",
-    desc: "Congruent halves split the base evenly — 1 : √3 : 2 falls out.",
-    accent: "#4ade80",
-    icon: `<polygon points="16,5 28,27 4,27" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="3 3" />
-      <polygon points="16,5 28,27 16,27" fill="none" stroke="currentColor"
-        stroke-width="2.5" stroke-linejoin="round" />`,
-  },
-  {
-    slug: "table",
-    part: "Trigonometry · Four",
-    name: "The Whole Table",
-    desc: "A unit hypotenuse on a dial — snap to 0°, 30°, 45°, 60°, 90° and read what you derived.",
-    accent: "#f43f5e",
-    icon: `<polygon points="4,26 24,26 24,12" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M 14 26 A 10 10 0 0 0 12.7 21" fill="none" stroke="currentColor"
-        stroke-width="2" />
-      <circle cx="24" cy="12" r="2.2" fill="currentColor" />`,
   },
 ];

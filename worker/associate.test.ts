@@ -31,7 +31,7 @@ describe("course", () => {
 
   it("says what each lesson the syllabus describes teaches and builds on", () => {
     const text = course(described);
-    expect(text).toContain("- medians: Medians (Parts · Two). ");
+    expect(text).toContain("- medians: Medians (Parts · Three). ");
     expect(text).toContain("  Teaches: Medians meet at the centroid $G$.\n  Builds on: nothing.");
     expect(text).toContain("  Teaches: Angle bisectors meet at the incentre.\n  Builds on: medians.");
   });

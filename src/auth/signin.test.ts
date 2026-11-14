@@ -1,7 +1,7 @@
 // The sign-in page's views, and what each reply from the Worker makes of them.
 
 import { describe, expect, it } from "vitest";
-import { afterLink, afterRedeem, afterSignOut, afterWho, initialView, problem } from "./signin.ts";
+import { afterLink, afterRedeem, afterSignOut, afterWho, headingOf, initialView, problem } from "./signin.ts";
 
 const TOKEN = "t".repeat(43);
 
@@ -9,6 +9,14 @@ describe("initialView", () => {
   it("uses a link's token with a button, or else asks who is signed in", () => {
     expect(initialView(`?token=${TOKEN}`)).toEqual({ kind: "redeem", token: TOKEN, error: null });
     expect(initialView("")).toMatchObject({ kind: "busy" });
+  });
+});
+
+describe("headingOf", () => {
+  it("heads the page as the learner's account once they are signed in", () => {
+    expect(headingOf({ kind: "signed-in", email: "a@example.com", justNow: false })).toBe("Your account");
+    expect(headingOf({ kind: "ask", email: "", error: null })).toBe("Sign in");
+    expect(headingOf({ kind: "busy", text: "Signing in…" })).toBe("Sign in");
   });
 });
 
