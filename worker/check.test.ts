@@ -25,6 +25,16 @@ describe("checkParams", () => {
   });
 });
 
+describe("checkParams for a passage", () => {
+  it("gives Claude the passage between the rest of the answer", () => {
+    const params = checkParams({ ...request, answer: "They meet at the centroid, always", span: { start: 13, end: 25 } });
+    expect(params.messages[0].content).toBe(
+      "<question>Where do the medians meet?</question>\n<asked_in>Triangles · Medians · Step 2</asked_in>\n" +
+        "<answer_before>They meet at </answer_before>\n<passage>the centroid</passage>\n<answer_after>, always</answer_after>",
+    );
+  });
+});
+
 describe("verdictOf", () => {
   it("reads the verdict from Claude's structured reply", () => {
     expect(verdictOf(message("end_turn", '{"grade":"recalled","feedback":"Yes: the centroid."}'))).toEqual({

@@ -105,12 +105,29 @@ export interface KeptExplanation {
   updated: number;
 }
 
+/** A stretch of an answer, as offsets into it. */
+export interface Span {
+  start: number;
+  end: number;
+}
+
+/** Claude's last check of a standing answer, of all of it or of one passage. */
+export interface KeptCheck {
+  /** The answer as it was sent. */
+  text: string;
+  /** The passage of `text` that was checked; absent when all of it was. */
+  span?: Span;
+  verdict: Verdict;
+}
+
 /** The learner's standing answer to a question, as edited in the answers document. */
 export interface KeptResponse {
   /** The id of the card it answers. */
   card: string;
   /** What the learner has written; empty once they clear it. */
   text: string;
+  /** Claude's last check of it, until the learner clears it; absent before any. */
+  checked?: KeptCheck;
   /** Its last change, so the newer of two copies wins a merge. */
   updated: number;
 }
@@ -256,10 +273,30 @@ export function setResponse(deck: Deck, id: string, text: string, now: number): 
   const card = deck.cards.find((c) => c.id === id);
   const clean = text.slice(0, MAX_RESPONSE);
   if (!card || clean === responseText(deck, card)) return deck;
-  const held = deck.responses ?? [];
-  const before = held.find((r) => r.card === id)?.updated ?? -1;
-  const kept: KeptResponse = { card: id, text: clean, updated: Math.max(now, before + 1) };
-  return { ...deck, responses: [...held.filter((r) => r.card !== id), kept].sort(byCard) };
+  const held = deck.responses?.find((r) => r.card === id);
+  return keepResponse(deck, { ...held, card: id, text: clean, updated: laterThan(held, now) });
+}
+
+/**
+ * Keep Claude's check of the standing answer to card `id`, or clear it with
+ * null. The answer stays as it stands, and from here on is kept as edited.
+ */
+export function setResponseCheck(deck: Deck, id: string, checked: KeptCheck | null, now: number): Deck {
+  const card = deck.cards.find((c) => c.id === id);
+  const held = deck.responses?.find((r) => r.card === id);
+  if (!card || (!checked && !held?.checked)) return deck;
+  const kept: KeptResponse = { card: id, text: responseText(deck, card), updated: laterThan(held, now) };
+  return keepResponse(deck, checked ? { ...kept, checked } : kept);
+}
+
+/** A time for a change to `held`: now, or just after it on a clock running behind. */
+function laterThan(held: KeptResponse | undefined, now: number): number {
+  return Math.max(now, (held?.updated ?? -1) + 1);
+}
+
+function keepResponse(deck: Deck, kept: KeptResponse): Deck {
+  const others = (deck.responses ?? []).filter((r) => r.card !== kept.card);
+  return { ...deck, responses: [...others, kept].sort(byCard) };
 }
 
 export function addCard(deck: Deck, card: Card): Deck {
@@ -516,7 +553,28 @@ export function loadDeck(raw: unknown): Deck | null {
 /** A kept standing answer as one element of a list, or none if `raw` is not one. */
 export function readKeptResponse(raw: unknown): KeptResponse[] {
   if (!isObject(raw) || typeof raw.card !== "string" || !raw.card || typeof raw.text !== "string" || !isTime(raw.updated)) return [];
-  return [{ card: raw.card, text: raw.text.slice(0, MAX_RESPONSE), updated: raw.updated }];
+  const kept: KeptResponse = { card: raw.card, text: raw.text.slice(0, MAX_RESPONSE), updated: raw.updated };
+  const checked = readKeptCheck(raw.checked);
+  return [checked ? { ...kept, checked } : kept];
+}
+
+function readKeptCheck(raw: unknown): KeptCheck | null {
+  if (!isObject(raw) || typeof raw.text !== "string") return null;
+  const verdict = readVerdict(raw.verdict);
+  if (!verdict) return null;
+  const text = raw.text.slice(0, MAX_RESPONSE);
+  if (raw.span === undefined) return { text, verdict };
+  const span = readSpan(raw.span, text);
+  return span ? { text, span, verdict } : null;
+}
+
+/** Read a stretch of `text`, or null if `raw` is not one holding some words. */
+export function readSpan(raw: unknown, text: string): Span | null {
+  if (!isObject(raw)) return null;
+  const { start, end } = raw;
+  if (!Number.isInteger(start) || !Number.isInteger(end)) return null;
+  const [from, to] = [start as number, end as number];
+  return from >= 0 && from < to && to <= text.length && text.slice(from, to).trim() ? { start: from, end: to } : null;
 }
 
 /** A kept explanation as one element of a list, or none if `raw` is not one. A check that is not one is dropped. */

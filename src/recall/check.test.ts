@@ -3,14 +3,21 @@
 
 import { describe, expect, it } from "vitest";
 import { loadReview, readCheckReply, readCheckRequest, SIGNED_OUT } from "./check.ts";
-import { MAX_ANSWER, MAX_FEEDBACK, MAX_REMARKS, readVerdict } from "./deck.ts";
+import { MAX_FEEDBACK, MAX_REMARKS, MAX_RESPONSE, readVerdict } from "./deck.ts";
 
 const request = { question: "Where do the medians meet?", where: "Triangles · Medians · Step 2", answer: "At the centroid" };
 
 describe("readCheckRequest", () => {
   it("reads a question, where it was asked and a written answer, trimmed and capped", () => {
     expect(readCheckRequest(request)).toEqual(request);
-    expect(readCheckRequest({ ...request, answer: `  ${"x".repeat(MAX_ANSWER + 5)} ` })?.answer).toHaveLength(MAX_ANSWER);
+    expect(readCheckRequest({ ...request, answer: `  ${"x".repeat(MAX_RESPONSE + 5)} ` })?.answer).toHaveLength(MAX_RESPONSE);
+  });
+
+  it("reads a passage of the answer to check, and nothing that is not one", () => {
+    expect(readCheckRequest({ ...request, span: { start: 3, end: 11 } })).toEqual({ ...request, span: { start: 3, end: 11 } });
+    for (const span of [null, "x", { start: 4, end: 4 }, { start: -1, end: 3 }, { start: 0, end: 99 }, { start: 1.5, end: 3 }, { start: 2, end: 3 }]) {
+      expect(readCheckRequest({ ...request, span })).toBeNull();
+    }
   });
 
   it("is not read from anything else, nor with nothing to check", () => {

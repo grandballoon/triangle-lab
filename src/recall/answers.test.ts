@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { answerDocument, sameOutline } from "./answers.ts";
+import { answerDocument, checkIsStale, checkRequestFor, checkedPassage, passageOf, sameOutline, settleCheck } from "./answers.ts";
 import {
   addCard,
   answerCard,
@@ -9,10 +9,12 @@ import {
   MAX_RESPONSE,
   mergeDecks,
   newCard,
+  editCard,
   removeCard,
   responseText,
   saveDeck,
   setResponse,
+  setResponseCheck,
   type Deck,
 } from "./deck.ts";
 import { sendWhen } from "./sync.ts";
@@ -121,7 +123,7 @@ describe("the answers document", () => {
     );
     const doc = answerDocument(deck);
     expect(doc.map((part) => part.lesson).sort()).toEqual(["altitudes", "medians"]);
-    expect(doc.find((part) => part.lesson === "medians")!.sections).toEqual([
+    expect(doc.find((part) => part.lesson === "medians")!.sections.map(({ id, question, text }) => ({ id, question, text }))).toEqual([
       { id: "early", question: "First step", text: "Written" },
       { id: "late", question: "Second step", text: "" },
     ]);
@@ -131,5 +133,68 @@ describe("the answers document", () => {
     const doc = answerDocument(one);
     expect(sameOutline(doc, answerDocument(setResponse(one, "a", "Text", T0)))).toBe(true);
     expect(sameOutline(doc, answerDocument(withCards(["a", "Reworded", "medians", 0])))).toBe(false);
+  });
+});
+
+describe("checking from the document", () => {
+  const verdict = { grade: "shaky" as const, feedback: "Nearly." };
+  const section = { question: "What is a median?", where: "Medians" };
+
+  it("finds the passage in the answer as sent, without the spaces at either end", () => {
+    const text = "  one two three \n";
+    expect(passageOf(text, 5, 9)).toEqual({ start: 4, end: 7 });
+    expect("one two three".slice(4, 7)).toBe("two");
+    expect(passageOf(text, 0, 1)).toBeNull();
+    expect(passageOf(text, 6, 6)).toBeNull();
+    expect(passageOf(text, 0, text.length)).toEqual({ start: 0, end: 13 });
+  });
+
+  it("asks about all of the answer, or the stretch selected, and not about no words", () => {
+    expect(checkRequestFor(section, " All of it ")).toEqual({ ...section, answer: "All of it" });
+    expect(checkRequestFor(section, "All of it", { from: 4, to: 6 })).toEqual({ ...section, answer: "All of it", span: { start: 4, end: 6 } });
+    expect(checkRequestFor(section, "   ")).toBeNull();
+    expect(checkRequestFor(section, "All of it", { from: 3, to: 4 })).toBeNull();
+  });
+
+  it("keeps a check with the answer, through further edits, a merge and a reload", () => {
+    const edited = setResponse(one, "a", "Vertex to side", T0);
+    const request = checkRequestFor({ ...section, question: "What is a median?" }, "Vertex to side", { from: 0, to: 6 })!;
+    const checked = settleCheck(edited, "a", request, verdict, T0 + 1);
+    const expected = { text: "Vertex to side", span: { start: 0, end: 6 }, verdict };
+    expect(checked.responses?.[0].checked).toEqual(expected);
+    expect(checkedPassage(expected)).toBe("Vertex");
+
+    const further = setResponse(checked, "a", "Vertex to midpoint", T0 + 2);
+    expect(further.responses?.[0].checked).toEqual(expected);
+    expect(checkIsStale(expected, "Vertex to midpoint")).toBe(true);
+    expect(checkIsStale(expected, " Vertex to side ")).toBe(false);
+    expect(mergeDecks(checked, further).responses?.[0]).toEqual(further.responses?.[0]);
+    expect(loadDeck(JSON.parse(JSON.stringify(saveDeck(further))))?.responses).toEqual(further.responses);
+  });
+
+  it("keeps the last review's answer as the text when a check is the first thing kept", () => {
+    const answered = answerCard(one, "a", "Given at review", "shaky", T0);
+    const checked = settleCheck(answered, "a", { ...section, answer: "Given at review" }, verdict, T0 + 1);
+    expect(responseText(checked, cardA(checked))).toBe("Given at review");
+  });
+
+  it("drops a reply once the question is reworded or gone", () => {
+    const request = { ...section, answer: "Text" };
+    const reworded = editCard(one, "a", "Reworded?", T0 + 1);
+    expect(settleCheck(reworded, "a", request, verdict, T0 + 2)).toBe(reworded);
+    const gone = removeCard(one, "a", T0 + 1);
+    expect(settleCheck(gone, "a", request, verdict, T0 + 2)).toBe(gone);
+  });
+
+  it("clears a check and leaves the answer", () => {
+    const checked = settleCheck(setResponse(one, "a", "Text", T0), "a", { ...section, answer: "Text" }, verdict, T0 + 1);
+    const cleared = setResponseCheck(checked, "a", null, T0 + 2);
+    expect(cleared.responses).toEqual([{ card: "a", text: "Text", updated: T0 + 2 }]);
+    expect(setResponseCheck(cleared, "a", null, T0 + 3)).toBe(cleared);
+  });
+
+  it("drops a kept check that makes no sense, and keeps the answer", () => {
+    const saved = { ...saveDeck(one), responses: [{ card: "a", text: "Text", updated: T0, checked: { text: "Text", span: { start: 2, end: 99 }, verdict } }] };
+    expect(loadDeck(saved)?.responses).toEqual([{ card: "a", text: "Text", updated: T0 }]);
   });
 });
