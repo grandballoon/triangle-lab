@@ -278,11 +278,19 @@ As in a sitting, a check is of the explanation as it was sent (`sent`): editing 
 Each lesson's explanation and Claude's last check of it are kept in the deck, by lesson, so they sync to every device and are there to come back to; a check under way is not kept.
 Explanations kept by an earlier version in this browser alone are moved into the deck on load.
 
+The recall page can also show the learner's answers as one document, with a part for each lesson and each question as a heading over its answer.
+The document is a view over the deck (`answers.ts`), so headings are never parsed back out of what the learner types, and an answer can hold anything.
+Each section's text is the card's standing answer (`KeptResponse`), which starts as the last answer written at a review and, once edited, stays as edited.
+Standing answers are kept apart from cards, so `attempts` remains the record of each review, and an edit on one device never competes in a merge with a grade on another.
+They merge question by question, the later copy winning, and a removed question's answer goes with it.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, marks to revisit, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `answers.ts` | The answers as one document: parts by lesson, sections headed by their questions | yes |
+| `answers-view.ts` | Drawing the answers document, keeping edits as they are typed, and taking in changes from elsewhere in place | no |
 | `explain.ts` | Having Claude check an explanation on a lesson page: the request as page and Worker read it, the explanation as it is written, checked and corrected, and as it is kept | yes |
 | `explain-panel.ts` | The Explain tab of a lesson's step column | no |
 | `associate.ts` | Having Claude read a free association: the request as page and Worker read it, what a reply means, the writing as it is read and corrected, and as it is kept in the deck | yes |
@@ -367,7 +375,7 @@ What to do with each request, the invite list, the cookie and the email are pure
 With `SENDER` unset, asking for a link answers 503, and a deploy refuses to start (`tools/deploy-guard.ts`).
 Locally, the email binding sends nothing, but logs the message and writes it under `.wrangler/tmp/email`, which is how the Worker test reads its links.
 
-A deck's object holds a row per question in its SQLite storage: a card, or the time it was removed; the free association in a table of its own, of at most one row; and each lesson's explanation in another.
+A deck's object holds a row per question in its SQLite storage: a card, or the time it was removed; the free association in a table of its own, of at most one row; each lesson's explanation in another; and each question's standing answer in a third.
 It reads the deck, merges, and writes the rows that changed in one synchronous transaction, and requests reach it one at a time, so two devices syncing at once cannot undo each other.
 The merge rule is the pages' own (`src/recall/deck.ts`, which has no DOM), so the Worker and the pages cannot disagree on it.
 

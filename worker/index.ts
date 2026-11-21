@@ -32,6 +32,7 @@ import {
   loadDeck,
   mergeDecks,
   readKeptExplanation,
+  readKeptResponse,
   readWriting,
   saveDeck,
   type Card,
@@ -296,6 +297,8 @@ export class RecallDeck extends DurableObject<Env> {
     ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS writing (id INTEGER PRIMARY KEY CHECK (id = 0), body TEXT NOT NULL)");
     // A row per lesson explained: its explanation (deck.ts KeptExplanation).
     ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS explanations (lesson TEXT PRIMARY KEY, body TEXT NOT NULL)");
+    // A row per question answered in the document (deck.ts KeptResponse).
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS responses (card TEXT PRIMARY KEY, body TEXT NOT NULL)");
   }
 
   read(): SavedDeck {
@@ -310,12 +313,19 @@ export class RecallDeck extends DurableObject<Env> {
       const changed = changedSince(held, merged);
       const put = "INSERT OR REPLACE INTO questions (id, at, card) VALUES (?, ?, ?)";
       for (const card of changed.cards) this.ctx.storage.sql.exec(put, card.id, card.updated, JSON.stringify(card));
-      for (const { id, at } of changed.removed) this.ctx.storage.sql.exec(put, id, at, null);
+      for (const { id, at } of changed.removed) {
+        this.ctx.storage.sql.exec(put, id, at, null);
+        // A removed question's answer goes with it.
+        this.ctx.storage.sql.exec("DELETE FROM responses WHERE card = ?", id);
+      }
       if (changed.writing) {
         this.ctx.storage.sql.exec("INSERT OR REPLACE INTO writing (id, body) VALUES (0, ?)", JSON.stringify(changed.writing));
       }
       for (const kept of changed.explanations ?? []) {
         this.ctx.storage.sql.exec("INSERT OR REPLACE INTO explanations (lesson, body) VALUES (?, ?)", kept.lesson, JSON.stringify(kept));
+      }
+      for (const kept of changed.responses ?? []) {
+        this.ctx.storage.sql.exec("INSERT OR REPLACE INTO responses (card, body) VALUES (?, ?)", kept.card, JSON.stringify(kept));
       }
       return saveDeck(merged);
     });
@@ -333,7 +343,11 @@ export class RecallDeck extends DurableObject<Env> {
       .exec<{ body: string }>("SELECT body FROM explanations")
       .toArray()
       .flatMap((r) => readKeptExplanation(JSON.parse(r.body)));
-    const deck: Deck = { cards, removed, explanations };
+    const responses = this.ctx.storage.sql
+      .exec<{ body: string }>("SELECT body FROM responses")
+      .toArray()
+      .flatMap((r) => readKeptResponse(JSON.parse(r.body)));
+    const deck: Deck = { cards, removed, explanations, responses };
     return mergeDecks(EMPTY_DECK, writing ? { ...deck, writing } : deck);
   }
 }
