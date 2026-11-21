@@ -35,7 +35,8 @@
 // back to and correct.
 //
 // The learner can also read and edit their answers as one document, with each
-// question as a heading over its answer (answers-view.ts).
+// question as a heading over its answer and its history, and have Claude check
+// an answer or a highlighted passage of one (answers-view.ts).
 //
 // The rules are pure (deck.ts, session.ts, associate.ts, answers.ts). The sitting is
 // held by sitting.ts and its card drawn by card.ts, both shared with the
@@ -82,7 +83,6 @@ import { answersView, type AnswersView } from "./answers-view.ts";
 import { cardParts } from "./card.ts";
 import { button, confirmButton, el, redraw, row, typing } from "./dom.ts";
 import {
-  answeredLabel,
   byLesson,
   gradeHint,
   lessonLabel,
@@ -93,7 +93,7 @@ import {
   whenLabel,
 } from "./labels.ts";
 import { progress, suggestedGrade, type Session } from "./session.ts";
-import { GRADE_LABEL, lessonLink, saidSheet, writingSheet } from "./sheet.ts";
+import { answerHistory, lessonLink, writingSheet } from "./sheet.ts";
 import { HeldSitting } from "./sitting.ts";
 import { submitsOnEnter, submitsOnModEnter, touchFirst } from "./keys.ts";
 import { openRecall } from "./remote.ts";
@@ -133,7 +133,7 @@ const tab = held.session ? null : readAssociating();
 /** Whether the free association is on show, rather than the overview. */
 let associating = tab !== null;
 /** The answers document, while it is on show rather than the overview. */
-let answers: AnswersView | null = !held.session && !associating && readDocumenting() ? answersView(store) : null;
+let answers: AnswersView | null = !held.session && !associating && readDocumenting() ? answersView(store, sync) : null;
 moveLocalAssociation();
 /** The free association, as written and read so far. */
 let association: Association = fromWriting(store.get().writing);
@@ -256,7 +256,7 @@ function associate(): void {
 
 /** Open the answers document. */
 function openAnswers(): void {
-  answers = answersView(store);
+  answers = answersView(store, sync);
   editing = null;
   notice = null;
   render();
@@ -474,7 +474,7 @@ function cardItem(card: Card, now: number): HTMLLIElement {
     confirmButton("Delete", () => store.update((d) => removeCard(d, card.id, Date.now()))),
   );
   item.append(question, meta, actions);
-  if (tried > 0 && historyOpen.has(card.id)) item.append(history(card));
+  if (tried > 0 && historyOpen.has(card.id)) item.append(answerHistory(card.attempts));
   return item;
 }
 
@@ -485,23 +485,6 @@ function revisitButton(card: Card): HTMLButtonElement {
   b.setAttribute("aria-pressed", String(on));
   b.title = on ? "Marked to revisit. Press to take the mark off." : "Mark this as a question you blank out on, to revisit";
   return b;
-}
-
-/** Every answer given to `card`, newest first, with what Claude said where it was kept. */
-function history(card: Card): HTMLElement {
-  const list = el("ol", "rc-history");
-  list.setAttribute("aria-label", "Answers given");
-  list.append(
-    ...[...card.attempts].reverse().map((attempt) => {
-      const entry = el("li");
-      entry.append(
-        el("p", "rc-history-when", `${answeredLabel(attempt.at)} · ${GRADE_LABEL[attempt.grade]}`),
-        saidSheet(attempt.answer, attempt.claude),
-      );
-      return entry;
-    }),
-  );
-  return list;
 }
 
 /**

@@ -283,6 +283,11 @@ The document is a view over the deck (`answers.ts`), so headings are never parse
 Each section's text is the card's standing answer (`KeptResponse`), which starts as the last answer written at a review and, once edited, stays as edited.
 Standing answers are kept apart from cards, so `attempts` remains the record of each review, and an edit on one device never competes in a merge with a grade on another.
 They merge question by question, the later copy winning, and a removed question's answer goes with it.
+Each section ends in a bar that unfolds the question's history, the same list of attempts as on the overview (`answerHistory`).
+A button by each question has Claude check its answer, and highlighting a stretch of an answer offers to check that passage in a popup placed from the layer that mirrors the text.
+A passage goes to `/check` as a `span` of the answer, and Claude is given the rest as context but grades and comments on the passage alone.
+The last check of each answer is kept with it (`KeptCheck`), so it syncs and survives a reload, until the learner clears it or checks again; its remarks are placed afresh as the answer is edited.
+A check never grades the card or changes when it is due.
 
 | File | Role | Pure |
 | --- | --- | --- |

@@ -13,7 +13,7 @@
 // the verdict by the same rules.
 
 import { ACCOUNT_STATUS } from "../auth/account.ts";
-import { MAX_ANSWER, MAX_QUESTION, readVerdict, type Verdict } from "./deck.ts";
+import { MAX_QUESTION, MAX_RESPONSE, readSpan, readVerdict, type Span, type Verdict } from "./deck.ts";
 import { signedOut } from "./sync.ts";
 
 /** What the page sends to have an answer checked. */
@@ -23,6 +23,8 @@ export interface CheckRequest {
   where: string;
   /** The learner's answer, as written; never empty. */
   answer: string;
+  /** The passage of `answer` to check, with the rest as its context; absent to check all of it. */
+  span?: Span;
 }
 
 /** Where a sitting stands on having the answer being checked read by Claude. */
@@ -47,9 +49,9 @@ export const SIGNED_OUT = "You're signed out. Sign in, then try once more.";
 const MAX_WHERE = 300;
 
 /** Largest request accepted, in characters of JSON: the three fields at their longest, escaped. */
-export const MAX_CHECK_BODY = 6 * (MAX_QUESTION + MAX_WHERE + MAX_ANSWER);
+export const MAX_CHECK_BODY = 6 * (MAX_QUESTION + MAX_WHERE + MAX_RESPONSE);
 
-/** Read a check request, or null if `raw` is not one. Each field is trimmed and capped. */
+/** Read a check request, or null if `raw` is not one. Each field is trimmed and capped, and a passage must lie in the answer as read. */
 export function readCheckRequest(raw: unknown): CheckRequest | null {
   if (!isObject(raw)) return null;
   const { question, where, answer } = raw;
@@ -57,9 +59,12 @@ export function readCheckRequest(raw: unknown): CheckRequest | null {
   const request = {
     question: question.trim().slice(0, MAX_QUESTION),
     where: where.trim().slice(0, MAX_WHERE),
-    answer: answer.trim().slice(0, MAX_ANSWER),
+    answer: answer.trim().slice(0, MAX_RESPONSE),
   };
-  return request.question && request.answer ? request : null;
+  if (!request.question || !request.answer) return null;
+  if (raw.span === undefined) return request;
+  const span = readSpan(raw.span, request.answer);
+  return span ? { ...request, span } : null;
 }
 
 /**
