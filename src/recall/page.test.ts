@@ -1121,3 +1121,60 @@ describe("free associating", () => {
     expect(field(root).value).toBe("");
   });
 });
+
+describe("the answers document", () => {
+  const openDocument = async (cards: Card[]): Promise<HTMLElement> => {
+    const root = await open(cards);
+    [...root.querySelectorAll("button")].find((b) => b.textContent === "Your answers")!.click();
+    return root;
+  };
+  const type = (field: HTMLTextAreaElement, text: string): void => {
+    field.value = text;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  const stored = (): Deck => loadDeck(JSON.parse(localStorage.getItem(KEY)!))!;
+
+  it("shows each question as a heading over its answer, starting from the last one given", async () => {
+    const root = await openDocument([
+      card("a", "What is a median?", { attempts: [{ at: now - 1000, answer: "Vertex to midpoint", grade: "shaky" }] }),
+      card("b", "Where do they meet?"),
+    ]);
+    expect([...root.querySelectorAll(".rc-document h3")].map((h) => h.textContent)).toEqual(["What is a median?", "Where do they meet?"]);
+    expect([...root.querySelectorAll<HTMLTextAreaElement>(".rc-document-answer")].map((f) => f.value)).toEqual(["Vertex to midpoint", ""]);
+  });
+
+  it("keeps an edit as it is typed, through a reload, without touching the review history", async () => {
+    const attempts = [{ at: now - 1000, answer: "Vertex to midpoint", grade: "shaky" as const }];
+    const root = await openDocument([card("a", "What is a median?", { attempts })]);
+    type(root.querySelector<HTMLTextAreaElement>(".rc-document-answer")!, "# Not a heading\nA segment to the midpoint");
+    expect(stored().responses?.map((r) => r.text)).toEqual(["# Not a heading\nA segment to the midpoint"]);
+    expect(stored().cards[0].attempts).toEqual(attempts);
+
+    const again = await reload();
+    expect(again.querySelector<HTMLTextAreaElement>(".rc-document-answer")!.value).toBe("# Not a heading\nA segment to the midpoint");
+    expect(again.querySelectorAll(".rc-document h3")).toHaveLength(1);
+  });
+
+  it("takes another tab's edit in place, leaving the answer being typed in alone", async () => {
+    const root = await openDocument([card("a", "First?"), card("b", "Second?")]);
+    const [first, second] = root.querySelectorAll<HTMLTextAreaElement>(".rc-document-answer");
+    first.focus();
+    type(first, "Still typing");
+    const elsewhere = { ...stored(), responses: [
+      { card: "a", text: "From elsewhere", updated: now + 5000 },
+      { card: "b", text: "Also elsewhere", updated: now + 5000 },
+    ] };
+    localStorage.setItem(KEY, JSON.stringify(saveDeck(elsewhere)));
+    window.dispatchEvent(new StorageEvent("storage", { key: KEY }));
+    expect(document.activeElement).toBe(first);
+    expect(first.value).toBe("Still typing");
+    expect(second.value).toBe("Also elsewhere");
+  });
+
+  it("goes back to the questions", async () => {
+    const root = await openDocument([card("a", "First?")]);
+    [...root.querySelectorAll("button")].find((b) => b.textContent === "Back to your questions")!.click();
+    expect(root.querySelector(".rc-document")).toBeNull();
+    expect(root.querySelector(".rc-summary")).not.toBeNull();
+  });
+});

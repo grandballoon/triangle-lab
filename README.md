@@ -130,6 +130,10 @@ An answer given in your head is not sent unless you write it down.
 When an answer was not right first time, what Claude said of it is kept with it.
 The next time the question comes up, it is there with your last answer, so you can work from it.
 Each question on the recall page has a History button listing every answer you gave, newest first, with Claude's comments where they were kept.
+
+"Your answers" on the recall page shows all your answers as one document, with each question as a heading over its answer.
+Each answer starts as the last one you wrote in a review, and whatever you type is saved as you go and synced to your other devices.
+Once you have edited an answer, later reviews add to its history but leave your edited version as it is.
 It syncs and is saved to a file with the rest of your questions.
 
 Questions are kept in the browser, like the gesture settings.

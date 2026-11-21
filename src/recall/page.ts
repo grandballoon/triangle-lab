@@ -34,7 +34,10 @@
 // step. The writing and Claude's reading are kept in the browser, to come
 // back to and correct.
 //
-// The rules are pure (deck.ts, session.ts, associate.ts). The sitting is
+// The learner can also read and edit their answers as one document, with each
+// question as a heading over its answer (answers-view.ts).
+//
+// The rules are pure (deck.ts, session.ts, associate.ts, answers.ts). The sitting is
 // held by sitting.ts and its card drawn by card.ts, both shared with the
 // review beside a lesson; this file holds the rest of the page's state,
 // renders it and does the I/O.
@@ -75,6 +78,7 @@ import {
   type Association,
   type ReadingState,
 } from "./associate.ts";
+import { answersView, type AnswersView } from "./answers-view.ts";
 import { cardParts } from "./card.ts";
 import { button, confirmButton, el, redraw, row, typing } from "./dom.ts";
 import {
@@ -115,6 +119,9 @@ const LOCAL_ASSOCIATION_KEY = "triangle-lab:recall-association";
  */
 const ASSOCIATING_KEY = "triangle-lab:recall-associating";
 
+/** Where the tab notes that it is on the answers document, so a reload comes back to it. */
+const DOCUMENT_KEY = "triangle-lab:recall-document";
+
 const { store, sync } = openRecall();
 const root = document.getElementById("recall") as HTMLElement;
 
@@ -125,6 +132,8 @@ held.inLesson(false);
 const tab = held.session ? null : readAssociating();
 /** Whether the free association is on show, rather than the overview. */
 let associating = tab !== null;
+/** The answers document, while it is on show rather than the overview. */
+let answers: AnswersView | null = !held.session && !associating && readDocumenting() ? answersView(store) : null;
 moveLocalAssociation();
 /** The free association, as written and read so far. */
 let association: Association = fromWriting(store.get().writing);
@@ -154,6 +163,11 @@ store.subscribe((deck) => {
       return;
     }
   }
+  // The document takes changes in place, so typing is never disturbed.
+  if (answers) {
+    answers.refresh(deck);
+    return;
+  }
   // The free association does not show the deck; redrawing it would only
   // disturb the writing. A sitting hears what concerns it itself (sitting.ts).
   if (associating || held.session) return;
@@ -166,7 +180,7 @@ sync.subscribe(() => {
   if (!held.session) root.querySelector(".rc-keep")?.replaceWith(keeping(store.get()));
 });
 
-window.addEventListener("resize", () => relayout?.());
+window.addEventListener("resize", () => (answers ? answers.layout() : relayout?.()));
 
 window.addEventListener("keydown", (e) => {
   if (held.session?.phase !== "check" || e.altKey || e.ctrlKey || e.metaKey || typing(e.target)) return;
@@ -194,6 +208,7 @@ render();
 
 function begin(cards: readonly Card[]): void {
   associating = false;
+  answers = null;
   held.begin(cards);
   editing = null;
   notice = null;
@@ -223,6 +238,7 @@ function skip(): void {
 function end(): void {
   held.end();
   associating = false;
+  answers = null;
   render();
   window.scrollTo({ top: 0 });
 }
@@ -232,6 +248,15 @@ function associate(): void {
   associating = true;
   writingOpened = true;
   writingHeight = null;
+  editing = null;
+  notice = null;
+  render();
+  window.scrollTo({ top: 0 });
+}
+
+/** Open the answers document. */
+function openAnswers(): void {
+  answers = answersView(store);
   editing = null;
   notice = null;
   render();
@@ -272,6 +297,14 @@ function clearWriting(): void {
 
 function render(): void {
   keepAssociating();
+  keepDocumenting();
+  if (answers) {
+    const top = el("div", "rc-sitting-top");
+    top.append(el("span", "rc-progress", "Your answers"), button("Back to your questions", "rc-small", end));
+    root.replaceChildren(top, answers.element);
+    answers.layout();
+    return;
+  }
   const session = held.session;
   // An editor just opened takes the focus first; else the box written in
   // before, any editor, or the answer while it is asked for. While it is
@@ -322,7 +355,7 @@ function overview(deck: Deck): HTMLElement[] {
     summary.append(
       el("p", "rc-lead", due.length === 0 ? "You're up to date." : `${due.length} due now`),
       el("p", "rc-note", facts.join(" · ")),
-      row(start, button(`Practise all ${total}`, "", () => begin(deck.cards)), freely),
+      row(start, button(`Practise all ${total}`, "", () => begin(deck.cards)), button("Your answers", "", openAnswers), freely),
     );
   }
 
@@ -762,6 +795,25 @@ function keepAssociating(): void {
     else sessionStorage.removeItem(ASSOCIATING_KEY);
   } catch {
     // Storage blocked: a reload starts from the overview, as before.
+  }
+}
+
+/** Whether this tab was on the answers document when it was last loaded. */
+function readDocumenting(): boolean {
+  try {
+    return sessionStorage.getItem(DOCUMENT_KEY) === "on";
+  } catch {
+    return false;
+  }
+}
+
+/** Keep whether the tab is on the answers document. */
+function keepDocumenting(): void {
+  try {
+    if (answers) sessionStorage.setItem(DOCUMENT_KEY, "on");
+    else sessionStorage.removeItem(DOCUMENT_KEY);
+  } catch {
+    // Storage blocked: a reload starts from the overview.
   }
 }
 
