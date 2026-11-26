@@ -24,6 +24,36 @@ function recorder(): { ctx: CanvasRenderingContext2D; log: [string, unknown][] }
 const widths = (log: [string, unknown][]) => log.filter(([k]) => k === "lineWidth").map(([, v]) => v);
 const blurs = (log: [string, unknown][]) => log.filter(([k]) => k === "shadowBlur").map(([, v]) => v);
 
+describe("noting and painting apart", () => {
+  const A = { x: 0, y: 0 };
+  const B = { x: 2, y: 0 };
+
+  it("notes marks drawn with noteOnly for terms, and paints none of them", () => {
+    const { ctx, log } = recorder();
+    const g = new Draw(ctx, VIEW, "#38d9a9");
+    g.noteOnly((canvas) => {
+      canvas.fillRect(0, 0, 10, 10);
+      g.segment(A, B);
+      g.label(B, "B");
+    });
+    expect(log).toEqual([]);
+    expect(g.anchors("pt:B")).toEqual([toScreen(VIEW, B)]);
+    expect(g.anchors("seg:A.B")).toHaveLength(0);
+    g.label(A, "A");
+    expect(g.anchors("seg:A.B")).toHaveLength(1);
+  });
+
+  it("paints marks drawn with unnoted and leaves them out of the figure index", () => {
+    const { ctx, log } = recorder();
+    const g = new Draw(ctx, VIEW, "#38d9a9");
+    g.unnoted(() => g.label(B, "B"));
+    expect(log.some(([name]) => name === "fillText")).toBe(true);
+    expect(g.anchors("pt:B")).toEqual([]);
+    g.label(B, "B");
+    expect(g.anchors("pt:B")).toHaveLength(1);
+  });
+});
+
 describe("focus", () => {
   it("draws the focused term's marks heavier and glowing, and leaves the rest alone", () => {
     const { ctx, log } = recorder();

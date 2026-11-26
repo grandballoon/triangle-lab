@@ -139,6 +139,15 @@ const middle = (pts: readonly Vec[]): Vec =>
 /** An axis number, with a true minus sign and no float noise. */
 const tick = (n: number): string => String(Math.round(n * 1e6) / 1e6).replace("-", "−");
 
+/** A canvas that takes every call and every setting and paints nothing (`Draw.noteOnly`). */
+const SILENT_CANVAS = new Proxy({} as Record<string | symbol, unknown>, {
+  get: (settings, name) => (name in settings ? settings[name] : () => undefined),
+  set: (settings, name, value) => {
+    settings[name] = value;
+    return true;
+  },
+}) as unknown as CanvasRenderingContext2D;
+
 const FONT = "ui-sans-serif, system-ui, -apple-system, sans-serif";
 const HALO = "rgba(6, 10, 16, 0.78)";
 const RIGHT_ANGLE_TOLERANCE = 0.6; // degrees
@@ -156,7 +165,7 @@ interface Tagged {
 
 export class Draw {
   constructor(
-    private readonly ctx: CanvasRenderingContext2D,
+    private ctx: CanvasRenderingContext2D,
     readonly view: View,
     /** The lesson's colour. */
     readonly accent: string,
@@ -167,6 +176,32 @@ export class Draw {
   private readonly index: FigureIndex = emptyFigure();
   /** Off while drawing a backdrop (grid, axes) that shows nothing a term could mean. */
   private indexing = true;
+
+  /**
+   * Run `marks` so that what they draw counts in the figure index, for the
+   * terms that lead to it, but nothing reaches the canvas. `marks` is handed
+   * the canvas to draw on directly, which swallows everything too.
+   */
+  noteOnly(marks: (canvas: CanvasRenderingContext2D) => void): void {
+    const canvas = this.ctx;
+    this.ctx = SILENT_CANVAS;
+    try {
+      marks(SILENT_CANVAS);
+    } finally {
+      this.ctx = canvas;
+    }
+  }
+
+  /** Run `marks` so that they paint but are left out of the figure index. */
+  unnoted(marks: () => void): void {
+    const was = this.indexing;
+    this.indexing = false;
+    try {
+      marks();
+    } finally {
+      this.indexing = was;
+    }
+  }
 
   /**
    * What the visible marks drawn so far light for any of `terms`: those drawn
@@ -531,14 +566,14 @@ export class Draw {
   grid(step = 1, o: Stroke = {}): void {
     const { xmin, xmax, ymin, ymax } = this.bounds;
     const style: Stroke = { color: C.faint, width: 1, ...o };
-    this.indexing = false;
-    for (let x = Math.ceil(xmin / step) * step; x <= xmax; x += step) {
-      this.segment({ x, y: ymin }, { x, y: ymax }, style);
-    }
-    for (let y = Math.ceil(ymin / step) * step; y <= ymax; y += step) {
-      this.segment({ x: xmin, y }, { x: xmax, y }, style);
-    }
-    this.indexing = true;
+    this.unnoted(() => {
+      for (let x = Math.ceil(xmin / step) * step; x <= xmax; x += step) {
+        this.segment({ x, y: ymin }, { x, y: ymax }, style);
+      }
+      for (let y = Math.ceil(ymin / step) * step; y <= ymax; y += step) {
+        this.segment({ x: xmin, y }, { x: xmax, y }, style);
+      }
+    });
   }
 
   /**
@@ -557,18 +592,18 @@ export class Draw {
     const ymin = o.positive ? origin.y : bounds.ymin;
     const { xmax, ymax } = bounds;
     const style: Stroke = { color: o.color ?? C.dim, width: 2, alpha: o.alpha };
-    this.indexing = false;
-    this.segment({ x: xmin, y: origin.y }, { x: xmax, y: origin.y }, style);
-    this.segment({ x: origin.x, y: ymin }, { x: origin.x, y: ymax }, style);
     const every = o.every ?? 1;
     const text: LabelOptions = { color: o.color ?? C.dim, size: 12, alpha: o.alpha };
-    for (let x = Math.ceil((xmin - origin.x) / every) * every; x + origin.x <= xmax; x += every) {
-      if (x !== 0) this.label({ x: x + origin.x, y: origin.y }, tick(x * units.x), { ...text, dy: -13 });
-    }
-    for (let y = Math.ceil((ymin - origin.y) / every) * every; y + origin.y <= ymax; y += every) {
-      if (y !== 0) this.label({ x: origin.x, y: y + origin.y }, tick(y * units.y), { ...text, dx: -13 });
-    }
-    this.indexing = true;
+    this.unnoted(() => {
+      this.segment({ x: xmin, y: origin.y }, { x: xmax, y: origin.y }, style);
+      this.segment({ x: origin.x, y: ymin }, { x: origin.x, y: ymax }, style);
+      for (let x = Math.ceil((xmin - origin.x) / every) * every; x + origin.x <= xmax; x += every) {
+        if (x !== 0) this.label({ x: x + origin.x, y: origin.y }, tick(x * units.x), { ...text, dy: -13 });
+      }
+      for (let y = Math.ceil((ymin - origin.y) / every) * every; y + origin.y <= ymax; y += every) {
+        if (y !== 0) this.label({ x: origin.x, y: y + origin.y }, tick(y * units.y), { ...text, dx: -13 });
+      }
+    });
   }
 
   // --- Internals -------------------------------------------------------------

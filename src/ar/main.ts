@@ -17,7 +17,7 @@ import { mountCameraSwitch } from "../cameraSwitch.ts";
 import { startHands } from "../hands/index.ts";
 import { C, Draw, toScreen, toStage, type View } from "../lab/draw.ts";
 import { sub, type Vec } from "../lab/geo.ts";
-import { drawGrip, drawSlider, pickRadius } from "../lab/grip.ts";
+import { drawGrips, pickRadius } from "../lab/grip.ts";
 import { Scene, STAGE, type Frame, type Handle, type HandPoints, type LessonBuilder, type LessonView } from "../lab/scene.ts";
 import { SpriteCache } from "../lab/sprites.ts";
 import { capturePointer, releasePointer } from "../pointer.ts";
@@ -248,8 +248,7 @@ function frame(now: number): void {
     g.polygon(corners, { stroke: C.faint, width: 3, alpha: backing });
   }
   lesson.view.draw(g, f);
-  for (const s of lesson.scene.sliders) drawSlider(g, s);
-  for (const h of lesson.scene.handles) drawGrip(ctx, g, h);
+  drawGrips(ctx, g, lesson.scene);
   card.readouts(lesson.view.readout?.(f) ?? []);
 }
 
