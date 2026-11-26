@@ -13,6 +13,16 @@ const PICK_RADIUS_PX: Record<string, number> = { mouse: 24, pen: 24, touch: 36, 
 /** How far from a handle, in screen pixels, a press of this pointer type still grabs it. */
 export const pickRadius = (pointerType: string): number => PICK_RADIUS_PX[pointerType] ?? PICK_RADIUS_PX.touch;
 
+/** Every slider's track and every handle's ring, handles on top. */
+export function drawGrips(
+  ctx: CanvasRenderingContext2D,
+  g: Draw,
+  scene: { sliders: readonly Slider[]; handles: readonly Handle[] },
+): void {
+  for (const s of scene.sliders) drawSlider(g, s);
+  for (const h of scene.handles) drawGrip(ctx, g, h);
+}
+
 /** A handle's ring, or a plain point when it is frozen. */
 export function drawGrip(ctx: CanvasRenderingContext2D, g: Draw, h: Handle): void {
   if (h.hidden) return;

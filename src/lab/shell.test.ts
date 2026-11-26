@@ -5,7 +5,7 @@
 // which reaches the page only as synthetic pointer events — can do the same
 // and can press buttons.
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HandsPanel } from "../hands/panel.ts";
 import { PointerBridge } from "../hands/pointerBridge.ts";
 import { SettingsStore } from "../hands/settings.ts";
@@ -296,7 +296,7 @@ describe("Shell", () => {
     expect(at(el.steps, "seg:A.B").classList.contains("term-linked")).toBe(true);
   });
 
-  it("lights the hovered feature on the figure, and its other mentions in the formulas with their rows", () => {
+  it("lights the hovered feature on the figure, and only its other mentions in the steps and formulas", () => {
     const styles: string[] = [];
     const recording = new Proxy({} as Record<string, unknown>, {
       get: (store, name: string) => (name in store ? store[name] : () => undefined),
@@ -313,7 +313,10 @@ describe("Shell", () => {
     const C = { x: 0, y: 2 };
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Lines", title: "T", accent: "#f472b6" }, () => ({
-      steps: [{ title: "One", text: "Side $BA$ of $\\triangle ABC$." }],
+      steps: [
+        { title: "One", text: "Side $BA$ of $\\triangle ABC$." },
+        { title: "Two", text: "Again $AB$, and $CA$." },
+      ],
       likes: [],
       uses: [],
       draw: (g) => {
@@ -325,30 +328,41 @@ describe("Shell", () => {
       readout: () => [{ tex: "AB = 4" }, { tex: "[ABC] = 4" }, { tex: "\\triangle CBA" }],
     }));
     tick();
-    const at = (host: HTMLElement, id: string) => host.querySelector<HTMLElement>(`[data-term='${id}']`)!;
-    const rows = () => [...el.readouts.children].map((r) => r.classList.contains("readout-echo"));
+    const at = (host: Element, id: string) => host.querySelector<HTMLElement>(`[data-term='${id}']`)!;
+    const step = (n: number) => el.steps.querySelectorAll(".step")[n];
+    /** The terms gently lit, wherever they are, as host and id. */
+    const echoed = () =>
+      [...document.querySelectorAll<HTMLElement>(".term-echo")].map(
+        (t) => `${el.readouts.contains(t) ? "formulas" : `step ${t.closest<HTMLElement>(".step")!.dataset.step}`} ${t.dataset.term}`,
+      );
     const highlight = () => styles.some((style) => style.includes("255, 250, 228"));
-    expect(rows()).toEqual([false, false, false]);
+    expect(echoed()).toEqual([]);
 
-    at(el.steps, "seg:B.A").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    // From the step text: its mentions in the formulas and in the other steps, never the hovered one.
+    at(step(0), "seg:B.A").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
     styles.length = 0;
     tick();
     expect(highlight()).toBe(true);
-    expect(rows()).toEqual([true, false, false]);
-    expect(at(el.readouts, "seg:A.B").classList.contains("term-echo")).toBe(true);
+    expect(echoed()).toEqual(["step 1 seg:A.B", "formulas seg:A.B"]);
 
-    // A triangle is not its area: only the row naming the triangle lights.
-    at(el.steps, "poly:A.B.C").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    // From the formulas: its mentions in the step text.
+    at(el.readouts, "seg:A.B").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
     tick();
-    expect(rows()).toEqual([false, false, true]);
-    expect(at(el.readouts, "seg:A.B").classList.contains("term-echo")).toBe(false);
+    expect(echoed()).toEqual(["step 0 seg:B.A", "step 1 seg:A.B"]);
+
+    // A triangle is not its area.
+    at(step(0), "poly:A.B.C").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(echoed()).toEqual(["formulas poly:C.B.A"]);
+
+    // Only the mentions light, never the formula rows that hold them.
+    expect(el.readouts.querySelector(".readout-echo")).toBeNull();
 
     el.canvas.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
     styles.length = 0;
     tick();
     expect(highlight()).toBe(false);
-    expect(rows()).toEqual([false, false, false]);
-    expect(el.readouts.querySelector(".term-echo")).toBeNull();
+    expect(echoed()).toEqual([]);
   });
 
   it("holds the formulas' changing numbers, greyed, while a handle is dragged", () => {
@@ -522,6 +536,10 @@ describe("PointerBridge", () => {
   const under = (el: Element | null): void => {
     document.elementFromPoint = () => el;
   };
+  // jsdom has no elementFromPoint of its own; leave none behind for later tests.
+  afterEach(() => {
+    Reflect.deleteProperty(document, "elementFromPoint");
+  });
 
   it("lets a hand drag a handle through the shell", () => {
     const { shell, el, scene } = loaded();
@@ -682,5 +700,36 @@ describe("page chrome", () => {
     expect(pressed()).toBe("Off");
     panel.setStatus("noCamera");
     expect(document.querySelector(".hands-pill")!.textContent).toBe("Camera off");
+  });
+});
+
+describe("every lab lesson, in the shell", () => {
+  const modules = import.meta.glob<{ default: (s: Scene) => ReturnType<typeof build> }>("./lessons/*.ts", { eager: true });
+  const labLessons = lessons.filter((l) => l.lab);
+
+  // A term is underlined as linked only when the figure shows it, so pointing
+  // at one must always lead somewhere: the parallelogram's B and D, labelled
+  // by their handles, once were linked yet led nowhere.
+  it.each(labLessons.map((l) => [l.slug] as const))("%s leads from every linked term, at every step", (slug) => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "", title: slug, accent: "#38d9a9" }, (s) => modules[`./lessons/${slug}.ts`].default(s));
+    tick();
+    const leaders = () => [...el.leader.querySelectorAll("line")].filter((l) => l.style.display !== "none").length;
+    const dead: string[] = [];
+    el.steps.querySelectorAll(".step").forEach((section, step) => {
+      shell.goTo(step);
+      tick(5000);
+      tick();
+      const linked = [...section.querySelectorAll<HTMLElement>(".term-linked"), ...el.readouts.querySelectorAll<HTMLElement>(".term-linked")];
+      for (const t of linked) {
+        if (!t.isConnected) continue;
+        t.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+        tick();
+        if (t.isConnected && t.classList.contains("term-linked") && leaders() === 0) dead.push(`step ${step + 1}: ${t.dataset.term}`);
+      }
+    });
+    document.documentElement.dispatchEvent(new PointerEvent("pointerleave"));
+    expect(dead).toEqual([]);
   });
 });
