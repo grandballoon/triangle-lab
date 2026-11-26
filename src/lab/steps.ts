@@ -198,7 +198,8 @@ export class StepList {
       row.setAttribute("role", "tablist");
       const steps = tab("Steps", null);
       row.append(steps);
-      column.insertBefore(row, column.firstChild);
+      // Under anything that heads the column (the grip, sheet-grip.ts), over the pager.
+      column.insertBefore(row, this.pager.parentElement === column ? this.pager : this.host);
       this.tabs = { row, steps, panes: [] };
     }
     const other = tab(label, pane);
@@ -238,15 +239,15 @@ export class StepList {
   }
 
   /**
-   * The column's height that shows the tallest step whole, with the tabs and
-   * the pager row, when paged. 0 until laid out. With the pane shown, as
+   * The column's height that shows the tallest step whole, with everything
+   * above the list (the grip, the tabs, the pager row), when paged. 0 until laid out. With the pane shown, as
    * much as the layout gives: the pane is for writing in.
    */
   pagedHeight(): number {
     if (this.shown) return Infinity;
     const track = this.track.offsetTop + this.track.offsetHeight;
-    const tabs = this.tabs?.row.offsetHeight ?? 0;
-    return track > 0 ? tabs + this.pager.offsetHeight + track + PAGED_BOTTOM_PX : 0;
+    // Everything above the list in the column: the grip, the tabs, the pager row.
+    return track > 0 ? this.host.offsetTop + track + PAGED_BOTTOM_PX : 0;
   }
 
   /** Show `step` as current, scrolling it into place when `scroll` is set. */

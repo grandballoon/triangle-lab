@@ -190,6 +190,43 @@
    step to step. A row above the list pages through, and the asides come with
    the last step. */
 
+/* The grip along the column's top edge (sheet-grip.ts): dragged, tapped or
+   keyed, it sizes the steps, from a few lines up to most of the screen. Its
+   strip is taller than the pill drawn on it, so a thumb finds it. */
+.sheet-grip { display: none; }
+
+html[data-layout="stacked"] .sheet-grip {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 22px;
+  margin-bottom: -6px;
+  cursor: ns-resize;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-layout="stacked"] .sheet-grip[hidden] { display: none; }
+
+.sheet-grip::before {
+  content: "";
+  width: 40px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(233, 240, 247, 0.3);
+  transition: background 0.12s ease, width 0.12s ease;
+}
+
+.sheet-grip:hover::before,
+.sheet-grip.dragging::before {
+  width: 48px;
+  background: rgba(233, 240, 247, 0.6);
+}
+
+.sheet-grip:focus-visible { outline: none; }
+.sheet-grip:focus-visible::before { background: var(--accent); }
+
 .step-pager { display: none; }
 
 html[data-layout="stacked"] .step-pager {
@@ -201,6 +238,8 @@ html[data-layout="stacked"] .step-pager {
 }
 
 html[data-layout="stacked"] .step-pager[hidden] { display: none; }
+
+html[data-layout="stacked"] .step-pager button { width: 52px; height: 36px; }
 
 .step-pager-label {
   flex: 1;
@@ -310,5 +349,7 @@ html[data-layout="stacked"] #step-list[data-last] .aside { display: block; }
   overscroll-behavior: contain;
 }
 
-html[data-layout="stacked"] .column-tabs { padding: 4px 6px 0; }
-html[data-layout="stacked"] .column-tab { padding: 6px 6px 7px; }
+/* On a phone the tabs and the pager are pressed with a thumb, so each is
+   at least 36px tall. */
+html[data-layout="stacked"] .column-tabs { padding: 0 6px; }
+html[data-layout="stacked"] .column-tab { min-height: 36px; padding: 0 6px; }

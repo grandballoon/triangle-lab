@@ -10,12 +10,16 @@
 //   stacked  A phone held upright: the top bar takes two rows (pager, then
 //            title), and the formula band and the steps are stacked along the
 //            bottom at full width. The steps show one at a time (steps.ts),
-//            in as little height as their tallest step needs, and the figure
-//            gets everything else.
+//            in as little height as their tallest step needs, or as tall as
+//            the reader has dragged them (sheet.ts), and the figure gets
+//            everything else.
 //
 // The top bar itself is laid out in CSS (nav.css), which keys its stacked
 // rows off the `data-layout` attribute arrange.ts sets on <html>; the
 // heights below are the ones that CSS draws.
+
+import type { View } from "./draw.ts";
+import { STAGE } from "./scene.ts";
 
 export type LayoutMode = "wide" | "stacked";
 
@@ -41,6 +45,11 @@ export interface LayoutInput {
    * much as the layout allows.
    */
   steps: number;
+  /**
+   * Height the reader dragged the stacked steps to (sheet.ts), or null for
+   * the height `steps` asks. Kept within `ChromeLayout.stepsRange`.
+   */
+  chosenSteps?: number | null;
 }
 
 export interface ChromeLayout {
@@ -50,6 +59,8 @@ export interface ChromeLayout {
   /** Gap between the chrome and the window's edges, and between pieces of chrome. */
   edge: number;
   steps: Box;
+  /** The heights the stacked steps may be dragged between; null when wide. */
+  stepsRange: { min: number; max: number } | null;
   /** The formula band, or null while it is not shown. */
   formulas: Box | null;
   /** Where the row of lesson controls starts and how wide it may run; its height is its own. */
@@ -69,7 +80,10 @@ export interface ChromeLayout {
   canvas: Box;
 }
 
-/** Below this window width the page stacks (a phone held upright). */
+/** The fewest screen pixels a stage unit is ever drawn at. */
+const MIN_STAGE_SCALE = 8;
+
+/** Below this window width, and held upright, the page stacks (a phone). */
 const STACK_BELOW_WIDTH = 700;
 /** Below this window height a wide page is compact (a phone on its side). */
 const COMPACT_BELOW_HEIGHT = 560;
@@ -98,8 +112,10 @@ const STACKED = {
   controls: 44,
   /** The steps never shrink below this, so the pager row and a few lines show. */
   minSteps: 96,
-  /** Nor take more than this share of the window; a longer step scrolls. */
+  /** Nor, unless dragged taller, more than this share of the window; a longer step scrolls. */
   maxStepsShare: 0.34,
+  /** However tall the steps are dragged, the figure keeps this much height. */
+  minFigure: 120,
 } as const;
 
 const PANEL_WIDTH = { min: 250, max: 340, share: 0.25 } as const;
@@ -111,7 +127,10 @@ function panelWidth(windowWidth: number): number {
 }
 
 export function layoutChrome(input: LayoutInput): ChromeLayout {
-  return input.width < STACK_BELOW_WIDTH ? stacked(input) : wide(input);
+  // A phone on its side is narrow too, but stacking there would leave the
+  // figure a sliver between the bar and the steps; it gets the column instead.
+  const upright = input.height >= input.width;
+  return input.width < STACK_BELOW_WIDTH && upright ? stacked(input) : wide(input);
 }
 
 function wide({ width, height, rail, formulas }: LayoutInput): ChromeLayout {
@@ -130,6 +149,7 @@ function wide({ width, height, rail, formulas }: LayoutInput): ChromeLayout {
     compact,
     edge,
     steps,
+    stepsRange: null,
     formulas: band,
     controls: { x: edge + rail, y: WIDE.columnTop, width: right - edge - rail },
     railBottom: band ? height - floor : null,
@@ -140,15 +160,17 @@ function wide({ width, height, rail, formulas }: LayoutInput): ChromeLayout {
   };
 }
 
-function stacked({ width, height, formulas, controls, steps: wanted }: LayoutInput): ChromeLayout {
+function stacked({ width, height, formulas, controls, steps: wanted, chosenSteps = null }: LayoutInput): ChromeLayout {
   const edge = EDGE.compact;
   const bandHeight = FORMULA_BAND_HEIGHT.compact;
   const top = STACKED.bar + (controls ? STACKED.controls : 0);
   const inner = width - 2 * edge;
 
-  const stepsHeight = Math.round(
-    Math.max(STACKED.minSteps, Math.min(height * STACKED.maxStepsShare, wanted)),
-  );
+  // Dragged up, the steps stop where the figure would get too small to use.
+  const above = top + STACKED.minFigure + edge + (formulas ? bandHeight + edge : 0);
+  const range = { min: STACKED.minSteps, max: Math.max(STACKED.minSteps, height - edge - above) };
+  const asked = chosenSteps ?? Math.min(height * STACKED.maxStepsShare, wanted);
+  const stepsHeight = Math.round(Math.min(range.max, Math.max(range.min, asked)));
   const steps = box(edge, height - edge - stepsHeight, inner, stepsHeight);
   const band = formulas ? box(edge, steps.y - edge - bandHeight, inner, bandHeight) : null;
   const floor = (band ?? steps).y - edge;
@@ -157,6 +179,7 @@ function stacked({ width, height, formulas, controls, steps: wanted }: LayoutInp
     compact: true,
     edge,
     steps,
+    stepsRange: range,
     formulas: band,
     controls: { x: edge, y: STACKED.bar, width: inner },
     // Floating over everything, the rail may run the window's full height.
@@ -173,4 +196,15 @@ function box(x: number, y: number, width: number, height: number): Box {
 /** The box between two corners. */
 function span(left: number, top: number, right: number, bottom: number): Box {
   return box(left, top, right - left, bottom - top);
+}
+
+/**
+ * How the lab fits its stage into the room the chrome leaves it (`figure`):
+ * as large as the whole stage fits, centred, on a window `width`×`height`,
+ * with the figure's text kept within the room's sides.
+ */
+export function stageView(figure: Box, width: number, height: number): View {
+  const { x, y, width: w, height: h } = figure;
+  const scale = Math.max(MIN_STAGE_SCALE, Math.min(w / (2 * STAGE.halfWidth), h / (2 * STAGE.halfHeight)));
+  return { scale, ox: x + w / 2, oy: y + h / 2, width, height, room: { left: x, right: x + w } };
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { captionScale, centreY, fitText, grabRadius, nearest, shareBox } from "./fit.ts";
+import { captionScale, centreY, fitText, grabRadius, keepInside, nearest, shareBox } from "./fit.ts";
 
 describe("grabRadius", () => {
   it("keeps a lesson's own radius for a mouse", () => {
@@ -92,5 +92,25 @@ describe("fitText", () => {
     expect(fitted.size).toBe(10);
     expect(fitted.lines).toEqual(["one two", "three four", "five six"]);
     for (const line of fitted.lines) expect(measure(line, 10)).toBeLessThanOrEqual(60);
+  });
+});
+
+describe("keepInside", () => {
+  it("leaves a line that already fits where it is", () => {
+    expect(keepInside(100, 40, "center", 0, 300)).toBe(100);
+    expect(keepInside(10, 40, "left", 0, 300)).toBe(10);
+    expect(keepInside(290, 40, "right", 0, 300)).toBe(290);
+  });
+
+  it("moves a line over an edge the least that brings it back inside", () => {
+    expect(keepInside(10, 40, "center", 0, 300)).toBe(20);
+    expect(keepInside(290, 40, "center", 0, 300)).toBe(280);
+    expect(keepInside(280, 40, "left", 0, 300)).toBe(260);
+    expect(keepInside(20, 40, "right", 0, 300)).toBe(40);
+  });
+
+  it("centres a line wider than the room", () => {
+    expect(keepInside(0, 400, "center", 0, 300)).toBe(150);
+    expect(keepInside(0, 400, "left", 0, 300)).toBe(-50);
   });
 });

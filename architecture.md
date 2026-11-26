@@ -74,7 +74,7 @@ A lesson with live numbers asks for the formula band there while its module is f
 Those rows are built by pure functions in `src/readouts.ts`, and pages showing several triangles at once arrange them with the pure `grid` in `src/grid.ts`.
 The band is used by the triangle inequality, Pythagoras, congruent and similar triangles, and the four trigonometry pages.
 Each standalone figure sizes itself for anything from a phone to a desktop.
-`src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
+`src/fit.ts` holds the pure helpers they share for that: grab radii widened for a finger or a hand, the nearest knob, captions that shrink and then wrap, text kept inside the figure's sides, and where a captioned figure sits; `grid` keeps a room in pixels round each figure for labels drawn at a fixed size.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
@@ -98,6 +98,8 @@ Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, ov
 | `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
+| `lab/sheet.ts` | How the grip on a phone's step column sizes it: drags, taps and keys to heights. Pure. |
+| `lab/sheet-grip.ts` | The grip itself, and the height the reader chose. |
 | `lab/link.ts` | Finds the names, angles, variables and numbers in a formula or step text and marks them as terms. Pure. |
 | `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to what it lights. Pure. |
 | `lab/highlight.ts` | What a hovered term lights on the figure, one shape per kind of feature, and where leaders end. Pure. |
@@ -159,10 +161,17 @@ The lab shell calls it every frame and fits its stage into `figure`; `page.ts` c
 
 There are two arrangements.
 In a wide window the steps run down the right and the band along the bottom.
-Below 700px across (a phone held upright) the page stacks: the top bar takes two rows, and the band and the steps sit under the figure at full width.
+Below 700px across, and taller than wide (a phone held upright), the page stacks: the top bar takes two rows, and the band and the steps sit under the figure at full width.
 The steps then show one at a time, paged with a row of buttons above them (`StepList.setPaged`).
 All steps share one grid cell with only the current one visible, so the list's height is its tallest step's (`pagedHeight`, at most a third of the window, scrolling past that), the figure keeps its size from step to step, and it gets all the rest.
-A short window (a phone on its side) keeps the wide arrangement but goes compact: thinner margins and a band without its heading.
+The reader can size the steps like a sheet with the grip on their top edge: dragged, tapped (all the way open, then back) or keyed.
+`sheet.ts` turns each of those into a height, purely; `sheet-grip.ts` holds the grip and keeps the height, as a share of the window, for the next visit.
+The page passes it to `layoutChrome` as `chosenSteps`, which keeps it within `stepsRange`: from a few lines up to all but 120px of figure.
+A phone on its side keeps the wide arrangement, even below 700px across, since stacking there would leave the figure a sliver; when short it goes compact: thinner margins and a band without its heading.
+
+The shell turns `figure` into the stage's view with `stageView`, whose `room` gives the figure's sides.
+`Draw` keeps every label within them: text too wide shrinks a little and then wraps (`fitText`), and text over an edge moves back inside (`keepInside`), both in `src/fit.ts`.
+A lesson places its labels for the stage, so on a narrow phone this is what keeps a long caption or an edge label readable.
 
 The arrangement is marked on `<html>` as `data-layout` (and `data-compact`), and the stylesheets key their phone rules off it: the two-row top bar (`nav.css`), the single swipeable row of lab controls (`lab.css`), and the hands pill showing an icon for its status text (`hands.css`).
 Those rules draw the heights `layout.ts` assumes, so the two are changed together.

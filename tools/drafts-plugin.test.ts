@@ -5,11 +5,12 @@
 
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { createServer, type ViteDevServer } from "vite";
+import { join } from "node:path";
+import type { ViteDevServer } from "vite";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { DRAFTS_ENDPOINT, explanationContent, type DraftSave } from "../src/dev/drafts/wire.ts";
 import { drafts } from "./drafts-plugin.ts";
+import { startTestServer } from "./test-server.ts";
 
 let server: ViteDevServer;
 let dir: string;
@@ -17,15 +18,7 @@ let base: string;
 
 beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), "drafts-"));
-  server = await createServer({
-    configFile: false,
-    root: resolve(__dirname, ".."),
-    logLevel: "silent",
-    plugins: [drafts(dir)],
-    server: { host: "127.0.0.1", port: 0, watch: null },
-  });
-  await server.listen();
-  base = server.resolvedUrls!.local[0].replace(/\/$/, "");
+  ({ server, base } = await startTestServer([drafts(dir)]));
 });
 
 afterAll(async () => {
