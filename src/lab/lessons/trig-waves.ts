@@ -23,6 +23,9 @@ import {
   wave,
 } from "../kit/unit-circle.ts";
 import { lesson, term, type Readout } from "../scene.ts";
+import gamePlanetOrbitImage from "../../images/game-planet-orbit.svg";
+import hillGradientSignImage from "../../images/hill-gradient-sign.svg";
+import mainsSineWaveImage from "../../images/mains-sine-wave.svg";
 
 const CENTER = vec(-5.6, 0);
 const R = 1.6; // stage units in the length called 1
@@ -104,14 +107,29 @@ export default lesson((s) => {
       {
         title: "Mains electricity",
         text: "A power-station generator turns a coil of wire in a magnetic field. The voltage it makes follows how much of the coil faces the field, which goes as $\\sin\\theta$, so the electricity at a socket is a sine wave. In Europe the coil turns $50$ times a second, so the wave repeats $50$ times a second.",
+        image: {
+          src: mainsSineWaveImage,
+          caption: "Mains electricity: the voltage at a wall socket rises and falls as a sine wave, repeating 50 times a second in Europe.",
+          alt: "A cream wall socket with two round holes, beside a dashed gold sine wave running across a thin horizontal axis.",
+        },
       },
       {
         title: "Moving round a circle in a game",
         text: "To send a planet round a sun at distance $r$, a game places it at $x = r\\cos\\theta$, $y = r\\sin\\theta$ and makes $\\theta$ a little bigger each frame. It is exactly the radius turning in this lesson, and the planet's two coordinates are the two waves.",
+        image: {
+          src: gamePlanetOrbitImage,
+          caption: "A planet orbiting a sun in a game: it sits at r cos θ across and r sin θ up, and growing θ each frame carries it round the circle.",
+          alt: "A game screen with a red sun at the centre of a dashed gold circle and a teal planet on the circle. A dashed gold right triangle runs from the sun across and up to the planet, with its right angle marked.",
+        },
       },
       {
         title: "How steep is a slope",
         text: "A road sign giving a hill as $10\\%$ means it rises $10$ m for every $100$ m across: its slope is $\\tan\\theta = 0.1$, so it climbs at about $5.7^\\circ$. Slope is just tangent: the rise for each $1$ of run, like the height on the tangent wall.",
+        image: {
+          src: hillGradientSignImage,
+          caption: "A 10% hill sign: the road rises 10 metres for every 100 across, so its slope is tan θ = 0.1, a climb of about 5.7°.",
+          alt: "A red triangular road sign reading 10% beside a road that climbs gently to the right. A long, thin dashed gold right triangle sits under the road, with its right angle at the top end.",
+        },
       },
     ],
 

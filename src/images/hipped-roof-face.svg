@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="560" cy="62" r="28" fill="#f2c14e"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <path d="M150 196 H490 V304 H150 Z" fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M296 236 H344 V304 H296 Z" fill="#b07a45" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M180 226 H246 V272 H180 Z M394 226 H460 V272 H394 Z" fill="#5fb0e8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M110 200 L530 200 L410 80 L230 80 Z" fill="#ef6b5b" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M190 120 H450 M150 160 H490" stroke="#0b0f14" stroke-width="5" stroke-linecap="round"/>
+  <path d="M110 200 L530 200 L410 80 L230 80 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M170 140 H470" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="320" y="66" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="30" fill="#f2c14e">6</text>
+  <text x="320" y="229" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="26" fill="#f2c14e" stroke="#0b0f14" stroke-width="5" paint-order="stroke">10</text>
+  <text x="500" y="134" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="30" fill="#f2c14e">4</text>
+</svg>

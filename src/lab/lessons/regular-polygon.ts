@@ -8,6 +8,8 @@ import {
   add, angleAt, angleOf, dist, fmt, inRing, mid, normalize, polygonArea, regularPolygon, scale, sub, toDeg, vec,
 } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import gazeboOctagonFloorImage from "../../images/gazebo-octagon-floor.svg";
+import octagonFrameMitreImage from "../../images/octagon-frame-mitre.svg";
 
 const O = vec(0, 0.5);
 const CIRCUM = C.blue;
@@ -66,10 +68,20 @@ export default lesson((s) => {
       {
         title: "Cutting mitres for an octagonal frame",
         text: "To make an eight-sided frame, each corner must be $\\tfrac{180^\\circ \\cdot 6}{8} = 135^\\circ$, so the frame turns through an exterior angle of $45^\\circ$ there, and each of the two pieces meeting at it is cut $22.5^\\circ$ off square. That is the angle set on the mitre saw; for any regular $n$-sided frame it is $\\tfrac{180^\\circ}{n}$.",
+        image: {
+          src: octagonFrameMitreImage,
+          caption: "An octagonal frame: each of the eight pieces is cut 22.5° off square, so two pieces meet in a 135° corner.",
+          alt: "An eight-sided wooden mirror frame, one mitre joint marked with the 22.5° angle between the cut and a square cut.",
+        },
       },
       {
         title: "Flooring an octagonal gazebo",
         text: "A regular octagonal gazebo floor with sides of $1.5$ m has apothem $r = \\tfrac{0.75}{\\tan 22.5^\\circ} \\approx 1.81$ m and perimeter $12$ m. Its area is $\\tfrac12 \\cdot 12 \\cdot 1.81 \\approx 10.9$ square metres, which is how much decking to order before allowing for waste.",
+        image: {
+          src: gazeboOctagonFloorImage,
+          caption: "An octagonal gazebo floor: half the 12 m perimeter times the 1.81 m apothem gives about 10.9 square metres of decking.",
+          alt: "An octagonal wooden floor seen from above with posts at the corners, one triangle from the centre to a side labelled 1.5 and its apothem marked at a right angle.",
+        },
       },
     ],
 

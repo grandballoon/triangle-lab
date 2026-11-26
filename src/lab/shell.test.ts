@@ -198,6 +198,38 @@ describe("Shell", () => {
     expect(el.steps.lastElementChild!.previousElementSibling).toBe(uses);
   });
 
+  it("shows a use's recommended picture under its text, captioned, and none for a use without one", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
+      ...build(s),
+      uses: [
+        { title: "Trusses", text: "Rigid.", image: { src: "/assets/truss.jpg", caption: "A roof truss.", alt: "Timber triangles." } },
+        { title: "Ramps", text: "Sloped.", image: { src: "/assets/ramp.jpg", caption: "A ramp at a door." } },
+        { title: "Surveying", text: "Angles." },
+      ],
+    }));
+    const items = [...el.steps.querySelectorAll(".aside")].at(-1)!.querySelectorAll(".aside-item");
+    const figures = [...items].map((item) => {
+      const figure = item.querySelector("figure.aside-figure");
+      const img = figure?.querySelector("img");
+      return (
+        figure && {
+          afterText: figure.previousElementSibling?.tagName,
+          src: img?.getAttribute("src"),
+          alt: img?.getAttribute("alt"),
+          loading: img?.getAttribute("loading"),
+          caption: figure.querySelector("figcaption")?.textContent,
+        }
+      );
+    });
+    expect(figures).toEqual([
+      { afterText: "P", src: "/assets/truss.jpg", alt: "Timber triangles.", loading: "lazy", caption: "A roof truss." },
+      { afterText: "P", src: "/assets/ramp.jpg", alt: "", loading: "lazy", caption: "A ramp at a door." },
+      null,
+    ]);
+  });
+
   it("shows a step's subtitle under its title, and none for a step without one", () => {
     const el = page();
     const shell = new Shell(el, () => []);

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M173 285 L448 285 L498 148 L137 84 Z" fill="#5fb0e8"/>
+    <path d="M173 285 L233 215 L323 255 L403 195 L448 245 L448 285 Z" fill="#5fbf72"/>
+    <path d="M139 325 L476 325 L448 285 L173 285 Z" fill="#d9a066"/>
+    <path d="M476 325 L552 117 L498 148 L448 285 Z" fill="#b07a45"/>
+    <path d="M552 117 L88 35 L137 84 L498 148 Z" fill="#d9a066"/>
+    <path d="M88 35 L139 325 L173 285 L137 84 Z" fill="#b07a45"/>
+  </g>
+  <path d="M122 345 L193 261 M490 345 L431 261 M579 101 L466 167 M63 10 L167 114" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="226" y="263" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke">100°</text>
+  <text x="396" y="262" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke">110°</text>
+</svg>

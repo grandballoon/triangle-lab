@@ -19,6 +19,9 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import ambulanceMirrorWritingImage from "../../images/ambulance-mirror-writing.svg";
+import fabricCutOnFoldImage from "../../images/fabric-cut-on-fold.svg";
+import snookerCushionBankImage from "../../images/snooker-cushion-bank.svg";
 
 const EQUAL = C.gold; // the two equal angles at the mirror
 /** Closer to the mirror than this, a point is treated as lying on it. */
@@ -102,14 +105,29 @@ export default lesson((s) => {
       {
         title: "Writing on an ambulance",
         text: "The word AMBULANCE is often painted on the front of the vehicle in mirror writing. A driver ahead sees it in their rear-view mirror, which reflects it a second time and turns it the right way round, so they can read it at a glance and pull over.",
+        image: {
+          src: ambulanceMirrorWritingImage,
+          caption: "An ambulance: the word on its front is painted in mirror writing, so a rear-view mirror reflects it back the right way round.",
+          alt: "The front of an ambulance with AMBULANCE written backwards, a gold dashed mirror line, and a rear-view mirror showing the word the right way round.",
+        },
       },
       {
         title: "Banking a ball off a cushion",
         text: "In snooker and pool, to bounce the cue ball off a cushion onto a target, players aim at the target's reflection in the cushion. The straight line to that reflection crosses the cushion at the bounce point, and since the real path and its reflection meet the cushion at equal angles, the ball comes off the cushion heading straight for the real target.",
+        image: {
+          src: snookerCushionBankImage,
+          caption: "Banking a snooker ball: aim at the target's reflection in the cushion, and the ball bounces off at equal angles straight to the real target.",
+          alt: "A green table with a cue, a white cue ball and a red target ball; a gold dashed path bounces off the cushion, its straight continuation running to a gold dashed reflected ball beyond the cushion, with equal angles marked.",
+        },
       },
       {
         title: "Cutting on the fold",
         text: "Sewing patterns for symmetric pieces, like the back of a shirt, give only half the shape and say place on fold. You fold the fabric, line the pattern's straight edge up with the fold and cut through both layers at once. Unfolded, the second half is the reflection of the first in the fold, so the two sides match exactly.",
+        image: {
+          src: fabricCutOnFoldImage,
+          caption: "Cutting on the fold: the pattern gives half a shirt back, and unfolded the second half is its reflection in the fold, so both sides match.",
+          alt: "A half shirt-back paper pattern pinned to folded purple fabric against the fold, with a gold fold line and the reflected other half outlined in gold dashes.",
+        },
       },
     ],
 

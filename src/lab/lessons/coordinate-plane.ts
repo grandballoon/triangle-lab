@@ -7,6 +7,8 @@ import { C, tint, type Draw } from "../draw.ts";
 import { angleOf, fmt, len, polar, toDeg, wrapAngle, type Vec } from "../geo.ts";
 import { num, pair, par, settle, snapping, X_COLOR, Y_COLOR } from "../kit/coordinates.ts";
 import { lesson } from "../scene.ts";
+import osMapGridReferenceImage from "../../images/os-map-grid-reference.svg";
+import radarScreenBlipImage from "../../images/radar-screen-blip.svg";
 
 const R_COLOR = C.gold;
 const THETA_COLOR = C.green;
@@ -72,10 +74,20 @@ export default lesson((s) => {
       {
         title: "Grid references on a map",
         text: "Ordnance Survey maps name a spot by eastings then northings: how far across, then how far up, just like $(x, y)$. A six-figure reference such as 123 456 means 12.3 km east and 45.6 km north of the south-west corner of its 100 km square. Walkers learn it as “along the corridor, then up the stairs”.",
+        image: {
+          src: osMapGridReferenceImage,
+          caption: "A map grid reference: go along the eastings first, then up the northings, just like finding the point (x, y).",
+          alt: "A cream map with a blue grid, a river and woods; a dashed gold path runs along the bottom edge then up a grid line to a red pin.",
+        },
       },
       {
         title: "Radar screens",
         text: "Radar finds a ship or aircraft by how far away it is and in which direction, a polar address. To plot it on a map, the computer converts with $x = r\\cos\\theta$ and $y = r\\sin\\theta$. One catch: navigators measure bearings clockwise from north, so a bearing of $90^\\circ$ means due east, $\\theta = 0^\\circ$.",
+        image: {
+          src: radarScreenBlipImage,
+          caption: "A radar screen: a blip found by its distance and direction is turned into x and y with r cos θ and r sin θ.",
+          alt: "A round green radar screen with a sweep; a dashed gold right triangle runs from the centre across and up to a blip, its long side marked r.",
+        },
       },
     ],
 

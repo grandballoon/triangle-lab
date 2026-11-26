@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="60" y="80" width="520" height="180" rx="4" fill="#d9a066" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M80 110 L240 110 M420 140 L560 140 M90 200 L230 200 M400 236 L540 236" stroke="#b07a45" stroke-width="5" stroke-linecap="round"/>
+  <path d="M60 125 L580 125 M60 170 L580 170 M60 215 L580 215" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g fill="none" stroke-linecap="butt"><path d="M205 60 L370 280" stroke="#0b0f14" stroke-width="40"/><path d="M205 60 L370 280" stroke="#f3ead8" stroke-width="28"/></g>
+  <path d="M220 80 L230 73 M254 125 L264 118 M288 170 L298 163 M321 215 L331 208 M355 260 L365 253" stroke="#0b0f14" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="3"><circle cx="254" cy="125" r="6"/><circle cx="288" cy="170" r="6"/><circle cx="321" cy="215" r="6"/></g>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f3ead8" text-anchor="middle"><text x="246" y="62">0</text><text x="322" y="306">12</text></g>
+</svg>

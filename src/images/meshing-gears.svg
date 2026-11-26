@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g transform="translate(24 0)">
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M329 171 L351 176 L351 190 L328 194 L326 205 L346 216 L341 230 L319 226 L313 237 L328 253 L320 265 L300 254 L291 263 L300 283 L289 292 L273 275 L262 281 L265 303 L251 307 L241 287 L229 289 L224 311 L210 311 L206 288 L195 286 L184 306 L170 301 L174 279 L163 273 L147 288 L135 280 L146 260 L137 251 L117 260 L108 249 L125 233 L119 222 L97 225 L93 211 L113 201 L111 189 L89 184 L89 170 L112 166 L114 155 L94 144 L99 130 L121 134 L127 123 L112 107 L120 95 L140 106 L149 97 L140 77 L151 68 L167 85 L178 79 L175 57 L189 53 L199 73 L211 71 L216 49 L230 49 L234 72 L245 74 L256 54 L270 59 L266 81 L277 87 L293 72 L305 80 L294 100 L303 109 L323 100 L332 111 L315 127 L321 138 L343 135 L347 149 L327 159 Z" fill="#8fa3b8"/>
+    <path d="M472 192 L492 203 L486 217 L464 211 L458 220 L470 240 L458 249 L442 233 L431 238 L432 261 L417 263 L411 241 L400 240 L389 260 L375 254 L381 232 L372 226 L352 238 L343 226 L359 210 L354 199 L331 200 L329 185 L351 179 L352 168 L332 157 L338 143 L360 149 L366 140 L354 120 L366 111 L382 127 L393 122 L392 99 L407 97 L413 119 L424 120 L435 100 L449 106 L443 128 L452 134 L472 122 L481 134 L465 150 L470 161 L493 160 L495 175 L473 181 Z" fill="#d9a066"/>
+    <circle cx="220" cy="180" r="26" fill="#1c2633"/>
+    <circle cx="412" cy="180" r="20" fill="#1c2633"/>
+  </g>
+  <g fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8">
+    <circle cx="220" cy="180" r="120"/>
+    <circle cx="412" cy="180" r="72"/>
+  </g>
+  <path d="M220 180 H412" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="220" cy="180" r="7"/><circle cx="412" cy="180" r="7"/><circle cx="340" cy="180" r="7"/></g>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">
+    <text x="280" y="168">5</text><text x="376" y="168">3</text><text x="316" y="340">8</text>
+  </g>
+  <path d="M220 306 V322 M412 306 V322 M220 314 H292 M340 314 H412" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

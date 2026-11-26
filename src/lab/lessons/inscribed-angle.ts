@@ -9,6 +9,8 @@ import { C } from "../draw.ts";
 import { angleAt, fmtDeg, polar, TAU, toRad, vec, wrapAngle } from "../geo.ts";
 import { arcTex, bearing, degTex, nameOutside, ring } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import photoTwoTowersImage from "../../images/photo-two-towers.svg";
+import shipSextantFixImage from "../../images/ship-sextant-fix.svg";
 
 const O = vec(0, 0.2);
 const R = 3.8;
@@ -86,10 +88,20 @@ export default lesson((s) => {
       {
         title: "Fixing a ship's position",
         text: "A navigator measures the angle between two lighthouses with a sextant held flat. Every point that sees them at that angle lies on one arc of a circle through both lighthouses, so the ship is somewhere on that arc. A second angle, to a third landmark, gives another arc, and the ship is where they cross.",
+        image: {
+          src: shipSextantFixImage,
+          caption: "A navigator's fix: every point that sees two lighthouses at the same angle lies on one arc through both, so the ship is somewhere on that arc.",
+          alt: "Two lighthouses on a shore and a boat at sea, with gold lines from the boat to each lighthouse, the angle between them marked, and a dashed gold arc through the lighthouses and the boat.",
+        },
       },
       {
         title: "Framing two buildings in a photo",
         text: "A photographer wants two towers to sit exactly at the edges of a lens that sees $40^\\circ$ across. Any spot on the arc through both towers that sees them at $40^\\circ$ works, so they can walk along that arc to pick the best foreground.",
+        image: {
+          src: photoTwoTowersImage,
+          caption: "A photographer framing two towers at the edges of a 40° lens can stand anywhere on the arc through both towers and still fit them exactly.",
+          alt: "A photographer seen from behind holding a camera towards two towers, with gold lines from their spot to the base of each tower and a dashed gold arc on the ground through both towers and the spot, labelled 40°.",
+        },
       },
     ],
 

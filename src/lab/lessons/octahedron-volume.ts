@@ -7,6 +7,8 @@ import { fmt } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { dist3, faces, label3, lerp3, Orbit, p3, point3, polygon3, segment3 } from "../solid.ts";
 import { glass, pyramidSides, rightAngle3, tetraVolume } from "../kit/solids.ts";
+import octahedronD8DieImage from "../../images/octahedron-d8-die.svg";
+import roughDiamondOctahedronImage from "../../images/rough-diamond-octahedron.svg";
 
 const SQUARE = C.gold;
 const HALF_DIAGONAL = C.green;
@@ -70,10 +72,20 @@ export default lesson((s) => {
       {
         title: "Eight-sided dice",
         text: "The eight-sided die in tabletop games is a regular octahedron. One with $2$ cm edges takes up $\\tfrac{\\sqrt2}{3} \\cdot 2^3 \\approx 3.8$ cubic centimetres, which is how much plastic or resin it needs if it is solid.",
+        image: {
+          src: octahedronD8DieImage,
+          caption: "An eight-sided die is a regular octahedron, so its edge length alone gives how much plastic it needs.",
+          alt: "A purple eight-sided die on a table with numbers on its faces; its hidden back edges are dashed gold.",
+        },
       },
       {
         title: "Weighing a diamond crystal",
         text: "Rough diamonds often grow as octahedra. An octahedral crystal with $5$ mm edges has volume $\\tfrac{\\sqrt2}{3} \\cdot 125 \\approx 59$ cubic millimetres, and diamond weighs about $3.5$ milligrams per cubic millimetre. That gives roughly $207$ mg, just over $1$ carat ($200$ mg), estimated from the edge alone.",
+        image: {
+          src: roughDiamondOctahedronImage,
+          caption: "A rough diamond crystal grows as an octahedron, so its edge length gives its volume and so its weight, about 207 mg.",
+          alt: "A blue octahedral crystal on a small scale reading 207; its hidden back edges are dashed gold.",
+        },
       },
     ],
 

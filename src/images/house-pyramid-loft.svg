@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<rect width="640" height="360" fill="#131a23"/>
+<rect y="296" width="640" height="64" fill="#2b3a2f"/>
+<g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+<path d="M110 214L370 238V316L110 292Z" fill="#f3ead8"/>
+<path d="M370 238L530 198V276L370 316Z" fill="#d9a066"/>
+<rect x="150" y="238" width="54" height="40" rx="4" fill="#5fb0e8"/>
+<rect x="274" y="244" width="54" height="40" rx="4" fill="#5fb0e8"/>
+<path d="M410 244L460 232V266L410 278Z" fill="#5fb0e8"/>
+<path d="M110 214L370 238L320 86Z" fill="#ef6b5b"/>
+<path d="M370 238L530 198L320 86Z" fill="#b07a45"/>
+</g>
+<path d="M110 214L370 238L530 198L320 86Z" fill="#f2c14e" fill-opacity="0.2"/>
+<g fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round">
+<path d="M110 94L370 118L530 78L270 54ZM110 94V214M370 118V238M530 78V198M270 54V174L110 214M270 174L530 198M270 174L320 86"/>
+</g>
+<text x="586" y="150" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e">⅓</text>
+</svg>

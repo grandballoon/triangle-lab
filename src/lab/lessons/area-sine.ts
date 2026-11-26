@@ -11,6 +11,9 @@ import {
 } from "../geo.ts";
 import { inSector } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import gameMeshImage from "../../images/game-mesh.svg";
+import hexagonTileTrianglesImage from "../../images/hexagon-tile-triangles.svg";
+import surveyorTwoSidesAngleImage from "../../images/surveyor-two-sides-angle.svg";
 
 const O = vec(-1.5, -2.8); // the vertex C, where the angle is
 
@@ -86,14 +89,29 @@ export default lesson((s) => {
       {
         title: "Measuring a plot from one corner",
         text: "A surveyor standing at one corner of a triangular plot can measure two sides, 40 and 30 metres, and the angle between them, $50^\\circ$, without walking to the far side. The area is $\\frac12 \\cdot 40 \\cdot 30 \\cdot \\sin 50^\\circ \\approx 460$ square metres. No height needs to be found.",
+        image: {
+          src: surveyorTwoSidesAngleImage,
+          caption: "A surveyor at one corner of a triangular plot measures two sides and the angle between them, which is enough to give the area without walking to the far side.",
+          alt: "A surveyor with a tripod at the left corner of a green triangular plot, sides marked 40 and 30 and the angle between them marked 50°.",
+        },
       },
       {
         title: "How much a hexagon tile covers",
         text: "A regular hexagon splits into six equilateral triangles. A hexagonal floor tile with 20 centimetre sides therefore covers $6 \\cdot \\frac{\\sqrt3}{4} \\cdot 20^2 \\approx 1039$ square centimetres, which is how you work out how many to order for a room.",
+        image: {
+          src: hexagonTileTrianglesImage,
+          caption: "A hexagonal floor tile: it splits into six equilateral triangles, so its area tells you how many tiles to order for a room.",
+          alt: "A floor of hexagonal tiles, one tile highlighted and split by gold lines from its centre into six triangles, with a side marked 20.",
+        },
       },
       {
         title: "Triangles in 3D graphics",
         text: "Game engines and 3D modelling software describe every surface as triangles, and often need their areas, for lighting or for scattering grass evenly over terrain. They get them with the cross product of two sides, whose length is $ab \\sin C$: twice the area, from two sides and the angle between them.",
+        image: {
+          src: gameMeshImage,
+          caption: "A 3D model on screen is built from triangles, and the engine finds each one's area from two sides and the angle between them, for lighting or scattering grass.",
+          alt: "A monitor showing a surface made of coloured triangles, one outlined in gold.",
+        },
       },
     ],
 

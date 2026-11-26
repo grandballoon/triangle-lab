@@ -40,6 +40,22 @@ export interface Likeness {
 export interface Use {
   title: string;
   text: string;
+  /** A picture of the use, shown under its text. */
+  image?: UseImage;
+}
+
+/**
+ * A recommended picture of a use, picked for the lesson rather than added by
+ * the reader: a roof truss for SSS, say. Its file lives in `src/images/`
+ * (README.md, "Adding a recommended image").
+ */
+export interface UseImage {
+  /** The picture's URL: the default import of its file, which Vite fingerprints. */
+  src: string;
+  /** Plain text under the picture, saying what real use it shows. */
+  caption: string;
+  /** What the picture shows, for a reader who cannot see it; leave it out when the caption says it all. */
+  alt?: string;
 }
 
 /** What a lesson says around its steps: what its idea is like, and what it is for. */

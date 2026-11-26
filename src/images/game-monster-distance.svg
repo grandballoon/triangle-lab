@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="52" y="22" width="536" height="316" rx="12" fill="#1c2633" stroke="#0b0f14" stroke-width="6"/>
+  <path d="M80 26 V334 M135 26 V334 M190 26 V334 M245 26 V334 M300 26 V334 M355 26 V334 M410 26 V334 M465 26 V334 M520 26 V334 M575 26 V334 M56 300 H584 M56 245 H584 M56 190 H584 M56 135 H584 M56 80 H584" stroke="#2a3340" stroke-width="3"/>
+  <path d="M190 300 L355 300 L355 80 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M331 300 V276 H355" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="174" y="276" width="32" height="40" rx="10" fill="#5fb0e8"/>
+    <circle cx="190" cy="262" r="16" fill="#f3c9a0"/>
+    <path d="M325 104 V72 Q325 44 355 44 Q385 44 385 72 V104 L375 96 L365 104 L355 96 L345 104 L335 96 Z" fill="#a78bfa"/>
+  </g>
+  <g fill="#0b0f14"><circle cx="345" cy="68" r="5"/><circle cx="365" cy="68" r="5"/></g>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle">
+    <text x="272" y="290">3</text><text x="384" y="200">4</text><text x="250" y="178">5</text>
+  </g>
+</svg>

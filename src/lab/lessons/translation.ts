@@ -20,6 +20,9 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson } from "../scene.ts";
+import gameSpriteStepGlideImage from "../../images/game-sprite-step-glide.svg";
+import setSquareSlideRulerImage from "../../images/set-square-slide-ruler.svg";
+import wallpaperPatternRepeatImage from "../../images/wallpaper-pattern-repeat.svg";
 
 const RUN = C.gold;
 const RISE = C.pink;
@@ -71,14 +74,29 @@ export default lesson((s) => {
       {
         title: "Hanging wallpaper",
         text: "Patterned wallpaper repeats: the printer draws one motif and prints it again and again, each copy slid the same distance, called the pattern repeat, down the roll. When you hang the next strip beside the first, you slide it up or down until its pattern lines up with its neighbour's. Because every copy is a translation of the first, matching one flower along the join matches them all.",
+        image: {
+          src: wallpaperPatternRepeatImage,
+          caption: "Hanging wallpaper: every flower is the first one slid by the same repeat, so lining up one flower across the join lines them all up.",
+          alt: "Two strips of flowered wallpaper side by side, the right one slid up to match, with gold lines joining matching flowers and a gold arrow marking the pattern repeat.",
+        },
       },
       {
         title: "Moving a character in a video game",
         text: "A game stores where each character is as a pair of coordinates and, every frame, adds the same step to it. A character at $(100, 40)$ walking with step $(3, -2)$ is drawn at $(103, 38)$, then $(106, 36)$. Every pixel of its picture is shifted by that same step, which is why it glides across the screen without turning or changing size.",
+        image: {
+          src: gameSpriteStepGlideImage,
+          caption: "A video game character: each frame adds the same step to its position, so it glides across the screen without turning or changing size.",
+          alt: "A blocky green character on a game screen, with two gold dashed outlines of its earlier positions and equal gold arrows between them.",
+        },
       },
       {
         title: "Drawing parallel lines with a set square",
         text: "Draughtsmen and carpenters hold a ruler still and slide a set square along it, drawing a line against the set square's edge at each stop. Sliding along the ruler is a translation, so every line drawn is the image of the first and runs parallel to it, just as $A'B'$ runs parallel to $AB$.",
+        image: {
+          src: setSquareSlideRulerImage,
+          caption: "Drawing parallels: sliding a set square along a held ruler is a translation, so every line drawn against its edge runs parallel to the first.",
+          alt: "A purple set square resting on a steel ruler on paper, with gold dashed slanting lines drawn at earlier stops and a gold arrow along the ruler.",
+        },
       },
     ],
 

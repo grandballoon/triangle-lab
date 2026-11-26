@@ -78,7 +78,7 @@ Each standalone figure sizes itself for anything from a phone to a desktop.
 On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle rather than beside it.
 
 **Lab lessons** (`src/lab/lessons/<slug>.ts`) are hosted by one page, `lab.html`, and loaded on demand.
-A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`).
+A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`), each of which may carry a recommended picture with a caption (`UseImage`), its file kept in `src/images/` and imported by the lesson.
 It never touches the DOM.
 
 A lesson that defines terms, one at a time, asks the scene for a row of them with `s.terms`: a `Choice` whose option n is step n.

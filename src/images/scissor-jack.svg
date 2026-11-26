@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2a3340"/>
+  <path d="M40 30 H600 V100 H40 Z" fill="#ef6b5b" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M120 100 A70 70 0 0 1 260 100 Z M380 100 A70 70 0 0 1 520 100 Z" fill="#131a23" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="6"><circle cx="450" cy="120" r="56" fill="#1c2633"/><circle cx="450" cy="120" r="22" fill="#8fa3b8"/></g>
+  <path d="M250 286 H390 V304 H250 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M284 100 H356 V120 H284 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M140 203 H460" stroke="#0b0f14" stroke-width="14"/><path d="M140 203 H460" stroke="#d9a066" stroke-width="6"/></g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M320 120 L431 203 L320 286 L209 203 Z" stroke="#0b0f14" stroke-width="22"/><path d="M320 120 L431 203 L320 286 L209 203 Z" stroke="#8fa3b8" stroke-width="12"/></g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M140 203 V241 H110" stroke="#0b0f14" stroke-width="17"/><path d="M140 203 V241 H110" stroke="#8fa3b8" stroke-width="8"/></g>
+  <path d="M320 120 V286 M209 203 H431" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M334 203 L334 217 L320 217" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#f3ead8" stroke="#0b0f14" stroke-width="4"><circle cx="320" cy="120" r="9"/><circle cx="320" cy="286" r="9"/><circle cx="209" cy="203" r="9"/><circle cx="431" cy="203" r="9"/></g>
+  <text x="346" y="194" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="28" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke">40</text>
+  <text x="294" y="232" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="28" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke">30</text>
+</svg>

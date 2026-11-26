@@ -6,6 +6,8 @@ import { C, tint } from "../draw.ts";
 import { dist, fmt, inRing, polygonArea, TAU, vec, type Vec } from "../geo.ts";
 import { agree, outline } from "../kit/areas.ts";
 import { lesson } from "../scene.ts";
+import pipeWallRingImage from "../../images/pipe-wall-ring.svg";
+import stopSignCutImage from "../../images/stop-sign-cut.svg";
 
 const RING_CENTER = vec(-5.2, 0.5);
 const OCTAGON_CENTER = vec(2.7, 0.5);
@@ -75,10 +77,20 @@ export default lesson((s) => {
       {
         title: "How much metal is in a pipe?",
         text: "A pipe's cross-section is a ring. A pipe 10 cm across with walls 1 cm thick has outer radius 5 cm and inner radius 4 cm, so its wall has area $\\pi \\cdot 5^2 - \\pi \\cdot 4^2 = 9\\pi \\approx 28.3$ square centimetres. Multiply by the length to find how much metal it takes.",
+        image: {
+          src: pipeWallRingImage,
+          caption: "A pipe seen end on: its wall is a ring, the area between an outer circle of radius 5 cm and an inner one of radius 4 cm.",
+          alt: "A steel pipe lying on the floor, its open end facing out. The ring of metal at the end is shaded gold between two dashed gold circles, with radii marked 5 and 4.",
+        },
       },
       {
         title: "Cutting a stop sign",
         text: "Stop signs are regular octagons, sized by their width across the flat sides, which is the square of this lesson. A sign 75 cm across has $s = \\frac{75}{1 + \\sqrt2} \\approx 31.1$ cm. Cut from a 75 cm square sheet, it uses $75^2 - s^2 \\approx 4660$ square centimetres, and the four corners thrown away add up to $s^2 \\approx 965$.",
+        image: {
+          src: stopSignCutImage,
+          caption: "Cutting a stop sign: a regular octagon cut from a 75 cm square sheet, with four triangular corners thrown away.",
+          alt: "A red octagonal sign with a cream rim on a square steel sheet. The square is outlined in dashed gold, the side is marked 75, and the four corner triangles left over are shaded gold.",
+        },
       },
     ],
 

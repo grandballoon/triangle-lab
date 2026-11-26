@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { asides } from "./asides.ts";
 import { directions } from "./directions.ts";
+import { imageFaults } from "./images/check.ts";
 import { linkTex } from "./lab/link.ts";
 import { richHtml } from "./lab/math.ts";
 import { anchorOf, chapters, lessons } from "./lessons.ts";
@@ -62,6 +63,7 @@ describe("standalone pages", () => {
       expect(aside.text.trim()).not.toBe("");
       richHtml(aside.text, true);
     }
+    for (const { image } of uses) if (image) expect(imageFaults(image), image.caption).toEqual([]);
   });
 
   it("brings in the Pythagoras proof at the step that scrubs it", () => {

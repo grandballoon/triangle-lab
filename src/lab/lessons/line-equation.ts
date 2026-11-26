@@ -18,6 +18,8 @@ import {
   texSum,
 } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import taxiFareLineImage from "../../images/taxi-fare-line.svg";
+import thermometerCelsiusLineImage from "../../images/thermometer-celsius-line.svg";
 
 const INTERCEPT = C.cyan;
 const SECOND = C.gold;
@@ -116,10 +118,20 @@ export default lesson((s) => {
       {
         title: "Converting temperatures",
         text: "Water freezes at $0^\\circ$C, which is $32^\\circ$F, and boils at $100^\\circ$C, which is $212^\\circ$F. Those two points give the slope $\\frac{212 - 32}{100 - 0} = 1.8$ and the intercept $32$, so $F = 1.8C + 32$. Its $x$-intercept says that $0^\\circ$F is about $-17.8^\\circ$C.",
+        image: {
+          src: thermometerCelsiusLineImage,
+          caption: "Converting temperatures: freezing at 0°C and 32°F and boiling at 100°C and 212°F fix the straight line F = 1.8C + 32.",
+          alt: "A thermometer beside a graph with a dashed gold straight line through two points, marked 32 and 212 on the up axis and 100 along the bottom.",
+        },
       },
       {
         title: "A taxi fare",
         text: "A taxi that charges 3 pounds when you get in and 2 pounds a mile costs $y = 2x + 3$ pounds for $x$ miles. The intercept is the fixed charge and the slope the rate, so you can price a 7 mile trip, 17 pounds, before you set off.",
+        image: {
+          src: taxiFareLineImage,
+          caption: "A taxi fare: the 3 pound fixed charge is where the line starts and 2 pounds a mile is its slope, so 7 miles costs 17 pounds.",
+          alt: "A red taxi beside a graph whose dashed gold line starts at 3 on the up axis and rises to a point marked 17.",
+        },
       },
     ],
 

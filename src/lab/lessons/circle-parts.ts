@@ -9,6 +9,9 @@ import { C, tint } from "../draw.ts";
 import { add, angleAt, angleOf, dist, fmt, inRing, onCircle, perp, polar, sub, TAU, toDeg, vec, wrapAngle } from "../geo.ts";
 import { arcPoints, onCircleClearOf } from "../kit/circles.ts";
 import { lesson, term, type Handle, type Readout } from "../scene.ts";
+import beltTwoWheelsImage from "../../images/belt-two-wheels.svg";
+import pizzaSliceSectorImage from "../../images/pizza-slice-sector.svg";
+import stringFlowerBedImage from "../../images/string-flower-bed.svg";
 
 const O = vec(0, 0.7);
 const R_MIN = 1.8;
@@ -168,14 +171,29 @@ export default lesson((s) => {
       {
         title: "Marking out a round flower bed",
         text: "Gardeners mark a round bed with a peg in the ground and a string tied to it. Walking round with the string held tight, every mark they make is one radius from the peg, so the outline is a circle. A $1.5$ metre string gives a bed $3$ metres across, its diameter.",
+        image: {
+          src: stringFlowerBedImage,
+          caption: "Marking out a flower bed: a string tied to a peg keeps every mark one radius from the centre, so the outline is a circle.",
+          alt: "A gardener holds a taut string from a peg at the centre of a round soil bed, with a few flowers round its edge. The string is marked 1.5 and the edge of the bed is traced in gold.",
+        },
       },
       {
         title: "Sizing a pizza",
         text: "A $30$ cm pizza is measured straight across through the middle: that is its diameter, so the radius from the centre to the crust is $15$ cm. Each slice cut from the middle is a sector, and its crust is an arc.",
+        image: {
+          src: pizzaSliceSectorImage,
+          caption: "A 30 cm pizza: measured straight through the middle is its diameter, each slice is a sector, and its crust is an arc.",
+          alt: "A pepperoni pizza cut into eight slices. A gold dashed diameter marked 30 runs across it, and one slice is shaded gold with its crust arc in solid gold.",
+        },
       },
       {
         title: "Running a belt round two wheels",
         text: "On a bike's chain or an engine's fan belt, the belt wraps part way round each wheel and runs straight between them. Each straight run leaves a wheel along a tangent, and the part lying on a wheel is an arc. To find the length of belt needed, mechanics add the straight tangent runs to those arcs.",
+        image: {
+          src: beltTwoWheelsImage,
+          caption: "A belt round two wheels: each straight run leaves a wheel along a tangent, and the part lying on a wheel is an arc.",
+          alt: "A large and a small pulley joined by a belt traced in gold. Radii run to the points where the straight runs leave the wheels, with right-angle marks there.",
+        },
       },
     ],
 

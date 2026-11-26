@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <circle cx="560" cy="66" r="30" fill="#f2c14e"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M150 130 L350 130 L450 50 L250 50 Z" fill="#5fbf72"/>
+    <path d="M350 330 L450 250 L450 50 L350 130 Z" fill="#8a5a34"/>
+    <rect x="150" y="130" width="200" height="200" fill="#b07a45"/>
+  </g>
+  <path d="M170 330 l0 -200 M150 310 l200 0 M190 330 l0 -200 M150 290 l200 0 M210 330 l0 -200 M150 270 l200 0 M230 330 l0 -200 M150 250 l200 0 M250 330 l0 -200 M150 230 l200 0 M270 330 l0 -200 M150 210 l200 0 M290 330 l0 -200 M150 190 l200 0 M310 330 l0 -200 M150 170 l200 0 M330 330 l0 -200 M150 150 l200 0 M170 130 l100 -80 M160 122 l200 0 M190 130 l100 -80 M170 114 l200 0 M210 130 l100 -80 M180 106 l200 0 M230 130 l100 -80 M190 98 l200 0 M250 130 l100 -80 M200 90 l200 0 M270 130 l100 -80 M210 82 l200 0 M290 130 l100 -80 M220 74 l200 0 M310 130 l100 -80 M230 66 l200 0 M330 130 l100 -80 M240 58 l200 0 M360 322 l0 -200 M350 310 l100 -80 M370 314 l0 -200 M350 290 l100 -80 M380 306 l0 -200 M350 270 l100 -80 M390 298 l0 -200 M350 250 l100 -80 M400 290 l0 -200 M350 230 l100 -80 M410 282 l0 -200 M350 210 l100 -80 M420 274 l0 -200 M350 190 l100 -80 M430 266 l0 -200 M350 170 l100 -80 M440 258 l0 -200 M350 150 l100 -80" fill="none" stroke="#0b0f14" stroke-width="2"/>
+  <path d="M180 302 L340 302 L340 142 L180 142 Z M260 238 L420 238 L420 78 L260 78 Z M180 302 L260 238 M340 302 L420 238 M340 142 L420 78 M180 142 L260 78" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+</svg>

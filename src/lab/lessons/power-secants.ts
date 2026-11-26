@@ -8,6 +8,8 @@ import { C, tint } from "../draw.ts";
 import { both, dist, fmt, inBox, inRing, polar, toRad, vec, wrapAngle } from "../geo.ts";
 import { bearing, farArc, farPair, nameOutside, nearPoint } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import horizonTangentImage from "../../images/horizon-tangent.svg";
+import lighthouseHorizonImage from "../../images/lighthouse-horizon.svg";
 
 const O = vec(2.4, 0);
 const R = 3.1;
@@ -155,10 +157,20 @@ export default lesson((s) => {
       {
         title: "How far is the horizon?",
         text: "Your line of sight to the horizon is a tangent to the Earth, and the line straight down through its centre is a secant: its outside part is your height $h$ and the whole of it is $h + 2R$, with $R \\approx 6371$ km. So the horizon is $\\sqrt{h(2R + h)}$ away. With your eyes 1.7 m above the sea that is about 4.7 km; from the top of a 100 m cliff, about 36 km. The air bends light slightly, so in practice you see a little further.",
+        image: {
+          src: horizonTangentImage,
+          caption: "Seeing the horizon: your line of sight is a tangent to the Earth, and your height h plus the diameter make the secant.",
+          alt: "A person standing on top of the Earth, with a dashed line of sight touching the Earth at a right angle to the radius R, and a dashed line straight down through the centre, the person's height marked h.",
+        },
       },
       {
         title: "When a lighthouse comes into view",
         text: "A light 30 m above the sea has its own horizon about 19.6 km away, and a lookout 10 m up has one about 11.3 km away. Their two lines of sight can just meet at a shared horizon point, so the light first shows over the edge of the sea about 31 km out. Navigators work out a light's range in this way, with a small allowance for the air bending light.",
+        image: {
+          src: lighthouseHorizonImage,
+          caption: "A lighthouse coming into view: its line of sight and a ship's lookout's meet at a shared horizon point, 19.6 km and 11.3 km away.",
+          alt: "A lighthouse and a ship on a curved sea, joined by one dashed line that just touches the sea between them, the two parts marked 19.6 and 11.3.",
+        },
       },
     ],
   };

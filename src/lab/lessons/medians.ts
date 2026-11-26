@@ -7,6 +7,7 @@ import { angleAt, dist, fmt, mid, triangleArea } from "../geo.ts";
 import { degTex } from "../kit/circle-angles.ts";
 import { baseKnob, CAPTION_AT, overMidpoint, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson, type Readout } from "../scene.ts";
+import medianFieldImage from "../../images/median-field.svg";
 
 const TERMS = ["median", "isosceles apex"] as const;
 
@@ -49,6 +50,11 @@ export default lesson((s) => {
       {
         title: "Sharing a triangular field",
         text: "Two farmers share a triangular field equally. A fence from one corner to the midpoint of the far side, a median, splits it into two pieces of equal area, because both pieces have half that side as a base and the same height up to the corner. Laying it out takes only a tape measure, to find the midpoint, and no angles at all.",
+        image: {
+          src: medianFieldImage,
+          caption: "Sharing a field: a fence from one corner to the midpoint of the far side, a median, splits a triangular field into two pieces of equal area.",
+          alt: "A triangular field split by a wooden fence from its top corner to the middle of its base, one side green and the other wheat-coloured, with the triangle and fence in dashed gold and ticks on the two equal halves of the base.",
+        },
       },
     ],
 

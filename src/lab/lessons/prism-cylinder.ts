@@ -7,6 +7,9 @@ import { clamp, fmt, TAU } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { dist3, faces, label3, lerp3, Orbit, p3, path3, point3, segment3, type Face, type P3 } from "../solid.ts";
 import { glass, outlineRulings } from "../kit/solids.ts";
+import concreteColumnPourImage from "../../images/concrete-column-pour.svg";
+import spiralHandrailUnrolledImage from "../../images/spiral-handrail-unrolled.svg";
+import tinLabelUnrolledImage from "../../images/tin-label-unrolled.svg";
 
 const BASES = ["triangle", "square", "hexagon", "circle"] as const;
 const SIDES: Record<(typeof BASES)[number], number> = { triangle: 3, square: 4, hexagon: 6, circle: 72 };
@@ -114,14 +117,29 @@ export default lesson((s) => {
       {
         title: "Printing a label for a tin",
         text: "A tin $7.4$ cm across needs a label as wide as its circumference, $2\\pi \\cdot 3.7 \\approx 23.2$ cm, plus a little overlap for the glue. The label's height is the tin's height. This is the unrolled wall, a rectangle $2\\pi r$ by $h$, cut from a flat sheet.",
+        image: {
+          src: tinLabelUnrolledImage,
+          caption: "A tin's label unrolled: a rectangle as wide as the tin's circumference, about 23.2 cm for a 7.4 cm tin, and as tall as the tin, plus a strip for the glue.",
+          alt: "A red-labelled tin marked 7.4 across beside its flat red label marked 23.2 along the bottom, with a cream glue strip at one end.",
+        },
       },
       {
         title: "Concrete for a round column",
         text: "A builder pouring a round column $0.6$ m across and $3$ m tall orders $V = Bh = \\pi \\cdot 0.3^2 \\cdot 3 \\approx 0.85$ cubic metres of concrete. The same base-times-height rule works for square or hexagonal columns, with $B$ the area of their cross-section.",
+        image: {
+          src: concreteColumnPourImage,
+          caption: "A round concrete column being poured: its volume is the circular base area times the 3 m height.",
+          alt: "A grey cylindrical column with a chute pouring concrete into its top; the top circle is shaded gold and marked 0.6, and the height is marked 3.",
+        },
       },
       {
         title: "The handrail of a spiral staircase",
         text: "The handrail of a spiral staircase is a spiral on a cylinder. If the rail rises $3$ m in one full turn at a radius of $0.8$ m, unrolling the cylinder turns it into the hypotenuse of a right triangle with legs $3$ and $2\\pi \\cdot 0.8$. So the rail is about $\\sqrt{3^2 + 5.03^2} \\approx 5.85$ m long.",
+        image: {
+          src: spiralHandrailUnrolledImage,
+          caption: "A spiral staircase handrail: unrolling the cylinder turns the spiral into the hypotenuse of a right triangle with legs 3 m and 5.03 m.",
+          alt: "A wooden handrail spiralling once round a pale cylinder with a gold dashed seam, beside the unrolled rectangle where the rail becomes the hypotenuse of a gold right triangle marked 3 and 5.03.",
+        },
       },
     ],
 

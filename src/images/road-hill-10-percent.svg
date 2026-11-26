@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M0 300 L160 300 L520 160 L640 160 V360 H0 Z" fill="#2b3a2f"/>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M0 300 L160 300 L520 160 L640 160" stroke="#0b0f14" stroke-width="24"/>
+    <path d="M0 300 L160 300 L520 160 L640 160" stroke="#2a3340" stroke-width="14"/>
+    <path d="M90 300 V200" stroke="#0b0f14" stroke-width="16"/>
+    <path d="M90 300 V200" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <path d="M90 104 L142 194 L38 194 Z" fill="#ef6b5b" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M90 130 L120 182 L60 182 Z" fill="#f3ead8"/>
+  <path d="M66 176 L114 176 L114 150 Z" fill="#0b0f14"/>
+  <path d="M160 300 L520 300 L520 160 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M496 300 V276 H520" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <text x="380" y="282" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e">10%</text>
+</svg>

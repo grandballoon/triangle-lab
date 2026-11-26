@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2a3340"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="50" y="50" width="250" height="254" rx="10" fill="#f3ead8"/>
+    <rect x="76" y="120" width="198" height="150" rx="10" fill="#0f1620"/>
+    <rect x="100" y="140" width="150" height="110" rx="6" fill="#ef6b5b" fill-opacity="0.35"/>
+    <circle cx="100" cy="84" r="16" fill="#8fa3b8"/><circle cx="175" cy="84" r="16" fill="#8fa3b8"/><circle cx="250" cy="84" r="16" fill="#8fa3b8"/>
+    <rect x="430" y="40" width="40" height="230" rx="20" fill="#f3ead8"/>
+    <circle cx="450" cy="276" r="28" fill="#ef6b5b"/>
+  </g>
+  <rect x="442" y="130" width="16" height="140" fill="#ef6b5b"/>
+  <path d="M430 80 H416 M430 130 H416 M430 180 H416 M430 230 H416 M470 80 H484 M470 130 H484 M470 180 H484 M470 230 H484" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M340 130 H590" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="365" y="116" font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e">350°F</text>
+  <text x="545" y="116" font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e">177°C</text>
+</svg>

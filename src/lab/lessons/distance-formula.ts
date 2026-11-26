@@ -5,6 +5,8 @@
 import { dist, fmt } from "../geo.ts";
 import { keepApart, num, pair, par, plane, riseRun, settle, snapping } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import gameMonsterDistanceImage from "../../images/game-monster-distance.svg";
+import tvDiagonalImage from "../../images/tv-diagonal.svg";
 
 export default lesson((s) => {
   const snap = s.toggle("Snap to grid", true);
@@ -46,10 +48,20 @@ export default lesson((s) => {
       {
         title: "Measuring a television",
         text: "Screens are sold by their diagonal. A screen 120 cm wide and 67.5 cm tall measures $\\sqrt{120^2 + 67.5^2} \\approx 137.7$ cm corner to corner, which is about 54 inches, the size on the box.",
+        image: {
+          src: tvDiagonalImage,
+          caption: "A television is sold by its diagonal, the distance from corner to corner found from its width and height.",
+          alt: "A television on a stand with a dashed gold right triangle across its screen, the diagonal marked 55.",
+        },
       },
       {
         title: "Is the enemy in range?",
         text: "A video game checks distances all the time: is the player close enough to open a door, or within reach of an enemy? With the player at $(3, 4)$ and an enemy at $(0, 0)$ with reach 6, it compares $3^2 + 4^2 = 25$ with $6^2 = 36$. Comparing the squares skips the square root, which saves time when the game does it thousands of times a second.",
+        image: {
+          src: gameMonsterDistanceImage,
+          caption: "A game checks whether an enemy is in reach by comparing the squared distance, 3² + 4² = 25, with the reach squared.",
+          alt: "A player and a purple monster on a game grid joined by a dashed gold right triangle with sides 3, 4 and 5.",
+        },
       },
     ],
 

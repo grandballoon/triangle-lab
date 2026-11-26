@@ -12,6 +12,8 @@
 import { C, tint } from "../draw.ts";
 import { angleAt, dist, fmt, mix, polar, toDeg, toRad, vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import cornerReflectorMirrorsImage from "../../images/corner-reflector-mirrors.svg";
+import periscopeMirrorsImage from "../../images/periscope-mirrors.svg";
 
 const B = vec(-7, 0.3);
 const LONGER_LEG = 12.6;
@@ -94,10 +96,20 @@ export default lesson((s) => {
       {
         title: "Corner reflectors",
         text: "A ray bouncing between two mirrors set at an angle $\\phi$ is turned through $2\\phi$ in all, wherever it comes in: chasing angles round the triangle it makes with the mirrors shows the angle of entry cancels. With the mirrors at $90^\\circ$ the ray is sent straight back the way it came, and the same idea with three mirrors in a cube corner is behind the reflectors on a bicycle.",
+        image: {
+          src: cornerReflectorMirrorsImage,
+          caption: "Two mirrors at a right angle: a ray bounces off both and goes straight back the way it came, as in a bicycle reflector.",
+          alt: "Two blue mirrors meeting at a right angle, a pink ray coming in, bouncing off each mirror and leaving parallel to its path in, with the triangle the ray makes with the mirrors in dashed gold and marked 90°.",
+        },
       },
       {
         title: "Looking through a periscope",
         text: "A periscope has two parallel mirrors, each at $45^\\circ$ to the tube. Light coming in level meets the top mirror at $45^\\circ$, leaves it at $45^\\circ$, and so is turned through $90^\\circ$ down the tube; the second mirror, parallel to the first, turns it back through $90^\\circ$ by the same chase. The light comes out travelling the way it went in, just lower down, at your eye.",
+        image: {
+          src: periscopeMirrorsImage,
+          caption: "A periscope: two parallel mirrors at 45° turn the light down the tube and back again, so it reaches your eye travelling the way it set off.",
+          alt: "A purple upright tube with a window at top left and bottom right and two parallel blue mirrors at 45° inside; a dashed gold light path runs from a tree, down the tube, and out to a person's eye, with a 45° mark at the top mirror.",
+        },
       },
     ],
 

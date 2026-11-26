@@ -11,6 +11,8 @@ import {
   angleAt, angleOf, clamp, cross, dist, fmt, lineLine, onSegment, polar, sub, toDeg, toRad, vec, type Vec,
 } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import prismLightRayImage from "../../images/prism-light-ray.svg";
+import quadFrameMitresImage from "../../images/quad-frame-mitres.svg";
 
 const B = vec(-2.5, 3.4);
 const Cc = vec(2.5, 3.4);
@@ -112,10 +114,20 @@ export default lesson((s) => {
       {
         title: "Mitring a four-sided frame",
         text: "Each corner of a picture frame is cut so the two pieces meet on the line that halves its angle. In a four-sided frame with two corners fixed at $100^\\circ$ and $110^\\circ$, the other two total $150^\\circ$, so their two mitre cuts total $75^\\circ$ however that $150^\\circ$ is shared out: the lesson's argument with halves in place of thirds.",
+        image: {
+          src: quadFrameMitresImage,
+          caption: "A four-sided picture frame: each corner is cut along the line that halves its angle, so with corners of 100° and 110° the other two mitre cuts always total 75°.",
+          alt: "A lopsided four-sided wooden frame around a picture of hills, with each corner's mitre line extended in dashed gold and two corners marked 100° and 110°.",
+        },
       },
       {
         title: "Light through a prism",
         text: "Inside a glass prism a ray makes angles $r_1$ and $r_2$ with the lines square to the two faces it passes through. Those two lines and the two faces make a quadrilateral with two right angles, so the lines meet at $180^\\circ - A$, where $A$ is the prism's apex angle; the triangle they make with the ray then forces $r_1 + r_2 = A$, however steeply the light enters. Opticians use this fixed total to work out how far a prism bends light.",
+        image: {
+          src: prismLightRayImage,
+          caption: "Light through a glass prism: the lines square to the two faces and the ray inside make a triangle that fixes the two inside angles to total the prism's apex angle.",
+          alt: "A blue triangular glass prism with a cream ray entering the left face, crossing level inside and leaving the right face, the lines square to each face in dashed gold meeting below the ray, and the apex angle marked A.",
+        },
       },
     ],
 

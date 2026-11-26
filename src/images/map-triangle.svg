@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="70" y="36" width="500" height="290" rx="6" fill="#f3ead8"/>
+    <path d="M78 122 Q180 140 250 220 T410 318" fill="none" stroke="#5fb0e8" stroke-width="14"/>
+    <circle cx="470" cy="80" r="30" fill="#5fbf72"/><circle cx="510" cy="110" r="24" fill="#5fbf72"/>
+  </g>
+  <path d="M237 36 V326 M403 36 V326" stroke="#d9a066" stroke-width="3"/>
+  <path d="M170 260 L430 140 L480 280 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g fill="#ef6b5b" stroke="#0b0f14" stroke-width="5">
+    <circle cx="170" cy="260" r="13"/><circle cx="430" cy="140" r="13"/><circle cx="480" cy="280" r="13"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="150" cy="100" r="40" fill="#1c2633"/>
+    <path d="M150 66 L162 100 L138 100 Z" fill="#ef6b5b"/>
+    <path d="M150 134 L162 100 L138 100 Z" fill="#8fa3b8"/>
+  </g>
+</svg>

@@ -7,6 +7,9 @@ import { C, tint } from "../draw.ts";
 import { add, dist, fmt, toDeg, toRad, vec, type Vec } from "../geo.ts";
 import { inSector, sq } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import framingSquareRafterRunImage from "../../images/framing-square-rafter-run.svg";
+import gameDiagonalSpeedImage from "../../images/game-diagonal-speed.svg";
+import solarPanelSunImage from "../../images/solar-panel-sun.svg";
 
 const A = vec(-4.5, -3);
 const UNIT = 3.6; // stage units in the length called 1
@@ -77,14 +80,29 @@ export default lesson((s) => {
       {
         title: "Fixing diagonal speed in games",
         text: "If a game moves a character 1 step right and 1 step up each frame for a diagonal, it actually travels $\\sqrt2 \\approx 1.41$ steps, faster than in a straight line. Games fix this by moving $\\cos A$ across and $\\sin A$ up for a direction $A$. Because $\\sin^2 A + \\cos^2 A = 1$, the step is exactly 1 in every direction.",
+        image: {
+          src: gameDiagonalSpeedImage,
+          caption: "Diagonal movement in a game: a step of 1 across and 1 up goes about 1.41, too far, while a step of cos A across and sin A up lands on the circle of radius 1 in every direction.",
+          alt: "A screen with a round character at the corner of a dashed red unit square. A red arrow to the square's far corner is labelled 1.41 and reaches beyond a dashed gold quarter circle; a shorter teal arrow ends on the circle, with a dashed gold right triangle under it and 1 marked along it.",
+        },
       },
       {
         title: "Rafter length per foot of run",
         text: "A carpenter's framing square has a table giving the length of a rafter for every foot it spans horizontally. For a roof that rises 6 inches per foot, $\\tan A = \\tfrac{6}{12}$, and $\\sec^2 A = 1 + \\tan^2 A = 1.25$. So each foot of run needs $12\\sqrt{1.25} \\approx 13.4$ inches of rafter, the number printed on the square.",
+        image: {
+          src: framingSquareRafterRunImage,
+          caption: "A framing square under a rafter that rises 6 inches per foot: the 12 and 6 legs make a hypotenuse of 12√1.25, about 13.4 inches of rafter for every foot of run.",
+          alt: "A steel framing square set under a sloping wooden rafter, its blade marked 12 and its tongue marked 6. A dashed gold right triangle fills the space between, with 13.4 along the rafter's edge.",
+        },
       },
       {
         title: "Sunlight on a flat solar panel",
         text: "A flat panel catches the most light with the sun straight overhead. When the sun is $A$ above the horizon, it is $90^\\circ - A$ from overhead, and the panel catches the fraction $\\cos(90^\\circ - A) = \\sin A$ of the full amount. With the sun $30^\\circ$ up, that is half, which is why installers tilt panels toward the sun.",
+        image: {
+          src: solarPanelSunImage,
+          caption: "A flat solar panel with the sun 30° up: it catches sin 30°, half the light it would get with the sun straight overhead, which is why installers tilt panels toward the sun.",
+          alt: "A flat blue solar panel on short legs, with the sun low to the right. A dashed gold right triangle runs from the panel's surface up to the sun, with 30° marked at the panel.",
+        },
       },
     ],
 

@@ -8,6 +8,9 @@ import { C, tint } from "../draw.ts";
 import { add, fmt, lerp, TAU, vec } from "../geo.ts";
 import { turnBetween } from "../kit/circles.ts";
 import { lesson } from "../scene.ts";
+import lawnSprinklerImage from "../../images/lawn-sprinkler.svg";
+import pizzaSizesCompareImage from "../../images/pizza-sizes-compare.svg";
+import roundWaterTankImage from "../../images/round-water-tank.svg";
 
 const DISC = vec(-5.2, 0.9);
 const ROW_LEFT = -2.6; // left edge of the dealt-out row
@@ -55,14 +58,29 @@ export default lesson((s) => {
       {
         title: "Comparing pizza sizes",
         text: "A $30$ cm pizza has area $\\pi \\cdot 15^2 \\approx 707$ square centimetres, while a $20$ cm one has $\\pi \\cdot 10^2 \\approx 314$. One large pizza is more than two small ones, because the area grows with the square of the radius.",
+        image: {
+          src: pizzaSizesCompareImage,
+          caption: "Comparing pizzas: one 30 cm pizza has more area than two 20 cm ones, because area grows with the square of the radius.",
+          alt: "One large pizza marked 30 beside two smaller pizzas each marked 20, every one shaded gold over its whole area.",
+        },
       },
       {
         title: "Watering a lawn",
         text: "A sprinkler that throws water $4$ metres wets a circle of $\\pi \\cdot 4^2 \\approx 50$ square metres. One that throws $8$ metres waters four times as much lawn, not twice.",
+        image: {
+          src: lawnSprinklerImage,
+          caption: "A lawn sprinkler: water thrown 4 metres wets a circle of about 50 square metres, and double the reach waters four times the lawn.",
+          alt: "A sprinkler in the middle of a lawn throws arcs of water drops. The wetted patch is outlined in gold, with a gold radius marked 4.",
+        },
       },
       {
         title: "Round water tanks",
         text: "For the same length of wall, a round tank holds $\\frac{4}{\\pi} \\approx 1.27$ times as much as a square one of the same height. Using less wall for the same water is one reason tanks, silos and paddling pools are so often round.",
+        image: {
+          src: roundWaterTankImage,
+          caption: "Water tanks: for the same length of wall, a round tank holds about 1.27 times as much as a square one of the same height.",
+          alt: "A square water tank beside a round one of the same height, with the water surface of each shaded and outlined in gold.",
+        },
       },
     ],
 

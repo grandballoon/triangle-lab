@@ -8,6 +8,9 @@ import { fmt, toRad } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { add3, dist3, label3, Orbit, p3, point3, polygon3, scale3, segment3 } from "../solid.ts";
 import { dot3, rightAngle3 } from "../kit/solids.ts";
+import fencePostSpiritLevelImage from "../../images/fence-post-spirit-level.svg";
+import gameCapsuleCablesImage from "../../images/game-capsule-cables.svg";
+import laserCeilingHeightImage from "../../images/laser-ceiling-height.svg";
 
 const PLANE_HALF = 4.6;
 const REACH = 3; // how far the line is drawn either side of P
@@ -114,14 +117,29 @@ export default lesson((s) => {
       {
         title: "Setting a fence post plumb",
         text: "Builders check a fence post or a door frame with a spirit level held against two neighbouring faces, not just one. A post can read perfectly vertical on its front face while leaning sideways, just as a line can make one right angle with the plane and still be tilted. Once both faces read level, the post is perpendicular to the ground.",
+        image: {
+          src: fencePostSpiritLevelImage,
+          caption: "A fence post checked with a spirit level on two neighbouring faces: only when both read true is the post at right angles to the ground in every direction.",
+          alt: "A square wooden post in the grass with a spirit level on its front face and another on its side face, and a gold vertical line meeting two gold ground lines at right angles.",
+        },
       },
       {
         title: "Measuring a ceiling with a laser",
         text: "A laser measure held on the floor and pointed straight up gives the true ceiling height, the perpendicular distance. Tilt it by $10^\\circ$ under a $2.4$ m ceiling and the beam travels along a hypotenuse instead, reading about $2.44$ m. That is why such tools are held against a flat surface, or take the smallest of several readings.",
+        image: {
+          src: laserCeilingHeightImage,
+          caption: "A laser measure on the floor: straight up it reads the true 2.4 m ceiling height, but tilted by 10° the beam runs along a longer hypotenuse.",
+          alt: "A red laser measure on the floor sending one beam straight up to the ceiling and another tilted 10°, forming a thin gold right triangle.",
+        },
       },
       {
         title: "Do the two cables touch?",
         text: "Game and physics engines often model rods, limbs and cables as capsules: line segments with a thickness. To test whether two of them collide, the engine finds the closest points of the two segments, which are usually skew in space. If that gap is smaller than the two thicknesses added together, they touch.",
+        image: {
+          src: gameCapsuleCablesImage,
+          caption: "Two capsules in a game engine: the engine finds the shortest gap between their skew centre lines and compares it with their thicknesses added together.",
+          alt: "A game screen with two thick rounded rods, purple and teal, each with a dashed gold centre line, joined by a short solid gold segment between their closest points.",
+        },
       },
     ],
 

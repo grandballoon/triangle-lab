@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { angleAt, clamp, dist, fmt, toDeg, vec } from "../geo.ts";
 import { eq, GLASS, same } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
+import splayedPlanterImage from "../../images/splayed-planter.svg";
+import taperedWindowDiagonalsImage from "../../images/tapered-window-diagonals.svg";
 
 const BASE_Y = -3.2;
 const TOP_MIN = -0.4;
@@ -108,10 +110,20 @@ export default lesson((s) => {
       {
         title: "Checking a tapered frame by its diagonals",
         text: "A builder setting out an isosceles trapezoid, such as a tapered window frame or raised bed, measures the two diagonals. The last step says this is enough: if the bases are parallel and the diagonals agree, the legs are equal and the base angles match, so the frame is symmetric without a protractor in sight.",
+        image: {
+          src: taperedWindowDiagonalsImage,
+          caption: "A tapered window frame: if its top and bottom are parallel and its two diagonals measure the same, the frame is symmetric.",
+          alt: "A wooden tapered window frame with blue glass, its two diagonals dashed and marked equal, equal legs ticked and equal base angles marked.",
+        },
       },
       {
         title: "Cutting the sides of a splayed planter",
         text: "Each side of a planter that flares out towards the top is an isosceles trapezoid. Because its two base angles are equal, a woodworker can set the saw to one angle and cut both ends of every side panel without changing it, and the panels come out with equal legs that meet cleanly at the corners.",
+        image: {
+          src: splayedPlanterImage,
+          caption: "A planter that flares out towards the top: each side is an isosceles trapezoid with equal base angles, so one saw setting cuts every panel.",
+          alt: "A wooden planter wider at the top than the bottom, full of plants, its front panel outlined with equal legs ticked and its two base angles marked.",
+        },
       },
     ],
 

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2a3340"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M60 232 V304 M580 232 V304" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M60 232 V304 M580 232 V304" stroke="#b07a45" stroke-width="8"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="30" y="214" width="580" height="20" fill="#b07a45"/>
+    <rect x="50" y="170" width="540" height="44" fill="#d9a066"/>
+    <path d="M518 86 L560 124 556 135 544 134 540 145 529 144 525 155 513 154 509 165 498 164 494 175 482 174 478 185 467 184 463 195 451 194 447 205 436 204 432 215 420 214 L410 204 Z" fill="#8fa3b8"/>
+    <rect x="532" y="66" width="64" height="44" rx="12" fill="#ef6b5b" transform="rotate(-48 564 88)"/>
+  </g>
+  <rect x="226" y="170" width="8" height="44" fill="#0b0f14"/>
+  <rect x="412" y="170" width="8" height="44" fill="#0b0f14"/>
+  <path d="M54 252 H222 M238 252 H408 M424 252 H586 M54 242 V262 M222 242 V262 M238 242 V262 M408 242 V262 M424 242 V262 M586 242 V262" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="26" font-weight="700" text-anchor="middle" fill="#f2c14e"><text x="138" y="292">29.8</text><text x="323" y="292">29.8</text><text x="505" y="292">29.8</text></g>
+</svg>

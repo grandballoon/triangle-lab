@@ -10,6 +10,9 @@ import { fmt, type Vec } from "../geo.ts";
 import { combine, lineText, lineThrough, meet, pointsOf, texLine, type Line } from "../kit/algebra.ts";
 import { INSIDE, keepApart, lattice, pair, plane, texPoint, texRatio } from "../kit/coordinates.ts";
 import { lesson, type Handle, type Readout } from "../scene.ts";
+import doubledReceiptImage from "../../images/doubled-receipt.svg";
+import twoBearingsFixImage from "../../images/two-bearings-fix.svg";
+import twoReceiptsImage from "../../images/two-receipts.svg";
 
 const FIRST = C.cyan;
 const SECOND = C.orange;
@@ -182,14 +185,29 @@ export default lesson((s) => {
       {
         title: "Two receipts",
         text: "Three coffees and two muffins cost 16; one coffee and two muffins cost 9. Subtract the second receipt from the first and the muffins cancel: two coffees cost 7. So a coffee is 3.50, and putting that back in, a muffin is 2.75.",
+        image: {
+          src: twoReceiptsImage,
+          caption: "Two café receipts: subtracting one from the other cancels the muffins, and the two price lines cross at a coffee of 3.50 and a muffin of 2.75.",
+          alt: "Two receipts, three coffees and two muffins for 16 and one coffee and two muffins for 9, with the muffins struck through, beside two dashed gold lines crossing at a dot.",
+        },
       },
       {
         title: "A fix from two bearings",
         text: "A sailor takes compass bearings on a lighthouse and a church spire and draws a line on the chart through each, along its bearing. The boat is on both lines, so it is where they cross. Landmarks in nearly the same direction give nearly parallel lines and a poor fix, so navigators pick ones far apart in bearing.",
+        image: {
+          src: twoBearingsFixImage,
+          caption: "A boat's position from two bearings: the lines from a lighthouse and a church spire cross where the boat is.",
+          alt: "A lighthouse and a church on the shore, with dashed gold lines from each crossing at a sailing boat on the sea.",
+        },
       },
       {
         title: "A receipt that tells you nothing new",
         text: "Suppose the second receipt had been six coffees and four muffins for 32: the first one doubled. Eliminating then leaves $0 = 0$. Endless pairs of prices fit both, and only a genuinely different purchase can pin them down.",
+        image: {
+          src: doubledReceiptImage,
+          caption: "A second receipt that is just the first one doubled: its line lies on top of the first, so endless prices fit both.",
+          alt: "A receipt of three coffees and two muffins for 16 beside one of six coffees and four muffins for 32, and a graph where a teal line and a dashed gold line coincide.",
+        },
       },
     ],
   };
