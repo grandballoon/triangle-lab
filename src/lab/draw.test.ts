@@ -98,3 +98,68 @@ describe("axes", () => {
     expect(text.some((t) => t.startsWith("−"))).toBe(false);
   });
 });
+
+describe("what a term's marks light", () => {
+  const V = (x: number, y: number) => ({ x, y });
+  const at = (x: number, y: number) => toScreen(VIEW, V(x, y));
+  const kinds = (g: Draw, ...terms: string[]) => g.shapes(...terms).map((s) => s.kind);
+
+  it("lights each mark by its own shape", () => {
+    const g = new Draw(recorder().ctx, VIEW, "#38d9a9");
+    g.segment(V(0, 0), V(2, 0), { term: "side" });
+    g.point(V(1, 1), { term: "dot" });
+    g.polygon([V(0, 0), V(2, 0), V(0, 2)], { term: "shape" });
+    g.circle(V(0, 0), 1, { term: "ring" });
+    g.arc(V(0, 0), 1, 0, 1, { term: "bend" });
+    g.angle(V(1, 0), V(0, 0), V(0, 1), { term: "turn" });
+    g.label(V(3, 3), "k", { term: "name" });
+    expect(g.shapes("side")).toEqual([{ kind: "segment", a: at(0, 0), b: at(2, 0) }]);
+    expect(g.shapes("dot")).toEqual([{ kind: "point", at: at(1, 1) }]);
+    expect(g.shapes("shape")).toEqual([{ kind: "polygon", corners: [at(0, 0), at(2, 0), at(0, 2)] }]);
+    expect(g.shapes("ring")).toEqual([{ kind: "circle", center: at(0, 0), r: 50 }]);
+    expect(g.shapes("bend")).toEqual([{ kind: "arc", center: at(0, 0), r: 50, from: 0, sweep: 1 }]);
+    expect(g.shapes("turn")).toEqual([{ kind: "angle", vertex: at(0, 0), from: 0, sweep: Math.PI / 2, r: 26 }]);
+    expect(kinds(g, "name")).toEqual(["label"]);
+  });
+
+  it("lights what a label names, not the label: an angle's measure, a side's length, a point's name", () => {
+    const g = new Draw(recorder().ctx, VIEW, "#38d9a9");
+    g.angle(V(1, 0), V(0, 0), V(1, 1), { term: "a", label: true });
+    g.along(V(0, 0), V(2, 0), "4", { term: "s" });
+    g.point(V(1, 1), { term: "p", label: "P" });
+    expect(kinds(g, "a")).toEqual(["angle"]);
+    expect(kinds(g, "s")).toEqual(["segment"]);
+    expect(kinds(g, "p")).toEqual(["point"]);
+    // The arc and its label are one place for the leader.
+    expect(g.anchors("a")).toHaveLength(1);
+  });
+
+  it("lights the feature a lesson says a mark stands for", () => {
+    const g = new Draw(recorder().ctx, VIEW, "#38d9a9");
+    g.polygon([V(0, 0), V(2, 0), V(0, 2)], { fill: "#123456", term: "region", feature: "area" });
+    g.circle(V(1, 1), 0.2, { term: "spot", feature: "point" });
+    g.sector(V(0, 0), 1, 0, Math.PI / 2, { term: "slice", feature: "area" });
+    g.segment(V(0, 0), V(2, 0), { term: "half", feature: "midpoint" });
+    expect(g.shapes("region")).toEqual([{ kind: "area", outline: [at(0, 0), at(2, 0), at(0, 2)] }]);
+    expect(g.shapes("spot")).toEqual([{ kind: "point", at: at(1, 1) }]);
+    expect(kinds(g, "slice")).toEqual(["area"]);
+    expect(g.shapes("half")).toEqual([{ kind: "midpoint", at: at(1, 0), a: at(0, 0), b: at(2, 0) }]);
+  });
+
+  it("lights a polyline piece by piece, from one leader", () => {
+    const g = new Draw(recorder().ctx, VIEW, "#38d9a9");
+    g.path([V(0, 0), V(1, 0), V(1, 1)], { term: "walk" });
+    expect(kinds(g, "walk")).toEqual(["segment", "segment"]);
+    expect(g.anchors("walk")).toEqual([at(1, 0)]);
+  });
+
+  it("joins a lesson's marks and what the figure shows for a found term", () => {
+    const g = new Draw(recorder().ctx, VIEW, "#38d9a9");
+    g.segment(V(0, 0), V(2, 0));
+    g.point(V(0, 0), { label: "A" });
+    g.point(V(2, 0), { label: "B" });
+    g.point(V(1, 0), { label: "M" });
+    expect(g.shapes("pt:M")).toEqual([{ kind: "midpoint", at: at(1, 0), a: at(0, 0), b: at(2, 0) }]);
+    expect(kinds(g, "seg:A.B", "seg:A.M")).toEqual(["segment", "segment"]);
+  });
+});

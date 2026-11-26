@@ -4,7 +4,9 @@
 // which arrives as synthetic pointer events — to find the term under it, and
 // draws thin leader lines from that term to the marks the figure drew for it
 // (draw.ts anchors). Only terms the figure shows are marked as linked and light up;
-// the rest read as plain mathematics.
+// the rest read as plain mathematics. Other mentions of the same feature in
+// the formula band are lit gently too, with the row they stand in, so the
+// reader can find the formula the words are about.
 //
 // The term is looked up afresh each frame from the last pointer position,
 // because formulas are re-typeset as their values change and the element
@@ -15,6 +17,9 @@ import type { Vec } from "./geo.ts";
 const SVG = "http://www.w3.org/2000/svg";
 const FOCUS_CLASS = "term-focus";
 const LINKED_CLASS = "term-linked";
+const ECHO_CLASS = "term-echo";
+const ROW_ECHO_CLASS = "readout-echo";
+const ROW_SELECTOR = ".readout";
 
 export interface FocusedTerm {
   id: string;
@@ -99,6 +104,26 @@ export class TermFocus {
       dot.setAttribute("cx", String(end.x));
       dot.setAttribute("cy", String(end.y));
     });
+  }
+
+  /**
+   * Light gently each term in `band` that `matches` — another mention of the
+   * focused term's feature — and each formula row holding one; none, when
+   * `matches` is null.
+   */
+  echo(band: HTMLElement, matches: ((id: string) => boolean) | null): void {
+    const rows = new Set<Element>();
+    for (const el of band.querySelectorAll<HTMLElement>("[data-term]")) {
+      const on = matches !== null && el !== this.lit && matches(el.dataset.term ?? "");
+      if (el.classList.contains(ECHO_CLASS) !== on) el.classList.toggle(ECHO_CLASS, on);
+      const row = el.closest(ROW_SELECTOR);
+      if (on && row) rows.add(row);
+      if (matches !== null && el === this.lit && row) rows.add(row);
+    }
+    for (const row of band.querySelectorAll(ROW_SELECTOR)) {
+      const on = rows.has(row);
+      if (row.classList.contains(ROW_ECHO_CLASS) !== on) row.classList.toggle(ROW_ECHO_CLASS, on);
+    }
   }
 
   /** Mark each term on the page as linked or not, by whether the figure shows it now. */

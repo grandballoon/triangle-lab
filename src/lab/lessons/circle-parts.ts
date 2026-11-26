@@ -8,7 +8,7 @@
 import { C, tint } from "../draw.ts";
 import { add, angleAt, angleOf, dist, fmt, inRing, onCircle, perp, polar, sub, TAU, toDeg, vec, wrapAngle } from "../geo.ts";
 import { arcPoints, onCircleClearOf } from "../kit/circles.ts";
-import { lesson, type Handle, type Readout } from "../scene.ts";
+import { lesson, term, type Handle, type Readout } from "../scene.ts";
 
 const O = vec(0, 0.7);
 const R_MIN = 1.8;
@@ -204,12 +204,12 @@ export default lesson((s) => {
           break;
         }
         case "circumference":
-          g.circle(O, r, { color: hot, width: 5 });
+          g.circle(O, r, { color: hot, width: 5, term: "circumference" });
           g.segment(O, A, { color: C.faint, width: 2 });
           g.label(polar(O, r + g.px(26), Math.PI / 2), `C = ${fmt(TAU * r, 2)}`, { color: hot });
           break;
         case "area":
-          g.circle(O, r, { color: hot, width: 3, fill: wash });
+          g.circle(O, r, { color: hot, width: 3, fill: wash, term: "disc", feature: "area" });
           g.segment(O, A, { color: C.faint, width: 2 });
           g.label(polar(O, r / 2, -Math.PI / 2), `A = ${fmt(Math.PI * r * r, 2)}`, { color: hot });
           break;
@@ -226,8 +226,8 @@ export default lesson((s) => {
           g.angle(O, P, add(P, perp(sub(P, O))), { color: hot });
           break;
         case "arc":
-          g.arc(O, r, to, from + TAU, { color: C.violet, width: 5 });
-          g.arc(O, r, from, to, { color: hot, width: 5 });
+          g.arc(O, r, to, from + TAU, { color: C.violet, width: 5, term: "major" });
+          g.arc(O, r, from, to, { color: hot, width: 5, term: "minor" });
           g.label(polar(O, r + g.px(22), from + sweep / 2), "minor", { color: hot });
           g.label(polar(O, r + g.px(22), from + sweep / 2 + Math.PI), "major", { color: C.violet });
           break;
@@ -235,7 +235,7 @@ export default lesson((s) => {
           g.sector(O, r, from, to, { color: hot, fill: wash });
           break;
         case "segment":
-          g.polygon(arcPoints(O, r, from, to), { color: hot, fill: wash });
+          g.polygon(arcPoints(O, r, from, to), { color: hot, fill: wash, term: "segment", feature: "area" });
           break;
         case "central angle":
           g.segment(O, P, { color: hot, width: 4 });
@@ -267,12 +267,12 @@ export default lesson((s) => {
       const rows: Record<Part, Readout[]> = {
         radius: [{ label: "Radius", tex: `r = OA = ${fmt(r, 2)}` }],
         diameter: [{ label: "Diameter", tex: `d = 2r = 2(${fmt(r, 2)}) = ${fmt(2 * r, 2)}`, tone: "good" }],
-        circumference: [{ label: "Circumference", tex: `C = 2\\pi r = 2\\pi(${fmt(r, 2)}) = ${fmt(TAU * r, 2)}`, tone: "good" }],
-        area: [{ label: "Area", tex: `A = \\pi r^2 = \\pi(${fmt(r, 2)})^2 = ${fmt(Math.PI * r * r, 2)}`, tone: "good" }],
+        circumference: [{ label: "Circumference", tex: `${term("circumference", "C")} = 2\\pi r = 2\\pi(${fmt(r, 2)}) = ${fmt(TAU * r, 2)}`, tone: "good" }],
+        area: [{ label: "Area", tex: `${term("disc", "A")} = \\pi r^2 = \\pi(${fmt(r, 2)})^2 = ${fmt(Math.PI * r * r, 2)}`, tone: "good" }],
         chord: [{ label: "A chord is never longer than a diameter", tex: `PQ = ${fmt(dist(P, Q), 2)} \\le ${fmt(2 * r, 2)}` }],
         secant: [],
         tangent: [{ label: "The tangent meets the radius square on", tex: `OP \\perp \\text{tangent}`, tone: "good" }],
-        arc: [{ label: "Minor arc + major arc", tex: `${fmt(minor)}^\\circ + ${fmt(360 - minor)}^\\circ = 360^\\circ` }],
+        arc: [{ label: "Minor arc + major arc", tex: `${term("minor", `${fmt(minor)}^\\circ`)} + ${term("major", `${fmt(360 - minor)}^\\circ`)} = 360^\\circ` }],
         sector: [{ label: "The sector's angle at O", tex: `${fmt(minor)}^\\circ` }],
         segment: [{ label: "Its chord", tex: `PQ = ${fmt(dist(P, Q), 2)}` }],
         "central angle": [{ label: "Central angle", tex: `\\angle POQ = ${fmt(minor)}^\\circ` }],

@@ -2,7 +2,7 @@
 // LaTeX become terms, under what id, and which are left alone.
 
 import { describe, expect, it } from "vitest";
-import { linkTex, parseTermId, termAliases, termId } from "./link.ts";
+import { canonicalTermId, linkTex, parseTermId, sameFeatureAs, termAliases, termId } from "./link.ts";
 import { texHtml } from "./math.ts";
 import { term } from "./scene.ts";
 
@@ -24,6 +24,15 @@ describe("linkTex", () => {
   it("marks angles and triangles together with their sign", () => {
     expect(linkTex("\\angle PED")).toBe(t("ang:P.E.D", "\\angle PED"));
     expect(linkTex("\\angle B + \\triangle ABC")).toBe(`${t("ang:B", "\\angle B")} + ${t("poly:A.B.C", "\\triangle ABC")}`);
+  });
+
+  it("marks an area written in square brackets, and leaves other brackets alone", () => {
+    expect(linkTex("[ABC] = \\tfrac14 [A'B'C'D']")).toBe(
+      `${t("area:A.B.C", "[ABC]")} = \\tfrac14 ${t("area:A′.B′.C′.D′", "[A'B'C'D']")}`,
+    );
+    expect(linkTex("[AB]")).toBe(`[${t("seg:A.B", "AB")}]`);
+    expect(linkTex("[0, 1]")).toBe(`[${t("num:0", "0")}, ${t("num:1", "1")}]`);
+    expect(() => texHtml(linkTex("\\frac{[ABD]}{[ADC]}"), true)).not.toThrow();
   });
 
   it("marks variables and Greek letters, but not π", () => {
@@ -67,7 +76,7 @@ describe("linkTex", () => {
 
 describe("term ids", () => {
   it("round-trip through their string form", () => {
-    for (const id of ["pt:A′", "seg:A.B", "ang:P.E.D", "ang:B", "poly:O₁.H.O₂", "sym:α", "num:37.5"]) {
+    for (const id of ["pt:A′", "seg:A.B", "ang:P.E.D", "ang:B", "poly:O₁.H.O₂", "area:A.B.C", "sym:α", "num:37.5"]) {
       expect(termId(parseTermId(id)!)).toBe(id);
     }
   });
@@ -75,6 +84,38 @@ describe("term ids", () => {
   it("are told apart from a lesson's own ids", () => {
     expect(parseTermId("alpha")).toBeNull();
     expect(parseTermId("exterior-a")).toBeNull();
+  });
+});
+
+describe("canonicalTermId", () => {
+  it("gives every way of writing one feature the same id", () => {
+    expect(canonicalTermId("seg:B.A")).toBe(canonicalTermId("seg:A.B"));
+    expect(canonicalTermId("ang:C.B.A")).toBe(canonicalTermId("ang:A.B.C"));
+    for (const id of ["poly:B.C.A", "poly:C.B.A", "poly:A.C.B"]) expect(canonicalTermId(id)).toBe("poly:A.B.C");
+    expect(canonicalTermId("area:D.A.B.C")).toBe("area:A.B.C.D");
+  });
+
+  it("keeps features that differ apart", () => {
+    expect(canonicalTermId("ang:A.C.B")).not.toBe(canonicalTermId("ang:A.B.C"));
+    expect(canonicalTermId("area:A.B.C")).not.toBe(canonicalTermId("poly:A.B.C"));
+    expect(canonicalTermId("poly:A.C.B.D")).not.toBe(canonicalTermId("poly:A.B.C.D"));
+    expect(canonicalTermId("alpha")).toBe("alpha");
+  });
+});
+
+describe("sameFeatureAs", () => {
+  it("matches other mentions of the focused feature, however written", () => {
+    const matches = sameFeatureAs("seg:A.B", new Map());
+    expect(matches("seg:B.A")).toBe(true);
+    expect(matches("seg:A.C")).toBe(false);
+    expect(matches("pt:A")).toBe(false);
+  });
+
+  it("matches through the lesson's own ids, both ways", () => {
+    const aliases = new Map([["sym:α", "alpha"]]);
+    expect(sameFeatureAs("sym:α", aliases)("alpha")).toBe(true);
+    expect(sameFeatureAs("alpha", aliases)("sym:α")).toBe(true);
+    expect(sameFeatureAs("alpha", aliases)("sym:β")).toBe(false);
   });
 });
 

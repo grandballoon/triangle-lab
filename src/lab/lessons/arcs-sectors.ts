@@ -7,7 +7,7 @@
 import { C, tint } from "../draw.ts";
 import { angleOf, clamp, fmt, onSegment, polar, sub, TAU, toDeg, vec, wrapAngle } from "../geo.ts";
 import { arcPoints } from "../kit/circles.ts";
-import { lesson } from "../scene.ts";
+import { lesson, term, type Frame } from "../scene.ts";
 
 const O = vec(0, 0.4);
 const R_MIN = 1.6;
@@ -16,6 +16,11 @@ const MIN_ARC = 0.2; // radians: the arc is never empty and never the whole circ
 const SECTOR = C.gold;
 const TRIANGLE = C.blue;
 const SEGMENT = C.pink;
+/** Above this opacity a shaded region counts as on the figure (draw.ts marks nothing fainter). */
+const SHOWN = 0.05;
+
+/** The sector shows on step 2 and gives way to the segment and triangle on step 3. */
+const sectorAlpha = (f: Frame): number => f.at(2) * (1 - f.at(3));
 
 export default lesson((s) => {
   const A = s.point(O.x + 2.8, O.y, {
@@ -91,11 +96,11 @@ export default lesson((s) => {
       g.circle(O, r, { color: C.faint, width: 2 });
 
       if (f.at(2) > 0) {
-        g.sector(O, r, 0, theta, { fill: tint(SECTOR, 0.3), stroke: null, alpha: f.at(2) * (1 - f.at(3)) });
+        g.sector(O, r, 0, theta, { fill: tint(SECTOR, 0.3), stroke: null, alpha: sectorAlpha(f), term: "sector", feature: "area" });
       }
       if (f.at(3) > 0) {
-        g.polygon(arcPoints(O, r, 0, theta), { fill: tint(SEGMENT, 0.4), stroke: null, alpha: f.at(3) });
-        g.polygon([O, A, B], { fill: tint(TRIANGLE, 0.4), stroke: null, alpha: f.at(3) });
+        g.polygon(arcPoints(O, r, 0, theta), { fill: tint(SEGMENT, 0.4), stroke: null, alpha: f.at(3), term: "segment", feature: "area" });
+        g.polygon([O, A, B], { fill: tint(TRIANGLE, 0.4), stroke: null, alpha: f.at(3), term: "triangle", feature: "area" });
         g.segment(A, B, { color: C.ink, width: 2, alpha: f.at(3) });
       }
 
@@ -108,8 +113,10 @@ export default lesson((s) => {
       g.point(O, { label: "O" });
     },
 
-    readout() {
+    readout(f) {
       const { r, theta, minor, sector, triangle, segment } = figure();
+      // A region's area is linked to it while the figure shows it.
+      const shaded = (id: string, alpha: number, tex: string): string => (alpha > SHOWN ? term(id, tex) : tex);
       const deg = toDeg(theta);
       return [
         { label: "Arc measure", tex: `\\theta = ${fmt(deg)}^\\circ = ${fmt(theta, 2)} \\text{ rad}` },
@@ -119,14 +126,14 @@ export default lesson((s) => {
           tex: `\\tfrac{${fmt(deg)}^\\circ}{360^\\circ} \\cdot 2\\pi r = ${fmt((deg / 360) * TAU * r, 2)}`,
           tone: "good",
         },
-        { label: "Sector", tex: `\\tfrac12 r^2\\theta = ${fmt(sector, 2)}` },
+        { label: "Sector", tex: `\\tfrac12 r^2\\theta = ${shaded("sector", sectorAlpha(f), fmt(sector, 2))}` },
         {
           label: "Triangle AOB",
-          tex: `\\tfrac12 r^2 ${minor ? "\\sin\\theta" : "|\\sin\\theta|"} = ${fmt(triangle, 2)}`,
+          tex: `\\tfrac12 r^2 ${minor ? "\\sin\\theta" : "|\\sin\\theta|"} = ${shaded("triangle", f.at(3), fmt(triangle, 2))}`,
         },
         {
           label: minor ? "Segment = sector − triangle" : "Segment = sector + triangle",
-          tex: `${fmt(sector, 2)} ${minor ? "-" : "+"} ${fmt(triangle, 2)} = ${fmt(segment, 2)}`,
+          tex: `${fmt(sector, 2)} ${minor ? "-" : "+"} ${fmt(triangle, 2)} = ${shaded("segment", f.at(3), fmt(segment, 2))}`,
         },
       ];
     },
