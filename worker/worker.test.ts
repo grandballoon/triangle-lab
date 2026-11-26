@@ -15,7 +15,7 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setExplanation, setWriting, type Deck } from "../src/recall/deck.ts";
+import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setExplanation, setResponse, setWriting, type Deck } from "../src/recall/deck.ts";
 import { RecallSync } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
 import { MAX_BODY } from "./rules.ts";
@@ -605,5 +605,27 @@ describe("two devices syncing through the Worker", () => {
       { lesson: "altitudes", text: "Altitudes", checked: null, updated: T0 + 1 },
       { lesson: "medians", text: "Medians meet at G", checked: null, updated: T0 + 2 },
     ]);
+  });
+
+  it("ends with each question's answer last edited on either, kept when evicted and gone with its question", async () => {
+    const phone = device();
+    const laptop = device();
+    const card = newCard("q", "What is a median?", { lesson: "medians", step: 0, stepTitle: "" }, T0)!;
+    phone.store.update((d) => setResponse(addCard(d, card), "q", "From the phone", T0 + 1));
+    await phone.sync.sync();
+    await laptop.sync.sync();
+    expect(laptop.store.get().responses).toEqual([{ card: "q", text: "From the phone", updated: T0 + 1 }]);
+
+    laptop.store.update((d) => setResponse(d, "q", "From the laptop", T0 + 2));
+    await laptop.sync.sync();
+    await harness.getWorker().evictDurableObject("RecallDeck", { name: "deck" });
+    await phone.sync.sync();
+    expect(phone.store.get().responses).toEqual([{ card: "q", text: "From the laptop", updated: T0 + 2 }]);
+
+    phone.store.update((d) => removeCard(d, "q", T0 + 3));
+    await phone.sync.sync();
+    await harness.getWorker().evictDurableObject("RecallDeck", { name: "deck" });
+    await laptop.sync.sync();
+    expect(laptop.store.get().responses).toBeUndefined();
   });
 });

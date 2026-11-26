@@ -278,11 +278,24 @@ As in a sitting, a check is of the explanation as it was sent (`sent`): editing 
 Each lesson's explanation and Claude's last check of it are kept in the deck, by lesson, so they sync to every device and are there to come back to; a check under way is not kept.
 Explanations kept by an earlier version in this browser alone are moved into the deck on load.
 
+The recall page can also show the learner's answers as one document, with a part for each lesson and each question as a heading over its answer.
+The document is a view over the deck (`answers.ts`), so headings are never parsed back out of what the learner types, and an answer can hold anything.
+Each section's text is the card's standing answer (`KeptResponse`), which starts as the last answer written at a review and, once edited, stays as edited.
+Standing answers are kept apart from cards, so `attempts` remains the record of each review, and an edit on one device never competes in a merge with a grade on another.
+They merge question by question, the later copy winning, and a removed question's answer goes with it.
+Each section ends in a bar that unfolds the question's history, the same list of attempts as on the overview (`answerHistory`).
+A button by each question has Claude check its answer, and highlighting a stretch of an answer offers to check that passage in a popup placed from the layer that mirrors the text.
+A passage goes to `/check` as a `span` of the answer, and Claude is given the rest as context but grades and comments on the passage alone.
+The last check of each answer is kept with it (`KeptCheck`), so it syncs and survives a reload, until the learner clears it or checks again; its remarks are placed afresh as the answer is edited.
+A check never grades the card or changes when it is due.
+
 | File | Role | Pure |
 | --- | --- | --- |
 | `deck.ts` | Cards and their answers, with Claude's verdicts where kept, marks to revisit, the free association and Claude's reading of it, the Leitner schedule, merging two decks, the stored form and reading it back | yes |
 | `session.ts` | A review sitting: ask, check, correct, grade, Claude's readings of the answer and the outcome they point to; reading one back after a reload | yes |
 | `check.ts` | Having Claude check an answer: the request and verdict as page and Worker read them, what a reply means | yes |
+| `answers.ts` | The answers as one document: parts by lesson, sections headed by their questions | yes |
+| `answers-view.ts` | Drawing the answers document, keeping edits as they are typed, and taking in changes from elsewhere in place | no |
 | `explain.ts` | Having Claude check an explanation on a lesson page: the request as page and Worker read it, the explanation as it is written, checked and corrected, and as it is kept | yes |
 | `explain-panel.ts` | The Explain tab of a lesson's step column | no |
 | `associate.ts` | Having Claude read a free association: the request as page and Worker read it, what a reply means, the writing as it is read and corrected, and as it is kept in the deck | yes |
@@ -367,7 +380,7 @@ What to do with each request, the invite list, the cookie and the email are pure
 With `SENDER` unset, asking for a link answers 503, and a deploy refuses to start (`tools/deploy-guard.ts`).
 Locally, the email binding sends nothing, but logs the message and writes it under `.wrangler/tmp/email`, which is how the Worker test reads its links.
 
-A deck's object holds a row per question in its SQLite storage: a card, or the time it was removed; the free association in a table of its own, of at most one row; and each lesson's explanation in another.
+A deck's object holds a row per question in its SQLite storage: a card, or the time it was removed; the free association in a table of its own, of at most one row; each lesson's explanation in another; and each question's standing answer in a third.
 It reads the deck, merges, and writes the rows that changed in one synchronous transaction, and requests reach it one at a time, so two devices syncing at once cannot undo each other.
 The merge rule is the pages' own (`src/recall/deck.ts`, which has no DOM), so the Worker and the pages cannot disagree on it.
 
@@ -642,6 +655,14 @@ Each reload takes off what the last load of the page listened to on the window a
 - `src/auth/account.test.ts`: the account page's section on paying for Claude, from each answer from `/account`, and what it says of credit and keys.
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
+
+# Open: writing, drawing, and building visualizations
+
+We need to refine the approach between writing, drawing (in Inkwise), and building visualizations across Lua Turtle (`luaturtleweb`), Inkwise (`inkwise`), and Triangle Lab (`triangle-lab`).
+The approach is not decided yet, so this note records the open question rather than a design.
+The same note is in all three projects, so a decision made in one should be carried to the other two.
+
+_Noted 2026-11-21._
 
 # Further Reading
 

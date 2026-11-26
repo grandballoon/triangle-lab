@@ -6,9 +6,9 @@
 
 import "./sheet.css";
 import { hrefOf, lessons, type Lesson } from "../lessons.ts";
-import type { Grade, Note, Verdict } from "./deck.ts";
+import type { Attempt, Grade, Note, Verdict } from "./deck.ts";
 import { el } from "./dom.ts";
-import { lessonLabel, questionHtml } from "./labels.ts";
+import { answeredLabel, lessonLabel, questionHtml } from "./labels.ts";
 import { placeRemarks, remarkAt, runsOf, stack } from "./remarks.ts";
 
 export const GRADE_LABEL: Record<Grade, string> = {
@@ -235,6 +235,23 @@ export function saidSheet(answer: string, verdict: Verdict | undefined): HTMLEle
   }
   if (verdict) box.append(claudeSaid(verdict.grade, verdict.feedback, "Claude"));
   return box;
+}
+
+/** Every answer given to a question, newest first, with what Claude said where it was kept. */
+export function answerHistory(attempts: readonly Attempt[]): HTMLElement {
+  const list = el("ol", "rc-history");
+  list.setAttribute("aria-label", "Answers given");
+  list.append(
+    ...[...attempts].reverse().map((attempt) => {
+      const entry = el("li");
+      entry.append(
+        el("p", "rc-history-when", `${answeredLabel(attempt.at)} · ${GRADE_LABEL[attempt.grade]}`),
+        saidSheet(attempt.answer, attempt.claude),
+      );
+      return entry;
+    }),
+  );
+  return list;
 }
 
 /** An answer as the learner gave it, or a note that it was given in the head. */

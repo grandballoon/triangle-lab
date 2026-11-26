@@ -288,8 +288,147 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02e
 
 .rc-finished .rc-note + .rc-note { margin-top: 2px; }
 
+/* --- The answers document ------------------------------------------------------ */
+
+.rc-document {
+  padding: 8px 32px 32px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+}
+
+.rc-document-warning { margin: 18px 0 0; }
+
+.rc-document-warning[hidden] { display: none; }
+
+.rc-document-lesson { margin-top: 26px; }
+
+.rc-document-lesson h2 {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #38d9a9;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.rc-document-section { margin-top: 22px; }
+
+.rc-document-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.rc-document-head .rc-button { flex: none; }
+
+.rc-document-head h3 {
+  min-width: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+/* The answer's words, with Claude's remarked words highlighted from behind
+   them by a layer that lays the same text out the same way. */
+.rc-document-paper { position: relative; margin-top: 6px; }
+
+.rc-document-marks,
+.rc-document-answer {
+  padding: 4px 0;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.rc-document-marks {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: transparent;
+  pointer-events: none;
+}
+
+.rc-document-marks mark {
+  color: transparent;
+  border-radius: 2px;
+  background: rgba(255, 212, 59, 0.2);
+  box-shadow: inset 0 -2px 0 rgba(255, 212, 59, 0.65);
+}
+
+.rc-document-answer {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  outline: none;
+  color: rgba(233, 240, 247, 0.88);
+}
+
+.rc-document-answer::placeholder { color: rgba(233, 240, 247, 0.32); }
+
+.rc-document-answer:focus-visible { box-shadow: -10px 0 0 -8px #38d9a9; }
+
+/* Offered over a highlighted stretch of an answer. */
+.rc-button.rc-document-popup {
+  position: absolute;
+  z-index: 5;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.rc-document-popup[hidden] { display: none; }
+
+.rc-document-check:not(:empty) { margin-top: 10px; }
+
+.rc-page .rc-document-check .rc-remark + .rc-remark { margin-top: 10px; }
+
+.rc-document-check-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rc-document-check .rc-remark-quote { margin-top: 4px; }
+
+.rc-document-history {
+  margin-top: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.rc-document-history summary {
+  padding: 7px 11px;
+  border-radius: 8px;
+  color: rgba(233, 240, 247, 0.55);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rc-document-history summary:hover { color: rgba(233, 240, 247, 0.85); }
+
+.rc-document-history summary:focus-visible { outline: 2px solid #38d9a9; outline-offset: 1px; }
+
+.rc-document-history > .rc-history { margin: 4px 11px 12px; }
+
+.rc-document-history > .rc-note { margin: 0; padding: 2px 11px 11px; font-size: 14px; }
+
 @media (max-width: 600px) {
   body { padding: 32px 16px 48px; }
+  .rc-document { padding: 4px 16px 24px; }
   /* The question gets the full width; its buttons go under it. */
   .rc-card { grid-template-columns: minmax(0, 1fr); }
   .rc-actions { grid-column: 1; grid-row: auto; margin-top: 6px; }

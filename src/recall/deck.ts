@@ -10,7 +10,11 @@
 // too is the same on every device: one piece of writing, and Claude's last
 // reading of it, of which a merge keeps the newer copy. And it holds each
 // lesson's explanation written on the lesson page (explain.ts), with Claude's
-// last check of it, merged lesson by lesson the same way.
+// last check of it, merged lesson by lesson the same way. And it holds the
+// learner's standing answer to each question, as edited in the answers
+// document (answers.ts). That is apart from the card, whose attempts stay a
+// record of what was given at each review, so editing an answer on one device
+// never competes in a merge with a grade given on another.
 //
 // Scheduling is a Leitner system. Each card sits in a box; recalling it moves
 // it up a box and further out, a shaky answer moves it down one, and a miss
@@ -101,6 +105,33 @@ export interface KeptExplanation {
   updated: number;
 }
 
+/** A stretch of an answer, as offsets into it. */
+export interface Span {
+  start: number;
+  end: number;
+}
+
+/** Claude's last check of a standing answer, of all of it or of one passage. */
+export interface KeptCheck {
+  /** The answer as it was sent. */
+  text: string;
+  /** The passage of `text` that was checked; absent when all of it was. */
+  span?: Span;
+  verdict: Verdict;
+}
+
+/** The learner's standing answer to a question, as edited in the answers document. */
+export interface KeptResponse {
+  /** The id of the card it answers. */
+  card: string;
+  /** What the learner has written; empty once they clear it. */
+  text: string;
+  /** Claude's last check of it, until the learner clears it; absent before any. */
+  checked?: KeptCheck;
+  /** Its last change, so the newer of two copies wins a merge. */
+  updated: number;
+}
+
 /** Where a question was asked: a lesson and the step it had current. */
 export interface Place {
   /** The lesson's slug (lessons.ts). */
@@ -147,6 +178,8 @@ export interface Deck {
   writing?: Writing;
   /** One per lesson explained, in order of slug; absent until one is written, and says nothing of another device's. */
   explanations?: KeptExplanation[];
+  /** One per question answered in the document, in order of card id; absent until one is written, and says nothing of another device's. */
+  responses?: KeptResponse[];
 }
 
 export const EMPTY_DECK: Deck = { cards: [], removed: [] };
@@ -175,6 +208,8 @@ export const MAX_FEEDBACK = 2000;
 export const MAX_REMARKS = 12;
 /** Longest free association kept: pages of writing, but not a stray paste of a book. */
 export const MAX_WRITING = 20_000;
+/** Longest standing answer kept: an answer worked over in the document can outgrow one given in a review. */
+export const MAX_RESPONSE = 20_000;
 /** Most remarks kept on one reading: a long piece of writing has many lines. */
 export const MAX_NOTES = 40;
 /** Most lessons suggested as next steps. */
@@ -219,6 +254,51 @@ export function setExplanation(deck: Deck, kept: KeptExplanation): Deck {
   return { ...deck, explanations: [...others, kept].sort(byLesson) };
 }
 
+/**
+ * The standing answer to `card`: as edited in the document once it has been,
+ * even to nothing, and until then the last answer written at a review.
+ */
+export function responseText(deck: Deck, card: Card): string {
+  const kept = deck.responses?.find((r) => r.card === card.id);
+  if (kept) return kept.text;
+  return card.attempts.filter((a) => a.answer.trim() !== "").at(-1)?.answer ?? "";
+}
+
+/**
+ * Keep `text` as the standing answer to card `id`. Nothing changes for a card
+ * not in the deck, or text it already stands at. Each change is later than
+ * the one it replaces, even on a device whose clock runs behind.
+ */
+export function setResponse(deck: Deck, id: string, text: string, now: number): Deck {
+  const card = deck.cards.find((c) => c.id === id);
+  const clean = text.slice(0, MAX_RESPONSE);
+  if (!card || clean === responseText(deck, card)) return deck;
+  const held = deck.responses?.find((r) => r.card === id);
+  return keepResponse(deck, { ...held, card: id, text: clean, updated: laterThan(held, now) });
+}
+
+/**
+ * Keep Claude's check of the standing answer to card `id`, or clear it with
+ * null. The answer stays as it stands, and from here on is kept as edited.
+ */
+export function setResponseCheck(deck: Deck, id: string, checked: KeptCheck | null, now: number): Deck {
+  const card = deck.cards.find((c) => c.id === id);
+  const held = deck.responses?.find((r) => r.card === id);
+  if (!card || (!checked && !held?.checked)) return deck;
+  const kept: KeptResponse = { card: id, text: responseText(deck, card), updated: laterThan(held, now) };
+  return keepResponse(deck, checked ? { ...kept, checked } : kept);
+}
+
+/** A time for a change to `held`: now, or just after it on a clock running behind. */
+function laterThan(held: KeptResponse | undefined, now: number): number {
+  return Math.max(now, (held?.updated ?? -1) + 1);
+}
+
+function keepResponse(deck: Deck, kept: KeptResponse): Deck {
+  const others = (deck.responses ?? []).filter((r) => r.card !== kept.card);
+  return { ...deck, responses: [...others, kept].sort(byCard) };
+}
+
 export function addCard(deck: Deck, card: Card): Deck {
   return { ...deck, cards: [...deck.cards.filter((c) => c.id !== card.id), card] };
 }
@@ -250,10 +330,13 @@ export function revisitCards(deck: Deck): Card[] {
 
 export function removeCard(deck: Deck, id: string, now: number): Deck {
   if (!deck.cards.some((c) => c.id === id)) return deck;
+  const { responses, ...rest } = deck;
+  const left = (responses ?? []).filter((r) => r.card !== id);
   return {
-    ...deck,
+    ...rest,
     cards: deck.cards.filter((c) => c.id !== id),
     removed: [...deck.removed.filter((r) => r.id !== id), { id, at: now }],
+    ...(left.length > 0 ? { responses: left } : {}),
   };
 }
 
@@ -313,7 +396,8 @@ export function lessonCards(deck: Deck, lesson: string): Card[] {
  * newer copy of a card, or its removal if that came later still.
  *
  * The free association is taken from whichever changed it last, and so is
- * each lesson's explanation.
+ * each lesson's explanation, and each question's standing answer, unless the
+ * question has been removed, when its answer goes with it.
  *
  * The order of the two decks never matters, and merging again changes
  * nothing, so devices that swap decks in any order end up holding the same.
@@ -333,7 +417,16 @@ export function mergeDecks(ours: Deck, theirs: Deck): Deck {
   const merged: Deck = { cards: cards.sort(byCreated), removed: removed.sort((a, b) => a.at - b.at || compare(a.id, b.id)) };
   const writing = laterCopy(ours.writing, theirs.writing);
   const explanations = mergeExplanations(ours.explanations ?? [], theirs.explanations ?? []);
-  return withExtras(merged, writing, explanations);
+  const gone = new Set(merged.removed.map((r) => r.id));
+  const responses = mergeResponses(ours.responses ?? [], theirs.responses ?? []).filter((r) => !gone.has(r.card));
+  return withExtras(merged, writing, explanations, responses);
+}
+
+/** Each question's later standing answer of the two lists, in order of card id. */
+function mergeResponses(ours: readonly KeptResponse[], theirs: readonly KeptResponse[]): KeptResponse[] {
+  const latest = new Map<string, KeptResponse>();
+  for (const kept of [...ours, ...theirs]) latest.set(kept.card, laterCopy(latest.get(kept.card), kept)!);
+  return [...latest.values()].sort(byCard);
 }
 
 /** Each lesson's later explanation of the two lists, in order of slug. */
@@ -343,27 +436,31 @@ function mergeExplanations(ours: readonly KeptExplanation[], theirs: readonly Ke
   return [...latest.values()].sort(byLesson);
 }
 
-/** `deck` with the free association and explanations given, leaving out what there is none of. */
-function withExtras(deck: Deck, writing: Writing | undefined, explanations: KeptExplanation[]): Deck {
-  const withWriting = writing ? { ...deck, writing } : deck;
-  return explanations.length > 0 ? { ...withWriting, explanations } : withWriting;
+/** `deck` with the free association, explanations and standing answers given, leaving out what there is none of. */
+function withExtras(deck: Deck, writing: Writing | undefined, explanations: KeptExplanation[], responses: KeptResponse[]): Deck {
+  return {
+    ...deck,
+    ...(writing ? { writing } : {}),
+    ...(explanations.length > 0 ? { explanations } : {}),
+    ...(responses.length > 0 ? { responses } : {}),
+  };
 }
 
-/** The later of two copies of the free association, or of one lesson's explanation. Ties go to the larger copy as text, so the choice is the same whichever deck each came from. */
+/** The later of two copies of the free association, of one lesson's explanation, or of one standing answer. Ties go to the larger copy as text, so the choice is the same whichever deck each came from. */
 function laterCopy<T extends { updated: number }>(a: T | undefined, b: T | undefined): T | undefined {
   if (!a || !b) return a ?? b;
   if (a.updated !== b.updated) return a.updated > b.updated ? a : b;
   return JSON.stringify(a) >= JSON.stringify(b) ? a : b;
 }
 
-/** Whether `a` and `b` hold the same questions, in the same states, and the same free association and explanations. */
+/** Whether `a` and `b` hold the same questions, in the same states, and the same free association, explanations and standing answers. */
 export function sameDeck(a: Deck, b: Deck): boolean {
   const keys = (d: Deck): string => entries(d).map(entryKey).sort().join("\n");
-  const extras = (d: Deck): string => JSON.stringify([d.writing ?? null, d.explanations ?? []]);
+  const extras = (d: Deck): string => JSON.stringify([d.writing ?? null, d.explanations ?? [], d.responses ?? []]);
   return keys(a) === keys(b) && extras(a) === extras(b);
 }
 
-/** The questions whose state in `after` is not their state in `before`, and the free association and explanations that changed. */
+/** The questions whose state in `after` is not their state in `before`, and the free association, explanations and standing answers that changed. */
 export function changedSince(before: Deck, after: Deck): Deck {
   const held = new Set(entries(before).map(entryKey));
   const fresh = (e: Entry): boolean => !held.has(entryKey(e));
@@ -374,7 +471,9 @@ export function changedSince(before: Deck, after: Deck): Deck {
   const writing = after.writing && JSON.stringify(after.writing) !== JSON.stringify(before.writing ?? null) ? after.writing : undefined;
   const explained = new Set((before.explanations ?? []).map((e) => JSON.stringify(e)));
   const explanations = (after.explanations ?? []).filter((e) => !explained.has(JSON.stringify(e)));
-  return withExtras(changed, writing, explanations);
+  const answered = new Set((before.responses ?? []).map((r) => JSON.stringify(r)));
+  const responses = (after.responses ?? []).filter((r) => !answered.has(JSON.stringify(r)));
+  return withExtras(changed, writing, explanations, responses);
 }
 
 /** One question's state in a deck: a card, or the time it was removed. */
@@ -417,12 +516,20 @@ export interface SavedDeck {
   writing?: Writing;
   /** Added later again, in the same way; absent until a lesson is explained. */
   explanations?: KeptExplanation[];
+  /** Added later again, in the same way; absent until a question is answered in the document. */
+  responses?: KeptResponse[];
 }
 
 export function saveDeck(deck: Deck): SavedDeck {
-  const saved: SavedDeck = { kind: "triangle-lab/recall", version: 1, cards: deck.cards, removed: deck.removed };
-  const withWriting = deck.writing ? { ...saved, writing: deck.writing } : saved;
-  return deck.explanations?.length ? { ...withWriting, explanations: deck.explanations } : withWriting;
+  return {
+    kind: "triangle-lab/recall",
+    version: 1,
+    cards: deck.cards,
+    removed: deck.removed,
+    ...(deck.writing ? { writing: deck.writing } : {}),
+    ...(deck.explanations?.length ? { explanations: deck.explanations } : {}),
+    ...(deck.responses?.length ? { responses: deck.responses } : {}),
+  };
 }
 
 /**
@@ -436,10 +543,38 @@ export function loadDeck(raw: unknown): Deck | null {
   const removed = Array.isArray(raw.removed) ? raw.removed.map(loadRemoval).filter((r) => r !== null) : [];
   const writing = readWriting(raw.writing) ?? undefined;
   const explanations = Array.isArray(raw.explanations) ? raw.explanations.flatMap(readKeptExplanation) : [];
+  const responses = Array.isArray(raw.responses) ? raw.responses.flatMap(readKeptResponse) : [];
   // A deck read back is merged with nothing, so it is in the shape a merge
   // makes: one state per question, the last one, and the same for each
-  // lesson's explanation.
-  return mergeDecks(EMPTY_DECK, withExtras({ cards, removed }, writing, explanations));
+  // lesson's explanation and each standing answer.
+  return mergeDecks(EMPTY_DECK, withExtras({ cards, removed }, writing, explanations, responses));
+}
+
+/** A kept standing answer as one element of a list, or none if `raw` is not one. */
+export function readKeptResponse(raw: unknown): KeptResponse[] {
+  if (!isObject(raw) || typeof raw.card !== "string" || !raw.card || typeof raw.text !== "string" || !isTime(raw.updated)) return [];
+  const kept: KeptResponse = { card: raw.card, text: raw.text.slice(0, MAX_RESPONSE), updated: raw.updated };
+  const checked = readKeptCheck(raw.checked);
+  return [checked ? { ...kept, checked } : kept];
+}
+
+function readKeptCheck(raw: unknown): KeptCheck | null {
+  if (!isObject(raw) || typeof raw.text !== "string") return null;
+  const verdict = readVerdict(raw.verdict);
+  if (!verdict) return null;
+  const text = raw.text.slice(0, MAX_RESPONSE);
+  if (raw.span === undefined) return { text, verdict };
+  const span = readSpan(raw.span, text);
+  return span ? { text, span, verdict } : null;
+}
+
+/** Read a stretch of `text`, or null if `raw` is not one holding some words. */
+export function readSpan(raw: unknown, text: string): Span | null {
+  if (!isObject(raw)) return null;
+  const { start, end } = raw;
+  if (!Number.isInteger(start) || !Number.isInteger(end)) return null;
+  const [from, to] = [start as number, end as number];
+  return from >= 0 && from < to && to <= text.length && text.slice(from, to).trim() ? { start: from, end: to } : null;
 }
 
 /** A kept explanation as one element of a list, or none if `raw` is not one. A check that is not one is dropped. */
@@ -557,6 +692,8 @@ function mapCard(deck: Deck, id: string, fn: (c: Card) => Card): Deck {
 const byDue = (a: Card, b: Card): number => a.due - b.due || a.created - b.created;
 
 const byLesson = (a: KeptExplanation, b: KeptExplanation): number => compare(a.lesson, b.lesson);
+
+const byCard = (a: KeptResponse, b: KeptResponse): number => compare(a.card, b.card);
 
 const byCreated = (a: Card, b: Card): number => a.created - b.created || compare(a.id, b.id);
 

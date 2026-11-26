@@ -1121,3 +1121,162 @@ describe("free associating", () => {
     expect(field(root).value).toBe("");
   });
 });
+
+describe("the answers document", () => {
+  const openDocument = async (cards: Card[]): Promise<HTMLElement> => {
+    const root = await open(cards);
+    [...root.querySelectorAll("button")].find((b) => b.textContent === "Your answers")!.click();
+    return root;
+  };
+  const type = (field: HTMLTextAreaElement, text: string): void => {
+    field.value = text;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  const stored = (): Deck => loadDeck(JSON.parse(localStorage.getItem(KEY)!))!;
+
+  it("shows each question as a heading over its answer, starting from the last one given", async () => {
+    const root = await openDocument([
+      card("a", "What is a median?", { attempts: [{ at: now - 1000, answer: "Vertex to midpoint", grade: "shaky" }] }),
+      card("b", "Where do they meet?"),
+    ]);
+    expect([...root.querySelectorAll(".rc-document h3")].map((h) => h.textContent)).toEqual(["What is a median?", "Where do they meet?"]);
+    expect([...root.querySelectorAll<HTMLTextAreaElement>(".rc-document-answer")].map((f) => f.value)).toEqual(["Vertex to midpoint", ""]);
+  });
+
+  it("keeps an edit as it is typed, through a reload, without touching the review history", async () => {
+    const attempts = [{ at: now - 1000, answer: "Vertex to midpoint", grade: "shaky" as const }];
+    const root = await openDocument([card("a", "What is a median?", { attempts })]);
+    type(root.querySelector<HTMLTextAreaElement>(".rc-document-answer")!, "# Not a heading\nA segment to the midpoint");
+    expect(stored().responses?.map((r) => r.text)).toEqual(["# Not a heading\nA segment to the midpoint"]);
+    expect(stored().cards[0].attempts).toEqual(attempts);
+
+    const again = await reload();
+    expect(again.querySelector<HTMLTextAreaElement>(".rc-document-answer")!.value).toBe("# Not a heading\nA segment to the midpoint");
+    expect(again.querySelectorAll(".rc-document h3")).toHaveLength(1);
+  });
+
+  it("takes another tab's edit in place, leaving the answer being typed in alone", async () => {
+    const root = await openDocument([card("a", "First?"), card("b", "Second?")]);
+    const [first, second] = root.querySelectorAll<HTMLTextAreaElement>(".rc-document-answer");
+    first.focus();
+    type(first, "Still typing");
+    const elsewhere = { ...stored(), responses: [
+      { card: "a", text: "From elsewhere", updated: now + 5000 },
+      { card: "b", text: "Also elsewhere", updated: now + 5000 },
+    ] };
+    localStorage.setItem(KEY, JSON.stringify(saveDeck(elsewhere)));
+    window.dispatchEvent(new StorageEvent("storage", { key: KEY }));
+    expect(document.activeElement).toBe(first);
+    expect(first.value).toBe("Still typing");
+    expect(second.value).toBe("Also elsewhere");
+  });
+
+  /** The Worker: the deck kept as sent, and each check answered with `reply`. Returns the checks asked for. */
+  const checking = (reply: () => Response): unknown[] => {
+    const checks: unknown[] = [];
+    vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      if (url === "/deck") return new Response(init.body, { status: 200 });
+      checks.push(JSON.parse(init.body as string));
+      return reply();
+    });
+    return checks;
+  };
+  const settled = async (): Promise<void> => {
+    for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
+  };
+  const named = (root: HTMLElement, name: string): HTMLButtonElement =>
+    [...root.querySelectorAll("button")].find((b) => b.textContent === name)!;
+  const verdict = { grade: "shaky", feedback: "Nearly.", remarks: [{ quote: "side", note: "The midpoint of it." }] };
+  const answered = (text: string) => card("a", "What is a median?", { attempts: [{ at: now - 1000, answer: text, grade: "shaky" as const }] });
+
+  it("folds each question's history into a bar at the foot of its section", async () => {
+    const root = await openDocument([answered("Vertex to midpoint"), card("b", "Unanswered?")]);
+    const [first, second] = root.querySelectorAll<HTMLDetailsElement>(".rc-document-history");
+    expect(first.open).toBe(false);
+    expect(first.querySelector("summary")!.textContent).toBe("History · 1 answer");
+    expect(first.querySelector(".rc-history .rc-said")!.textContent).toBe("Vertex to midpoint");
+    expect(second.querySelector("summary")!.textContent).toBe("History · 0 answers");
+    expect(first.closest(".rc-document-section")!.lastElementChild).toBe(first);
+  });
+
+  it("checks a whole answer from the button by its question, and keeps Claude's remarks on its words", async () => {
+    const checks = checking(() => Response.json(verdict));
+    const root = await openDocument([answered("Vertex to side")]);
+    named(root, "Check").click();
+    await settled();
+    expect(checks).toEqual([expect.objectContaining({ question: "What is a median?", answer: "Vertex to side" })]);
+    expect(checks[0]).not.toHaveProperty("span");
+    expect(root.querySelector(".rc-document-check .rc-feedback")!.textContent).toBe("Nearly.");
+    expect(root.querySelector(".rc-document-marks mark")!.textContent).toBe("side");
+    expect(stored().responses?.[0].checked?.verdict.grade).toBe("shaky");
+
+    const again = await reload();
+    expect(again.querySelector(".rc-document-marks mark")!.textContent).toBe("side");
+    named(again, "Clear").click();
+    expect(again.querySelector(".rc-document-marks mark")).toBeNull();
+    expect(stored().responses?.[0].checked).toBeUndefined();
+  });
+
+  it("offers to check a highlighted stretch, and sends just that passage", async () => {
+    const checks = checking(() => Response.json({ grade: "recalled", feedback: "Right." }));
+    const root = await openDocument([answered("Vertex to side")]);
+    const field = root.querySelector<HTMLTextAreaElement>(".rc-document-answer")!;
+    expect(root.querySelector(".rc-document-popup")).toBeNull();
+    field.focus();
+    field.setSelectionRange(7, 9);
+    field.dispatchEvent(new Event("select"));
+    const offered = root.querySelector<HTMLButtonElement>(".rc-document-popup")!;
+    expect(offered.hidden).toBe(false);
+    offered.click();
+    await settled();
+    expect(offered.hidden).toBe(true);
+    expect(checks).toEqual([expect.objectContaining({ answer: "Vertex to side", span: { start: 7, end: 9 } })]);
+    expect(root.querySelector(".rc-document-check .rc-remark-quote")!.textContent).toBe("to");
+  });
+
+  it("does not offer a highlight again once it has been waved away, until it changes", async () => {
+    const root = await openDocument([answered("Vertex to side")]);
+    const field = root.querySelector<HTMLTextAreaElement>(".rc-document-answer")!;
+    field.focus();
+    field.setSelectionRange(0, 6);
+    field.dispatchEvent(new Event("select"));
+    const offered = root.querySelector<HTMLButtonElement>(".rc-document-popup")!;
+    field.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    field.dispatchEvent(new KeyboardEvent("keyup", { key: "Escape" }));
+    await settled();
+    expect(offered.hidden).toBe(true);
+    field.setSelectionRange(0, 3);
+    field.dispatchEvent(new Event("select"));
+    expect(offered.hidden).toBe(false);
+  });
+
+  it("takes the offer away when the highlight is gone", async () => {
+    const root = await openDocument([answered("Vertex to side")]);
+    const field = root.querySelector<HTMLTextAreaElement>(".rc-document-answer")!;
+    field.focus();
+    field.setSelectionRange(0, 6);
+    field.dispatchEvent(new Event("select"));
+    field.setSelectionRange(3, 3);
+    field.dispatchEvent(new Event("select"));
+    expect(root.querySelector<HTMLButtonElement>(".rc-document-popup")!.hidden).toBe(true);
+  });
+
+  it("says why a check failed, and has nothing to check in an empty answer", async () => {
+    checking(() => Response.json({ error: "Claude is busy. Try again in a minute." }, { status: 502 }));
+    const root = await openDocument([answered("Vertex to side"), card("b", "Unanswered?")]);
+    const [first, second] = root.querySelectorAll<HTMLButtonElement>(".rc-document-head button");
+    expect(second.disabled).toBe(true);
+    first.click();
+    expect(first.textContent).toBe("Checking…");
+    await settled();
+    expect(first.textContent).toBe("Check");
+    expect(root.querySelector(".rc-document-check")!.textContent).toContain("Claude is busy");
+  });
+
+  it("goes back to the questions", async () => {
+    const root = await openDocument([card("a", "First?")]);
+    [...root.querySelectorAll("button")].find((b) => b.textContent === "Back to your questions")!.click();
+    expect(root.querySelector(".rc-document")).toBeNull();
+    expect(root.querySelector(".rc-summary")).not.toBeNull();
+  });
+});
