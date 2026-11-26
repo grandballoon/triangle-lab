@@ -436,6 +436,22 @@
         "parallel-transversal"
       ]
     },
+    "triangle-tests": {
+      "source": "0faca345aba6",
+      "teaches": [
+        "SSS, SAS, ASA and AAS each fix a triangle, so two triangles that agree in those parts are congruent; AAS reduces to ASA because the third angle is $180^\\circ$ minus the other two.",
+        "HL: two right triangles with equal hypotenuses and one equal leg are congruent.",
+        "SSA does not prove congruence: an angle, a side beside it and the side opposite it can fit two different triangles, except when the angle opposite the longest given side is right, which is HL.",
+        "AAA does not prove congruence, since equal angles allow any size, but it does prove similarity.",
+        "AA, SSS with all three sides in one ratio $k$, and SAS with two sides in one ratio around an equal angle each prove similarity.",
+        "SSA with two sides in one ratio and a non-included equal angle does not prove similarity."
+      ],
+      "builds_on": [
+        "congruence",
+        "right-congruence",
+        "similarity-tests"
+      ]
+    },
     "altitude-on-hypotenuse": {
       "source": "bcfc963a863d",
       "teaches": [

@@ -40,7 +40,7 @@ const TRIANGLES_ORDER = [
   "inequality",
   "pythagoras", "pythagoras-square", "pythagoras-converse", "pythagorean-triples",
   "congruence", "right-congruence", "isosceles-base-angles", "chord-bisector",
-  "similar", "similarity-tests", "altitude-on-hypotenuse", "angle-bisector-theorem",
+  "similar", "similarity-tests", "triangle-tests", "altitude-on-hypotenuse", "angle-bisector-theorem",
   "area-base-height", "area-inradius",
   "right-angle-tests", "parallel-trick",
 ];

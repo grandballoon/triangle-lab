@@ -116,4 +116,16 @@ export const trianglesCentres: Lesson[] = [
         stroke-linecap="round" />`,
     lab: true,
   },
+  {
+    slug: "triangle-tests",
+    part: "Matching · Three",
+    name: "Every Test, One Triangle",
+    desc: "Shape one triangle and scroll through every congruence and similarity test, working or not.",
+    accent: "#38d9a9",
+    icon: `<polygon points="4,26 14,26 7,13" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" />
+      <polygon points="17,26 28,26 20.5,12" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="3 2.5" />`,
+    lab: true,
+  },
 ];

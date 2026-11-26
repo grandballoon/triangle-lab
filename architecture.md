@@ -656,6 +656,14 @@ Each reload takes off what the last load of the page listened to on the window a
 
 None of this checks how a lesson looks, and no test sees a real hand: gesture thresholds are tuned by eye and exposed in the settings panel for that reason.
 
+# Open: writing, drawing, and building visualizations
+
+We need to refine the approach between writing, drawing (in Inkwise), and building visualizations across Lua Turtle (`luaturtleweb`), Inkwise (`inkwise`), and Triangle Lab (`triangle-lab`).
+The approach is not decided yet, so this note records the open question rather than a design.
+The same note is in all three projects, so a decision made in one should be carried to the other two.
+
+_Noted 2026-11-21._
+
 # Further Reading
 
 - `README.md`: running the project and adding a lesson.
