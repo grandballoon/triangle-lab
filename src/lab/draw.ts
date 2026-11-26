@@ -17,6 +17,7 @@
 // that link.ts found on its own — names, angles, numbers — can be traced to
 // the marks that show them without the lesson tagging anything.
 
+import { fitText, keepInside } from "../fit.ts";
 import { emptyFigure, resolveTerm, type FigureIndex } from "./figure.ts";
 import { add, angleOf, lerp, normalize, perp, polar, scale, sub, TAU, toDeg, type Vec } from "./geo.ts";
 import { asFeature, distinctShapes, leaderEnds, type Feature, type Highlight, type Shape } from "./highlight.ts";
@@ -30,6 +31,11 @@ export interface View {
   oy: number;
   width: number;
   height: number;
+  /**
+   * The screen x the figure's text keeps between, clear of the chrome beside
+   * the figure; the whole width when unset.
+   */
+  room?: { left: number; right: number };
 }
 
 export const toScreen = (v: View, p: Vec): Vec => ({ x: v.ox + p.x * v.scale, y: v.oy - p.y * v.scale });
@@ -149,6 +155,12 @@ const SILENT_CANVAS = new Proxy({} as Record<string | symbol, unknown>, {
 }) as unknown as CanvasRenderingContext2D;
 
 const FONT = "ui-sans-serif, system-ui, -apple-system, sans-serif";
+/** The least a label shrinks to, in px, before it wraps instead. */
+const MIN_LABEL_PX = 12;
+/** How far inside the figure's room its text keeps, in px. */
+const TEXT_MARGIN_PX = 6;
+/** Lines of a wrapped label, this many sizes apart. */
+const LINE_HEIGHT = 1.25;
 const HALO = "rgba(6, 10, 16, 0.78)";
 const RIGHT_ANGLE_TOLERANCE = 0.6; // degrees
 
@@ -519,34 +531,49 @@ export class Draw {
   /** A label, which lights `names` — the mark it names — or else its own box. */
   private text(p: Vec, text: string, o: LabelOptions, names?: Shape): void {
     const s = toScreen(this.view, p);
-    const x = s.x + (o.dx ?? 0);
     const y = s.y - (o.dy ?? 0);
     const { ctx } = this;
     const lit = this.lit(o);
-    const size = o.size ?? 15;
     const align = o.align ?? "center";
-    const width = [...text].length * size * 0.6 + 6;
+    const weight = o.bold || lit ? 700 : 600;
+    const font = (px: number): string => `${weight} ${px}px ${FONT}`;
+    const measure = (t: string, px: number): number => {
+      ctx.font = font(px);
+      const width = ctx.measureText(t)?.width;
+      // A canvas stand-in measures nothing; guess from the length.
+      return typeof width === "number" && Number.isFinite(width) ? width : [...t].length * px * 0.6;
+    };
+
+    // Text keeps to the figure's room: too wide for it, it shrinks a little
+    // and then wraps (fit.ts); over an edge, it moves back inside.
+    const { left, right } = this.view.room ?? { left: 0, right: this.view.width };
+    const fitted = fitText(text, (o.size ?? 15) + (lit ? 2 : 0), MIN_LABEL_PX, right - left - 2 * TEXT_MARGIN_PX, measure);
+    const width = Math.max(...fitted.lines.map((line) => measure(line, fitted.size)));
+    const x = keepInside(s.x + (o.dx ?? 0), width, align, left + TEXT_MARGIN_PX, right - TEXT_MARGIN_PX);
+    const step = fitted.size * LINE_HEIGHT;
+    const top = y - ((fitted.lines.length - 1) * step) / 2;
+
     const box: Shape = {
       kind: "label",
-      at: { x: x + (align === "left" ? width / 2 - 3 : align === "right" ? 3 - width / 2 : 0), y },
-      width,
-      height: size + 6,
+      at: { x: x + (align === "left" ? width / 2 : align === "right" ? -width / 2 : 0), y },
+      width: width + 6,
+      height: fitted.lines.length * step + 6,
     };
     const shows = names ?? box;
-    this.mark(o, p, [shows], { x: o.dx ?? 0, y: -(o.dy ?? 0) });
+    this.mark(o, p, [shows], { x: x - s.x, y: y - s.y });
     if (this.noted(o)) this.index.labels.push({ text, at: s, screen: { x, y }, shows });
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
-    ctx.font = `${o.bold || lit ? 700 : 600} ${size + (lit ? 2 : 0)}px ${FONT}`;
+    ctx.font = font(fitted.size);
     ctx.textAlign = align;
     ctx.textBaseline = "middle";
     ctx.lineJoin = "round";
     ctx.lineWidth = 4;
     ctx.strokeStyle = HALO;
-    ctx.strokeText(text, x, y);
+    fitted.lines.forEach((line, i) => ctx.strokeText(line, x, top + i * step));
     this.glow(o, o.color ?? C.ink);
     ctx.fillStyle = o.color ?? C.ink;
-    ctx.fillText(text, x, y);
+    fitted.lines.forEach((line, i) => ctx.fillText(line, x, top + i * step));
     ctx.restore();
   }
 

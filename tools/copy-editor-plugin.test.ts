@@ -6,12 +6,13 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { createServer, type ViteDevServer } from "vite";
+import { join } from "node:path";
+import type { ViteDevServer } from "vite";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { readHistory } from "../src/dev/copy/history.ts";
 import { CHECK_ENDPOINT, COPY_ENDPOINT, type CopyEdit } from "../src/dev/copy/wire.ts";
 import { copyEditor } from "./copy-editor-plugin.ts";
+import { startTestServer } from "./test-server.ts";
 
 const LESSON = `export default lesson(() => ({
   steps: [
@@ -55,15 +56,7 @@ beforeAll(async () => {
   await writeFile(join(dir, "src/lab/lessons/demo.ts"), LESSON);
   await writeFile(join(dir, "src/directions.ts"), DIRECTIONS);
   await writeFile(join(dir, "src/asides.ts"), ASIDES);
-  server = await createServer({
-    configFile: false,
-    root: resolve(__dirname, ".."),
-    logLevel: "silent",
-    plugins: [copyEditor(dir, async () => (keyed ? standIn : null))],
-    server: { host: "127.0.0.1", port: 0, watch: null },
-  });
-  await server.listen();
-  base = server.resolvedUrls!.local[0].replace(/\/$/, "");
+  ({ server, base } = await startTestServer([copyEditor(dir, async () => (keyed ? standIn : null))]));
 });
 
 afterAll(async () => {
