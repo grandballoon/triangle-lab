@@ -2,8 +2,8 @@
 // lesson saying how. `linkTex` reads a LaTeX expression and marks each thing
 // a figure could show as a term (scene.ts `term`): point and segment names
 // (`A`, `AB`, `A'B'`, `O_1`), angles (`\angle PED`, `\angle B`), triangles
-// and polygons (`\triangle ABC`, `ABCD`), variables (`a`, `\alpha`) and
-// numbers (`5.2`, `37^\circ`). The term id says what to look for, and
+// and polygons (`\triangle ABC`, `ABCD`), areas (`[ABC]`), variables (`a`,
+// `\alpha`) and numbers (`5.2`, `37^\circ`). The term id says what to look for, and
 // figure.ts finds where the figure drew it, so a term the figure does not
 // show simply leads nowhere.
 //
@@ -17,12 +17,22 @@ export type TermRef =
   /** One name (`∠B`) or three, vertex in the middle (`∠ABC`). */
   | { kind: "angle"; names: string[] }
   | { kind: "polygon"; names: string[] }
+  /** The region inside a polygon, written `[ABC]`. */
+  | { kind: "area"; names: string[] }
   | { kind: "symbol"; text: string }
   | { kind: "number"; text: string };
 
 // Term ids are `kind:part.part…`; the parts never hold a dot, a comma or an
 // equals sign, which KaTeX's `\htmlData` would misread.
-const KIND_PREFIX = { point: "pt", segment: "seg", angle: "ang", polygon: "poly", symbol: "sym", number: "num" } as const;
+const KIND_PREFIX = {
+  point: "pt",
+  segment: "seg",
+  angle: "ang",
+  polygon: "poly",
+  area: "area",
+  symbol: "sym",
+  number: "num",
+} as const;
 const PREFIX_KIND = Object.fromEntries(Object.entries(KIND_PREFIX).map(([k, p]) => [p, k])) as Record<
   string,
   TermRef["kind"]
@@ -47,11 +57,50 @@ export function parseTermId(id: string): TermRef | null {
       return parts.length === 2 ? { kind, names: [parts[0], parts[1]] } : null;
     case "angle":
     case "polygon":
+    case "area":
       return { kind, names: parts };
     case "symbol":
     case "number":
       return { kind, text: parts.join(".") };
   }
+}
+
+/**
+ * One id for every way of writing the same feature: `seg:B.A` is `seg:A.B`,
+ * `ang:C.B.A` is `ang:A.B.C`, and a polygon or area may start at any corner
+ * and run either way round. Ids `linkTex` did not make are their own.
+ */
+export function canonicalTermId(id: string): string {
+  const ref = parseTermId(id);
+  if (!ref) return id;
+  const first = (options: string[][]): string[] => options.map((o) => o.join(".")).sort()[0].split(".");
+  switch (ref.kind) {
+    case "segment":
+      return termId({ kind: ref.kind, names: [...ref.names].sort() as [string, string] });
+    case "angle":
+      return termId({ kind: ref.kind, names: first([ref.names, [...ref.names].reverse()]) });
+    case "polygon":
+    case "area": {
+      const turns = (names: string[]): string[][] => names.map((_, i) => [...names.slice(i), ...names.slice(0, i)]);
+      return termId({ kind: ref.kind, names: first([...turns(ref.names), ...turns([...ref.names].reverse())]) });
+    }
+    default:
+      return termId(ref);
+  }
+}
+
+/**
+ * Which term ids name the same feature as `focus`, the term the reader is
+ * pointing at — directly, or through an alias for one of the lesson's own
+ * terms (`termAliases`) — so its other mentions can be lit too.
+ */
+export function sameFeatureAs(focus: string, aliases: ReadonlyMap<string, string>): (id: string) => boolean {
+  const ways = (id: string): string[] => {
+    const alias = aliases.get(id);
+    return (alias ? [id, alias] : [id]).map(canonicalTermId);
+  };
+  const wanted = new Set(ways(focus));
+  return (id) => ways(id).some((w) => wanted.has(w));
 }
 
 /** Greek letters (and ℓ) as LaTeX commands, with the characters figures label them by. π is a constant, not a mark. */
@@ -128,6 +177,7 @@ class Linker {
       const c = s[this.i];
       if (c === "\\") this.command();
       else if (c === "^" || c === "_") this.copy(this.argEnd(this.i + 1));
+      else if (c === "[") this.bracket();
       else if (isDigit(c)) this.number();
       else if (isUpper(c)) this.names();
       else if (isLower(c)) this.symbol(c, this.i + 1);
@@ -244,6 +294,16 @@ class Linker {
       (next === "\\" && GLUING.has(this.commandAt(end).name));
     if (glued) this.copy(end);
     else this.wrap({ kind: "number", text }, end);
+  }
+
+  /** `[ABC]`, the area of a polygon; any other bracket is copied. */
+  private bracket(): void {
+    const run = this.nameRun(this.i + 1);
+    if (run.plain && run.names.length >= 3 && this.s[run.end] === "]") {
+      this.wrap({ kind: "area", names: run.names }, run.end + 1);
+    } else {
+      this.copy(this.i + 1);
+    }
   }
 
   /** Capital letters run together: a point, a segment, or a polygon's corners. */

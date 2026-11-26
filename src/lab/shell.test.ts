@@ -282,6 +282,61 @@ describe("Shell", () => {
     expect(at(el.steps, "seg:A.B").classList.contains("term-linked")).toBe(true);
   });
 
+  it("lights the hovered feature on the figure, and its other mentions in the formulas with their rows", () => {
+    const styles: string[] = [];
+    const recording = new Proxy({} as Record<string, unknown>, {
+      get: (store, name: string) => (name in store ? store[name] : () => undefined),
+      set: (store, name: string, value) => {
+        if (name === "strokeStyle" || name === "fillStyle") styles.push(String(value));
+        store[name] = value;
+        return true;
+      },
+    });
+    HTMLCanvasElement.prototype.getContext = (() => recording) as never;
+    const el = page();
+    const A = { x: -2, y: 0 };
+    const B = { x: 2, y: 0 };
+    const C = { x: 0, y: 2 };
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Lines", title: "T", accent: "#f472b6" }, () => ({
+      steps: [{ title: "One", text: "Side $BA$ of $\\triangle ABC$." }],
+      likes: [],
+      uses: [],
+      draw: (g) => {
+        g.polygon([A, B, C]);
+        g.point(A, { label: "A" });
+        g.point(B, { label: "B" });
+        g.point(C, { label: "C" });
+      },
+      readout: () => [{ tex: "AB = 4" }, { tex: "[ABC] = 4" }, { tex: "\\triangle CBA" }],
+    }));
+    tick();
+    const at = (host: HTMLElement, id: string) => host.querySelector<HTMLElement>(`[data-term='${id}']`)!;
+    const rows = () => [...el.readouts.children].map((r) => r.classList.contains("readout-echo"));
+    const highlight = () => styles.some((style) => style.includes("255, 250, 228"));
+    expect(rows()).toEqual([false, false, false]);
+
+    at(el.steps, "seg:B.A").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    styles.length = 0;
+    tick();
+    expect(highlight()).toBe(true);
+    expect(rows()).toEqual([true, false, false]);
+    expect(at(el.readouts, "seg:A.B").classList.contains("term-echo")).toBe(true);
+
+    // A triangle is not its area: only the row naming the triangle lights.
+    at(el.steps, "poly:A.B.C").dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    tick();
+    expect(rows()).toEqual([false, false, true]);
+    expect(at(el.readouts, "seg:A.B").classList.contains("term-echo")).toBe(false);
+
+    el.canvas.dispatchEvent(pointer("pointermove", { x: 0, y: 0 }));
+    styles.length = 0;
+    tick();
+    expect(highlight()).toBe(false);
+    expect(rows()).toEqual([false, false, false]);
+    expect(el.readouts.querySelector(".term-echo")).toBeNull();
+  });
+
   it("holds the formulas' changing numbers, greyed, while a handle is dragged", () => {
     const { shell, el, scene } = loaded();
     const apex = scene.handles[2];

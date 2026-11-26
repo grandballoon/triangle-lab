@@ -7,8 +7,11 @@
 //
 // A mark may name the formula term it shows (`term`, see scene.ts). When the
 // reader hovers that term, the shell passes it in as `focus`: matching marks
-// are drawn heavier and glowing, and their positions are kept as anchors for
-// the leader lines the shell draws from the formula to the figure.
+// are drawn heavier and glowing. Each such mark also notes what it lights
+// (highlight.ts) — a segment its length, an angle mark its wedge, a polygon
+// its outline — and where the leader line from the formula meets it. A
+// lesson says when a mark stands for another kind of feature (`feature`:
+// a filled triangle meant as its area, a ring meant as the point inside).
 //
 // Every visible mark is also noted in a figure index (figure.ts), so terms
 // that link.ts found on its own — names, angles, numbers — can be traced to
@@ -16,6 +19,7 @@
 
 import { emptyFigure, resolveTerm, type FigureIndex } from "./figure.ts";
 import { add, angleOf, lerp, normalize, perp, polar, scale, sub, TAU, toDeg, type Vec } from "./geo.ts";
+import { asFeature, distinctShapes, leaderEnds, type Feature, type Highlight, type Shape } from "./highlight.ts";
 
 /** How stage coordinates land on the canvas. */
 export interface View {
@@ -63,6 +67,8 @@ export interface Stroke {
   alpha?: number;
   /** The formula term this mark shows (scene.ts `term`). */
   term?: string;
+  /** What kind of feature the term names, when it is not the mark's own shape (highlight.ts `asFeature`). */
+  feature?: Feature;
 }
 
 export interface Fill extends Stroke {
@@ -82,6 +88,7 @@ export interface LabelOptions {
   bold?: boolean;
   alpha?: number;
   term?: string;
+  feature?: Feature;
 }
 
 export interface AngleOptions extends Stroke {
@@ -104,6 +111,7 @@ export interface SpriteOptions {
   rotate?: number;
   alpha?: number;
   term?: string;
+  feature?: Feature;
 }
 
 /** A decoded image, ready to draw. */
@@ -135,11 +143,16 @@ const FONT = "ui-sans-serif, system-ui, -apple-system, sans-serif";
 const HALO = "rgba(6, 10, 16, 0.78)";
 const RIGHT_ANGLE_TOLERANCE = 0.6; // degrees
 
-// How a focused mark stands out, and how close two anchors of one term may be
-// before they count as the same place (an angle's arc and its label).
+// How a focused mark stands out.
 const FOCUS_WIDTH = 1.8;
 const FOCUS_GLOW_PX = 14;
-const ANCHOR_MERGE_PX = 36;
+
+/** What a mark may tag itself with. */
+interface Tagged {
+  term?: string;
+  feature?: Feature;
+  alpha?: number;
+}
 
 export class Draw {
   constructor(
@@ -150,24 +163,27 @@ export class Draw {
     private readonly options: DrawOptions = {},
   ) {}
 
-  private readonly anchorsByTerm = new Map<string, Vec[]>();
+  private readonly litByTerm = new Map<string, Highlight[]>();
   private readonly index: FigureIndex = emptyFigure();
   /** Off while drawing a backdrop (grid, axes) that shows nothing a term could mean. */
   private indexing = true;
 
   /**
-   * Screen positions of the visible marks drawn so far for any of `terms`:
-   * those drawn with it, and for a term link.ts found, those the figure index
-   * shows it by. Marks in the same place count once.
+   * What the visible marks drawn so far light for any of `terms`: those drawn
+   * with it, and for a term link.ts found, those the figure index shows it by.
    */
+  highlights(...terms: string[]): readonly Highlight[] {
+    return terms.flatMap((term) => [...(this.litByTerm.get(term) ?? []), ...resolveTerm(term, this.index)]);
+  }
+
+  /** The shapes `terms` light, each once. */
+  shapes(...terms: string[]): readonly Shape[] {
+    return distinctShapes(this.highlights(...terms));
+  }
+
+  /** Screen positions where leader lines to `terms` end. Marks in the same place count once. */
   anchors(...terms: string[]): readonly Vec[] {
-    const found: Vec[] = [];
-    for (const term of terms) {
-      for (const p of [...(this.anchorsByTerm.get(term) ?? []), ...resolveTerm(term, this.index)]) {
-        if (!found.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < ANCHOR_MERGE_PX)) found.push(p);
-      }
-    }
-    return found;
+    return leaderEnds(this.highlights(...terms));
   }
 
   /** What the figure has shown so far, in screen pixels. */
@@ -197,22 +213,24 @@ export class Draw {
   line(a: Vec, b: Vec, o: Stroke = {}): void {
     const d = normalize(sub(b, a));
     const far = this.reach();
-    this.anchor(o, lerp(a, b, 0.5));
+    const ends = [sub(a, scale(d, far)), add(a, scale(d, far))];
+    this.mark(o, lerp(a, b, 0.5), [this.segmentShape(ends[0], ends[1])]);
     this.noteLine(a, b, "line", o);
-    this.strokePath([sub(a, scale(d, far)), add(a, scale(d, far))], o);
+    this.strokePath(ends, o);
   }
 
   /** The ray from `a` through `b`. */
   ray(a: Vec, b: Vec, o: Stroke = {}): void {
-    this.anchor(o, lerp(a, b, 0.5));
+    const end = add(a, scale(normalize(sub(b, a)), this.reach()));
+    this.mark(o, lerp(a, b, 0.5), [this.segmentShape(a, end)]);
     this.noteLine(a, b, "ray", o);
-    this.strokePath([a, add(a, scale(normalize(sub(b, a)), this.reach()))], o);
+    this.strokePath([a, end], o);
   }
 
   /** An open polyline. */
   path(pts: readonly Vec[], o: Stroke = {}): void {
     if (pts.length < 2) return;
-    this.anchor(o, middle(pts));
+    this.mark(o, middle(pts), pts.slice(1).map((p, i) => this.segmentShape(pts[i], p)));
     for (let i = 1; i < pts.length; i++) this.noteLine(pts[i - 1], pts[i], "segment", o);
     this.strokePath(pts, o);
   }
@@ -242,7 +260,7 @@ export class Draw {
   polygon(pts: readonly Vec[], o: Fill = {}): void {
     if (pts.length < 2) return;
     const centre = scale(pts.reduce(add), 1 / pts.length);
-    this.anchor(o, centre);
+    this.mark(o, centre, [{ kind: "polygon", corners: pts.map((p) => toScreen(this.view, p)) }]);
     if (this.noted(o)) {
       pts.forEach((p, i) => this.noteLine(p, pts[(i + 1) % pts.length], "segment", o));
       this.index.polygons.push({ corners: pts.map((p) => toScreen(this.view, p)), screen: toScreen(this.view, centre) });
@@ -256,7 +274,7 @@ export class Draw {
   circle(center: Vec, r: number, o: Fill = {}): void {
     if (!(r > 0)) return;
     const c = toScreen(this.view, center);
-    this.anchor(o, center);
+    this.mark(o, center, [{ kind: "circle", center: c, r: r * this.view.scale }]);
     this.begin(o);
     this.ctx.arc(c.x, c.y, r * this.view.scale, 0, TAU);
     this.paint(o);
@@ -265,10 +283,11 @@ export class Draw {
   /** The arc of a circle from angle `from` counter-clockwise to `to`. */
   arc(center: Vec, r: number, from: number, to: number, o: Stroke = {}): void {
     if (!(r > 0)) return;
-    this.anchor(o, polar(center, r, (from + to) / 2));
+    const shape: Shape = { kind: "arc", center: toScreen(this.view, center), r: r * this.view.scale, from, sweep: to - from };
+    this.mark(o, polar(center, r, (from + to) / 2), [shape]);
     if (this.noted(o)) {
       const at = (t: number): Vec => toScreen(this.view, polar(center, r, t));
-      this.index.arcs.push({ ends: [at(from), at(to)], screen: at((from + to) / 2) });
+      this.index.arcs.push({ ends: [at(from), at(to)], screen: at((from + to) / 2), shape });
     }
     this.begin(o);
     this.traceArc(center, r * this.view.scale, from, to);
@@ -279,8 +298,9 @@ export class Draw {
   sector(center: Vec, r: number, from: number, to: number, o: Fill = {}): void {
     if (!(r > 0)) return;
     const c = toScreen(this.view, center);
-    this.anchor(o, polar(center, r / 2, (from + to) / 2));
-    this.noteAngle(center, from, to, polar(center, r / 2, (from + to) / 2), o);
+    const shape = this.angleShape(center, from, to, r * this.view.scale);
+    this.mark(o, polar(center, r / 2, (from + to) / 2), [shape]);
+    this.noteAngle(shape, polar(center, r / 2, (from + to) / 2), o);
     this.begin(o);
     this.ctx.moveTo(c.x, c.y);
     this.traceArc(center, r * this.view.scale, from, to);
@@ -317,8 +337,9 @@ export class Draw {
     const c = toScreen(this.view, v);
     const isRight = o.square !== false && Math.abs(degrees - 90) < RIGHT_ANGLE_TOLERANCE;
 
-    this.anchor(o, polar(v, r / this.view.scale, from + sweep / 2));
-    this.noteAngle(v, from, to, polar(v, r / this.view.scale, from + sweep / 2), o);
+    const shape = this.angleShape(v, from, to, r);
+    this.mark(o, polar(v, r / this.view.scale, from + sweep / 2), [shape]);
+    this.noteAngle(shape, polar(v, r / this.view.scale, from + sweep / 2), o);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
     this.glow(o, color);
@@ -356,7 +377,7 @@ export class Draw {
     if (o.label) {
       const text = o.label === true ? `${Math.round(degrees)}°` : o.label;
       const reach = (r + 5 * ((o.arcs ?? 1) - 1) + 16) / this.view.scale;
-      this.label(polar(v, reach, from + sweep / 2), text, { color, alpha: o.alpha, size: 14, term: o.term });
+      this.text(polar(v, reach, from + sweep / 2), text, { color, alpha: o.alpha, size: 14, term: o.term, feature: o.feature }, shape);
     }
   }
 
@@ -368,7 +389,7 @@ export class Draw {
     const n = { x: -d.y, y: d.x };
     const m = lerp(sa, sb, 0.5);
     const { ctx } = this;
-    this.anchor(o, lerp(a, b, 0.5));
+    this.mark(o, lerp(a, b, 0.5), [this.segmentShape(a, b)]);
     this.noteLine(a, b, "segment", o);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
@@ -393,7 +414,7 @@ export class Draw {
     const n = { x: -d.y, y: d.x };
     const m = lerp(sa, sb, 0.5);
     const { ctx } = this;
-    this.anchor(o, lerp(a, b, 0.5));
+    this.mark(o, lerp(a, b, 0.5), [this.segmentShape(a, b)]);
     this.noteLine(a, b, "segment", o);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
@@ -413,10 +434,11 @@ export class Draw {
   }
 
   /** A dot, optionally named. */
-  point(p: Vec, o: { label?: string; color?: string; r?: number; alpha?: number; term?: string } = {}): void {
+  point(p: Vec, o: { label?: string; color?: string; r?: number; alpha?: number; term?: string; feature?: Feature } = {}): void {
     const s = toScreen(this.view, p);
     const { ctx } = this;
-    this.anchor(o, p);
+    const shape: Shape = { kind: "point", at: s };
+    this.mark(o, p, [shape]);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
     this.glow(o, o.color ?? C.ink);
@@ -425,7 +447,7 @@ export class Draw {
     ctx.arc(s.x, s.y, (o.r ?? 4.5) * this.weight(o), 0, TAU);
     ctx.fill();
     ctx.restore();
-    if (o.label) this.label(p, o.label, { color: o.color, alpha: o.alpha, dx: 12, dy: 12, term: o.term });
+    if (o.label) this.text(p, o.label, { color: o.color, alpha: o.alpha, dx: 12, dy: 12, term: o.term, feature: o.feature }, shape);
   }
 
   // --- Pictures --------------------------------------------------------------
@@ -442,7 +464,7 @@ export class Draw {
     const h = (w * picture.height) / picture.width;
     const s = toScreen(this.view, at);
     const { ctx } = this;
-    this.anchor(o, at);
+    this.mark(o, at, [{ kind: "label", at: s, width: w, height: h }]);
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
     this.glow(o, C.ink);
@@ -456,17 +478,32 @@ export class Draw {
 
   /** Plain text anchored at a stage point. Use Unicode for symbols (², √, θ, ∠). */
   label(p: Vec, text: string, o: LabelOptions = {}): void {
+    this.text(p, text, o);
+  }
+
+  /** A label, which lights `names` — the mark it names — or else its own box. */
+  private text(p: Vec, text: string, o: LabelOptions, names?: Shape): void {
     const s = toScreen(this.view, p);
     const x = s.x + (o.dx ?? 0);
     const y = s.y - (o.dy ?? 0);
     const { ctx } = this;
     const lit = this.lit(o);
-    this.anchor(o, p, { x: o.dx ?? 0, y: -(o.dy ?? 0) });
-    if (this.noted(o)) this.index.labels.push({ text, at: s, screen: { x, y } });
+    const size = o.size ?? 15;
+    const align = o.align ?? "center";
+    const width = [...text].length * size * 0.6 + 6;
+    const box: Shape = {
+      kind: "label",
+      at: { x: x + (align === "left" ? width / 2 - 3 : align === "right" ? 3 - width / 2 : 0), y },
+      width,
+      height: size + 6,
+    };
+    const shows = names ?? box;
+    this.mark(o, p, [shows], { x: o.dx ?? 0, y: -(o.dy ?? 0) });
+    if (this.noted(o)) this.index.labels.push({ text, at: s, screen: { x, y }, shows });
     ctx.save();
     ctx.globalAlpha = o.alpha ?? 1;
-    ctx.font = `${o.bold || lit ? 700 : 600} ${(o.size ?? 15) + (lit ? 2 : 0)}px ${FONT}`;
-    ctx.textAlign = o.align ?? "center";
+    ctx.font = `${o.bold || lit ? 700 : 600} ${size + (lit ? 2 : 0)}px ${FONT}`;
+    ctx.textAlign = align;
     ctx.textBaseline = "middle";
     ctx.lineJoin = "round";
     ctx.lineWidth = 4;
@@ -485,7 +522,7 @@ export class Draw {
   along(a: Vec, b: Vec, text: string, o: LabelOptions & { offset?: number } = {}): void {
     const n = normalize(perp(sub(b, a)));
     const off = o.offset ?? 16;
-    this.label(lerp(a, b, 0.5), text, { size: 14, ...o, dx: n.x * off, dy: n.y * off });
+    this.text(lerp(a, b, 0.5), text, { size: 14, ...o, dx: n.x * off, dy: n.y * off }, this.segmentShape(a, b));
   }
 
   // --- Coordinate plane ------------------------------------------------------
@@ -564,15 +601,26 @@ export class Draw {
     this.ctx.shadowBlur = FOCUS_GLOW_PX;
   }
 
-  /** Note where a mark showing a term sits, unless it is invisible or already noted. */
-  private anchor(o: { term?: string; alpha?: number }, at: Vec, offsetPx: Vec = { x: 0, y: 0 }): void {
+  /**
+   * Note what a mark showing a term lights, and where a leader meets it at
+   * stage point `at` (moved `offsetPx` on screen), unless it is invisible.
+   */
+  private mark(o: Tagged, at: Vec, shapes: Shape[], offsetPx: Vec = { x: 0, y: 0 }): void {
     if (o.term === undefined || (o.alpha ?? 1) <= 0.05) return;
-    const s = add(toScreen(this.view, at), offsetPx);
-    if (!Number.isFinite(s.x) || !Number.isFinite(s.y)) return;
-    const list = this.anchorsByTerm.get(o.term) ?? [];
-    if (list.some((q) => Math.hypot(q.x - s.x, q.y - s.y) < ANCHOR_MERGE_PX)) return;
-    list.push(s);
-    this.anchorsByTerm.set(o.term, list);
+    const anchor = add(toScreen(this.view, at), offsetPx);
+    if (!Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) return;
+    const list = this.litByTerm.get(o.term) ?? [];
+    for (const shape of shapes) list.push(asFeature({ anchor, shape }, o.feature));
+    this.litByTerm.set(o.term, list);
+  }
+
+  private segmentShape(a: Vec, b: Vec): Shape {
+    return { kind: "segment", a: toScreen(this.view, a), b: toScreen(this.view, b) };
+  }
+
+  /** The angle at `v` swept counter-clockwise from direction `from` to `to`, its mark `rPx` out. */
+  private angleShape(v: Vec, from: number, to: number, rPx: number): Extract<Shape, { kind: "angle" }> {
+    return { kind: "angle", vertex: toScreen(this.view, v), from, sweep: to - from, r: rPx };
   }
 
   /** Whether a mark drawn with `o` belongs in the figure index. */
@@ -585,11 +633,16 @@ export class Draw {
     this.index.lines.push({ a: toScreen(this.view, a), b: toScreen(this.view, b), extent });
   }
 
-  /** An angle at `v` between directions `from` and `to` (stage radians), its mark at `at`. */
-  private noteAngle(v: Vec, from: number, to: number, at: Vec, o: { alpha?: number }): void {
+  /** An angle, its mark at stage point `at`. */
+  private noteAngle(shape: Extract<Shape, { kind: "angle" }>, at: Vec, o: { alpha?: number }): void {
     if (!this.noted(o)) return;
     const side = (t: number): Vec => ({ x: Math.cos(t), y: -Math.sin(t) });
-    this.index.angles.push({ vertex: toScreen(this.view, v), sides: [side(from), side(to)], screen: toScreen(this.view, at) });
+    this.index.angles.push({
+      vertex: shape.vertex,
+      sides: [side(shape.from), side(shape.from + shape.sweep)],
+      screen: toScreen(this.view, at),
+      shape,
+    });
   }
 
   private begin(o: Stroke): void {

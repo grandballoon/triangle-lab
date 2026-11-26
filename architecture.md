@@ -99,8 +99,10 @@ Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, ov
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
 | `lab/link.ts` | Finds the names, angles, variables and numbers in a formula or step text and marks them as terms. Pure. |
-| `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to the marks that show it. Pure. |
-| `lab/terms.ts` | Finds the term under the pointer and draws leader lines from it to the figure. |
+| `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to what it lights. Pure. |
+| `lab/highlight.ts` | What a hovered term lights on the figure, one shape per kind of feature, and where leaders end. Pure. |
+| `lab/highlight-paint.ts` | Paints those highlights over the figure, each kind its own way. |
+| `lab/terms.ts` | Finds the term under the pointer, draws leader lines from it to the figure, and lights its other mentions in the formula band. |
 | `lab/hold.ts` | Holds the formula band's numbers still, greyed, while the figure is dragged. Pure. |
 | `lab/sprites.ts` | Loads and caches the images lessons draw with `g.sprite`. |
 | `lab/grip.ts` | How handles and sliders are drawn, and how near a press must land to grab one; shared with the AR page. |
@@ -113,19 +115,24 @@ All steps are visible at once (on a phone, one at a time; see "Fitting the windo
 ### Terms and the figure
 
 Pointing at a piece of mathematics, in the step column or the formula band, draws a thin line from it to each place the figure shows it, on a click-through SVG layer above the panels (`terms.ts`).
+It also lights, over the figure, exactly the feature the term names, in a way that says what kind of feature it is (`highlight.ts`, painted by `highlight-paint.ts`): a ring around a point; a band along a segment with its ends dotted; a midpoint's ring with each half banded and ticked as equal; a band along an arc or round a circle; an angle's wedge filled with its two sides drawn out; a polygon's sides banded and corners dotted; an area filled and hatched; and a soft box behind a label that names nothing else.
+Deciding what to light is pure: each term resolves to highlights, each a shape in screen pixels and the place its leader meets it, and the shell paints the shapes and draws the leaders.
+Other mentions of the same feature in the formula band, however written (`BA` for `AB`, `\triangle CBA` for `\triangle ABC`, `link.ts` `canonicalTermId`), are underlined gently, and the rows they stand in are tinted.
 There are two ways a piece becomes such a term.
 
 **Found terms** need nothing from the lesson.
-Before typesetting, `link.ts` marks every point name (`A`, `A'`, `O_1`), segment (`AB`), angle (`\angle PED`), triangle or polygon (`\triangle ABC`), variable (`a`, `\alpha`) and value (`5.2`, `37^\circ`) with an id saying what it is, such as `seg:A.B` or `num:37`.
+Before typesetting, `link.ts` marks every point name (`A`, `A'`, `O_1`), segment (`AB`), angle (`\angle PED`), triangle or polygon (`\triangle ABC`), area (`[ABC]`), variable (`a`, `\alpha`) and value (`5.2`, `37^\circ`) with an id saying what it is, such as `seg:A.B` or `num:37`.
 As `Draw` draws, it notes every visible line, arc, angle mark, filled shape and label in a figure index, in screen pixels (`figure.ts`).
-A found term is looked up in that index after the frame is drawn: points by their name labels, segments by a drawn line or arc through both named points, angles by a mark at the named vertex whose sides pass the other two points, shapes by their corners, and variables and values by the labels that print them.
+A found term is looked up in that index after the frame is drawn: points by their name labels, segments by a drawn line or arc through both named points, angles by a mark at the named vertex whose sides pass the other two points or by the corner two drawn sides make, shapes and areas by their corners, and variables and values by the labels that print them.
+The id says the kind of feature, and the index supplies its shape: a point exactly halfway along a drawn segment lights as that segment's midpoint, and a label lights the mark it was drawn for (an angle's measure its wedge, a side's length the side), or its own box when it was drawn alone.
 The grid and axes are left out of the index, and a number printed to fewer places still matches (37.4 and 37°), except small whole numbers, which are as often counts as measures.
 
 **Lesson terms** are for what the index cannot see.
 A formula marks a symbol with `term(id, tex)` (`scene.ts`), and a figure mark names the term it shows with the `term` drawing option (`draw.ts`).
 When the reader points at one, the shell hands its id to `Draw` as the focus, so matching marks are drawn heavier and glowing.
+Each mark lights its own shape (a segment its length, an angle mark its wedge, a filled polygon its outline); where the mark stands for another kind of feature, the lesson says so with the `feature` drawing option, as in `feature: "area"` on a shaded region or `feature: "point"` on a ring drawn round a point.
 A lesson term over a single symbol also stands for that symbol wherever it is written: `term("alpha", "\\alpha")` in a formula makes an `\alpha` in the step text lead to the same marks.
-The lesson tests check that every lesson term has a visible mark in the figure at that step.
+The lesson tests check that every lesson term has a visible mark in the figure at that step, that every found term lights the kind of feature its id names, and that all the marks of one lesson term agree on what kind it is.
 
 Only terms the figure shows at the moment are underlined and light up; the rest read as plain mathematics, and that changes as steps draw their constructions in.
 
@@ -581,7 +588,8 @@ The workflow builds but does not test: edited copy leaves its lesson's syllabus 
 - `LessonView`, `Step`, `Use`, `Readout`, `Frame` (`src/lab/scene.ts`): what a lab lesson returns and what it is given each frame.
 - `Handle`, `Slider`, `Toggle`, `Choice`, `Button` (`src/lab/scene.ts`): the things a learner can touch.
 - `View` (`src/lab/draw.ts`): the mapping from stage coordinates to the canvas.
-- `TermRef` (`src/lab/link.ts`): what a found term refers to — a point, segment, angle, polygon, symbol or number.
+- `TermRef` (`src/lab/link.ts`): what a found term refers to — a point, segment, angle, polygon, area, symbol or number.
+- `Highlight`, `Shape`, `Feature` (`src/lab/highlight.ts`): what a hovered term lights, by the kind of feature it names, and where its leader meets it.
 - `FigureIndex` (`src/lab/figure.ts`): the lines, arcs, angle marks, shapes and labels one frame drew, in screen pixels.
 - `Hold` (`src/lab/hold.ts`): whether the formula band is live, held through a drag, or settling after one.
 - `Card`, `Deck`, `Place`, `Attempt`, `Removal` (`src/recall/deck.ts`): a noted question, where it was asked, its answers, when it is next due, and a removed one.
@@ -602,12 +610,14 @@ The workflow builds but does not test: edited copy leaves its lesson's syllabus 
 - `src/hands/hands.test.ts`: pose classification on synthetic hands, the grab and hold state machine, settings rules.
 - `src/lab/geo.test.ts`: the geometry kernel.
 - `src/lab/layout.test.ts`: the chrome's boxes in wide and phone windows, and that the chrome never covers the figure at any common screen size.
-- `src/lab/draw.test.ts`: focused terms, the anchors leader lines run to, and sprites.
+- `src/lab/draw.test.ts`: focused terms, what each mark lights and the anchors leader lines run to, and sprites.
+- `src/lab/highlight.test.ts`: reading a mark as the feature a lesson names, lighting each shape once, and where leaders end.
+- `src/lab/highlight-paint.test.ts`: every kind of highlight paints, each its own way.
 - `src/lab/link.test.ts`: which pieces of LaTeX become found terms, and which are left alone.
-- `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures, and reading labels.
+- `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures and the shape each lights, and reading labels.
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
-- `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, and has a figure mark for every lesson term.
-- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+- `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, has a figure mark for every lesson term, and lights the kind of feature each term names.
+- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, highlights and lit formula rows, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
 - `src/pages.test.ts`: every standalone page's stage rule, script order and directions, and that every page is a build entry.
 - `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.
