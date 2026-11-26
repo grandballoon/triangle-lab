@@ -15,15 +15,15 @@ import { paintHighlights } from "./highlight-paint.ts";
 import { distinctShapes, leaderEnds } from "./highlight.ts";
 import { drawGrips, pickRadius } from "./grip.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
-import { layoutChrome } from "./layout.ts";
+import { layoutChrome, stageView } from "./layout.ts";
 import { linkTex, sameFeatureAs, termAliases } from "./link.ts";
+import { SheetGrip } from "./sheet-grip.ts";
 import { SpriteCache } from "./sprites.ts";
 import { StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
 import {
   followStep,
   Scene,
-  STAGE,
   type Frame,
   type Handle,
   type HandPoints,
@@ -78,6 +78,8 @@ export class Shell {
   private readonly band: FormulaBand;
   private readonly terms: TermFocus;
   private readonly arranger: Arranger;
+  /** The grip that sizes the steps on a phone. */
+  private readonly grip: SheetGrip;
   private readonly sprites = new SpriteCache();
   private readonly drags = new Map<number, Drag>();
   private current: Loaded | null = null;
@@ -110,6 +112,8 @@ export class Shell {
     this.band = new FormulaBand(el.readouts, linkTex);
     this.terms = new TermFocus(document, el.leader);
     this.arranger = new Arranger({ steps: el.column, formulas: el.formulas, controls: el.controls });
+    // The frame lays the page out each time; nothing more to do on a drag.
+    this.grip = new SheetGrip(el.column, () => {});
 
     el.canvas.addEventListener("pointerdown", (e) => this.onDown(e));
     el.canvas.addEventListener("pointermove", (e) => this.onMove(e));
@@ -214,12 +218,12 @@ export class Shell {
       formulas: this.formulasShown,
       controls: (this.current?.scene.controls.length ?? 0) > 0,
       steps: this.stepList.pagedHeight(),
+      chosenSteps: this.grip.chosen(height),
     });
     this.arranger.apply(chrome);
+    this.grip.show(chrome);
     this.stepList.setPaged(chrome.mode === "stacked");
-    const { x, y, width: w, height: h } = chrome.figure;
-    const scale = Math.max(8, Math.min(w / (2 * STAGE.halfWidth), h / (2 * STAGE.halfHeight)));
-    return { scale, ox: x + w / 2, oy: y + h / 2, width, height };
+    return stageView(chrome.figure, width, height);
   }
 
   // --- Frame -----------------------------------------------------------------

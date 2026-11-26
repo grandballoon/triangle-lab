@@ -9,6 +9,8 @@ import { describe, expect, it } from "vitest";
 import { imageFaults } from "../images/check.ts";
 import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
+import { drawGrips } from "./grip.ts";
+import { layoutChrome, stageView } from "./layout.ts";
 import type { Feature } from "./highlight.ts";
 import { linkTex, parseTermId, type TermRef } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
@@ -143,6 +145,48 @@ describe("reading order", () => {
   });
 });
 
+/** Phones held upright, from the smallest in use to the largest. */
+const PHONES = [
+  [320, 568],
+  [375, 667],
+  [430, 932],
+] as const;
+
+/**
+ * Draw a frame, grips and all, as the shell would in a `width`×`height`
+ * window, and return each line of text that would reach past the figure's
+ * sides. The stand-in measures nothing, so text is sized as draw.ts guesses
+ * it then, 0.6 of its size a character.
+ */
+function textPastFigure(view: LessonView, scene: Scene, frame: Frame, width: number, height: number): string[] {
+  const chrome = layoutChrome({ width, height, rail: 0, formulas: true, controls: scene.controls.length > 0, steps: 200 });
+  const stage = stageView(chrome.figure, width, height);
+  const state: Record<string, unknown> = {};
+  const past: string[] = [];
+  const ctx = new Proxy(state, {
+    get: (store, name: string) => {
+      if (name === "fillText") {
+        return (text: string, x: number) => {
+          const size = Number(/(\d+(?:\.\d+)?)px/.exec(String(store.font))?.[1]);
+          const w = [...text].length * size * 0.6;
+          const align = store.textAlign;
+          const left = align === "left" ? x : align === "right" ? x - w : x - w / 2;
+          if (left < stage.room!.left - 0.5 || left + w > stage.room!.right + 0.5) past.push(`${width}px: "${text}"`);
+        };
+      }
+      return name in store ? store[name] : () => undefined;
+    },
+    set: (store, name: string, value) => {
+      store[name] = value;
+      return true;
+    },
+  }) as unknown as CanvasRenderingContext2D;
+  const g = new Draw(ctx, stage, "#38d9a9");
+  view.draw(g, frame);
+  drawGrips(ctx, g, scene);
+  return past;
+}
+
 describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, meta) => {
   const build = modules[`./lessons/${slug}.ts`]?.default;
   const fresh = (): { scene: Scene; view: LessonView } => {
@@ -198,6 +242,14 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
       expect(Math.abs(h.x)).toBeLessThanOrEqual(STAGE.halfWidth);
       expect(Math.abs(h.y)).toBeLessThanOrEqual(STAGE.halfHeight);
     }
+  });
+
+  it("keeps its text inside the figure on a phone, at every step", () => {
+    const { scene, view } = fresh();
+    const past = PHONES.flatMap(([w, h]) =>
+      view.steps.flatMap((_, step) => textPastFigure(view, scene, frameAt(step), w, h)),
+    );
+    expect([...new Set(past)]).toEqual([]);
   });
 
   it("draws every step, with no hand, one hand or two in view", () => {

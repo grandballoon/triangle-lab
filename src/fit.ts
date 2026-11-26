@@ -112,6 +112,20 @@ export function fitText(
   return { size: min, lines };
 }
 
+export type TextAlign = "left" | "center" | "right";
+
+/**
+ * Where to anchor a line `width` px wide, drawn with `align` at `x`, so that
+ * it lies between `left` and `right`: `x` itself when it already does, else
+ * moved the least that brings it inside, or centred between them when it is
+ * wider than the room.
+ */
+export function keepInside(x: number, width: number, align: TextAlign, left: number, right: number): number {
+  const start = align === "left" ? x : align === "right" ? x - width : x - width / 2;
+  const inside = width >= right - left ? (left + right - width) / 2 : Math.min(right - width, Math.max(left, start));
+  return x + (inside - start);
+}
+
 export interface TextStyle {
   /** The font at a size in px, as a canvas font string. */
   font: (px: number) => string;

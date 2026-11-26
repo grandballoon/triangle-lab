@@ -54,6 +54,43 @@ describe("noting and painting apart", () => {
   });
 });
 
+describe("text on a narrow figure", () => {
+  const PHONE: View = { scale: 20, ox: 160, oy: 200, width: 320, height: 400, room: { left: 10, right: 310 } };
+  const lines = (log: [string, unknown][]) =>
+    log.filter(([k]) => k === "fillText").map(([, args]) => args as [string, number, number]);
+
+  it("leaves text that fits as it is", () => {
+    const { ctx, log } = recorder();
+    new Draw(ctx, PHONE, "#38d9a9").label({ x: 0, y: 0 }, "A");
+    expect(lines(log)).toEqual([["A", 160, 200]]);
+  });
+
+  it("moves a label over the figure's edge back inside it", () => {
+    const { ctx, log } = recorder();
+    // 0.6 of 15 px a character, the guess when nothing measures.
+    new Draw(ctx, PHONE, "#38d9a9").label({ x: 7.5, y: 0 }, "b = 3");
+    const [[, x]] = lines(log);
+    expect(x + (5 * 9) / 2).toBeCloseTo(304);
+  });
+
+  it("wraps a sentence too wide for the figure, line under line, all inside it", () => {
+    const { ctx, log } = recorder();
+    const text = "Median: a segment from a corner to the midpoint of the opposite side.";
+    new Draw(ctx, PHONE, "#38d9a9").label({ x: 0, y: 0 }, text);
+    const drawn = lines(log);
+    expect(drawn.length).toBeGreaterThan(1);
+    expect(drawn.map(([line]) => line).join(" ")).toBe(text);
+    const ys = drawn.map(([, , y]) => y);
+    expect(ys).toEqual([...ys].sort((a, b) => a - b));
+    expect((ys[0] + ys.at(-1)!) / 2).toBeCloseTo(200);
+    for (const [line, x] of drawn) {
+      const w = [...line].length * 12 * 0.6;
+      expect(x - w / 2).toBeGreaterThanOrEqual(16 - 1e-9);
+      expect(x + w / 2).toBeLessThanOrEqual(304 + 1e-9);
+    }
+  });
+});
+
 describe("focus", () => {
   it("draws the focused term's marks heavier and glowing, and leaves the rest alone", () => {
     const { ctx, log } = recorder();

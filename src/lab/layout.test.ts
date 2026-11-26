@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { layoutChrome, type Box, type LayoutInput } from "./layout.ts";
+import { layoutChrome, stageView, type Box, type LayoutInput } from "./layout.ts";
+import { STAGE } from "./scene.ts";
 
 const LAB = { rail: 0, formulas: true, controls: false, steps: 180 } as const;
 
@@ -42,6 +43,13 @@ describe("layoutChrome, wide", () => {
     expect(l.edge).toBe(10);
     expect(l.formulas!.height).toBe(88);
   });
+
+  it("gives a narrow phone on its side the column too, not a stack that squeezes the figure", () => {
+    const l = at(667, 375, { controls: true });
+    expect(l.mode).toBe("wide");
+    expect(l.stepsRange).toBeNull();
+    expect(l.figure.height).toBeGreaterThan(150);
+  });
 });
 
 describe("layoutChrome, stacked", () => {
@@ -71,16 +79,43 @@ describe("layoutChrome, stacked", () => {
   it("ignores the rail, which floats over a phone", () => {
     expect(at(390, 664, { rail: 278 }).figure.x).toBe(10);
   });
+
+  it("gives the steps the height the reader dragged them to", () => {
+    const l = at(390, 664, { controls: true, chosenSteps: 300 });
+    expect(l.steps).toEqual({ x: 10, y: 354, width: 370, height: 300 });
+    expect(l.figure.y + l.figure.height).toBe(l.formulas!.y - 10);
+  });
+
+  it("lets the steps be dragged from a few lines up to all but a usable figure", () => {
+    const l = at(390, 664, { controls: true });
+    expect(l.stepsRange).toEqual({ min: 96, max: 664 - 10 - (120 + 120 + 10 + 88 + 10) });
+    const tallest = at(390, 664, { controls: true, chosenSteps: 5000 });
+    expect(tallest.steps.height).toBe(l.stepsRange!.max);
+    expect(tallest.figure.height).toBe(120);
+    expect(at(390, 664, { chosenSteps: 10 }).steps.height).toBe(96);
+  });
+});
+
+describe("stageView", () => {
+  it("fits the whole stage into the figure's room, centred, and keeps text within its sides", () => {
+    const view = stageView({ x: 10, y: 120, width: 370, height: 406 }, 390, 844);
+    expect(view.scale).toBeCloseTo(370 / (2 * STAGE.halfWidth));
+    expect(view).toMatchObject({ ox: 195, oy: 323, width: 390, height: 844, room: { left: 10, right: 380 } });
+  });
 });
 
 describe("layoutChrome, any window", () => {
   const sizes = [
     [320, 480], [360, 640], [375, 553], [390, 664], [430, 932], [699, 900],
-    [700, 900], [844, 390], [1024, 768], [1440, 900], [2560, 1440],
+    [700, 900], [667, 375], [844, 390], [1024, 768], [1440, 900], [2560, 1440],
   ] as const;
   const cases = sizes.flatMap(([w, h]) =>
     [true, false].flatMap((formulas) =>
-      [true, false].flatMap((controls) => [0, 180, 2000].map((steps) => ({ w, h, formulas, controls, steps }))),
+      [true, false].flatMap((controls) =>
+        [0, 180, 2000].flatMap((steps) =>
+          [null, 10, 5000].map((chosenSteps) => ({ w, h, formulas, controls, steps, chosenSteps })),
+        ),
+      ),
     ),
   );
 
@@ -89,8 +124,8 @@ describe("layoutChrome, any window", () => {
   const inside = (a: Box, w: number, h: number): boolean =>
     a.x >= 0 && a.y >= 0 && a.x + a.width <= w && a.y + a.height <= h;
 
-  it.each(cases)("keeps the chrome and the figure apart at $w×$h", ({ w, h, formulas, controls, steps }) => {
-    const l = at(w, h, { formulas, controls, steps });
+  it.each(cases)("keeps the chrome and the figure apart at $w×$h", ({ w, h, formulas, controls, steps, chosenSteps }) => {
+    const l = at(w, h, { formulas, controls, steps, chosenSteps });
     const pieces = [l.steps, l.figure, ...(l.formulas ? [l.formulas] : [])];
     for (const p of pieces) {
       expect(inside(p, w, h)).toBe(true);

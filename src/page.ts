@@ -33,6 +33,7 @@ import { startHands } from "./hands/index.ts";
 import { Arranger } from "./lab/arrange.ts";
 import { FormulaBand } from "./lab/formulas.ts";
 import { layoutChrome } from "./lab/layout.ts";
+import { SheetGrip } from "./lab/sheet-grip.ts";
 import { StepList } from "./lab/steps.ts";
 import { chapters, hrefOf, lessons, slugOfLocation, stepOfHash } from "./lessons.ts";
 import { mountPager, moveBy } from "./pager.ts";
@@ -117,6 +118,7 @@ function mount(): void {
 
   const band = formulaRows() ? mountFormulaBand() : null;
   const arranger = new Arranger({ steps: column, formulas: band?.section });
+  const grip = new SheetGrip(column, () => fit());
 
   const fit = (): void => {
     const chrome = layoutChrome({
@@ -126,8 +128,10 @@ function mount(): void {
       formulas: band !== null,
       controls: false,
       steps: list.pagedHeight(),
+      chosenSteps: grip.chosen(window.innerHeight),
     });
     list.setPaged(chrome.mode === "stacked");
+    grip.show(chrome);
     if (!arranger.apply(chrome)) return;
     // The band, or the stacked steps, take the bottom-left corner the hands
     // pill sits in otherwise, so the pill moves to the top right, as on the

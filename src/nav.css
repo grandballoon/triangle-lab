@@ -12,6 +12,14 @@
    two rows, the pager and then the title, and ends where layout.ts's
    STACKED.bar says: 10px margin + 32px pager + 6px gap + a 22px title. */
 
+/* A phone turned on its side keeps the sizes these pages set, rather than
+   inflating the text it guesses is too small to read. Every lesson page
+   carries this sheet, so it says so for all of them. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 #topbar {
   position: fixed;
   top: 16px;

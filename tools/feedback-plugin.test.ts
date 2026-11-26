@@ -3,11 +3,12 @@
 
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { createServer, type ViteDevServer } from "vite";
+import { join } from "node:path";
+import type { ViteDevServer } from "vite";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { FEEDBACK_ENDPOINT, FEEDBACK_HEADER, type FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import { uiFeedback } from "./feedback-plugin.ts";
+import { startTestServer } from "./test-server.ts";
 
 let server: ViteDevServer;
 let dir: string;
@@ -17,15 +18,7 @@ let base: string;
 beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), "ui-feedback-"));
   file = join(dir, "ui-feedback.md");
-  server = await createServer({
-    configFile: false,
-    root: resolve(__dirname, ".."),
-    logLevel: "silent",
-    plugins: [uiFeedback(file)],
-    server: { host: "127.0.0.1", port: 0 },
-  });
-  await server.listen();
-  base = server.resolvedUrls!.local[0].replace(/\/$/, "");
+  ({ server, base } = await startTestServer([uiFeedback(file)]));
 });
 
 afterAll(async () => {
