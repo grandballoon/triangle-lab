@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="220" y="30" width="200" height="300" rx="16" fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M280 82 L282 62 L292 74 L300 56 L308 74 L318 62 L320 82 Z" fill="#ef6b5b"/><path d="M258 178 Q258 128 300 124 Q342 128 342 178 Z" fill="#a78bfa"/><path d="M300 126 V178" fill="none"/><circle cx="300" cy="102" r="22" fill="#f3c9a0"/></g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(180 320 180)"><path d="M280 82 L282 62 L292 74 L300 56 L308 74 L318 62 L320 82 Z" fill="#ef6b5b"/><path d="M258 178 Q258 128 300 124 Q342 128 342 178 Z" fill="#a78bfa"/><path d="M300 126 V178" fill="none"/><circle cx="300" cy="102" r="22" fill="#f3c9a0"/></g>
+  <path d="M236 180 H404" stroke="#0b0f14" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#ef6b5b"><text x="246" y="68">K</text><text x="246" y="68" transform="rotate(180 320 180)">K</text></g>
+  <path d="M300 56 L340 304" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="320" cy="180" r="8" fill="#f2c14e"/><circle cx="300" cy="56" r="7" fill="#f2c14e"/><circle cx="340" cy="304" r="7" fill="#f2c14e"/>
+</svg>

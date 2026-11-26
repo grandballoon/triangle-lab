@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M150 151 A204 204 0 0 0 127 330 M490 151 A204 204 0 0 1 513 330" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round" opacity="0.7"/>
+  <path d="M150 151 A204 204 0 0 1 490 151 L470 178 L430 168 L390 186 L340 176 L290 190 L240 174 L190 184 Z" fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M200 130 A180 180 0 0 1 440 130" fill="none" stroke="#5fb0e8" stroke-width="6" stroke-linecap="round"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M224 84 H416" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M224 84 H416" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <path d="M320 60 V330" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M320 98 H334 V84" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <circle cx="320" cy="264" r="8" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e"><text x="458" y="94">16</text><text x="348" y="50">2</text><text x="346" y="322">D</text></g>
+</svg>

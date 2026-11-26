@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="250" width="640" height="110" fill="#2b3a2f"/>
+  <path d="M240 290 A160 160 0 0 0 80 130 M347 290 A213 213 0 0 1 560 77" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M80 290 L560 290 M80 290 L160 151 M560 290 L454 106" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M80 290 L560 290 M80 290 L160 151 M560 290 L454 106" stroke="#d9a066" stroke-width="8"/>
+  </g>
+  <path d="M240 290 L347 290" stroke="#ef6b5b" stroke-width="6" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="4"><circle cx="250" cy="322" r="9" fill="#f472b6"/><circle cx="140" cy="326" r="9" fill="#ef6b5b"/><circle cx="390" cy="320" r="9" fill="#a78bfa"/><circle cx="200" cy="330" r="9" fill="#f472b6"/><circle cx="440" cy="332" r="9" fill="#ef6b5b"/></g>
+  <text x="96" y="200" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">3</text>
+  <text x="540" y="186" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">4</text>
+  <text x="320" y="332" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">9</text>
+</svg>

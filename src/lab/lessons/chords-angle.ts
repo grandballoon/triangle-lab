@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { add, angleAt, lineLine, normalize, sub, toRad, vec, wrapAngle } from "../geo.ts";
 import { arcTex, bearing, degTex, nameOutside, ring } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import domeProjectorImage from "../../images/dome-projector.svg";
+import lobbyCameraImage from "../../images/lobby-camera.svg";
 
 const O = vec(0, 0.2);
 const R = 3.8;
@@ -67,10 +69,20 @@ export default lesson((s) => {
       {
         title: "A projector in a dome",
         text: "In a round dome, a projector set away from the centre throws its picture across a fixed angle, say $60^\\circ$. The arc of screen it covers in front, plus the arc on the same lines behind it, always totals $120^\\circ$, so moving the projector back towards the rear wall makes one picture cover more of the front screen.",
+        image: {
+          src: domeProjectorImage,
+          caption: "A projector set back in a round dome throws a 60° picture: the arc it lights in front plus the arc behind it on the same lines always total 120°.",
+          alt: "Plan view of a round dome with a projector near the back wall, its 60° beam lighting a gold arc of the front screen, and the two beam lines carried on through it to a short gold arc behind.",
+        },
       },
       {
         title: "A camera in a round lobby",
         text: "A security camera with a $90^\\circ$ view, mounted away from the centre of a round lobby, sees an arc of wall in front; the arc behind it on the same lines makes the two total $180^\\circ$. Mounted near one wall, it sees well over a quarter of the far wall.",
+        image: {
+          src: lobbyCameraImage,
+          caption: "A 90° security camera mounted near the wall of a round lobby: the arc of wall it sees plus the arc behind it total 180°, so it covers well over a quarter of the far wall.",
+          alt: "Plan view of a round lobby with a camera near the bottom wall, its 90° view shaded and the large arc of wall it sees picked out in gold, with the view lines carried on to a short gold arc behind it.",
+        },
       },
     ],
 

@@ -8,6 +8,8 @@ import { C, tint } from "../draw.ts";
 import { add, angleAt, angleOf, clamp, dist, fmt, mid, polar, polygonArea, sub, toDeg, toRad, vec, type Vec } from "../geo.ts";
 import { GLASS, same } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
+import leadedWindowDiamondsImage from "../../images/leaded-window-diamonds.svg";
+import scissorJackImage from "../../images/scissor-jack.svg";
 
 const A = vec(-4.3, 0);
 const MIN_SIDE = 2.6;
@@ -81,10 +83,20 @@ export default lesson((s) => {
       {
         title: "A car's scissor jack",
         text: "A scissor jack is a rhombus of four equal arms. Turning the handle draws the two side hinges together, shortening the horizontal diagonal, and the vertical diagonal grows to lift the car. With arms of $25$ cm and the side hinges $40$ cm apart, the jack stands $2\\sqrt{25^2 - 20^2} = 30$ cm tall; squeeze the side hinges to $30$ cm apart and it rises to $2\\sqrt{25^2 - 15^2} = 40$ cm.",
+        image: {
+          src: scissorJackImage,
+          caption: "A car's scissor jack: its four equal arms form a rhombus, so drawing the side hinges together lengthens the upright diagonal and lifts the car.",
+          alt: "A scissor jack with four equal arms under a car's sill, with a screw and handle through its side hinges, its diagonals marked 40 across and 30 tall, crossing at right angles.",
+        },
       },
       {
         title: "Diamond panes in a leaded window",
         text: "Old leaded windows are often glazed with diamond-shaped panes. A glazier working out how much glass to cut can use the diagonals: a pane $20$ cm tall and $12$ cm across has area $\\tfrac12 \\cdot 20 \\cdot 12 = 120$ square centimetres.",
+        image: {
+          src: leadedWindowDiamondsImage,
+          caption: "An old leaded window glazed with diamond panes: each pane's area is half the product of its diagonals.",
+          alt: "A wooden window frame filled with diamond-shaped panes in a lead lattice, one pane highlighted with its diagonals marked 20 tall and 12 across, crossing at right angles.",
+        },
       },
     ],
 

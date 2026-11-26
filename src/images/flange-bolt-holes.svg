@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="320" cy="180" r="140" fill="#8fa3b8"/>
+    <circle cx="320" cy="180" r="42" fill="#131a23"/>
+  </g>
+  <g fill="#131a23" stroke="#0b0f14" stroke-width="5">
+    <circle cx="320" cy="85" r="14"/><circle cx="402" cy="132" r="14"/><circle cx="402" cy="228" r="14"/>
+    <circle cx="320" cy="275" r="14"/><circle cx="238" cy="228" r="14"/><circle cx="238" cy="132" r="14"/>
+  </g>
+  <path d="M320 85 L402 132 L402 228 L320 275 L238 228 L238 132 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M320 180 L320 85 L402 132 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M330 92 L410 22 L404 124" stroke="#0b0f14" stroke-width="16"/>
+    <path d="M330 92 L410 22 L404 124" stroke="#d9a066" stroke-width="8"/>
+  </g>
+  <circle cx="410" cy="22" r="9" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4"/>
+</svg>

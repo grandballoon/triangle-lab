@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M180 300 L460 300 L180 90 Z" fill="#d9a066" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M300 280 L380 284 M200 130 L230 170" stroke="#b07a45" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="250" cy="230" r="70" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8"/>
+  <path d="M250 230 V300 M250 230 H180" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M236 300 V286 H250 M180 216 H194 V230" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <circle cx="250" cy="230" r="8" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M168 150 V312 H330" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M168 150 V312 H330" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="26" fill="#f2c14e"><text x="215" y="346">10</text><text x="138" y="240">10</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="26" fill="#f3ead8"><text x="400" y="346">40</text><text x="344" y="172">50</text><text x="138" y="120">30</text></g>
+</svg>

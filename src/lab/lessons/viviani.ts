@@ -7,6 +7,8 @@
 import { C, tint } from "../draw.ts";
 import { centroid, closestOnSegment, cross, dist, fmt, lerp, mid, project, sub, triangleArea, vec, type Vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import alloyMixTriangleImage from "../../images/alloy-mix-triangle.svg";
+import soilTextureTriangleImage from "../../images/soil-texture-triangle.svg";
 
 const BASE_Y = -3.3;
 const CENTER_X = -1.6;
@@ -88,10 +90,20 @@ export default lesson((s) => {
       {
         title: "Reading a soil texture triangle",
         text: "Soil scientists and gardeners classify soil with a triangle chart whose three sides stand for sand, silt and clay. A point's distances to the sides give the three percentages, and they always total $100\\%$ because the triangle is equilateral: they add to the altitude. A sample with $40\\%$ sand, $40\\%$ silt and $20\\%$ clay lands in the region called loam.",
+        image: {
+          src: soilTextureTriangleImage,
+          caption: "A soil texture triangle: a sample's distances to the three sides give its sand, silt and clay, which always add to 100%.",
+          alt: "A jar of soil settled into layers beside a gridded triangle chart; a gold point in the green loam patch has dashed gold perpendiculars to all three sides.",
+        },
       },
       {
         title: "Mixing three ingredients",
         text: "Metallurgists and chemists plot mixtures of three ingredients, such as three metals in an alloy, on the same kind of equilateral triangle. Each corner is a pure ingredient, and any point inside is a mix whose three amounts add to the whole. Viviani's result is what makes every point a valid recipe.",
+        image: {
+          src: alloyMixTriangleImage,
+          caption: "Mixing an alloy from three metals: any point in the equilateral triangle is a recipe whose three amounts add to the whole.",
+          alt: "A triangle chart with a metal ingot at each corner and a crucible of molten metal beside it; a pink point inside has dashed gold perpendiculars to the three sides.",
+        },
       },
     ],
 

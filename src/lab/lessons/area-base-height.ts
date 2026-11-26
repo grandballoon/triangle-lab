@@ -10,6 +10,8 @@ import {
 } from "../geo.ts";
 import { labelAway } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import gablePaintImage from "../../images/gable-paint.svg";
+import oddFieldImage from "../../images/odd-field.svg";
 
 const A = vec(-2, -2.2);
 const B = vec(2, -2.2);
@@ -85,10 +87,19 @@ export default lesson((s) => {
       {
         title: "Painting a gable end",
         text: "The triangular end wall of a house under a pitched roof is 8 metres wide at the eaves and 3 metres from there up to the peak. Its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres, which is what you need to buy enough paint. The peak does not have to be in the middle for this to work.",
+        image: {
+          src: gablePaintImage,
+          caption: "Painting a gable end: half its 8 metre base times its 3 metre height gives the 12 square metres to buy paint for.",
+        },
       },
       {
         title: "Measuring an odd-shaped field",
         text: "Surveyors find the area of an irregular field by splitting it into triangles. For each triangle they measure one side along the ground and the perpendicular distance to the opposite corner, then add up half of each product. It works for any shape with straight edges, however lopsided the triangles are.",
+        image: {
+          src: oddFieldImage,
+          caption: "Surveying an irregular field: split it into triangles, and measure a base and the perpendicular height of each.",
+          alt: "A lopsided five-sided green field seen from above, divided by dashed gold lines from one corner into three triangles, each with a dashed gold height meeting its base at a right angle.",
+        },
       },
     ],
 

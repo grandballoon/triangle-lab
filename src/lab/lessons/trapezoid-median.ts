@@ -9,6 +9,9 @@ import { C, tint } from "../draw.ts";
 import { clamp, dist, fmt, mid, polygonArea, rotateAbout, vec } from "../geo.ts";
 import { GLASS } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
+import drainageDitchImage from "../../images/drainage-ditch.svg";
+import hippedRoofFaceImage from "../../images/hipped-roof-face.svg";
+import streamOffsetStripsImage from "../../images/stream-offset-strips.svg";
 
 const BASE_Y = -3.2;
 const TOP_MIN = -0.6;
@@ -104,14 +107,29 @@ export default lesson((s) => {
       {
         title: "Digging a ditch",
         text: "A drainage ditch is often dug with sloping sides, say $1.2$ m wide at the top, $0.6$ m wide at the bottom and $1$ m deep. Its cross-section is a trapezoid of area $\\tfrac12(1.2 + 0.6) \\cdot 1 = 0.9$ square metres, so each metre of ditch means $0.9$ cubic metres of soil to dig out and carry away.",
+        image: {
+          src: drainageDitchImage,
+          caption: "A drainage ditch with sloping sides: its cross-section is a trapezoid, so its area gives the soil to dig out for each metre of ditch.",
+          alt: "A cross-section of a ditch cut into soil with a little water at the bottom, outlined as a trapezoid marked 1.2 across the top, 0.6 across the bottom and 1 deep, with its midline dashed and a spoil heap and spade beside it.",
+        },
       },
       {
         title: "Tiling a hipped roof",
         text: "On a hipped roof the two long faces are trapezoids: the eaves along the bottom, the ridge along the top. If the eaves are $10$ m long, the ridge $6$ m and the slope from eaves to ridge $4$ m, a roofer orders tiles for $\\tfrac12(10 + 6) \\cdot 4 = 32$ square metres on each face, before adding a margin for cuts.",
+        image: {
+          src: hippedRoofFaceImage,
+          caption: "A hipped roof: each long face is a trapezoid between the eaves and the ridge, so the roofer orders tiles for its area.",
+          alt: "A house with a red tiled hipped roof, its front face outlined as a trapezoid with the ridge marked 6, the eaves 10 and the slope 4, and its midline dashed.",
+        },
       },
       {
         title: "Measuring an irregular plot",
         text: "To find the area of land along a curving stream, surveyors run a straight baseline and measure how far the stream is from it at regular intervals. Each strip between two measurements is close to a trapezoid, so a strip $10$ m wide with offsets of $6$ m and $8$ m counts as $10 \\cdot \\tfrac12(6 + 8) = 70$ square metres. This is called the trapezoidal rule.",
+        image: {
+          src: streamOffsetStripsImage,
+          caption: "Land along a curving stream: offsets measured from a straight baseline cut it into strips that are close to trapezoids, which is the trapezoidal rule.",
+          alt: "A green strip of land between a straight baseline and a winding blue stream, with one strip between two offsets of 6 and 8, 10 apart, outlined as a trapezoid.",
+        },
       },
     ],
 

@@ -12,6 +12,9 @@ import {
   type Example, type Locus, type Name, type Part, type Proof, type Test, type TestKey, type Tri,
 } from "../kit/triangle-tests.ts";
 import { lesson, type Readout } from "../scene.ts";
+import fireLookoutImage from "../../images/fire-lookout.svg";
+import roofTrussImage from "../../images/roof-truss.svg";
+import wheelchairRampImage from "../../images/wheelchair-ramp.svg";
 
 // Each side is coloured by the corner opposite it (a = BC, b = CA, c = AB) and
 // each angle by its corner, with ticks and arcs counted alike, so a part reads
@@ -281,14 +284,27 @@ export default lesson((s) => {
       {
         title: "Rigid frames",
         text: "A triangle of three bars bolted at the corners cannot change shape, because SSS leaves only one triangle with those lengths. That is why bridges, cranes and roof trusses are built from triangles, while a rectangle of four bars folds flat.",
+        image: {
+          src: roofTrussImage,
+          caption: "A roof truss: each triangle of timbers holds its shape, so the roof keeps its pitch under load.",
+        },
       },
       {
         title: "Fixing a position from two angles",
         text: "Two observers a known distance apart each measure the angle to a fire on a hillside. Two angles and the side between them fix one triangle by ASA, so its far corner, the fire, is pinned down. Forest lookouts and surveyors have long located things this way.",
+        image: {
+          src: fireLookoutImage,
+          caption: "Two lookouts a known distance apart each measure the angle to a fire on a hillside, and those two angles fix where the fire is.",
+          alt: "Two people stand on the ground some way apart, with a fire and smoke on a green hill to the right; a dashed gold triangle joins the two people to the fire, with angle marks at both people and ticks on the side between them.",
+        },
       },
       {
         title: "Checking a ramp against a plan",
         text: "A wheelchair ramp is drawn as a right triangle with a given length of slope and a given rise. HL says any ramp built with that hypotenuse and that leg has the same angle, so an inspector who measures the two lengths knows the slope without measuring it.",
+        image: {
+          src: wheelchairRampImage,
+          caption: "A wheelchair ramp: its slope and its rise fix its angle by HL, so measuring two lengths checks it.",
+        },
       },
     ],
 

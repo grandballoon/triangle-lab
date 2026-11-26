@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <clipPath id="f"><rect x="40" y="30" width="560" height="300"/></clipPath>
+  <g clip-path="url(#f)" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M37 20 L14 60 L-32 60 L-55 20 L-32 -20 L14 -20 Z" fill="#f3ead8"/>
+    <path d="M37 100 L14 140 L-32 140 L-55 100 L-32 60 L14 60 Z" fill="#8fa3b8"/>
+    <path d="M37 180 L14 219 L-32 219 L-55 180 L-32 140 L14 140 Z" fill="#38d9a9"/>
+    <path d="M37 259 L14 299 L-32 299 L-55 259 L-32 219 L14 219 Z" fill="#f3ead8"/>
+    <path d="M37 339 L14 379 L-32 379 L-55 339 L-32 299 L14 299 Z" fill="#8fa3b8"/>
+    <path d="M37 419 L14 458 L-32 458 L-55 419 L-32 379 L14 379 Z" fill="#38d9a9"/>
+    <path d="M106 -20 L83 20 L37 20 L14 -20 L37 -60 L83 -60 Z" fill="#38d9a9"/>
+    <path d="M106 60 L83 100 L37 100 L14 60 L37 20 L83 20 Z" fill="#f3ead8"/>
+    <path d="M106 140 L83 180 L37 180 L14 140 L37 100 L83 100 Z" fill="#8fa3b8"/>
+    <path d="M106 219 L83 259 L37 259 L14 219 L37 180 L83 180 Z" fill="#38d9a9"/>
+    <path d="M106 299 L83 339 L37 339 L14 299 L37 259 L83 259 Z" fill="#f3ead8"/>
+    <path d="M106 379 L83 419 L37 419 L14 379 L37 339 L83 339 Z" fill="#8fa3b8"/>
+    <path d="M175 20 L152 60 L106 60 L83 20 L106 -20 L152 -20 Z" fill="#8fa3b8"/>
+    <path d="M175 100 L152 140 L106 140 L83 100 L106 60 L152 60 Z" fill="#38d9a9"/>
+    <path d="M175 180 L152 219 L106 219 L83 180 L106 140 L152 140 Z" fill="#f3ead8"/>
+    <path d="M175 259 L152 299 L106 299 L83 259 L106 219 L152 219 Z" fill="#8fa3b8"/>
+    <path d="M175 339 L152 379 L106 379 L83 339 L106 299 L152 299 Z" fill="#38d9a9"/>
+    <path d="M175 419 L152 458 L106 458 L83 419 L106 379 L152 379 Z" fill="#f3ead8"/>
+    <path d="M244 -20 L221 20 L175 20 L152 -20 L175 -60 L221 -60 Z" fill="#f3ead8"/>
+    <path d="M244 60 L221 100 L175 100 L152 60 L175 20 L221 20 Z" fill="#8fa3b8"/>
+    <path d="M244 140 L221 180 L175 180 L152 140 L175 100 L221 100 Z" fill="#38d9a9"/>
+    <path d="M244 219 L221 259 L175 259 L152 219 L175 180 L221 180 Z" fill="#f3ead8"/>
+    <path d="M244 299 L221 339 L175 339 L152 299 L175 259 L221 259 Z" fill="#8fa3b8"/>
+    <path d="M244 379 L221 419 L175 419 L152 379 L175 339 L221 339 Z" fill="#38d9a9"/>
+    <path d="M313 20 L290 60 L244 60 L221 20 L244 -20 L290 -20 Z" fill="#38d9a9"/>
+    <path d="M313 100 L290 140 L244 140 L221 100 L244 60 L290 60 Z" fill="#f3ead8"/>
+    <path d="M313 180 L290 219 L244 219 L221 180 L244 140 L290 140 Z" fill="#8fa3b8"/>
+    <path d="M313 259 L290 299 L244 299 L221 259 L244 219 L290 219 Z" fill="#38d9a9"/>
+    <path d="M313 339 L290 379 L244 379 L221 339 L244 299 L290 299 Z" fill="#f3ead8"/>
+    <path d="M313 419 L290 458 L244 458 L221 419 L244 379 L290 379 Z" fill="#8fa3b8"/>
+    <path d="M382 -20 L359 20 L313 20 L290 -20 L313 -60 L359 -60 Z" fill="#8fa3b8"/>
+    <path d="M382 60 L359 100 L313 100 L290 60 L313 20 L359 20 Z" fill="#38d9a9"/>
+    <path d="M382 140 L359 180 L313 180 L290 140 L313 100 L359 100 Z" fill="#f3ead8"/>
+    <path d="M382 219 L359 259 L313 259 L290 219 L313 180 L359 180 Z" fill="#8fa3b8"/>
+    <path d="M382 299 L359 339 L313 339 L290 299 L313 259 L359 259 Z" fill="#38d9a9"/>
+    <path d="M382 379 L359 419 L313 419 L290 379 L313 339 L359 339 Z" fill="#f3ead8"/>
+    <path d="M451 20 L428 60 L382 60 L359 20 L382 -20 L428 -20 Z" fill="#f3ead8"/>
+    <path d="M451 100 L428 140 L382 140 L359 100 L382 60 L428 60 Z" fill="#8fa3b8"/>
+    <path d="M451 180 L428 219 L382 219 L359 180 L382 140 L428 140 Z" fill="#38d9a9"/>
+    <path d="M451 259 L428 299 L382 299 L359 259 L382 219 L428 219 Z" fill="#f3ead8"/>
+    <path d="M451 339 L428 379 L382 379 L359 339 L382 299 L428 299 Z" fill="#8fa3b8"/>
+    <path d="M451 419 L428 458 L382 458 L359 419 L382 379 L428 379 Z" fill="#38d9a9"/>
+    <path d="M520 -20 L497 20 L451 20 L428 -20 L451 -60 L497 -60 Z" fill="#38d9a9"/>
+    <path d="M520 60 L497 100 L451 100 L428 60 L451 20 L497 20 Z" fill="#f3ead8"/>
+    <path d="M520 140 L497 180 L451 180 L428 140 L451 100 L497 100 Z" fill="#8fa3b8"/>
+    <path d="M520 219 L497 259 L451 259 L428 219 L451 180 L497 180 Z" fill="#38d9a9"/>
+    <path d="M520 299 L497 339 L451 339 L428 299 L451 259 L497 259 Z" fill="#f3ead8"/>
+    <path d="M520 379 L497 419 L451 419 L428 379 L451 339 L497 339 Z" fill="#8fa3b8"/>
+    <path d="M589 20 L566 60 L520 60 L497 20 L520 -20 L566 -20 Z" fill="#8fa3b8"/>
+    <path d="M589 100 L566 140 L520 140 L497 100 L520 60 L566 60 Z" fill="#38d9a9"/>
+    <path d="M589 180 L566 219 L520 219 L497 180 L520 140 L566 140 Z" fill="#f3ead8"/>
+    <path d="M589 259 L566 299 L520 299 L497 259 L520 219 L566 219 Z" fill="#8fa3b8"/>
+    <path d="M589 339 L566 379 L520 379 L497 339 L520 299 L566 299 Z" fill="#38d9a9"/>
+    <path d="M589 419 L566 458 L520 458 L497 419 L520 379 L566 379 Z" fill="#f3ead8"/>
+    <path d="M658 -20 L635 20 L589 20 L566 -20 L589 -60 L635 -60 Z" fill="#f3ead8"/>
+    <path d="M658 60 L635 100 L589 100 L566 60 L589 20 L635 20 Z" fill="#8fa3b8"/>
+    <path d="M658 140 L635 180 L589 180 L566 140 L589 100 L635 100 Z" fill="#38d9a9"/>
+    <path d="M658 219 L635 259 L589 259 L566 219 L589 180 L635 180 Z" fill="#f3ead8"/>
+    <path d="M658 299 L635 339 L589 339 L566 299 L589 259 L635 259 Z" fill="#8fa3b8"/>
+    <path d="M658 379 L635 419 L589 419 L566 379 L589 339 L635 339 Z" fill="#38d9a9"/>
+    <path d="M727 20 L704 60 L658 60 L635 20 L658 -20 L704 -20 Z" fill="#38d9a9"/>
+    <path d="M727 100 L704 140 L658 140 L635 100 L658 60 L704 60 Z" fill="#f3ead8"/>
+    <path d="M727 180 L704 219 L658 219 L635 180 L658 140 L704 140 Z" fill="#8fa3b8"/>
+    <path d="M727 259 L704 299 L658 299 L635 259 L658 219 L704 219 Z" fill="#38d9a9"/>
+    <path d="M727 339 L704 379 L658 379 L635 339 L658 299 L704 299 Z" fill="#f3ead8"/>
+    <path d="M727 419 L704 458 L658 458 L635 419 L658 379 L704 379 Z" fill="#8fa3b8"/>
+  </g>
+  <rect x="40" y="30" width="560" height="300" fill="none" stroke="#0b0f14" stroke-width="8"/>
+  <path d="M382 140 L359 180 L313 180 L290 140 L313 100 L359 100 Z" fill="#f2c14e" fill-opacity="0.3" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <text x="336" y="88" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke">10</text>
+</svg>

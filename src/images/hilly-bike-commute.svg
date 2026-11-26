@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="90" cy="70" r="30" fill="#f2c14e"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M30 300 L520 150 L640 150 L640 300 Z" fill="#5fbf72"/>
+    <rect x="44" y="246" width="60" height="52" fill="#f3ead8"/>
+    <path d="M36 248 L74 212 L112 248 Z" fill="#ef6b5b"/>
+    <rect x="530" y="60" width="70" height="92" fill="#8fa3b8"/>
+    <rect x="546" y="76" width="16" height="18" fill="#5fb0e8"/><rect x="570" y="76" width="16" height="18" fill="#5fb0e8"/>
+    <rect x="546" y="106" width="16" height="18" fill="#5fb0e8"/><rect x="570" y="106" width="16" height="18" fill="#5fb0e8"/>
+  </g>
+  <g transform="translate(300 217) rotate(-17)">
+    <g fill="none"><path d="M-12 -24 A22 22 0 1 0 -56 -24 A22 22 0 1 0 -12 -24 M56 -24 A22 22 0 1 0 12 -24 A22 22 0 1 0 56 -24" stroke="#0b0f14" stroke-width="16"/><path d="M-12 -24 A22 22 0 1 0 -56 -24 A22 22 0 1 0 -12 -24 M56 -24 A22 22 0 1 0 12 -24 A22 22 0 1 0 56 -24" stroke="#8fa3b8" stroke-width="6"/></g>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M-34 -24 L-4 -24 L18 -58 M-4 -24 L-16 -58 L18 -58 M18 -58 L34 -24 M-12 -54 L-4 -26" stroke="#0b0f14" stroke-width="16"/>
+      <path d="M-34 -24 L-4 -24 L18 -58 M-4 -24 L-16 -58 L18 -58 M18 -58 L34 -24" stroke="#ef6b5b" stroke-width="8"/>
+      <path d="M-12 -54 L-4 -26" stroke="#8fa3b8" stroke-width="8"/>
+    </g>
+    <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+      <rect x="-30" y="-106" width="28" height="52" rx="12" fill="#38d9a9"/>
+      <circle cx="0" cy="-118" r="16" fill="#f3c9a0"/>
+    </g>
+  </g>
+  <path d="M30 300 L520 150" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8"/>
+  <g fill="none" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 230 L190 206 M174 200 L190 206 L180 220"/>
+    <path d="M470 220 L390 244 M406 250 L390 244 L400 230"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="#f2c14e">
+    <text x="140" y="196">10</text>
+  </g>
+  <text x="456" y="276" font-family="system-ui, sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="#131a23">30</text>
+</svg>

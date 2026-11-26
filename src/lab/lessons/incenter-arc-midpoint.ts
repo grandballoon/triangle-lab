@@ -5,6 +5,8 @@
 import { C } from "../draw.ts";
 import { angleAt, angleOf, clamp, dist, fmt, incenter, lineCircle, polar, sub, toDeg, toRad, vec, wrapAngle, type Constraint } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import shipSextantFixImage from "../../images/ship-sextant-fix.svg";
+import triangleGardenRoundBedImage from "../../images/triangle-garden-round-bed.svg";
 
 const O = vec(0, 0.2);
 const RADIUS = 3.7;
@@ -73,10 +75,20 @@ export default lesson((s) => {
       {
         title: "Fixing a ship's position",
         text: "Coastal navigators measure the angle between two landmarks, such as two lighthouses, with a sextant held sideways. Every point from which that angle looks the same lies on one circle through the two landmarks, the inscribed-angle fact at the heart of this lesson. A second angle to a third landmark gives a second circle, and the ship is where they cross.",
+        image: {
+          src: shipSextantFixImage,
+          caption: "A navigator's fix: every point that sees two lighthouses at the same angle lies on one arc through both, so the ship is somewhere on that arc.",
+          alt: "Two lighthouses on a shore and a boat at sea, with gold lines from the boat to each lighthouse, the angle between them marked, and a dashed gold arc through the lighthouses and the boat.",
+        },
       },
       {
         title: "A round flower bed in a triangular garden",
         text: "The largest circle that fits inside a triangular plot is centred at the incentre $I$, the point equally far from all three sides. That is where to put a round flower bed, a fountain or a rotating sprinkler meant to reach each fence equally. The lesson gives a way to find $I$ with a compass: it is where the circle about $D$ through $B$ and $C$ meets the bisector $AD$.",
+        image: {
+          src: triangleGardenRoundBedImage,
+          caption: "A triangular garden: the largest round flower bed that fits is centred at the incentre, the point equally far from all three fences.",
+          alt: "A triangular lawn fenced in wood with a round bed of pink flowers inside, a dashed gold circle touching all three fences and dashed gold radii from its centre to each fence.",
+        },
       },
     ],
 

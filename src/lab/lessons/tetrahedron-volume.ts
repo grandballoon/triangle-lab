@@ -7,6 +7,8 @@ import { fmt } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { dist3, faces, label3, lerp3, Orbit, p3, point3, polygon3, segment3 } from "../solid.ts";
 import { centroid3, glass, mid3, pyramidSides, rightAngle3, tetraVolume, triangleArea3 } from "../kit/solids.ts";
+import orangeStackPyramidImage from "../../images/orange-stack-pyramid.svg";
+import tetraMilkCartonImage from "../../images/tetra-milk-carton.svg";
 
 const BASE = C.gold;
 const ALTITUDE = C.blue;
@@ -71,10 +73,20 @@ export default lesson((s) => {
       {
         title: "A one-litre tetrahedral carton",
         text: "Some of the earliest Tetra Pak milk cartons were tetrahedra. A regular tetrahedron that holds one litre, $1000$ cubic centimetres, needs $\\tfrac{\\sqrt2}{12}s^3 = 1000$, so an edge of about $20.4$ cm. Doubling the edge would hold eight litres.",
+        image: {
+          src: tetraMilkCartonImage,
+          caption: "A tetrahedral milk carton: a regular tetrahedron with edges of about 20.4 cm holds one litre.",
+          alt: "A cream and blue tetrahedral milk carton on a table, its edges traced in gold dashes, the bottom edge marked 20.4.",
+        },
       },
       {
         title: "How tall is a stack of oranges?",
         text: "Greengrocers stack oranges in triangular layers, each one resting in the dip between three below. Every new layer raises the stack by the height of a regular tetrahedron whose edge is one orange's width. For oranges $8$ cm across that is $\\tfrac{\\sqrt6}{3} \\cdot 8 \\approx 6.5$ cm per layer, a little less than the oranges' width.",
+        image: {
+          src: orangeStackPyramidImage,
+          caption: "A greengrocer's stack of oranges: each layer rests in the dips below and adds the height of a regular tetrahedron of orange centres.",
+          alt: "A pyramid of oranges on a crate; gold dashes join the centre of the top orange to two below, with its height marked 6.5.",
+        },
       },
     ],
 

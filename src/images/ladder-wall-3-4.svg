@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="440" y="40" width="166" height="264" fill="#f3ead8"/>
+    <rect x="496" y="110" width="64" height="76" rx="4" fill="#5fb0e8"/>
+  </g>
+  <g fill="none" stroke-linecap="round">
+    <path d="M249 300 L414 80 M275 300 L440 80 M274 267 H300 M300 230 H326 M325 196 H351 M350 163 H376 M375 129 H401" stroke="#0b0f14" stroke-width="16"/>
+    <path d="M249 300 L414 80 M275 300 L440 80 M274 267 H300 M300 230 H326 M325 196 H351 M350 163 H376 M375 129 H401" stroke="#d9a066" stroke-width="8"/>
+  </g>
+  <path d="M275 300 L440 300 L440 80 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M424 300 V284 H440" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e"><text x="358" y="338">3</text><text x="414" y="210">4</text><text x="326" y="176">5</text></g>
+</svg>

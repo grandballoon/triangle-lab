@@ -7,6 +7,8 @@ import { fmt, polar, TAU } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { label3, lerp3, Orbit, p3, path3, point3, polygon3, ringY, segment3 } from "../solid.ts";
 import { cone3, rightAngle3 } from "../kit/solids.ts";
+import funnelSheetSectorImage from "../../images/funnel-sheet-sector.svg";
+import gravelPileConeImage from "../../images/gravel-pile-cone.svg";
 
 const RIM = C.gold;
 const SLANT = C.pink;
@@ -58,10 +60,20 @@ export default lesson((s) => {
       {
         title: "Cutting a funnel from sheet metal",
         text: "To make a funnel with a rim of radius $10$ cm and sides $15$ cm long, a metalworker cuts a sector of a circle of radius $15$ cm. Its arc must be as long as the rim, so it is $\\tfrac{10}{15}$ of the full circle: an angle of $\\tfrac23 \\cdot 360^\\circ = 240^\\circ$. Rolled up and seamed, it is the cone.",
+        image: {
+          src: funnelSheetSectorImage,
+          caption: "Cutting a funnel: a 240° sector of sheet metal rolls up into a cone whose rim is exactly as long as the sector's arc.",
+          alt: "A steel sector of a circle with a wedge missing, its angle marked 240°, an arrow, and the funnel it rolls into; the sector's arc and the funnel's rim are both dashed gold.",
+        },
       },
       {
         title: "How much gravel is in the pile?",
         text: "Sand and gravel poured from a chute settle into a cone. A pile $4$ m across and $1.5$ m tall holds about $\\tfrac13 \\pi \\cdot 2^2 \\cdot 1.5 = 2\\pi \\approx 6.3$ cubic metres. Builders' merchants and quarries estimate stockpiles this way from just the width and height.",
+        image: {
+          src: gravelPileConeImage,
+          caption: "A gravel pile poured from a conveyor settles into a cone, so its volume follows from just its width and height.",
+          alt: "A conveyor drops gravel onto a pile; a gold dashed cone outlines it with its height marked 1.5 and its base across marked 4.",
+        },
       },
     ],
 

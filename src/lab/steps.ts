@@ -23,7 +23,7 @@
 import "./steps.css";
 import { linkTex } from "./link.ts";
 import { richHtml } from "./math.ts";
-import type { Asides, Likeness, Step, Use } from "./scene.ts";
+import type { Asides, Likeness, Step, Use, UseImage } from "./scene.ts";
 
 /** A step becomes current once its top is scrolled this close to the list's top. */
 const ACTIVE_LINE_PX = 48;
@@ -340,9 +340,25 @@ function asideSection(doc: Document, heading: string, items: readonly (Likeness 
     const text = doc.createElement("p");
     text.innerHTML = richHtml(entry.text);
     item.append(title, text);
+    if ("image" in entry && entry.image) item.append(useFigure(doc, entry.image));
     section.append(item);
   }
   return section;
+}
+
+/** A use's recommended picture and its caption, loaded only once its aside is opened. */
+function useFigure(doc: Document, image: UseImage): HTMLElement {
+  const figure = doc.createElement("figure");
+  figure.className = "aside-figure";
+  const img = doc.createElement("img");
+  img.src = image.src;
+  img.alt = image.alt ?? "";
+  img.setAttribute("loading", "lazy");
+  img.setAttribute("decoding", "async");
+  const caption = doc.createElement("figcaption");
+  caption.textContent = image.caption;
+  figure.append(img, caption);
+  return figure;
 }
 
 function reducedMotion(): boolean {

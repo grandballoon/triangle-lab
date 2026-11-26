@@ -7,6 +7,8 @@ import { C } from "../draw.ts";
 import { add, angleAt, angleOf, cross, fmt, onCircle, perp, scale, sub, toDeg, vec } from "../geo.ts";
 import { onCircleClearOf } from "../kit/circles.ts";
 import { lesson } from "../scene.ts";
+import pictureFrameMitreImage from "../../images/picture-frame-mitre.svg";
+import streetCrossingAnglesImage from "../../images/street-crossing-angles.svg";
 
 const O = vec(0, 0);
 const REACH = 3.6;
@@ -80,10 +82,20 @@ export default lesson((s) => {
       {
         title: "Measuring an angle you cannot stand in",
         text: "Two straight streets cross, and a surveyor needs the angle on the corner where a building stands. They measure the opposite angle across the crossing instead: vertical angles are equal, and the neighbouring angles are each $180^\\circ$ minus it.",
+        image: {
+          src: streetCrossingAnglesImage,
+          caption: "Two crossing streets: the angle on the built-up corner equals the vertically opposite angle across the crossing, which the surveyor can measure.",
+          alt: "A top view of two straight streets crossing, with dashed gold centre lines; a house fills one corner, and matching double gold arcs mark that corner's angle and the opposite one.",
+        },
       },
       {
         title: "Cutting a picture frame",
         text: "The corner of a picture frame is a right angle made from two mitred pieces, so the two cut angles must be complementary. For an ordinary frame each piece is cut at $45^\\circ$, and if one were cut at $40^\\circ$ the other would need $50^\\circ$ to close the corner.",
+        image: {
+          src: pictureFrameMitreImage,
+          caption: "A mitred picture frame: the two cuts at each corner add up to the 90° corner, so for an ordinary frame each is 45°.",
+          alt: "A wooden picture frame around a landscape, with a dashed gold line along one mitred corner joint and its 45° angles marked.",
+        },
       },
     ],
 

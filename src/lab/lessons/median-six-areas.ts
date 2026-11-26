@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { centroid, dist, fmt, mid, project, triangleArea, type Vec } from "../geo.ts";
 import { agree, looseTriangle } from "../kit/areas.ts";
 import { lesson } from "../scene.ts";
+import fieldThreePlotsImage from "../../images/field-three-plots.svg";
+import triangleCakeSixImage from "../../images/triangle-cake-six.svg";
 
 const HALF = C.gold; // triangle ACD, half of the whole
 const SIXTH = C.pink; // triangle GCD
@@ -65,10 +67,20 @@ export default lesson((s) => {
       {
         title: "A triangular cake for six",
         text: "A triangular tray bake can be shared among six people without measuring anything but the edges. Find the middle of each edge, and cut from each corner to the middle of the opposite edge. The six pieces have different shapes but exactly equal amounts of cake.",
+        image: {
+          src: triangleCakeSixImage,
+          caption: "A triangular tray bake cut from each corner to the middle of the opposite edge: the six pieces differ in shape but hold exactly the same amount of cake.",
+          alt: "A lopsided triangular cake on a wooden board, cut along its three medians into six pieces alternately pink and cream, the cuts in dashed gold and ticks marking each edge's halves.",
+        },
       },
       {
         title: "Three equal plots",
         text: "To split a triangular field among three owners, find the point $G$ where two medians cross, and run fences from $G$ to the three corners. Each plot is two of the six equal pieces, so each owner gets exactly a third, and each plot keeps a whole side of the field as its frontage.",
+        image: {
+          src: fieldThreePlotsImage,
+          caption: "A triangular field fenced from the point where its medians cross to each corner, giving three owners exactly a third each, every plot with a whole side as frontage.",
+          alt: "A triangular field split by wooden fences from a central point G to its three corners into green, tan and teal plots, with the medians crossing at G in dashed gold and ticks marking each side's halves.",
+        },
       },
     ],
 

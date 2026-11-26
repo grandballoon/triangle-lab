@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="120" y="60" width="400" height="240" fill="#f3ead8"/>
+  <g stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><path d="M120 60 v80 h80 Z" fill="#a78bfa"/><path d="M200 60 h80 v80 Z" fill="#38d9a9"/><path d="M280 60 v80 h80 Z" fill="#f472b6"/><path d="M360 60 h80 v80 Z" fill="#5fb0e8"/><path d="M440 60 v80 h80 Z" fill="#a78bfa"/><path d="M120 140 h80 v80 Z" fill="#38d9a9"/><path d="M200 140 v80 h80 Z" fill="#f472b6"/><path d="M280 140 h80 v80 Z" fill="#5fb0e8"/><path d="M360 140 v80 h80 Z" fill="#a78bfa"/><path d="M440 140 h80 v80 Z" fill="#38d9a9"/><path d="M120 220 v80 h80 Z" fill="#f472b6"/><path d="M200 220 h80 v80 Z" fill="#5fb0e8"/><path d="M280 220 v80 h80 Z" fill="#a78bfa"/><path d="M360 220 h80 v80 Z" fill="#38d9a9"/><path d="M440 220 v80 h80 Z" fill="#f472b6"/></g>
+  <rect x="110" y="50" width="420" height="260" rx="4" fill="none" stroke="#0b0f14" stroke-width="30" stroke-linejoin="round"/>
+  <rect x="110" y="50" width="420" height="260" rx="4" fill="none" stroke="#ef6b5b" stroke-width="18" stroke-linejoin="round"/>
+  <rect x="88" y="28" width="464" height="304" rx="8" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+</svg>

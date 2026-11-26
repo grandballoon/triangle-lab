@@ -7,6 +7,8 @@ import { C, tint, type Draw } from "../draw.ts";
 import { centroid, clamp, dist, dot, fmt, inBox, lerp, lineLine, project, sub, triangleArea, vec, type Vec } from "../geo.ts";
 import { agree } from "../kit/areas.ts";
 import { lesson, type Frame, type Readout } from "../scene.ts";
+import pinholeCameraImage from "../../images/pinhole-camera.svg";
+import riverWidthSimilarImage from "../../images/river-width-similar.svg";
 
 const TOP = 2.9;
 const BOTTOM = -2.7;
@@ -253,10 +255,20 @@ export default lesson((s) => {
       {
         title: "A pinhole camera",
         text: "In a pinhole camera, light from the top and bottom of a person crosses at the pinhole and lands upside down on the back of the box, which is parallel to them. That is the trapezoid's figure: two similar triangles meeting at $E$. A person 1.8 m tall standing 6 m away from a box 15 cm deep makes an image $\\frac{0.15}{6} = \\frac{1}{40}$ as tall, 4.5 cm.",
+        image: {
+          src: pinholeCameraImage,
+          caption: "A pinhole camera: light from a person's head and feet crosses at the pinhole, so the image on the back of the box is upside down and smaller by the ratio of the box's depth to the person's distance.",
+          alt: "A person stands to the left of a wooden box with a small hole in its front, and a small upside-down copy of the person is on the back wall inside. Gold dashed lines from the person's head and feet cross at the hole, making two similar triangles that meet at a point.",
+        },
       },
       {
         title: "Measuring across a river",
         text: "To find the width of a river without crossing it, pick a tree $A$ on the far bank and stand at $B$ opposite it. Walk 20 paces along the bank to a post $E$, then 10 more to $D$, and turn away from the river until you see $E$ and the tree lined up; say that point $C$ is 15 paces from $D$. Triangles $ABE$ and $CDE$ are similar with $AB$ twice $CD$, so the river is 30 paces wide.",
+        image: {
+          src: riverWidthSimilarImage,
+          caption: "Measuring across a river: pacing 20 along the bank to a post and 10 more, then stepping back until the post lines up with a tree, makes two similar triangles, so the river is twice the short side.",
+          alt: "Top view of a river with a tree on the far bank, a post on the near bank and a person standing back from it. Gold dashed lines make a large right triangle from the tree across the river to the post, and a smaller one from the post to the person, meeting at the post, with the bank sides marked 20 and 10.",
+        },
       },
     ],
 

@@ -8,6 +8,8 @@
 import { C, tint } from "../draw.ts";
 import { add, angleAt, angleOf, dist, fmt, inRing, mid, polar, scale, sub, toDeg, vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import compassFifteenDegreesImage from "../../images/compass-fifteen-degrees.svg";
+import origamiSixtyFoldImage from "../../images/origami-sixty-fold.svg";
 
 const O = vec(0, 0.1);
 const MIN_HALF_DIAGONAL = 1.5;
@@ -81,10 +83,20 @@ export default lesson((s) => {
       {
         title: "Drawing a fifteen-degree angle with compasses",
         text: "With only a straight edge and compasses you can draw a square and an equilateral triangle on one of its sides. Joining the triangle's tip to the far corner of the square, as in this lesson, gives a $15^\\circ$ angle at the tip, a classic way to mark angles that are not on a set square.",
+        image: {
+          src: compassFifteenDegreesImage,
+          caption: "A square and an equilateral triangle drawn with compasses: joining the triangle's tip to the far corner of the square marks a 15° angle.",
+          alt: "A sheet of paper with a pencil square and an equilateral triangle on its top side, a line from the tip to the far bottom corner, the thin triangle this makes shaded in dashed gold and marked 15°, and a pair of compasses beside it.",
+        },
       },
       {
         title: "Folding sixty degrees in origami",
         text: "Paper folders make a $60^\\circ$ angle from a square without a protractor: fold the square in half to make a crease, then fold one bottom corner up so that it lands on the crease while the fold passes through the other bottom corner. Where the corner lands is the same distance from both bottom corners, and a whole side away from the corner the fold passes through, so it is the tip of an equilateral triangle on the bottom side, like $E$ here.",
+        image: {
+          src: origamiSixtyFoldImage,
+          caption: "Folding a square of paper so a bottom corner lands on the centre crease makes an equilateral triangle on the bottom side, and so a 60° angle.",
+          alt: "A pink square of paper with a centre crease and its bottom-right corner folded up to land on the crease, with the equilateral triangle on the bottom side outlined in dashed gold, its equal sides ticked and a 60° mark at the bottom-left corner.",
+        },
       },
     ],
 

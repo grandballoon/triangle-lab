@@ -10,6 +10,10 @@ import { fmt, mix } from "../geo.ts";
 import { axes, onStage, texLinear, type Graph } from "../kit/algebra.ts";
 import { texRatio } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import ovenDialTemperatureImage from "../../images/oven-dial-temperature.svg";
+import phonePlanBillsImage from "../../images/phone-plan-bills.svg";
+import planterTrimSquareRoundImage from "../../images/planter-trim-square-round.svg";
+import shelfBoardCutsImage from "../../images/shelf-board-cuts.svg";
 
 const LEFT = C.cyan;
 const RIGHT = C.orange;
@@ -180,18 +184,38 @@ export default lesson((s) => {
       {
         title: "Trim round a planter",
         text: "You have 120 cm of trim to run round the rim of a planter. A square planter of side $s$ uses $4s$ of it, so $4s = 120$ and $s = 30$ cm. A round one of diameter $d$ uses $\\pi d$, so $d = 120 \\div \\pi \\approx 38.2$ cm: for the same trim, the round planter can be wider across.",
+        image: {
+          src: planterTrimSquareRoundImage,
+          caption: "Two planters with the same 120 cm of trim round the rim: the square one is 30 cm a side, the round one about 38 cm across.",
+          alt: "Top view of a square wooden planter marked 30 and a round terracotta planter marked 38 across, each rim traced in dashed gold.",
+        },
       },
       {
         title: "Which phone plan is cheaper?",
         text: "One plan costs 20 a month plus 2 for each gigabyte; another costs 35 a month plus 0.50 a gigabyte. Setting the two bills equal, $2x + 20 = 0.5x + 35$, gives $x = 10$: under 10 GB a month the first plan is cheaper, over it the second.",
+        image: {
+          src: phonePlanBillsImage,
+          caption: "Two phone plans as lines of cost against data: they cross at 10 GB, where the two bills are equal.",
+          alt: "A phone beside a graph of a red and a teal line crossing at a gold dot above 10 on the horizontal axis.",
+        },
       },
       {
         title: "Equal shelves from one board",
         text: "A 90 cm board is to be cut into three equal shelves, and each of the two saw cuts turns 0.3 cm of wood to dust. So $3x + 0.6 = 90$, and each shelf is $x = 29.8$ cm. Marking off 30 cm for each would leave the last one short.",
+        image: {
+          src: shelfBoardCutsImage,
+          caption: "A 90 cm board cut into three shelves: the two saw cuts take 0.6 cm between them, so each shelf is 29.8 cm.",
+          alt: "A board on a bench with two saw cuts and a saw in the second, three equal gold dashed spans below marked 29.8.",
+        },
       },
       {
         title: "Oven temperatures",
         text: "A recipe gives the oven in °F and your oven reads °C. Solving $F = \\tfrac95 C + 32$ for $C$ takes this lesson's two moves: subtract 32 from both sides, then divide both by $\\tfrac95$. For 350 °F that is about 177 °C.",
+        image: {
+          src: ovenDialTemperatureImage,
+          caption: "An oven and a thermometer read in both scales: 350 °F lines up with about 177 °C.",
+          alt: "An oven beside a thermometer, with a gold dashed line across it labelled 350°F on one side and 177°C on the other.",
+        },
       },
     ],
   };

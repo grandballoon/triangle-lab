@@ -9,6 +9,8 @@ import { C, tint } from "../draw.ts";
 import { angleOf, clamp, dist, fmt, len, polar, polygonArea, sub, toDeg, toRad, vec, wrapAngle, type Vec } from "../geo.ts";
 import { eq, same } from "../kit/quadrilaterals.ts";
 import { lesson, type Handle, type Readout } from "../scene.ts";
+import kiteSailImage from "../../images/kite-sail.svg";
+import stringCrossBedImage from "../../images/string-cross-bed.svg";
 
 const P = vec(0, -0.2);
 const MIN_REACH = 1.2;
@@ -188,10 +190,20 @@ export default lesson((s) => {
       {
         title: "Marking out a rectangular bed with string",
         text: "To mark out a rectangular flower bed without a set square, take two equal lengths of string and peg them so they cross at their midpoints. The four ends are the corners of a rectangle: equal diagonals that bisect each other force all four right angles.",
+        image: {
+          src: stringCrossBedImage,
+          caption: "Marking out a flower bed: two equal strings pegged to cross at their midpoints put the four pegs at the corners of a rectangle.",
+          alt: "A soil bed seen from above with two equal strings crossing at their midpoints, pegs at the four ends, and right angles marked at the corners.",
+        },
       },
       {
         title: "Cutting fabric for a kite",
         text: "A kite with a $90$ cm spine and a $60$ cm crossbar at right angles to it needs a sail of $\\tfrac12 \\cdot 90 \\cdot 60 = 2700$ square centimetres, wherever along the spine the crossbar is fixed. That tells you how much ripstop to buy before you have decided on the exact shape.",
+        image: {
+          src: kiteSailImage,
+          caption: "A kite sail: with a 90 cm spine crossed at right angles by a 60 cm bar, the sail is half the 90 by 60 rectangle around it, 2700 square centimetres.",
+          alt: "A red and cream kite with crossed wooden spars and a ribbon tail, inside a dashed rectangle labelled 90 and 60.",
+        },
       },
     ],
 

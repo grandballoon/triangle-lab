@@ -20,6 +20,8 @@ import {
   texSum,
 } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import pottingSoilMixImage from "../../images/potting-soil-mix.svg";
+import raisedBedBoardsImage from "../../images/raised-bed-boards.svg";
 
 const FIRST = C.cyan;
 const SECOND = C.orange;
@@ -206,10 +208,20 @@ export default lesson((s) => {
       {
         title: "Boards for a raised bed",
         text: "You want a rectangular raised bed whose long sides are 40 cm longer than its short ones, from 240 cm of board in all. So $\\ell = s + 40$ and $2\\ell + 2s = 240$. Substituting the first into the second gives $2(s + 40) + 2s = 240$: the short sides are 40 cm and the long ones 80 cm.",
+        image: {
+          src: raisedBedBoardsImage,
+          caption: "A raised bed from 240 cm of board, its long sides 40 cm longer than its short ones: 80 cm by 40 cm.",
+          alt: "Top view of a wooden raised bed with plants, outlined in dashed gold and marked 80 and 40.",
+        },
       },
       {
         title: "Mixing potting soil",
         text: "A houseplant wants soil that is 30% perlite, and you have bags that are 50% and 20% perlite. For 10 litres, $x + y = 10$ and $0.5x + 0.2y = 3$. Putting $x = 10 - y$ into the second gives $5 - 0.3y = 3$: about 6.7 litres from the 20% bag and 3.3 from the 50% one.",
+        image: {
+          src: pottingSoilMixImage,
+          caption: "Ten litres of 30% perlite soil mixed from two bags: about 3.3 litres of the 50% mix and 6.7 of the 20% one.",
+          alt: "Bags marked 50% and 20% pouring into a pot, labelled 3.3 and 6.7, with a gold bar below split in that ratio.",
+        },
       },
     ],
   };

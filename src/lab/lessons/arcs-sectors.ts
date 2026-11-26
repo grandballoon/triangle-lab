@@ -8,6 +8,9 @@ import { C, tint } from "../draw.ts";
 import { angleOf, clamp, fmt, onSegment, polar, sub, TAU, toDeg, vec, wrapAngle } from "../geo.ts";
 import { arcPoints } from "../kit/circles.ts";
 import { lesson, term, type Frame } from "../scene.ts";
+import oilTankSegmentImage from "../../images/oil-tank-segment.svg";
+import runningTrackStaggerImage from "../../images/running-track-stagger.svg";
+import sprinklerLawnSectorImage from "../../images/sprinkler-lawn-sector.svg";
 
 const O = vec(0, 0.4);
 const R_MIN = 1.6;
@@ -79,14 +82,29 @@ export default lesson((s) => {
       {
         title: "Staggered starts on a running track",
         text: "On a standard track each lane is $1.22$ metres wider than the last, so on each half-circle bend a runner one lane out goes about $\\pi \\times 1.22 \\approx 3.8$ metres further. That is why the $400$ metre start is staggered: outer runners start ahead, so everyone runs the same distance.",
+        image: {
+          src: runningTrackStaggerImage,
+          caption: "A running track's bend: each outer lane's half-circle is about 3.8 metres longer, so the 400 metre start is staggered to even out the distance.",
+          alt: "Top-down view of a red running track bending round a green infield, with four runners starting at staggered marks and the inner and outer lane half-circles traced in gold.",
+        },
       },
       {
         title: "A sprinkler in a corner",
         text: "A sprinkler in the corner of a lawn, set to sweep a quarter turn, $\\frac{\\pi}{2}$, with a $6$ metre throw, waters a sector of $\\tfrac12 \\cdot 6^2 \\cdot \\frac{\\pi}{2} \\approx 28$ square metres.",
+        image: {
+          src: sprinklerLawnSectorImage,
+          caption: "A corner sprinkler sweeping a quarter turn with a 6 metre throw waters a quarter-circle sector of lawn, about 28 square metres.",
+          alt: "Top-down rectangular lawn with a sprinkler in one corner and a blue quarter-circle of watered grass outlined in gold, its radius marked 6.",
+        },
       },
       {
         title: "Oil in a lying tank",
         text: "A cylindrical tank lying on its side, like a home heating oil tank, has a circular end. When it is partly full, the liquid's end face is a circular segment: sector minus triangle. Dip charts that turn a depth reading into litres are worked out this way.",
+        image: {
+          src: oilTankSegmentImage,
+          caption: "A heating oil tank lying on its side: the oil's end face is a circular segment, the sector minus the triangle, which is how dip charts turn depth into litres.",
+          alt: "A cylindrical tank on two supports, its round end showing oil in the bottom, with the sector from the centre and the chord at the oil's surface traced in gold.",
+        },
       },
     ],
 

@@ -8,6 +8,8 @@
 import { C, tint } from "../draw.ts";
 import { clamp, fmt, lerp, rotateAbout, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import ballTossPeakImage from "../../images/ball-toss-peak.svg";
+import edgedSquareBedImage from "../../images/edged-square-bed.svg";
 
 const SQUARE = C.cyan;
 const STRIP = C.orange;
@@ -151,10 +153,20 @@ export default lesson((s) => {
       {
         title: "The biggest bed for your edging",
         text: "With 20 m of edging, a rectangular bed $x$ m long is $10 - x$ wide, so its area is $10x - x^2 = 25 - (x - 5)^2$. That is 25 minus something never negative, so the area is largest, 25 m², when $x = 5$: a square.",
+        image: {
+          src: edgedSquareBedImage,
+          caption: "A garden bed inside 20 m of edging: completing the square shows the area is largest, 25 m², when the bed is a 5 m square.",
+          alt: "A square planted garden bed with steel edging seen from above, outlined in gold dashes with equal-side ticks and 5 marked on two sides.",
+        },
       },
       {
         title: "The top of a throw",
         text: "A ball tossed upward has height $h = -16t^2 + 32t + 5$ feet. Completing the square gives $h = 21 - 16(t - 1)^2$, so it peaks after 1 second, 21 feet up, without drawing a graph.",
+        image: {
+          src: ballTossPeakImage,
+          caption: "A ball tossed upward: completing the square shows it peaks after 1 second, 21 feet up, without drawing the graph.",
+          alt: "A person throwing a ball, its path a gold dashed parabola, with the ball at the top and a dotted gold line down from the peak marked 21.",
+        },
       },
     ],
   };

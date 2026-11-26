@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="568" cy="90" r="28" fill="#f2c14e"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M150 254 V302 M360 254 V302" stroke="#0b0f14" stroke-width="16"/>
+    <path d="M150 254 V302 M360 254 V302" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <path d="M140 222 L410 222 L390 258 L120 258 Z" fill="#5fb0e8"/>
+  </g>
+  <path d="M207 222 L187 258 M275 222 L255 258 M342 222 L322 258 M130 240 H400" stroke="#0b0f14" stroke-width="3"/>
+  <path d="M290 240 L550 240 L550 90 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M534 240 V224 H550" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <path d="M360 240 A70 70 0 0 0 351 205" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <text x="410" y="230" font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e">30°</text>
+</svg>

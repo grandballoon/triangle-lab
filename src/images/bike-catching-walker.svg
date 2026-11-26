@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2a3340"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><rect x="40" y="240" width="70" height="62" fill="#f3ead8"/><path d="M32 240 L75 200 L118 240 Z" fill="#ef6b5b"/><rect x="64" y="266" width="22" height="36" fill="#b07a45"/></g>
+  <g fill="none" stroke-linecap="round"><path d="M392 254 L380 300 M408 254 L420 300" stroke="#0b0f14" stroke-width="16"/><path d="M392 254 L380 300 M408 254 L420 300" stroke="#8fa3b8" stroke-width="8"/></g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><rect x="384" y="206" width="32" height="54" rx="12" fill="#a78bfa"/><circle cx="400" cy="190" r="16" fill="#c68a5b"/></g>
+  <g transform="translate(230 282)"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M-30 0 L-6 -30 L30 0 M-6 -30 L22 -30 L30 0 M-6 -30 L-10 -40 M22 -30 L20 -44" stroke="#0b0f14" stroke-width="12"/><path d="M-30 0 L-6 -30 L30 0 M-6 -30 L22 -30 L30 0 M-6 -30 L-10 -40 M22 -30 L20 -44" stroke="#ef6b5b" stroke-width="5"/></g><g stroke="#0b0f14" stroke-width="6"><circle cx="-30" cy="0" r="18" fill="#1c2633"/><circle cx="30" cy="0" r="18" fill="#1c2633"/></g><g fill="none" stroke-linecap="round"><path d="M-6 -46 L4 -22" stroke="#0b0f14" stroke-width="16"/><path d="M-6 -46 L4 -22" stroke="#8fa3b8" stroke-width="8"/></g><g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="-18" y="-92" width="28" height="50" rx="12" fill="#38d9a9" transform="rotate(20 -4 -67)"/><circle cx="12" cy="-102" r="15" fill="#f3c9a0"/></g></g>
+  <path d="M80 200 L480 60 M80 107 L480 60 M480 60 V300" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="480" cy="60" r="10" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <text x="540" y="290" font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f2c14e">2.5</text>
+</svg>

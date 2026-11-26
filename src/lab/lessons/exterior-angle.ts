@@ -7,6 +7,9 @@
 import { C } from "../draw.ts";
 import { add, angleAt, fmt, inBox, normalize, scale, sub, toDeg, type Vec } from "../geo.ts";
 import { lesson, term } from "../scene.ts";
+import lighthouseBowAngleImage from "../../images/lighthouse-bow-angle.svg";
+import propertyCornerTurnsImage from "../../images/property-corner-turns.svg";
+import racetrackTurnsImage from "../../images/racetrack-turns.svg";
 
 const ALPHA = C.gold;
 const BETA = C.blue;
@@ -81,14 +84,29 @@ export default lesson((s) => {
       {
         title: "How far away is that lighthouse?",
         text: "Ship navigators use a trick called doubling the angle on the bow. They note the angle between the ship's path and a lighthouse, then keep sailing straight until that angle has doubled. The new angle is an exterior angle of the triangle made by the two ship positions and the lighthouse, so it equals the old angle plus the angle at the lighthouse. It is also twice the old angle, so the angle at the lighthouse must equal the old angle, so two sides of the triangle are equal: the lighthouse is exactly as far away as the distance the ship sailed in between, which the navigator knows from speed and time.",
+        image: {
+          src: lighthouseBowAngleImage,
+          caption: "Doubling the angle on the bow: when the angle to the lighthouse has doubled, the lighthouse is as far away as the ship has sailed since.",
+          alt: "A lighthouse on an island and a boat at two positions along a straight course; a dashed gold triangle joins the two positions and the lighthouse, the course runs on with an arrow, the first angle and the doubled exterior angle are marked, and tick marks show the distance sailed equals the distance to the lighthouse.",
+        },
       },
       {
         title: "Checking the corners of a property",
         text: "When surveyors map the edge of a piece of land, like a backyard, they walk from corner to corner and measure how much they turn at each one. Those turns are the exterior angles of the outline, so for a lot whose corners all point outward they must add up to $360^\\circ$. If the turns add up to $361^\\circ$, the surveyor knows a measurement is off before anyone builds a fence in the wrong place.",
+        image: {
+          src: propertyCornerTurnsImage,
+          caption: "Surveying a plot: the turns made walking round its corners are its exterior angles, which must add up to 360°.",
+          alt: "A top view of a five-sided green plot with a house in the middle and posts at each corner; the boundary is dashed gold, each side is extended past its corner, and an arc marks the turn at every corner, labelled 360°.",
+        },
       },
       {
         title: "Which way does a racetrack run?",
         text: "Game engines often need to know whether the outline of a track, a room or a lake was drawn clockwise or counterclockwise, because that decides which side counts as inside. One way is to add up the turn at every corner, counting left turns as positive and right turns as negative. Going all the way round counterclockwise, the turns total $+360^\\circ$; clockwise, they total $-360^\\circ$.",
+        image: {
+          src: racetrackTurnsImage,
+          caption: "A racetrack outline: going round it counterclockwise, the turns at its corners total +360°, with the one right-hand bend counting as negative.",
+          alt: "A top view of a six-cornered racetrack with a red car; a dashed gold outline runs along the track with direction arrows, each side is extended past its corner, and arcs mark the turn at every corner, one of them turning the opposite way, labelled 360°.",
+        },
       },
     ],
 

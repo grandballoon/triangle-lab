@@ -6,6 +6,9 @@
 import { C } from "../draw.ts";
 import { angleOf, clamp, fmt, polar, sub, TAU, toDeg, toRad, vec, wrapAngle } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import gameSpriteTurnImage from "../../images/game-sprite-turn.svg";
+import gpsLatitudeGlobeImage from "../../images/gps-latitude-globe.svg";
+import skateboardSpinImage from "../../images/skateboard-spin.svg";
 
 const O = vec(0, -0.3);
 const DIAL = 3.4;
@@ -87,14 +90,29 @@ export default lesson((s) => {
       {
         title: "Spinning tricks",
         text: "Skateboarders and snowboarders name spins by how far they turn: a 180 lands you riding backwards, a 360 brings you round to face the way you started, and a 540 is one and a half turns.",
+        image: {
+          src: skateboardSpinImage,
+          caption: "A skateboard spin: a 360 is one full turn about the rider's upright axis, bringing them round to face the way they started.",
+          alt: "A skateboarder with arms out on a board, a dashed gold vertical axis through them and a dashed gold ellipse with an arrow round them, labelled 360°.",
+        },
       },
       {
         title: "Reading a GPS position",
         text: "Latitude and longitude are angles, often written in degrees, minutes and seconds. One minute of latitude is about $1852$ metres, a nautical mile, so one second is about $31$ metres: a position to the nearest second pins down a spot about the size of a house plot.",
+        image: {
+          src: gpsLatitudeGlobeImage,
+          caption: "A GPS position: latitude is the angle at the Earth's centre between the equator and the place, here about 51° north.",
+          alt: "A globe with an equator line and a red map pin; dashed gold lines from the centre to the equator and to the pin, with the angle between them marked 51°.",
+        },
       },
       {
         title: "Turning a sprite in a game",
         text: "Most programming languages measure angles in radians: in JavaScript, Math.cos(90) is the cosine of $90$ radians, not of $90^\\circ$. To turn a sprite a quarter turn, a game programmer passes $\\frac{\\pi}{2}$, converting with $90 \\cdot \\frac{2\\pi}{360} = \\frac{\\pi}{2}$.",
+        image: {
+          src: gameSpriteTurnImage,
+          caption: "Turning a game sprite: a quarter turn is 90°, which the code must pass as π/2 radians.",
+          alt: "A computer monitor showing an arrow-shaped spaceship pointing up, with a dashed gold ray to the right, a right-angle mark, and a curved arrow sweeping a quarter turn labelled 90°.",
+        },
       },
     ],
 

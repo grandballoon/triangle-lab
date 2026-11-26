@@ -8,6 +8,8 @@ import { fmt, TAU } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { add3, faces, label3, Orbit, p3, point3, polygon3, scale3, segment3, type P3 } from "../solid.ts";
 import { centroid3, glass, mid3, polygonY, prismSides, pyramidSides, rightAngle3, triangleArea3 } from "../kit/solids.ts";
+import housePyramidLoftImage from "../../images/house-pyramid-loft.svg";
+import summerHousePyramidRoofImage from "../../images/summer-house-pyramid-roof.svg";
 
 const ALTITUDE = C.blue;
 const APOTHEM = C.green;
@@ -112,10 +114,20 @@ export default lesson((s) => {
       {
         title: "Tiles for a pyramid roof",
         text: "A summer house with a square pyramid roof, $4$ m along each side of the base and $1.5$ m tall, needs roofing for its four sloping faces. The slant height is $l = \\sqrt{1.5^2 + 2^2} = 2.5$ m, so the roof area is $\\tfrac12 pl = \\tfrac12 \\cdot 16 \\cdot 2.5 = 20$ square metres, which is what the roofer prices.",
+        image: {
+          src: summerHousePyramidRoofImage,
+          caption: "A summer house with a square pyramid roof: the slant height up the middle of each face gives the roof area the roofer prices.",
+          alt: "A small summer house with a tiled square pyramid roof; a gold right triangle runs from the peak down to the middle of the front eave and the centre of the base, its slanted side marked 2.5.",
+        },
       },
       {
         title: "Space under a pyramid roof",
         text: "The loft under a square pyramid roof on an $8$ m by $8$ m house, rising $3$ m to the peak, holds $\\tfrac13 \\cdot 64 \\cdot 3 = 64$ cubic metres of air. That is a third of a box-shaped loft of the same size, which matters when sizing insulation or ventilation.",
+        image: {
+          src: housePyramidLoftImage,
+          caption: "A house with a pyramid roof: the loft holds a third of the air of a box-shaped loft on the same base and height.",
+          alt: "A house with a square pyramid roof, drawn inside a gold dashed box of the same base and height, marked ⅓.",
+        },
       },
     ],
 

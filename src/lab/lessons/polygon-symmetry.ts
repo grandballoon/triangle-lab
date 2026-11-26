@@ -7,6 +7,9 @@ import { C, tint } from "../draw.ts";
 import { angleOf, fmt, polar, regularPolygon, sub, TAU, toDeg, toRad, vec, wrapAngle, type Vec } from "../geo.ts";
 import { IMAGE, ORIGINAL } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import carWheelFiveBoltsImage from "../../images/car-wheel-five-bolts.svg";
+import coinFiftyHeptagonImage from "../../images/coin-fifty-heptagon.svg";
+import spannerSixtyTurnImage from "../../images/spanner-sixty-turn.svg";
 
 const CENTRE = vec(0, 0.5);
 const RADIUS = 3.4;
@@ -75,14 +78,29 @@ export default lesson((s) => {
       {
         title: "Fitting a spanner on a nut",
         text: "Nuts and bolt heads are usually hexagons, so a spanner fits them in $6$ positions, $60^\\circ$ apart. In a tight space you only need room to swing the spanner $60^\\circ$: take it off and put it back on one corner further round, and it fits again. A $12$-point socket fits a hexagonal nut every $30^\\circ$, for even less room.",
+        image: {
+          src: spannerSixtyTurnImage,
+          caption: "An open-ended spanner on a hexagonal nut: the nut fits the jaws again every 60°, so in a tight space you only need room to swing it that far.",
+          alt: "A spanner gripping two flats of a hexagonal nut, the hexagon traced in dashed gold, with gold lines from the centre along the handle and 60° round to mark the next fitting position.",
+        },
       },
       {
         title: "Bolting on a car wheel",
         text: "Many car wheels are held on by $5$ bolts spaced evenly round a circle, $360^\\circ / 5 = 72^\\circ$ apart. So a wheel can go on in $5$ positions, turning it $72^\\circ$ at a time until the holes line up with the bolts. Since $5$ is odd, a half-turn of the wheel would put each hole opposite a gap between two bolts.",
+        image: {
+          src: carWheelFiveBoltsImage,
+          caption: "A car wheel held on by five bolts evenly spaced round a circle, 72° apart, so it fits on in five positions.",
+          alt: "A wheel with a tyre, steel rim and five wheel nuts, a dashed gold regular pentagon through the nuts and a shaded wedge from the centre to two neighbouring nuts labelled 72°.",
+        },
       },
       {
         title: "The shape of the 20p and 50p coins",
         text: "British 20p and 50p coins are seven-sided, with gently curved sides, and turn onto themselves in $7$ ways, every $360^\\circ / 7$. Because $7$ is odd, every corner sits opposite the middle of a side, and the curves are chosen so the coin is the same width measured across in any direction. That lets coin machines measure them by width, like a round coin.",
+        image: {
+          src: coinFiftyHeptagonImage,
+          caption: "A 50p coin: seven curved sides that turn onto themselves every 360°/7, with each corner opposite the middle of a side so the coin is the same width every way across.",
+          alt: "A silver seven-sided coin with curved sides; two dashed gold lines, each from a corner through the centre to the middle of the opposite side, are marked as equal.",
+        },
       },
     ],
 

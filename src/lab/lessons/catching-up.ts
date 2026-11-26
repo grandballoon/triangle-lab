@@ -8,6 +8,9 @@ import { C } from "../draw.ts";
 import { clamp, fmt } from "../geo.ts";
 import { axes, onStage, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
+import bikeCatchingWalkerImage from "../../images/bike-catching-walker.svg";
+import cyclistsMeetingImage from "../../images/cyclists-meeting.svg";
+import navAppArrivalImage from "../../images/nav-app-arrival.svg";
 
 const FIRST = C.cyan;
 const SECOND = C.orange;
@@ -144,14 +147,29 @@ export default lesson((s) => {
       {
         title: "Catching up on a bike",
         text: "A friend sets off walking to the park at 5 km/h, and you leave 20 minutes later on a bike at 15 km/h. Setting the distances equal, $5t = 15\\left(t - \\tfrac13\\right)$, gives $t = \\tfrac12$ hour: you catch them 2.5 km from home, ten minutes after you set off.",
+        image: {
+          src: bikeCatchingWalkerImage,
+          caption: "A cyclist leaving 20 minutes after a walker: their distance–time lines meet 2.5 km from home, where the bike catches up.",
+          alt: "A house, a cyclist and a walker on a road, with two dashed gold lines from the house meeting at a dot above the point marked 2.5.",
+        },
       },
       {
         title: "Meeting on the road",
         text: "Two friends 30 km apart cycle toward each other at 12 and 18 km/h. Their distances add up to the gap, $12t + 18t = 30$, so they meet after 1 hour, 12 km from the slower rider's house: not halfway, because the faster one covers more.",
+        image: {
+          src: cyclistsMeetingImage,
+          caption: "Two cyclists riding towards each other from 30 km apart: they meet after an hour, 12 km from the slower rider's house.",
+          alt: "Two houses with a cyclist heading out from each towards the other, and a gold dashed span above split at the meeting point into 12 and 18.",
+        },
       },
       {
         title: "Arrival estimates",
         text: "A navigation app predicts when you will reach someone driving ahead of you, or meet someone coming the other way, by setting two distance equations equal and solving for the time.",
+        image: {
+          src: navAppArrivalImage,
+          caption: "A navigation app working out when you reach a car ahead: it sets the two distance equations equal and solves for the time.",
+          alt: "A phone map with a red car, a teal car further along the road and a gold pin between them, beside a red and a teal line crossing at a gold dot.",
+        },
       },
     ],
   };

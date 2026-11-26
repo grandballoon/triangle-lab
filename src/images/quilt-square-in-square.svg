@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="140" y="20" width="360" height="320" rx="14" fill="#1c2633"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><path d="M180 40 L320 40 L180 180 Z" fill="#a78bfa"/><path d="M320 40 L460 40 L460 180 Z" fill="#f472b6"/><path d="M460 180 L460 320 L320 320 Z" fill="#a78bfa"/><path d="M320 320 L180 320 L180 180 Z" fill="#f472b6"/><path d="M320 40 L460 180 L320 320 L180 180 Z" fill="#38d9a9"/><path d="M320 110 L390 180 L320 250 L250 180 Z" fill="#f3ead8"/></g>
+  <rect x="180" y="40" width="280" height="280" fill="none" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M320 40 L460 180 L320 320 L180 180 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M250 31 L250 49 M390 31 L390 49 M469 110 L451 110 M469 250 L451 250 M390 329 L390 311 M250 329 L250 311 M171 250 L189 250 M171 110 L189 110" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M202 40 L202 62 L180 62 M460 298 L438 298 L438 320" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

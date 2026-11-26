@@ -6,6 +6,9 @@ import { C, tint } from "../draw.ts";
 import { add, angleOf, centroid, clamp, dist, fmt, lerp, perp, polar, scale, sub } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import deckFrame345Image from "../../images/deck-frame-3-4-5.svg";
+import gameMonsterDistanceImage from "../../images/game-monster-distance.svg";
+import tvDiagonalImage from "../../images/tv-diagonal.svg";
 
 // The right-angle corner of the triangle the learner shapes.
 const CORNER = { x: -7, y: -2.6 };
@@ -70,14 +73,29 @@ export default lesson((s) => {
       {
         title: "Is the deck square?",
         text: "Before carpenters nail down the frame of a deck or a shed, they check that each corner is a right angle. They mark 3 feet along one board from the corner and 4 feet along the other, then measure between the two marks. Because $3^2 + 4^2 = 5^2$, that distance is exactly 5 feet only when the corner is square. If it comes out at 5 feet and an inch, the corner is a little too wide, and they nudge the boards before anything is fixed. On a big deck they use 6, 8 and 10 feet, or 9, 12 and 15, which work for the same reason.",
+        image: {
+          src: deckFrame345Image,
+          caption: "A deck frame: marks 3 feet and 4 feet from a corner are exactly 5 feet apart only when the corner is square.",
+          alt: "Top-down view of a wooden deck frame with joists and corner posts, with red pencil marks at 3 and 4 along two boards and a dashed gold 5 between them.",
+        },
       },
       {
         title: "How big is a 55-inch TV?",
         text: "Screens are sold by the length of their diagonal, corner to corner. The width and the height are the two legs of a right triangle, and the diagonal is its hypotenuse. A 55-inch TV is about 48 inches wide and 27 inches tall, and $48^2 + 27^2$ comes out at almost exactly $55^2$. Furniture designers work it backwards like this to know how wide to make a TV stand or a wall cabinet for each size of screen.",
+        image: {
+          src: tvDiagonalImage,
+          caption: "A 55-inch TV: about 48 inches wide and 27 tall, its width and height are the legs and the 55-inch diagonal is the hypotenuse.",
+          alt: "A flat television on a wooden cabinet, with a dashed gold right triangle along its bottom edge, right edge and corner-to-corner diagonal marked 55.",
+        },
       },
       {
         title: "Can the monster see you?",
         text: "In a video game, every character has a position across the screen and a position up it. To decide whether an enemy is close enough to spot the player, the game finds how far apart they are across and how far apart they are up. Those are the legs of a right triangle, and the straight-line distance between them is its hypotenuse, $\\sqrt{a^2 + b^2}$. Games check this for every enemy, many times a second, so they often skip the square root and compare $a^2 + b^2$ with the square of the enemy's sight range instead.",
+        image: {
+          src: gameMonsterDistanceImage,
+          caption: "A game deciding whether the monster can see you: the gaps across and up are the legs, and the distance between you is the hypotenuse.",
+          alt: "A grid-like game map with a player at the bottom left and a purple ghost above and to the right, joined by a dashed gold right triangle with sides 3, 4 and 5.",
+        },
       },
     ],
 

@@ -8,6 +8,8 @@ import { C } from "../draw.ts";
 import { clamp, fmt } from "../geo.ts";
 import { axes, plot, texQuadratic, onStage, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
+import chairsInRowsImage from "../../images/chairs-in-rows.svg";
+import pictureFrameBorderImage from "../../images/picture-frame-border.svg";
 
 const ROOT = C.gold;
 const TARGET = C.ink;
@@ -138,10 +140,20 @@ export default lesson((s) => {
       {
         title: "A frame for a picture",
         text: "A 20 by 30 cm print goes in a frame with a border $w$ wide all round, and the whole frame should cover 1200 cm² of wall. Then $(20 + 2w)(30 + 2w) = 1200$, which tidies up to $w^2 + 25w - 150 = 0$ and factors as $(w + 30)(w - 5) = 0$. A border of $-30$ cm makes no sense, so it is 5 cm.",
+        image: {
+          src: pictureFrameBorderImage,
+          caption: "A frame round a 20 by 30 cm print: a border of the same width all round, solved from a factored quadratic, comes out at 5 cm.",
+          alt: "A wooden frame round a picture of a hill and sun, with the outer edge and the print edge in gold dashes and the border's width marked 5.",
+        },
       },
       {
         title: "Chairs in rows",
         text: "48 chairs are to be set out in rows, each row two chairs longer than there are rows. With $r$ rows, $r(r + 2) = 48$, so $r^2 + 2r - 48 = (r + 8)(r - 6) = 0$: 6 rows of 8.",
+        image: {
+          src: chairsInRowsImage,
+          caption: "48 chairs set out in rows, each row two longer than the number of rows: factoring gives 6 rows of 8.",
+          alt: "Rows of red chairs seen from above, 6 rows of 8, inside a gold dashed rectangle marked 8 along the top and 6 down the side.",
+        },
       },
     ],
   };

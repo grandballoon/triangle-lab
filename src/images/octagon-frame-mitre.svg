@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M416 220 L360 276 L280 276 L224 220 L224 140 L280 84 L360 84 L416 140 Z" fill="#5fb0e8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M270 150 L300 132 M262 186 L330 146" stroke="#f3ead8" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M459 237 L377 319 L360 276 L416 220 Z" fill="#b07a45"/><path d="M377 319 L263 319 L280 276 L360 276 Z" fill="#d9a066"/><path d="M263 319 L181 237 L224 220 L280 276 Z" fill="#b07a45"/><path d="M181 237 L181 123 L224 140 L224 220 Z" fill="#d9a066"/><path d="M181 123 L263 41 L280 84 L224 140 Z" fill="#b07a45"/><path d="M263 41 L377 41 L360 84 L280 84 Z" fill="#d9a066"/><path d="M377 41 L459 123 L416 140 L360 84 Z" fill="#b07a45"/><path d="M459 123 L459 237 L416 220 L416 140 Z" fill="#d9a066"/></g>
+  <path d="M416 140 L497 107 M416 140 H516" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M488 110 A78 78 0 0 1 494 140" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="548" y="142" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">22.5°</text>
+</svg>

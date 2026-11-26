@@ -9,6 +9,8 @@ import { angleAt, dist, fmt, lerp } from "../geo.ts";
 import { degTex } from "../kit/circle-angles.ts";
 import { baseKnob, CAPTION_AT, overMidpoint, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson, type Readout } from "../scene.ts";
+import goalkeeperAngleImage from "../../images/goalkeeper-angle.svg";
+import pictureFrameMitreImage from "../../images/picture-frame-mitre.svg";
 
 const TERMS = ["angle bisector", "isosceles apex"] as const;
 
@@ -57,10 +59,20 @@ export default lesson((s) => {
       {
         title: "Mitring a picture frame",
         text: "Each corner of a picture frame is $90^\\circ$, and the two pieces of moulding meet along the corner's bisector, each cut at $45^\\circ$. Cutting both at half the corner angle makes their ends exactly the same length, so the decorative profile lines up all the way round the joint.",
+        image: {
+          src: pictureFrameMitreImage,
+          caption: "A picture frame: each 90° corner is cut along its bisector, so both pieces of moulding meet at 45°.",
+          alt: "A square wooden frame around a landscape picture, with a dashed line along one corner's mitre joint marked 45°.",
+        },
       },
       {
         title: "Where a goalkeeper stands",
         text: "Goalkeepers in football and hockey are coached to stand on the line that bisects the angle between the ball and the two goalposts. From the ball's point of view, the keeper then covers the same angle of goal on each side, leaving no easier side to shoot at.",
+        image: {
+          src: goalkeeperAngleImage,
+          caption: "A goalkeeper standing on the line that bisects the angle between the ball and the two goalposts covers the same angle of goal on each side.",
+          alt: "A football pitch seen from above, with dashed lines from the ball to each post and a dashed bisector running through the keeper.",
+        },
       },
     ],
 

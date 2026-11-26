@@ -78,6 +78,15 @@ describe("entriesIn", () => {
     expect(second.text?.quote).toBe("`");
   });
 
+  it("lists and rewrites a use that has a picture, leaving the picture be", () => {
+    const source = `export default lesson(() => ({
+  uses: [{ title: "Trusses", text: "Rigid.", image: { src: truss, caption: "A roof truss." } }],
+}));`;
+    expect(listing(entriesIn(source, LAB, "uses"))).toEqual([{ title: "Trusses", text: "Rigid." }]);
+    const result = rewriteEntry(source, LAB, { section: "uses", index: 0, was: { title: "Trusses", text: "Rigid." }, to: { text: "Stiff." } });
+    expect(result).toEqual({ ok: true, changed: true, source: source.replace('"Rigid."', '"Stiff."') });
+  });
+
   it("lists one page's entries at a path", () => {
     const source = `export const asides: Record<string, Asides> = {
   angles: { likes: [{ title: "Door", text: "Opens." }], uses: [] },
@@ -221,7 +230,8 @@ describe("every lesson's copy", () => {
       expect(listing(entriesIn(directionsSource, homes.steps, "steps")), slug).toEqual(steps);
       const shown = asides[slug] ?? { likes: [], uses: [] };
       expect(listing(entriesIn(asidesSource, homes.likes, "likes")), `${slug} likes`).toEqual(shown.likes);
-      expect(listing(entriesIn(asidesSource, homes.uses, "uses")), `${slug} uses`).toEqual(shown.uses);
+      const uses = shown.uses.map(({ title, text }) => ({ title, text }));
+      expect(listing(entriesIn(asidesSource, homes.uses, "uses")), `${slug} uses`).toEqual(uses);
     }
   });
 

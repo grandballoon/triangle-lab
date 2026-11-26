@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { fmt, toDeg } from "../geo.ts";
 import { corners, freeQuad, GLASS, isSimpleQuad } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
+import fieldCornerAnglesImage from "../../images/field-corner-angles.svg";
+import worktopWonkyCornerImage from "../../images/worktop-wonky-corner.svg";
 
 const NAMES = ["A", "B", "C", "D"] as const;
 const FIRST = C.gold;
@@ -66,10 +68,20 @@ export default lesson((s) => {
       {
         title: "Fitting a worktop into a wonky corner",
         text: "Walls in old houses are rarely square. A kitchen fitter who measures three corners of a four-sided worktop piece as $90^\\circ$, $92^\\circ$ and $95^\\circ$ knows the fourth must be $360^\\circ - 277^\\circ = 83^\\circ$, without having to reach the awkward one behind the cooker.",
+        image: {
+          src: worktopWonkyCornerImage,
+          caption: "A kitchen worktop in a wonky corner: with three corners measured, the fourth behind the cooker is whatever is left of 360°.",
+          alt: "A top view of a four-sided wooden worktop against a wall, corners marked 90°, 92° and 95°, and a question mark at the corner beside the cooker.",
+        },
       },
       {
         title: "Checking a survey of a field",
         text: "A surveyor who measures all four corner angles of a four-sided field expects them to total $360^\\circ$. If they come to $360^\\circ\\,2'$, the two extra minutes of angle are measurement error, and the usual practice is to share the correction out among the corners before drawing the plan.",
+        image: {
+          src: fieldCornerAnglesImage,
+          caption: "A surveyed four-sided field: its four corner angles should add up to 360°, and any small excess is measurement error shared out among the corners.",
+          alt: "A green four-sided field with an angle arc at each corner and 360° in the middle, and a surveyor with a tripod beside it.",
+        },
       },
     ],
 

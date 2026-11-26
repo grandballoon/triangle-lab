@@ -8,6 +8,8 @@ import { fmt } from "../geo.ts";
 import { perimeterOf, walkedPath } from "../kit/triangle-parts.ts";
 import { CAPTION_AT, edgeWalker, labelSides, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson } from "../scene.ts";
+import fencingPlotImage from "../../images/fencing-plot.svg";
+import quiltBindingImage from "../../images/quilt-binding.svg";
 
 export default lesson((s) => {
   s.terms("Term", ["perimeter"]);
@@ -33,10 +35,20 @@ export default lesson((s) => {
       {
         title: "Buying fencing",
         text: "A triangular corner plot has sides of $9$, $12$ and $15$ metres. Fencing it all the way round takes $9 + 12 + 15 = 36$ metres of fence, which is what you would order before allowing a little extra for posts and offcuts.",
+        image: {
+          src: fencingPlotImage,
+          caption: "Fencing a corner plot: sides of 9, 12 and 15 metres add up to 36 metres of fence all the way round.",
+          alt: "A triangular plot enclosed by a wooden post-and-rail fence, its sides labelled 9, 12 and 15, with the fence line traced in dashed gold.",
+        },
       },
       {
         title: "Binding the edge of a quilt",
         text: "Quilters finish a quilt by sewing a strip of fabric, the binding, all the way round its edge. To know how long a strip to cut, they add up the lengths of every side, the perimeter, and then add some extra for turning the corners and joining the ends.",
+        image: {
+          src: quiltBindingImage,
+          caption: "Binding a quilt: the strip sewn round its edge must be as long as the perimeter, plus a little extra for the corners and the join.",
+          alt: "A quilt of coloured triangle patches with a red binding strip round its edge, and a dashed gold line tracing the whole edge.",
+        },
       },
     ],
 

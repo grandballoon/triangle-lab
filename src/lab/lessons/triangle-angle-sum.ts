@@ -7,6 +7,8 @@ import { C } from "../draw.ts";
 import { add, angleAt, fmt, inBox, normalize, scale, sub, toDeg, type Constraint } from "../geo.ts";
 import { lesson } from "../scene.ts";
 import { triangleOf } from "../kit/two-hands.ts";
+import fireLookoutImage from "../../images/fire-lookout.svg";
+import roofRidgeAngleImage from "../../images/roof-ridge-angle.svg";
 
 const ALPHA = C.gold;
 const BETA = C.blue;
@@ -60,10 +62,20 @@ export default lesson((s) => {
       {
         title: "The peak of a roof",
         text: "A simple roof truss is a triangle. If the roof rises at $35^\\circ$ at each eave, the angle at the ridge must be $180^\\circ - 2 \\cdot 35^\\circ = 110^\\circ$, which tells the carpenter how to cut the rafters where they meet.",
+        image: {
+          src: roofRidgeAngleImage,
+          caption: "A roof truss: with the roof rising at 35° at each eave, the angle at the ridge must be 110°.",
+          alt: "A house with a triangular timber roof frame outlined in dashed gold, angles of 35° marked at both eaves and 110° at the ridge.",
+        },
       },
       {
         title: "Spotting a fire from two towers",
         text: "Two fire lookouts $5$ km apart both sight the same smoke, one at $60^\\circ$ and the other at $70^\\circ$ from the line joining the towers. The angle at the fire must be $180^\\circ - 60^\\circ - 70^\\circ = 50^\\circ$, so the whole triangle is known and the distance to the fire can be worked out.",
+        image: {
+          src: fireLookoutImage,
+          caption: "Two fire lookouts: knowing the angle each one sights the smoke at tells you the third angle, at the fire, and so the whole triangle.",
+          alt: "Two lookouts on posts on the ground and smoke and flames on a hill; a dashed gold triangle joins the two lookouts and the fire, with the angles at the lookouts marked.",
+        },
       },
     ],
 

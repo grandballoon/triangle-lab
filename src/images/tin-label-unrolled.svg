@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#b07a45"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M60 110 V290 A50 14 0 0 0 160 290 V110 Z" fill="#ef6b5b"/>
+    <ellipse cx="110" cy="110" rx="50" ry="14" fill="#8fa3b8"/>
+  </g>
+  <path d="M60 160 A50 14 0 0 0 160 160 M60 240 A50 14 0 0 0 160 240" fill="none" stroke="#f3ead8" stroke-width="8"/>
+  <path d="M60 290 A50 14 0 0 0 160 290" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M60 80 H160 M60 72 V88 M160 72 V88" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="550" y="110" width="22" height="180" fill="#f3ead8"/>
+    <rect x="236" y="110" width="314" height="180" fill="#ef6b5b"/>
+  </g>
+  <path d="M236 160 H550 M236 240 H550" fill="none" stroke="#f3ead8" stroke-width="8"/>
+  <path d="M236 290 H550" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle">
+    <text x="110" y="62">7.4</text>
+    <text x="393" y="336">23.2</text>
+  </g>
+</svg>

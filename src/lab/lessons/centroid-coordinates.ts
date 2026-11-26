@@ -8,6 +8,8 @@ import { C, tint } from "../draw.ts";
 import { centroid, cross, dist, fmt, lineLine, mid, sub, type Vec } from "../geo.ts";
 import { guard, lattice, num, pair, par, plane, texPoint, texSum } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import seeThroughTrianglesDepthImage from "../../images/see-through-triangles-depth.svg";
+import triangleSignPostImage from "../../images/triangle-sign-post.svg";
 
 // One colour per median, named by the vertex it starts from.
 const FROM_A = C.gold;
@@ -83,10 +85,20 @@ export default lesson((s) => {
       {
         title: "Balancing a triangular sign",
         text: "A flat triangular sign of even thickness balances on its centroid. With corners at $(0, 0)$, $(60, 0)$ and $(30, 90)$ cm, the balance point is $\\left(\\frac{0 + 60 + 30}{3}, \\frac{0 + 0 + 90}{3}\\right) = (30, 30)$, so a single post fixed there holds it level.",
+        image: {
+          src: triangleSignPostImage,
+          caption: "A triangular sign on a single post: fixed at the centroid, where the three medians meet, it balances level.",
+          alt: "A purple triangular sign on a wooden post, with its three medians dashed in gold and crossing at a gold dot where the post meets it.",
+        },
       },
       {
         title: "Sorting triangles in 3D graphics",
         text: "A 3D picture is made of thousands of triangles. When some are see-through, renderers often draw them from the back forwards, sorting each triangle by the depth of its centroid, found by averaging its three corners. Averaging is quick, which matters when it is done for every triangle in every frame.",
+        image: {
+          src: seeThroughTrianglesDepthImage,
+          caption: "See-through triangles on a screen: a renderer sorts them back to front by the depth of each one's centroid, the average of its three corners.",
+          alt: "A monitor showing three overlapping translucent triangles, each with a gold dot at its centroid, one outlined in dashed gold.",
+        },
       },
     ],
 

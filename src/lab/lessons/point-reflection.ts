@@ -29,6 +29,9 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import courtCardHalfTurnImage from "../../images/court-card-half-turn.svg";
+import pinholeHalfTurnImage from "../../images/pinhole-half-turn.svg";
+import rectangleFromCentreImage from "../../images/rectangle-from-centre.svg";
 
 const RUN = C.gold;
 const RISE = C.pink;
@@ -81,14 +84,29 @@ export default lesson((s) => {
       {
         title: "Playing cards that read either way up",
         text: "The kings, queens and jacks in a standard pack are printed double-ended: the lower half of the card is the upper half turned through $180^\\circ$ about the card's centre. Every point of the design has a matching point straight through the centre and as far again. So the card looks the same whichever way up you are dealt it, and you never need to turn it round.",
+        image: {
+          src: courtCardHalfTurnImage,
+          caption: "A king playing card: the lower half is the upper half turned 180° about the card's centre, so it looks the same either way up.",
+          alt: "A double-ended king card, with a gold dashed line from the top crown through the gold centre point to the matching bottom crown.",
+        },
       },
       {
         title: "Drawing a rectangle from its centre",
         text: "Many drawing programs let you hold a key to draw a rectangle out from its centre instead of from a corner. The program keeps the centre $O$ fixed and puts the opposite corner at $2O - A$, where $A$ is the corner you are dragging. With the centre at $(5, 3)$ and your pointer at $(8, 5)$, the far corner lands at $(2, 1)$.",
+        image: {
+          src: rectangleFromCentreImage,
+          caption: "Drawing a rectangle from its centre: the program keeps the centre fixed and puts the far corner straight through it, as far again as the corner you drag.",
+          alt: "A blue rectangle on a screen with a mouse pointer at one corner and a gold dashed diagonal through the gold centre point, its two halves marked equal.",
+        },
       },
       {
         title: "Why a pinhole camera turns the picture over",
         text: "In a pinhole camera, light from each point of the scene travels in a straight line through the pinhole and lands on the far side. So the picture on the screen is upside down and swapped left to right at once: a half-turn about the pinhole, not a flip. It is a true point reflection only when the screen is as far behind the pinhole as the subject is in front; otherwise the picture is also shrunk or enlarged.",
+        image: {
+          src: pinholeHalfTurnImage,
+          caption: "A pinhole camera: light through the pinhole lands upside down and swapped left to right, a half-turn about the pinhole.",
+          alt: "A person standing outside a dark box camera, and the same person upside down on the screen inside, with gold dashed rays from head and feet crossing at the gold pinhole.",
+        },
       },
     ],
 

@@ -7,6 +7,8 @@ import { C } from "../draw.ts";
 import { angleOf, centroid, fmt, lerp, polar, sub, toDeg, vec, wrapAngle, type Vec } from "../geo.ts";
 import { convexPolygon, interiorAngles, pieceColor } from "../kit/polygons.ts";
 import { lesson, type Readout } from "../scene.ts";
+import bentStripHexagonImage from "../../images/bent-strip-hexagon.svg";
+import turtlePentagonImage from "../../images/turtle-pentagon.svg";
 
 const MAX_SIDES = 10;
 const WEDGE = 36; // px
@@ -75,10 +77,20 @@ export default lesson((s) => {
       {
         title: "Drawing a polygon with a turtle",
         text: "In turtle graphics, a common first programming exercise, a cursor walks forward and turns. To draw a regular pentagon it repeats “forward 100, turn $72^\\circ$” five times, because five equal turns must add to $360^\\circ$. For any regular $n$-gon the turn is $\\tfrac{360^\\circ}{n}$.",
+        image: {
+          src: turtlePentagonImage,
+          caption: "Turtle graphics: to draw a regular pentagon the turtle walks forward and turns 72° five times, one full turn in all.",
+          alt: "A monitor showing a pentagon partly drawn by a small turtle, which has reached a corner and turns through an angle marked 72°.",
+        },
       },
       {
         title: "Bending a frame from one strip",
         text: "A metalworker bending a single flat strip into a closed frame knows the bends must add to one full turn. For a regular hexagon that is six bends of $60^\\circ$ each; for a regular octagon, eight of $45^\\circ$.",
+        image: {
+          src: bentStripHexagonImage,
+          caption: "A hexagonal frame bent from one steel strip: its six bends of 60° each add up to one full turn.",
+          alt: "A steel strip bent into a hexagon with its ends welded at the top, one bend marked with the 60° turn from the line of the side before it.",
+        },
       },
     ],
 

@@ -6,6 +6,8 @@
 import { C, tint } from "../draw.ts";
 import { clamp, fmt, lineLine, mid, onSegment, vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import cameraLensFocusImage from "../../images/camera-lens-focus.svg";
+import parallelResistorsChartImage from "../../images/parallel-resistors-chart.svg";
 
 const GROUND = -3.6;
 const A = vec(-5.5, GROUND);
@@ -68,10 +70,20 @@ export default lesson((s) => {
       {
         title: "Focusing a camera",
         text: "A camera lens obeys $\\tfrac1f = \\tfrac1u + \\tfrac1v$: object distance $u$ and image distance $v$ combine just like $x$ and $y$, with the focal length $f$ in the role of $z$. A $50$ mm lens focused on someone $2$ m away needs $\\tfrac1v = \\tfrac{1}{50} - \\tfrac{1}{2000}$, so $v \\approx 51.3$ mm: the lens moves out about $1.3$ mm.",
+        image: {
+          src: cameraLensFocusImage,
+          caption: "Focusing a camera: light from the subject crosses at the lens, and the distance u in front and v behind combine the way the two ladders' heights do.",
+          alt: "A person stands in front of a camera; gold dashed rays from their head and feet cross at the lens and land upside down on the sensor, with the distances marked u and v.",
+        },
       },
       {
         title: "Resistors side by side",
         text: "Two resistors connected side by side, in parallel, act like one whose resistance $z$ satisfies $\\tfrac1z = \\tfrac1x + \\tfrac1y$. A $6$ ohm and a $3$ ohm resistor together act like $2$ ohms. The crossed-ladders drawing has even been used as a chart for this: draw two scales upright, join the tops to the opposite feet, and read the answer at the crossing.",
+        image: {
+          src: parallelResistorsChartImage,
+          caption: "Two resistors in parallel: drawn as uprights of 6 and 3 with the tops joined to the opposite feet, the lines cross at 2, their combined resistance.",
+          alt: "A circuit with a tall resistor marked 6 and a short one marked 3 side by side; gold dashed lines from each top to the other's foot cross at a height marked 2.",
+        },
       },
     ],
 

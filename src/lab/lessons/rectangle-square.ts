@@ -8,6 +8,9 @@ import { C, tint } from "../draw.ts";
 import { angleAt, clamp, dist, fmt, mid, toDeg, vec, type Vec } from "../geo.ts";
 import { GLASS, same } from "../kit/quadrilaterals.ts";
 import { lesson, type Readout } from "../scene.ts";
+import deckDiagonalsCheckImage from "../../images/deck-diagonals-check.svg";
+import quiltSquareInSquareImage from "../../images/quilt-square-in-square.svg";
+import tvDiagonalImage from "../../images/tv-diagonal.svg";
 
 const O = vec(0, -0.1);
 const MIN_HALF = 1.2;
@@ -88,14 +91,29 @@ export default lesson((s) => {
       {
         title: "Squaring a deck by its diagonals",
         text: "Builders laying out a deck or a concrete form check it is square by measuring both diagonals. Once opposite sides are equal, it is a parallelogram, and equal diagonals make it a rectangle: for a $3$ m by $4$ m deck, both should be $\\sqrt{9 + 16} = 5$ m. If one is longer, they push that pair of corners together until the two agree.",
+        image: {
+          src: deckDiagonalsCheckImage,
+          caption: "Squaring a deck: once both diagonals of a 3 m by 4 m frame measure 5 m, the corners are right angles.",
+          alt: "A timber deck seen from above, with a tape measure at one corner and both diagonals marked equal and labelled 5.",
+        },
       },
       {
         title: "Screen sizes",
         text: "Televisions and monitors are sold by their diagonal. A $55$-inch screen in the usual $16:9$ shape has sides $16k$ and $9k$ with $\\sqrt{(16k)^2 + (9k)^2} = 55$, so $k \\approx 3$ and the screen is about $48$ inches wide and $27$ inches tall.",
+        image: {
+          src: tvDiagonalImage,
+          caption: "A 55-inch television: the size is the screen's diagonal, so a 16:9 screen works out about 48 inches wide and 27 inches tall.",
+          alt: "A widescreen television on a stand, with the right triangle formed by its width, height and diagonal, which is labelled 55.",
+        },
       },
       {
         title: "Square in a square",
         text: "Quilters call the last figure a square-in-a-square block: a square set on its point inside a bigger one, its corners at the middles of the sides. The four corner triangles are cut as isosceles right triangles, and together they take up exactly half the block.",
+        image: {
+          src: quiltSquareInSquareImage,
+          caption: "A square-in-a-square quilt block: the four corner triangles are isosceles right triangles, and together they make up exactly half the block.",
+          alt: "A quilt block with four coloured corner triangles around a square set on its point, its corners at the middles of the sides, each half-side marked equal.",
+        },
       },
     ],
 

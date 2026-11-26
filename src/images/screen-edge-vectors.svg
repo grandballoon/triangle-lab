@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2a3340"/>
+  <path d="M296 268 H344 V304 H296 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M230 298 H410 V314 H230 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M110 30 H530 V276 H110 Z" fill="#1c2633" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M132 50 H508 V254 H132 Z" fill="#0f1620" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M180 228 L360 228 L260 90 Z" fill="#a78bfa" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M180 228 L360 228 L440 90 L260 90 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M180 228 L360 228 M342 238 L360 228 L342 218" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M180 228 L260 90 M260 111 L260 90 L242 101" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M216 228 A36 36 0 0 0 198 197" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="232" y="214" font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="26" fill="#f2c14e">θ</text>
+</svg>

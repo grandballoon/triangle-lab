@@ -9,6 +9,9 @@ import {
 } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import aFrameBraceImage from "../../images/a-frame-brace.svg";
+import buildingShadowImage from "../../images/building-shadow.svg";
+import projectorPictureImage from "../../images/projector-picture.svg";
 
 type Mode = "AA" | "SAS" | "SSS" | "Midsegment";
 const MODES: readonly Mode[] = ["AA", "SAS", "SSS", "Midsegment"];
@@ -122,14 +125,29 @@ export default lesson((s) => {
       {
         title: "How tall is that building?",
         text: "On a sunny day, measure your own shadow and the building's. Sunlight arrives in parallel rays, so you and your shadow form a triangle similar to the building and its shadow (AA). If you are 1.8 metres tall with a 1.2 metre shadow, and the building's shadow is 20 metres, the building is $20 \\cdot \\tfrac{1.8}{1.2} = 30$ metres tall.",
+        image: {
+          src: buildingShadowImage,
+          caption: "Measuring a building by its shadow: sunlight falls in parallel rays, so you and your shadow make a triangle similar to the building and its shadow.",
+          alt: "A person and a tall block of flats stand on grass under the sun, each casting a shadow to the left; dashed gold right triangles join the top of each to the tip of its shadow.",
+        },
       },
       {
         title: "Sizing a projector picture",
         text: "Light from a projector spreads from one point, so the picture and the lens form similar triangles at every distance. If the picture is 2 metres wide with the projector 3 metres from the wall, moving it back to 4.5 metres makes the picture $2 \\cdot \\tfrac{4.5}{3} = 3$ metres wide. Installers use this ratio, often printed as the throw ratio, to choose where to mount it.",
+        image: {
+          src: projectorPictureImage,
+          caption: "A projector on a table: its light spreads from the lens, so the picture grows in proportion to the distance from the wall.",
+          alt: "A projector on a small table throws a widening beam onto a screen on the wall; a dashed gold triangle runs from the lens to the picture, with a dashed line partway along showing the smaller picture at a nearer distance.",
+        },
       },
       {
         title: "A brace for an A-frame",
         text: "An A-frame sign or stepladder whose feet stand 80 centimetres apart can be braced with a bar joining the midpoints of its two legs. By the midsegment, that bar is parallel to the floor and exactly 40 centimetres long, so you can cut it before assembling anything.",
+        image: {
+          src: aFrameBraceImage,
+          caption: "An A-frame braced at the midpoints of its legs: the brace is parallel to the floor and half the distance between the feet.",
+          alt: "Two wooden legs meet at the top, with a steel bar joining their midpoints; a dashed gold triangle runs along the legs and the floor, with tick marks showing each leg cut in equal halves.",
+        },
       },
     ],
 

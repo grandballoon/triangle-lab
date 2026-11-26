@@ -6,6 +6,9 @@
 import { C, tint } from "../draw.ts";
 import { add, clamp, fmt, polar, sub, TAU, vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import bikeWheelComputerImage from "../../images/bike-wheel-computer.svg";
+import cakeRibbonImage from "../../images/cake-ribbon.svg";
+import trundleWheelImage from "../../images/trundle-wheel.svg";
 
 const START_X = -7.2;
 const GROUND_Y = -0.8;
@@ -59,14 +62,29 @@ export default lesson((s) => {
       {
         title: "A trundle wheel",
         text: "Groundskeepers and surveyors measure distances with a trundle wheel, a wheel on a handle that clicks once per turn. A wheel whose circumference is exactly $1$ metre has diameter $\\frac{1}{\\pi} \\approx 0.318$ metres, so each click means one metre walked.",
+        image: {
+          src: trundleWheelImage,
+          caption: "A trundle wheel: one turn of a wheel with a 1 metre circumference rolls exactly 1 metre along the ground.",
+          alt: "A person pushes a wheel on a handle across the grass. The wheel's rim is traced in gold, and a gold line marked 1 runs along the ground behind it, the length of one turn.",
+        },
       },
       {
         title: "A bike computer",
         text: "A cycle computer counts turns of the wheel using a magnet on a spoke, and you tell it the wheel's circumference. A wheel about $0.67$ metres across rolls $\\pi \\times 0.67 \\approx 2.1$ metres per turn, so $1000$ turns is about $2.1$ km.",
+        image: {
+          src: bikeWheelComputerImage,
+          caption: "A bike computer: each turn of a wheel about 0.67 metres across rolls π times that, about 2.1 metres.",
+          alt: "A bicycle with a small screen on the handlebars and a magnet on a front-wheel spoke. The front wheel is ringed in gold, with a gold diameter marked 0.67.",
+        },
       },
       {
         title: "Ribbon round a cake",
         text: "To tie a ribbon round a round cake $20$ cm across, you need $\\pi \\times 20 \\approx 63$ cm of ribbon, plus a little extra for the bow.",
+        image: {
+          src: cakeRibbonImage,
+          caption: "Ribbon round a cake: a cake 20 cm across needs about π × 20, or 63 cm, of ribbon to go once round.",
+          alt: "A round iced cake with a candle on a plate, a pink ribbon and bow round its middle. A gold diameter marked 20 crosses the top, and the ribbon's path is traced in gold and marked 63.",
+        },
       },
     ],
 

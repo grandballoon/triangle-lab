@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { clamp, fmt, vec } from "../geo.ts";
 import { agree, outline, tracedArea, type Arc } from "../kit/areas.ts";
 import { lesson } from "../scene.ts";
+import crescentMoonLitImage from "../../images/crescent-moon-lit.svg";
+import curvedLawnTurfImage from "../../images/curved-lawn-turf.svg";
 
 const HYPOTENUSE_Y = 0.3;
 const M = vec(0, HYPOTENUSE_Y); // midpoint of AB, centre of the semicircle
@@ -68,10 +70,20 @@ export default lesson((s) => {
       {
         title: "Turf for a curved lawn",
         text: "A lawn is a 6 m by 4 m rectangle with a semicircular end of radius 2 m, and a round pond of radius 1 m in the middle. No formula covers that shape, but adding and taking away simple pieces does: $24 + \\tfrac12 \\pi \\cdot 2^2 - \\pi \\cdot 1^2 = 24 + \\pi \\approx 27.1$ square metres of turf.",
+        image: {
+          src: curvedLawnTurfImage,
+          caption: "Turf for a curved lawn: a 6 m by 4 m rectangle plus a half circle of radius 2 m, less a round pond, adds up to about 27 square metres.",
+          alt: "Top view of a green lawn, a rectangle with a rounded end and a round blue pond in the middle. Dashed gold lines mark the rectangle, the half circle with its radius 2, and the pond, with sides marked 6 and 4.",
+        },
       },
       {
         title: "How much of the Moon is lit?",
         text: "A crescent Moon's lit part is bounded by the edge of the disc, a semicircle, and the line between day and night, which we see as half an ellipse. Neither piece is a crescent, but the crescent is the half disc with the half ellipse taken away, and both of those have simple areas. That subtraction gives the percentage illuminated that almanacs and moon-phase apps list.",
+        image: {
+          src: crescentMoonLitImage,
+          caption: "A crescent Moon: the lit part is the half disc with the half ellipse of the day–night line taken away.",
+          alt: "A dark Moon disc with a cream crescent lit on its right. The crescent is outlined in dashed gold between the disc's edge and the curved day–night line, with a dashed gold line down the disc's middle.",
+        },
       },
     ],
 

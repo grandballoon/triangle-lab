@@ -9,6 +9,8 @@ import {
 } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import brokenPlateImage from "../../images/broken-plate.svg";
+import terrainTrianglesImage from "../../images/terrain-triangles.svg";
 
 const BASE = -1;
 // How far below AB the circumcenter may sink before C is stopped.
@@ -110,10 +112,20 @@ export default lesson((s) => {
       {
         title: "How big was the broken plate?",
         text: "Archaeologists often find only a curved piece of the rim of a pot or plate, yet want its original size. One way is to mark three points along the rim and join them into two chords. The perpendicular bisectors of those chords cross at the centre of the whole rim, and the distance from there to the rim is its radius.",
+        image: {
+          src: brokenPlateImage,
+          caption: "A broken plate rim: the perpendicular bisectors of two chords between three rim points cross at the centre of the whole plate.",
+          alt: "A curved fragment of a plate rim with three gold points, two dashed chords and their perpendicular bisectors meeting at a centre, and a faint dashed circle showing the whole plate.",
+        },
       },
       {
         title: "Turning survey points into a landscape",
         text: "Mapping software and game engines build terrain by joining measured points into triangles. A popular rule, the Delaunay triangulation, picks the triangles so that no other point lies inside any triangle's circumcircle. This avoids long thin slivers, so the surface between the points looks natural and smooth.",
+        image: {
+          src: terrainTrianglesImage,
+          caption: "A landscape built from survey points: in a Delaunay triangulation no other point lies inside any triangle's circumcircle.",
+          alt: "Low-poly green hills made of triangles joining survey points, with one triangle highlighted and its dashed circumcircle holding no other point.",
+        },
       },
     ],
 

@@ -8,6 +8,8 @@ import { C, tint } from "../draw.ts";
 import { centroid, dist, fmt, inBox, lerp, lineLine, vec } from "../geo.ts";
 import { labelAway, ratio } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import boardStripsImage from "../../images/board-strips.svg";
+import triangleSignBalanceImage from "../../images/triangle-sign-balance.svg";
 
 const GIVEN = C.gold; // AE, and DG once it is shown to match
 const COPY = C.pink; // triangle CDG, the small copy of CBE
@@ -79,10 +81,19 @@ export default lesson((s) => {
       {
         title: "Splitting a board into equal strips",
         text: "To cut a board of awkward width into four equal strips, carpenters lay a ruler across it at a slant, so that 0 sits on one edge and 12 on the other. Marks at 3, 6 and 9 then divide the width exactly into quarters, because lines through them parallel to the edges cut every crossing line in the same ratio.",
+        image: {
+          src: boardStripsImage,
+          caption: "Marking a board into four equal strips: lay a ruler across it at a slant from 0 to 12, and lines through 3, 6 and 9 parallel to the edges split the width exactly.",
+          alt: "A wooden board seen from above with a cream ruler laid across it at a slant, 0 at the top edge and 12 at the bottom; gold dots at the ruler's 3, 6 and 9 marks, with dashed gold lines through them running the length of the board.",
+        },
       },
       {
         title: "Balancing a triangular sign",
         text: "A flat triangular sign balances at the point where the lines from each corner to the middle of the opposite side cross. With $D$ and $E$ at the midpoints, $m = n = 1$, and the formula gives $\\frac{AF}{FD} = 2$: the balance point lies two thirds of the way from each corner. That is where to hang it so it does not tip.",
+        image: {
+          src: triangleSignBalanceImage,
+          caption: "A triangular sign balanced on one point: where its medians cross, two thirds of the way along each from its corner.",
+        },
       },
     ],
 

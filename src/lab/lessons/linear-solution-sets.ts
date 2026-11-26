@@ -9,6 +9,8 @@ import { fmt, type Vec } from "../geo.ts";
 import { plot, PLANE } from "../kit/algebra.ts";
 import { pair, par, plane, snapping } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import coinsNickelsDimesImage from "../../images/coins-nickels-dimes.svg";
+import gardenBedEdgingShapesImage from "../../images/garden-bed-edging-shapes.svg";
 
 const FOUND = C.gold;
 /** At most this many found solutions are kept on the figure. */
@@ -187,10 +189,20 @@ export default lesson((s) => {
       {
         title: "Making change",
         text: "How many ways can you pay 50 cents in nickels and dimes? With $x$ nickels and $y$ dimes, $5x + 10y = 50$. The answers (10, 0), (8, 1), (6, 2), (4, 3), (2, 4) and (0, 5) lie on one straight line, because each dime you add replaces exactly two nickels.",
+        image: {
+          src: coinsNickelsDimesImage,
+          caption: "Ways to make 50 cents from nickels and dimes: every combination lies on one straight line, since each dime replaces two nickels.",
+          alt: "A nickel and a dime labelled 5 and 10, beside a graph of six gold dots along a dashed gold straight line.",
+        },
       },
       {
         title: "Edging for a garden bed",
         text: "With 12 m of edging for a rectangular bed, the length and width must satisfy $2x + 2y = 12$: 5 by 1, 4 by 2 and 3 by 3 all use it up, and they line up. Ask instead for a bed of area 8 m², $xy = 8$, and the shapes that work (8 by 1, 4 by 2, 2 by 4…) curve away instead.",
+        image: {
+          src: gardenBedEdgingShapesImage,
+          caption: "Garden beds from 12 m of edging: the far corners of the 5 by 1, 4 by 2 and 3 by 3 beds line up, while beds of equal area curve away.",
+          alt: "Three overlapping rectangular beds sharing a corner, their opposite corners on a dashed gold straight line, with a fainter dotted gold curve beside it.",
+        },
       },
     ],
   };

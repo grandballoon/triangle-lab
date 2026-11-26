@@ -7,6 +7,9 @@ import { C, tint } from "../draw.ts";
 import { angleAt, clamp, dist, fmt, toDeg, type Vec } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson, type Readout } from "../scene.ts";
+import gameEnemyInFrontImage from "../../images/game-enemy-in-front.svg";
+import knottedRopeImage from "../../images/knotted-rope.svg";
+import stringLines345Image from "../../images/string-lines-3-4-5.svg";
 
 const BASE = -2.6;
 const VERTEX_C: Vec = { x: 0.5, y: BASE };
@@ -87,14 +90,29 @@ export default lesson((s) => {
       {
         title: "Setting out a square corner",
         text: "Builders laying out a foundation or a shed base stretch two string lines from a corner peg. They mark 3 metres along one and 4 along the other, then move the second string until the marks are exactly 5 metres apart. The converse guarantees the corner is now a right angle. If the gap is more than 5 metres, the corner is too wide, so they swing the string in; less than 5, and they swing it out.",
+        image: {
+          src: stringLines345Image,
+          caption: "Setting out a shed base: once the marks at 3 and 4 metres along two string lines are exactly 5 metres apart, the converse makes the corner a right angle.",
+          alt: "Top-down view of two string lines running from a corner peg along the ground, with red marks at 3 and 4 and a dashed gold diagonal of 5 between them closing a right triangle.",
+        },
       },
       {
         title: "A rope with twelve knots",
         text: "Gardeners can make a right-angle tool with no ruler at all: tie knots in a loop of rope to make twelve equal spaces. Peg it into a triangle with sides of 3, 4 and 5 spaces and pull it taut. Because $3^2 + 4^2 = 5^2$, the corner between the 3 and the 4 is square, ready for edging a bed or laying a path.",
+        image: {
+          src: knottedRopeImage,
+          caption: "A gardener's knotted rope: twelve equal spaces pegged out as 3, 4 and 5 pull taut into a square corner.",
+          alt: "A loop of cream rope with knots at equal spaces, pegged into a triangle with sides 3, 4 and 5 on a lawn beside a flower bed, with a gold right-angle mark at its corner.",
+        },
       },
       {
         title: "Is the enemy in front of you?",
         text: "A game can check whether something is within a quarter turn of where a character faces without measuring any angle. Take the character at $C$, a point straight ahead at $B$, and the enemy at $A$. If $a^2 + b^2$ is bigger than $c^2$, the angle at $C$ is acute and the enemy is in front; if it is smaller, the enemy is behind.",
+        image: {
+          src: gameEnemyInFrontImage,
+          caption: "A game checking whether an enemy is in front: comparing the sides of the triangle from the character to a point ahead and to the enemy shows whether the angle at the character is acute.",
+          alt: "A game map with a character at C facing right along a teal arrow, a point B straight ahead and a red ghost at A, joined by a dashed gold triangle.",
+        },
       },
     ],
 

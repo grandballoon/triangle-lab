@@ -6,6 +6,8 @@
 import { C, tint } from "../draw.ts";
 import { angleOf, dist, fmt, inRing, polygonArea, regularPolygon, sub, vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import hexNutSpannerImage from "../../images/hex-nut-spanner.svg";
+import hexagonFloorTilesImage from "../../images/hexagon-floor-tiles.svg";
 
 const O = vec(0, 0.3);
 const SIDE = C.gold;
@@ -63,10 +65,20 @@ export default lesson((s) => {
       {
         title: "Choosing a spanner",
         text: "A hex nut is sized by its width across the flats, which is the short diagonal $s\\sqrt3$. A $13$ mm nut therefore has sides of $\\tfrac{13}{\\sqrt3} \\approx 7.5$ mm and measures $2s \\approx 15$ mm across the corners, so a socket for it must grip $13$ mm flats while leaving room for $15$ mm corners to turn inside it.",
+        image: {
+          src: hexNutSpannerImage,
+          caption: "A spanner on a hex nut: its jaws grip the 13 mm flats, while the corners, 15 mm apart, need room to turn inside a socket.",
+          alt: "A red open-ended spanner gripping the top and bottom flats of a steel hex nut, with a gold dashed hexagon over the nut, a 13 mark across the flats and a 15 mark across the corners.",
+        },
       },
       {
         title: "Ordering hexagonal floor tiles",
         text: "A hexagonal tile with $10$ cm sides covers $\\tfrac{3\\sqrt3}{2} \\cdot 10^2 \\approx 260$ square centimetres, so a square metre of floor takes about $\\tfrac{10000}{260} \\approx 38.5$ tiles. Tilers work from that figure and add a margin for the cut pieces at the edges.",
+        image: {
+          src: hexagonFloorTilesImage,
+          caption: "A floor of hexagonal tiles: each tile with 10 cm sides covers about 260 square centimetres, so a square metre takes about 38 and a half tiles.",
+          alt: "A honeycomb of cream, teal and grey hexagonal tiles filling a floor, with one tile outlined in dashed gold and its side marked 10.",
+        },
       },
     ],
 

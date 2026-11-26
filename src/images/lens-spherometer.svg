@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="236" width="640" height="124" fill="#b07a45"/>
+  <path d="M126 236 A220 220 0 0 1 514 236 Z" fill="#5fb0e8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M126 236 A220 220 0 0 0 514 236" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M200 156 L200 84 L440 84 L440 156" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M200 156 L200 84 L440 84 L440 156" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M320 120 L320 52" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M320 120 L320 52" stroke="#d9a066" stroke-width="8"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="294" y="34" width="52" height="22" rx="6" fill="#ef6b5b"/>
+    <rect x="170" y="74" width="300" height="20" rx="6" fill="#8fa3b8"/>
+  </g>
+  <path d="M320 340 L440 156 L320 156 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M320 172 H336 V156" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle">
+    <text x="392" y="148">a</text>
+    <text x="300" y="148">h</text>
+    <text x="404" y="286">R</text>
+  </g>
+</svg>

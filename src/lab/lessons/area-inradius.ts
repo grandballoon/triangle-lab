@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { dist, distToLine, fmt, inBox, incenter, lerp, project, triangleArea, vec } from "../geo.ts";
 import { labelAway, ratio } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import cornerPondImage from "../../images/corner-pond.svg";
+import roofDuctImage from "../../images/roof-duct.svg";
 
 // Lengths are reported in units of half a stage unit, so that an 8-15-17
 // triangle fits on the stage.
@@ -80,10 +82,20 @@ export default lesson((s) => {
       {
         title: "The biggest pond in a corner garden",
         text: "A triangular garden has sides of 5, 12 and 13 metres, so it is right-angled with area $\\frac12 \\cdot 5 \\cdot 12 = 30$ square metres. Its semiperimeter is 15, so $r = 30 / 15 = 2$ metres. A round pond or trampoline any wider than 4 metres across will not fit inside.",
+        image: {
+          src: cornerPondImage,
+          caption: "A round pond in a 5-12-13 corner garden: the widest that fits is the inscribed circle, 2 metres in radius.",
+          alt: "A right-angled grassy garden seen from above, sides labelled 5, 12 and 13, with a blue round pond touching all three fences; dashed gold radii run from the pond's centre to each fence.",
+        },
       },
       {
         title: "A round duct in a roof space",
         text: "The space under a roof is 8 metres wide with sloping sides of 5 metres each, so it is 3 metres high and its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres. The semiperimeter is 9, so the largest round duct that fits has radius $12 / 9 \\approx 1.33$ metres.",
+        image: {
+          src: roofDuctImage,
+          caption: "A round duct in a loft: the widest that fits under the roof is the circle touching both slopes and the floor.",
+          alt: "A house with a red pitched roof, a grey round duct filling the triangular loft space; dashed gold radii run from the duct's centre to the floor and to both roof slopes.",
+        },
       },
     ],
 

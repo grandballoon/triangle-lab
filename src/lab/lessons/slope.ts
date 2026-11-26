@@ -7,6 +7,8 @@ import { C } from "../draw.ts";
 import { add, clamp, dist, dot, fmt, scale, sub, type Vec } from "../geo.ts";
 import { clipLine, keepApart, lattice, num, par, plane, riseRun, texPoint } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import roadHill10PercentImage from "../../images/road-hill-10-percent.svg";
+import wheelchairRampImage from "../../images/wheelchair-ramp.svg";
 
 const SECOND = C.gold;
 /** The sliding pair is kept at least this far apart, so it always spans a triangle. */
@@ -89,10 +91,20 @@ export default lesson((s) => {
       {
         title: "Road gradient signs",
         text: "Road signs warning of a steep hill show its slope as a percentage. A 10% hill climbs about 10 metres for every 100 metres you travel across, a slope of $\\frac{1}{10}$. Lorry drivers and cyclists read the number to know how hard the climb or the braking will be.",
+        image: {
+          src: roadHill10PercentImage,
+          caption: "A steep hill sign: 10% means the road climbs 10 metres for every 100 metres across, a slope of one tenth.",
+          alt: "A red triangular hill warning sign beside a road climbing a hill, with a dashed gold rise-and-run triangle under the slope labelled 10%.",
+        },
       },
       {
         title: "Wheelchair ramps",
         text: "Building rules commonly limit a wheelchair ramp to a slope of 1 in 12: one unit of rise for every 12 of run. To climb a 30 cm step, the ramp must run at least $30 \\times 12 = 360$ cm, so a builder knows straight away it needs 3.6 metres of space.",
+        image: {
+          src: wheelchairRampImage,
+          caption: "A wheelchair ramp: a slope of 1 in 12 means every unit of rise needs 12 units of run.",
+          alt: "A wooden ramp with a handrail rising to a doorway, its rise and run outlined by a dashed gold right triangle.",
+        },
       },
     ],
 
