@@ -102,7 +102,7 @@ Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, ov
 | `lab/figure.ts` | What a frame's figure showed, and the lookup from a found term to what it lights. Pure. |
 | `lab/highlight.ts` | What a hovered term lights on the figure, one shape per kind of feature, and where leaders end. Pure. |
 | `lab/highlight-paint.ts` | Paints those highlights over the figure, each kind its own way. |
-| `lab/terms.ts` | Finds the term under the pointer, draws leader lines from it to the figure, and lights its other mentions in the formula band. |
+| `lab/terms.ts` | Finds the term under the pointer, draws leader lines from it to the figure, and lights its other mentions in the step text and the formula band. |
 | `lab/hold.ts` | Holds the formula band's numbers still, greyed, while the figure is dragged. Pure. |
 | `lab/sprites.ts` | Loads and caches the images lessons draw with `g.sprite`. |
 | `lab/grip.ts` | How handles and sliders are drawn, and how near a press must land to grab one; shared with the AR page. |
@@ -117,7 +117,8 @@ All steps are visible at once (on a phone, one at a time; see "Fitting the windo
 Pointing at a piece of mathematics, in the step column or the formula band, draws a thin line from it to each place the figure shows it, on a click-through SVG layer above the panels (`terms.ts`).
 It also lights, over the figure, exactly the feature the term names, in a way that says what kind of feature it is (`highlight.ts`, painted by `highlight-paint.ts`): a ring around a point; a band along a segment with its ends dotted; a midpoint's ring with each half banded and ticked as equal; a band along an arc or round a circle; an angle's wedge filled with its two sides drawn out; a polygon's sides banded and corners dotted; an area filled and hatched; and a soft box behind a label that names nothing else.
 Deciding what to light is pure: each term resolves to highlights, each a shape in screen pixels and the place its leader meets it, and the shell paints the shapes and draws the leaders.
-Other mentions of the same feature in the formula band, however written (`BA` for `AB`, `\triangle CBA` for `\triangle ABC`, `link.ts` `canonicalTermId`), are underlined gently, and the rows they stand in are tinted.
+The grips the reader drags are part of what the figure shows, since a handle's label names its point: the shell notes them in the figure index before resolving the hovered term (`Draw.noteOnly`), then paints them over its highlight without noting them again (`Draw.unnoted`).
+Other mentions of the same feature, in the step text and the formula band alike and however written (`BA` for `AB`, `\triangle CBA` for `\triangle ABC`, `link.ts` `canonicalTermId`), are underlined gently; nothing around them is lit.
 There are two ways a piece becomes such a term.
 
 **Found terms** need nothing from the lesson.
@@ -617,7 +618,7 @@ The workflow builds but does not test: edited copy leaves its lesson's syllabus 
 - `src/lab/figure.test.ts`: tracing found terms to the marks of real drawn figures and the shape each lights, and reading labels.
 - `src/lab/hold.test.ts`: the formula band held still through a drag and settling after it.
 - `src/lab/lessons.test.ts`: every lab lesson is built, drawn at every step onto a canvas stand-in that rejects non-finite numbers, has every handle dragged to the stage corners and every control used, has all its text typeset strictly with found terms marked, has a figure mark for every lesson term, and lights the kind of feature each term names.
-- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, highlights and lit formula rows, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
+- `src/lab/shell.test.ts`: the shell, step column (whole and paged), formula-term leaders, highlights and other mentions lit in both panels, pager, settings panel and hand-to-pointer bridge against a DOM stand-in.
 - `src/pages.test.ts`: every standalone page's stage rule, script order and directions, and that every page is a build entry.
 - `src/readouts.test.ts`: the standalone lessons' live formulas, typeset strictly.
 - `src/grid.test.ts`: laying several figures out at the largest size that fits, with room for their labels.

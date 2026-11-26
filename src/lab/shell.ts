@@ -13,7 +13,7 @@ import { Arranger } from "./arrange.ts";
 import { FormulaBand } from "./formulas.ts";
 import { paintHighlights } from "./highlight-paint.ts";
 import { distinctShapes, leaderEnds } from "./highlight.ts";
-import { drawGrip, drawSlider, pickRadius } from "./grip.ts";
+import { drawGrips, pickRadius } from "./grip.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
 import { layoutChrome } from "./layout.ts";
 import { linkTex, sameFeatureAs, termAliases } from "./link.ts";
@@ -260,13 +260,15 @@ export class Shell {
       const alias = this.aliases.get(id);
       return alias ? [id, alias] : [id];
     };
+    // The grips' labels name points too (a handle labelled B), so note them
+    // before working out what the hovered term lights, and paint them after,
+    // over its highlight.
+    g.noteOnly((silent) => drawGrips(silent, g, c.scene));
     const highlights = focus ? g.highlights(...ways(focus.id)) : [];
-    // Over the figure, under the grips the reader drags it by.
     paintHighlights(this.ctx, distinctShapes(highlights));
-    for (const s of c.scene.sliders) drawSlider(g, s);
-    for (const h of c.scene.handles) drawGrip(this.ctx, g, h);
+    g.unnoted(() => drawGrips(this.ctx, g, c.scene));
     this.terms.lead(focus, leaderEnds(highlights));
-    this.terms.echo(this.el.readouts, focus && highlights.length > 0 ? sameFeatureAs(focus.id, this.aliases) : null);
+    this.terms.echo([this.el.steps, this.el.readouts], focus && highlights.length > 0 ? sameFeatureAs(focus.id, this.aliases) : null);
     this.terms.showLinked((id) => g.anchors(...ways(id)).length > 0);
     this.stepList.fit();
   }
