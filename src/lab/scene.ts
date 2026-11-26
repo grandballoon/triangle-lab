@@ -18,6 +18,8 @@ export const STAGE = { halfWidth: 8, halfHeight: 5 } as const;
 /** One beat of a proof or exploration. Text may hold `$…$` LaTeX. */
 export interface Step {
   title: string;
+  /** A plain-text line under the title, such as what a step's test proves. */
+  subtitle?: string;
   text: string;
 }
 

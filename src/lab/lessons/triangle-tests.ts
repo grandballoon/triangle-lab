@@ -8,8 +8,8 @@
 import { C, tint, type Draw } from "../draw.ts";
 import { add, centroid, dist, fmt, inBox, normalize, scale, sub, type Vec } from "../geo.ts";
 import {
-  example, measure, snapRight, TESTS,
-  type Example, type Locus, type Name, type Part, type Test, type TestKey, type Tri,
+  example, measure, snapRight, testOf, TESTS, works,
+  type Example, type Locus, type Name, type Part, type Proof, type Test, type TestKey, type Tri,
 } from "../kit/triangle-tests.ts";
 import { lesson, type Readout } from "../scene.ts";
 
@@ -53,6 +53,13 @@ const TITLE: Record<TestKey, string> = {
   "SSA~": "SSA · does not prove similarity",
 };
 
+/** The line under each test's step title: what matching those parts proves. */
+const PROVES: Record<Proof, string> = {
+  congruence: "Proves congruence and similarity",
+  similarity: "Proves similarity only",
+  nothing: "Proves nothing",
+};
+const proves = (key: TestKey): string => PROVES[testOf(key).proves];
 
 /** A corner's name with primes, as TeX: A, A', A''. */
 const named = (n: Name, primes: number): string => n + "'".repeat(primes);
@@ -204,46 +211,57 @@ export default lesson((s) => {
       },
       {
         title: "SSS: three sides",
+        subtitle: proves("SSS"),
         text: "Give all three sides, $a$, $b$ and $c$. On the right, the base $c$ is laid down and compass arcs of radius $b$ and $a$ are swung from its ends. They cross at one point above the base, so only one triangle fits: a copy of yours. SSS proves congruence.",
       },
       {
         title: "SAS: two sides and the angle between",
+        subtitle: proves("SAS"),
         text: "Give the sides $b$ and $c$ and the angle $A$ between them. The angle aims a ray out of the corner, and the length $b$ marks one point on it. Nothing is left to choose, so SAS proves congruence.",
       },
       {
         title: "ASA: two angles and the side between",
+        subtitle: proves("ASA"),
         text: "Give the angles $A$ and $B$ and the side $c$ between them. Each angle aims a ray out of one end of the base, and two rays cross once. ASA proves congruence.",
       },
       {
         title: "AAS: two angles and a side not between",
+        subtitle: proves("AAS"),
         text: "Give the angles $A$ and $B$ and the side $a$, which is not between them. The three angles add up to $180^\\circ$, so the angle $C$ is known too, faintly marked. Then $a$ lies between two known angles, and this is ASA in disguise.",
       },
       {
         title: "HL: the hypotenuse and a leg",
+        subtitle: proves("HL"),
         text: "For right triangles only: drag $C$ until the corner there squares off, and it snaps at $90^\\circ$. Give the hypotenuse $c$ and the leg $a$. The arc of radius $c$ about the end of $a$ meets the perpendicular once, so HL proves congruence.",
       },
       {
         title: "SSA does not work",
+        subtitle: proves("SSA"),
         text: "Give an angle, the side beside it and the side opposite it. The arc swung with the opposite side can cross the ray twice, and the red triangle has all three parts too, yet a different shape. The test is set at your smallest angle, where a second triangle appears unless the corner opposite your longest side is right: then the arc only touches the ray, and that one case is HL.",
       },
       {
         title: "AAA does not work",
+        subtitle: proves("AAA"),
         text: "Give all three angles and no side. A smaller triangle nested in the corner has the very same angles, so the angles alone cannot say how big a triangle is. AAA does not prove congruence, though it does prove similarity.",
       },
       {
         title: "Similarity by AA",
+        subtitle: proves("AA~"),
         text: "Similar triangles may differ in size but not in shape. Give two angles; the third is then forced. Every triangle with those angles is a scaled copy of yours, here by $k = 0.6$. AA proves similarity.",
       },
       {
         title: "Similarity by SSS",
+        subtitle: proves("SSS~"),
         text: "Give three sides in one ratio, $\\tfrac{a'}{a} = \\tfrac{b'}{b} = \\tfrac{c'}{c} = k$. Shrink the copy by $\\tfrac1k$ and SSS makes it congruent to yours, so the angles match. SSS in proportion proves similarity.",
       },
       {
         title: "Similarity by SAS",
+        subtitle: proves("SAS~"),
         text: "Give two sides in one ratio, $\\tfrac{b'}{b} = \\tfrac{c'}{c} = k$, around an equal angle $A$. Shrink by $\\tfrac1k$ and SAS applies, so the triangles are similar.",
       },
       {
         title: "SSA does not prove similarity",
+        subtitle: proves("SSA~"),
         text: "Two sides in one ratio and an angle not between them fail for the same reason SSA fails. The red triangle has the same angle and both ratios, but its third side is in another ratio, and its angles differ.",
       },
     ],
@@ -288,7 +306,7 @@ export default lesson((s) => {
         g.label({ x: 4.1, y: 0 }, "Scroll to a test", { color: C.dim, size: 16 });
         return;
       }
-      g.label({ x: 4.1, y: 4.55 }, TITLE[test.key], { color: test.works ? g.accent : C.red, size: 14, bold: true });
+      g.label({ x: 4.1, y: 4.55 }, TITLE[test.key], { color: works(test) ? g.accent : C.red, size: 14, bold: true });
       marks(g, t, ex, { alpha: 1, numbers: true });
       if (ex.status === "needs-right") {
         g.angle(t.A, t.C, t.B, { color: C.red, fill: true, r: 24, label: true });

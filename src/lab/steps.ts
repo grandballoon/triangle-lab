@@ -142,6 +142,12 @@ export class StepList {
       title.className = "step-title";
       title.textContent = step.title;
       button.append(count, title);
+      if (step.subtitle) {
+        const subtitle = doc.createElement("span");
+        subtitle.className = "step-subtitle";
+        subtitle.textContent = step.subtitle;
+        button.append(subtitle);
+      }
       head.append(button);
       const text = doc.createElement("p");
       text.className = "step-text";

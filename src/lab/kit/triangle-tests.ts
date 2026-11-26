@@ -19,28 +19,38 @@ export type Part = { kind: "side"; ends: readonly [Name, Name] } | { kind: "angl
 
 export type TestKey = "SSS" | "SAS" | "ASA" | "AAS" | "HL" | "SSA" | "AAA" | "AA~" | "SSS~" | "SAS~" | "SSA~";
 
+/**
+ * What matching parts prove about two triangles: that they are congruent (and
+ * so similar too), only that they are similar, or nothing.
+ */
+export type Proof = "congruence" | "similarity" | "nothing";
+
 export interface Test {
   key: TestKey;
   /** Congruence asks for the same size and shape; similarity for the same shape. */
   family: "congruence" | "similarity";
-  /** Whether the test proves its claim. */
-  works: boolean;
+  /** What two triangles that agree in the parts this test names are proved to be. */
+  proves: Proof;
 }
 
 /** The tests in the order the lesson steps through them. */
 export const TESTS: readonly Test[] = [
-  { key: "SSS", family: "congruence", works: true },
-  { key: "SAS", family: "congruence", works: true },
-  { key: "ASA", family: "congruence", works: true },
-  { key: "AAS", family: "congruence", works: true },
-  { key: "HL", family: "congruence", works: true },
-  { key: "SSA", family: "congruence", works: false },
-  { key: "AAA", family: "congruence", works: false },
-  { key: "AA~", family: "similarity", works: true },
-  { key: "SSS~", family: "similarity", works: true },
-  { key: "SAS~", family: "similarity", works: true },
-  { key: "SSA~", family: "similarity", works: false },
+  { key: "SSS", family: "congruence", proves: "congruence" },
+  { key: "SAS", family: "congruence", proves: "congruence" },
+  { key: "ASA", family: "congruence", proves: "congruence" },
+  { key: "AAS", family: "congruence", proves: "congruence" },
+  { key: "HL", family: "congruence", proves: "congruence" },
+  { key: "SSA", family: "congruence", proves: "nothing" },
+  { key: "AAA", family: "congruence", proves: "similarity" },
+  { key: "AA~", family: "similarity", proves: "similarity" },
+  { key: "SSS~", family: "similarity", proves: "similarity" },
+  { key: "SAS~", family: "similarity", proves: "similarity" },
+  { key: "SSA~", family: "similarity", proves: "nothing" },
 ];
+
+/** Whether a test proves what its family asks: congruence proves similarity too. */
+export const works = (test: Test): boolean =>
+  test.family === "congruence" ? test.proves === "congruence" : test.proves !== "nothing";
 
 export const testOf = (key: TestKey): Test => TESTS.find((t) => t.key === key)!;
 
