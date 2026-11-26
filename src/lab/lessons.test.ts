@@ -120,6 +120,10 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
     for (const step of view.steps) {
       expect(step.title.trim()).not.toBe("");
       expect(step.title).not.toContain("$");
+      if (step.subtitle !== undefined) {
+        expect(step.subtitle.trim()).not.toBe("");
+        expect(step.subtitle).not.toContain("$");
+      }
       expect(step.text.trim()).not.toBe("");
       richHtml(step.text, true, linkTex);
     }

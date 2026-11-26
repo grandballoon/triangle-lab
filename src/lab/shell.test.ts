@@ -198,6 +198,20 @@ describe("Shell", () => {
     expect(el.steps.lastElementChild!.previousElementSibling).toBe(uses);
   });
 
+  it("shows a step's subtitle under its title, and none for a step without one", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => {
+      const view = build(s);
+      return { ...view, steps: view.steps.map((step, i) => (i === 1 ? { ...step, subtitle: "Proves nothing" } : step)) };
+    });
+    const subtitles = [...el.steps.querySelectorAll(".step")].map((section) => {
+      const sub = section.querySelector(".step-head .step-subtitle");
+      return sub && { text: sub.textContent, afterTitle: sub.previousElementSibling?.className };
+    });
+    expect(subtitles).toEqual([null, { text: "Proves nothing", afterTitle: "step-title" }, null, null]);
+  });
+
   it("leaves out an aside a lesson gives nothing for", () => {
     const el = page();
     const shell = new Shell(el, () => []);
