@@ -11,10 +11,12 @@ import { Draw, toStage, type View } from "./draw.ts";
 import { sub, type Vec } from "./geo.ts";
 import { Arranger } from "./arrange.ts";
 import { FormulaBand } from "./formulas.ts";
+import { paintHighlights } from "./highlight-paint.ts";
+import { distinctShapes, leaderEnds } from "./highlight.ts";
 import { drawGrip, drawSlider, pickRadius } from "./grip.ts";
 import { liveHold, present, type Hold } from "./hold.ts";
 import { layoutChrome } from "./layout.ts";
-import { linkTex, termAliases } from "./link.ts";
+import { linkTex, sameFeatureAs, termAliases } from "./link.ts";
 import { SpriteCache } from "./sprites.ts";
 import { StepList } from "./steps.ts";
 import { TermFocus } from "./terms.ts";
@@ -250,18 +252,22 @@ export class Shell {
     // A lesson may change a control itself (a step that picks a case, a
     // button that resets a toggle); keep the chips showing the truth.
     if (this.controlState(c.scene) !== this.shownControls) this.renderControls();
-    for (const s of c.scene.sliders) drawSlider(g, s);
-    for (const h of c.scene.handles) drawGrip(this.ctx, g, h);
     const shown = present(this.hold, this.drags.size > 0, c.view.readout?.(frame) ?? []);
     this.hold = shown.hold;
     this.band.show(shown.rows);
     this.aliases = termAliases(shown.rows.map((r) => r.tex).join(" "));
-    const anchors = (id: string): readonly Vec[] => {
+    const ways = (id: string): string[] => {
       const alias = this.aliases.get(id);
-      return alias ? g.anchors(id, alias) : g.anchors(id);
+      return alias ? [id, alias] : [id];
     };
-    this.terms.lead(focus, focus ? anchors(focus.id) : []);
-    this.terms.showLinked((id) => anchors(id).length > 0);
+    const highlights = focus ? g.highlights(...ways(focus.id)) : [];
+    // Over the figure, under the grips the reader drags it by.
+    paintHighlights(this.ctx, distinctShapes(highlights));
+    for (const s of c.scene.sliders) drawSlider(g, s);
+    for (const h of c.scene.handles) drawGrip(this.ctx, g, h);
+    this.terms.lead(focus, leaderEnds(highlights));
+    this.terms.echo(this.el.readouts, focus && highlights.length > 0 ? sameFeatureAs(focus.id, this.aliases) : null);
+    this.terms.showLinked((id) => g.anchors(...ways(id)).length > 0);
     this.stepList.fit();
   }
 

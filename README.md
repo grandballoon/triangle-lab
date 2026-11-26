@@ -361,7 +361,9 @@ That is all: the menu card, the pager links and the page appear on their own, an
 
 Every lesson says, after its steps, what its idea is like (`likes`: an everyday activity whose structure matches it, saying which part is which) and what it is for (`uses`: concrete real-world applications, with small worked numbers where they help).
 Names, angles, variables and numbers in the step text and formulas lead to the figure on their own: pointing at `AB` draws a line to segment AB, as long as the figure labels its points A and B.
+Pointing at a term also lights the feature it names on the figure, each kind its own way: a point, a segment, a midpoint and its equal halves, an angle's wedge, a polygon, or an area written `[ABC]`.
 Where that is not enough, a lesson can mark a symbol in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks it stands for, so pointing at it also highlights those marks.
+A mark lights its own shape; add `feature: "area"` (or `"point"`, `"midpoint"`, `"circle"`) where it stands for another kind of feature, such as a shaded region meant as its area.
 And it can set pictures on the figure with `g.sprite(src, at)`.
 `src/lab/lessons/exterior-angle.ts` has likes, uses and terms.
 

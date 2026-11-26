@@ -8,7 +8,8 @@
 import { describe, expect, it } from "vitest";
 import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
-import { linkTex } from "./link.ts";
+import type { Feature } from "./highlight.ts";
+import { linkTex, parseTermId, type TermRef } from "./link.ts";
 import { richHtml, texHtml } from "./math.ts";
 import { Scene, STAGE, type Frame, type HandPoints, type LessonBuilder, type LessonView } from "./scene.ts";
 
@@ -60,6 +61,40 @@ function show(view: LessonView, frame: Frame): string[] {
     }
   }
   return unmarked;
+}
+
+/** The shapes a term `linkTex` found may light, by what its id says it names. */
+const FITS: Record<TermRef["kind"], readonly Feature[] | null> = {
+  point: ["point", "midpoint"],
+  segment: ["segment", "arc"],
+  // An angle by its mark or its corner; one named by its vertex alone may have neither.
+  angle: ["angle", "point"],
+  polygon: ["polygon"],
+  area: ["area"],
+  // A printed value lights whatever mark prints it.
+  symbol: null,
+  number: null,
+};
+
+/**
+ * Draw one frame and read every term in its step text and readouts. Returns
+ * each term that lights a shape its id does not name, and each of the
+ * lesson's own terms whose marks disagree about the kind of feature it is.
+ */
+function misfits(view: LessonView, frame: Frame): string[] {
+  const g = new Draw(canvasStandIn(), VIEW, "#38d9a9");
+  view.draw(g, frame);
+  const rows = view.readout?.(frame) ?? [];
+  const tex = [view.steps[frame.step].text, ...rows.flatMap((r) => [r.label ?? "", r.tex])].map(linkTex).join(" ");
+  const wrong: string[] = [];
+  for (const id of new Set(termsIn(tex))) {
+    const kinds = new Set(g.shapes(id).filter((s) => s.kind !== "label").map((s) => s.kind));
+    const ref = parseTermId(id);
+    const fits = ref ? FITS[ref.kind] : null;
+    if (fits && [...kinds].some((k) => !fits.includes(k))) wrong.push(`${id} lights ${[...kinds].join(", ")}`);
+    if (!ref && kinds.size > 1) wrong.push(`${id} lights ${[...kinds].join(" and ")}`);
+  }
+  return wrong;
 }
 
 function showAllSteps(view: LessonView): void {
@@ -141,6 +176,13 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
     const { view } = fresh();
     for (let step = 0; step < view.steps.length; step++) {
       expect(show(view, frameAt(step)), `step ${step}`).toEqual([]);
+    }
+  });
+
+  it("lights the kind of feature each term names, at every step", () => {
+    const { view } = fresh();
+    for (let step = 0; step < view.steps.length; step++) {
+      expect(misfits(view, frameAt(step)), `step ${step}`).toEqual([]);
     }
   });
 

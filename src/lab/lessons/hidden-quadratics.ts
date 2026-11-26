@@ -53,7 +53,7 @@ export default lesson((s) => {
         plot(g, GRAPH, (z) => z * z + b * z + c, { color: IN_Z, width: 2, dash: [8, 6], alpha: f.at(1) });
         for (const z of zs) {
           const at = onStage(GRAPH, { x: z, y: 0 });
-          g.circle(at, g.px(8), { color: IN_Z, width: 2.5, alpha: f.at(1), term: "z" });
+          g.circle(at, g.px(8), { color: IN_Z, width: 2.5, alpha: f.at(1), term: "z", feature: "point" });
           g.label(at, `z = ${fmt(z, 2)}`.replace("-", "−"), { color: IN_Z, size: 13, dy: 26, alpha: f.at(1) });
         }
       }
