@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { angleAt, dist, toDeg } from "../geo.ts";
 import {
-  AAA_K, example, isFlat, measure, SIMILAR_K, snapRight, ssaCorners, TESTS, type Part, type Tri,
+  AAA_K, example, isFlat, measure, SIMILAR_K, snapRight, ssaCorners, TESTS, works, type Part, type Tri,
 } from "./triangle-tests.ts";
 
 // The lesson's starting triangle: scalene, no right angle, smallest angle at C.
@@ -19,9 +19,31 @@ const ANGLES: Part[] = (["A", "B", "C"] as const).map((at) => ({ kind: "angle", 
 
 const close = (a: number, b: number): void => expect(a).toBeCloseTo(b, 6);
 
+describe("TESTS", () => {
+  it("says what each test proves", () => {
+    expect(Object.fromEntries(TESTS.map((t) => [t.key, t.proves]))).toEqual({
+      SSS: "congruence",
+      SAS: "congruence",
+      ASA: "congruence",
+      AAS: "congruence",
+      HL: "congruence",
+      SSA: "nothing",
+      AAA: "similarity",
+      "AA~": "similarity",
+      "SSS~": "similarity",
+      "SAS~": "similarity",
+      "SSA~": "nothing",
+    });
+  });
+
+  it("counts a test as working when it proves what its family asks", () => {
+    expect(TESTS.filter((t) => !works(t)).map((t) => t.key)).toEqual(["SSA", "AAA", "SSA~"]);
+  });
+});
+
 describe("example", () => {
   it("pins a copy of the triangle for every congruence test that works", () => {
-    for (const test of TESTS.filter((t) => t.family === "congruence" && t.works && t.key !== "HL")) {
+    for (const test of TESTS.filter((t) => t.family === "congruence" && works(t) && t.key !== "HL")) {
       const ex = example(SCALENE, test.key);
       expect(ex.status, test.key).toBe("pinned");
       expect(ex.impostor).toBeNull();
@@ -30,7 +52,7 @@ describe("example", () => {
   });
 
   it("pins a copy scaled by k for every similarity test that works", () => {
-    for (const test of TESTS.filter((t) => t.family === "similarity" && t.works)) {
+    for (const test of TESTS.filter((t) => t.family === "similarity" && works(t))) {
       const ex = example(SCALENE, test.key);
       expect(ex.status, test.key).toBe("pinned");
       expect(ex.k).toBe(SIMILAR_K);
