@@ -11,6 +11,8 @@ import {
 } from "../geo.ts";
 import { labelAway, sq } from "../kit/triangles-measure.ts";
 import { lesson, type Handle, type Readout } from "../scene.ts";
+import frameDiagonalsImage from "../../images/frame-diagonals.svg";
+import setSquareDiameterImage from "../../images/set-square-diameter.svg";
 
 const SNAP = 0.2; // stage units within which a corner clicks into a right angle
 const RIGHT_TOLERANCE = 0.05; // degrees; snapped corners are exact, this absorbs rounding
@@ -115,10 +117,20 @@ export default lesson((s) => {
       {
         title: "Are the diagonals equal?",
         text: "Carpenters check that a frame, a drawer or a door opening is truly rectangular by measuring both diagonals with a tape. The diagonals of a four-sided frame with parallel opposite sides cut each other in half. If they are equal too, their crossing point is equally far from all four corners, which is the median test: every corner is a right angle.",
+        image: {
+          src: frameDiagonalsImage,
+          caption: "Checking a frame with a tape: when both diagonals measure the same, every corner is a right angle.",
+          alt: "A rectangular wooden frame with a red tape measure at one corner, dashed gold diagonals crossing at a gold centre point, equal tick marks on the four halves and right-angle marks in the corners.",
+        },
       },
       {
         title: "Finding a diameter with a set square",
         text: "Put the square corner of a set square or a sheet of paper on the edge of a round plate or a disc of wood, and mark where its two edges cross the rim. Because the right angle sits on the circle, those two marks are the ends of a diameter. Do it twice, and the diameters cross at the centre.",
+        image: {
+          src: setSquareDiameterImage,
+          caption: "Finding a diameter: with a set square's corner on the rim of a disc, the two points where its edges cross the rim are the ends of a diameter.",
+          alt: "A round wooden disc with a teal set square whose right-angled corner touches the bottom of the rim, gold dots where its edges cross the rim, and a dashed gold diameter between them.",
+        },
       },
     ],
 

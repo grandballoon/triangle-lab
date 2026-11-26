@@ -10,6 +10,9 @@ import {
 } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import discCentreImage from "../../images/disc-centre.svg";
+import doorArchImage from "../../images/door-arch.svg";
+import flangeBoltHolesImage from "../../images/flange-bolt-holes.svg";
 
 const O: Vec = { x: 0, y: 0.2 };
 const R = 3.8;
@@ -76,14 +79,29 @@ export default lesson((s) => {
       {
         title: "Finding the centre of a wooden disc",
         text: "Woodturners need the exact centre of a round blank before mounting it on the lathe. Draw any two chords across it, mark each one's midpoint, and draw the line at right angles through each midpoint. Both lines pass through the centre, so it lies where they cross.",
+        image: {
+          src: discCentreImage,
+          caption: "Finding the centre of a wooden disc: the perpendicular bisectors of any two chords both pass through the centre, so it lies where they cross.",
+          alt: "A round wooden blank seen from above with two dashed gold chords; a dashed line at right angles through each chord's midpoint, with right-angle marks, and the two lines meet at a gold dot in the centre.",
+        },
       },
       {
         title: "Setting out a curved arch",
         text: "A builder wants a shallow arch over a doorway 2 metres wide, rising 0.5 metres in the middle. The line from the centre of the circle through the top of the arch is perpendicular to the span and halves it, which makes a right triangle with legs 1 and $R - 0.5$ and hypotenuse $R$. So $R^2 = 1^2 + (R - 0.5)^2$, giving $R = 1.25$ metres: they swing a string that long from a peg to draw the curve.",
+        image: {
+          src: doorArchImage,
+          caption: "Setting out a shallow arch over a doorway: the line from the circle's centre through the top of the arch halves the span at right angles, so a right triangle gives the radius of string to swing.",
+          alt: "A wall with an arched doorway; a peg below the arch, a dashed gold vertical from the peg through the arch's top, the halved span marked with ticks, and the right triangle of peg, half span and string outlined in dashed gold.",
+        },
       },
       {
         title: "Bolt holes round a circle",
         text: "Machinists marking holes evenly round a flange often set a pair of dividers to the right chord length and step it round the circle. Equal chords cut equal arcs, so the holes come out evenly spaced. For six holes the chord is exactly the radius, which is also how you draw a hexagon with a pair of compasses.",
+        image: {
+          src: flangeBoltHolesImage,
+          caption: "Bolt holes round a flange: dividers stepped round at one chord length cut equal arcs, and for six holes that chord equals the radius.",
+          alt: "A steel flange with a centre bore and six evenly spaced bolt holes joined by a dashed gold hexagon; a pair of dividers spans two neighbouring holes, and the triangle from the centre to those two holes is shaded gold.",
+        },
       },
     ],
 

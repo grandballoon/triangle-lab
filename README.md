@@ -334,6 +334,7 @@ src/chapters/         The lesson entries, one file per chapter
 src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
+src/images/           Recommended pictures of the lessons' uses, and the checks they are held to
 src/recall/           Noting questions in a lesson and reviewing them later
 worker/               The Cloudflare Worker: serves the site, syncs recall questions between devices, and has Claude check answers
 src/<slug>.ts         A standalone lesson's entry point
@@ -366,6 +367,39 @@ Where that is not enough, a lesson can mark a symbol in its formulas with `term(
 A mark lights its own shape; add `feature: "area"` (or `"point"`, `"midpoint"`, `"circle"`) where it stands for another kind of feature, such as a shaded region meant as its area.
 And it can set pictures on the figure with `g.sprite(src, at)`.
 `src/lab/lessons/exterior-angle.ts` has likes, uses and terms.
+
+### Adding a recommended image
+
+A use can carry a picture of itself, chosen for the lesson rather than added by the reader: a roof truss for SSS, a ramp for HL.
+It shows under the use's text in "What will we use this for?", with a caption saying what real use it shows.
+A use without one looks as it always has.
+The pictures are part of the site's source, so they are reviewed, versioned and deployed with the lesson, and staging shows them as soon as `main` does.
+
+1. Save the picture in `src/images/`, named in lower-case words joined by hyphens, as `roof-truss.jpg`.
+   Make it a JPEG or WebP about 1200 pixels across; `npm test` refuses any file over 400 KB, and any kind other than JPEG, PNG, WebP, AVIF or SVG.
+2. Import it at the top of the lesson's module: `import roofTruss from "../../images/roof-truss.jpg";` from a lab lesson, or `"./images/roof-truss.jpg"` from `src/asides.ts`.
+3. Give the use an `image`:
+
+   ```ts
+   {
+     title: "Rigid frames",
+     text: "A triangle of three bars bolted at the corners cannot change shape…",
+     image: {
+       src: roofTruss,
+       caption: "A roof truss: each triangle of timbers holds its shape, so the roof keeps its pitch under load.",
+       alt: "Timber roof trusses on a house under construction.",
+     },
+   },
+   ```
+
+The caption is plain text, without LaTeX.
+`alt` describes the picture for a reader who cannot see it; leave it out when the caption already says what is there.
+Importing the file, rather than linking to it, makes a missing or misspelt file fail the build, and gives the published file a fingerprinted name, so a replaced picture is never served stale.
+Every use in the Triangles chapter has a simple cartoon of its own, hand-written as an SVG in `src/images/` in one style: flat colours, thick dark outlines, and the lesson's triangle laid over the object as a dashed gold line.
+To put a photo in place of a cartoon, save the photo and change the import to point at it; delete the cartoon once nothing imports it.
+`src/images/placeholder.svg` can stand in for a picture that is still to come.
+The copy editor edits a use's title and text and leaves its image alone; edit a caption in the source.
+These pictures are separate from the reader's own background photo (`src/backdrop/`), which stays on the reader's device.
 
 ### Adding a standalone lesson
 

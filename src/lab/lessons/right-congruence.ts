@@ -7,6 +7,9 @@ import { C, type Draw } from "../draw.ts";
 import { add, angleAt, clamp, dist, fmt, normalize, polar, scale, sub, toDeg, type Vec } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson, type Readout } from "../scene.ts";
+import ladderGutterImage from "../../images/ladder-gutter.svg";
+import rafterTemplateImage from "../../images/rafter-template.svg";
+import treeClinometerImage from "../../images/tree-clinometer.svg";
 
 type Mode = "AAS" | "HL" | "LL" | "SA";
 const MODES: readonly Mode[] = ["AAS", "HL", "LL", "SA"];
@@ -163,14 +166,29 @@ export default lesson((s) => {
       {
         title: "One rafter as the pattern",
         text: "When carpenters frame a roof, they work out the rise and the run for a common rafter, cut one, and use it as a template for all the rest. Each rafter with its run and rise forms a right triangle fixed by its two legs, so every copy fits the same way. That is why a roof can be framed from one carefully cut piece.",
+        image: {
+          src: rafterTemplateImage,
+          caption: "Framing a roof from one pattern rafter: every rafter makes the same right triangle with its run and rise, so one carefully cut piece fixes them all.",
+          alt: "A row of identical sloping rafters between a wall plate and a ridge beam; the front rafter is lighter, with the right triangle of its run and rise outlined in dashed gold.",
+        },
       },
       {
         title: "Measuring a tree without climbing it",
         text: "Stand 20 metres from a tree and measure the angle up to its top with a phone app or a clinometer. The tree meets the ground at a right angle, so one side and one acute angle are known, and SA says only one triangle fits. Its height is therefore settled; with an angle of $35^\\circ$ it is about 14 metres, plus the height of your eyes.",
+        image: {
+          src: treeClinometerImage,
+          caption: "Measuring a tree with a clinometer: the distance to the trunk and the 35° angle up to the top fix one right triangle, and so the tree's height.",
+          alt: "A person holding a phone to their eye sights the top of a tree; a dashed gold right triangle runs from their eye level to the trunk and up to the treetop, with the 35° angle marked at the eye.",
+        },
       },
       {
         title: "Will the ladder reach the gutter?",
         text: "Safety guidance says a ladder's foot should stand 1 unit out from the wall for every 4 units up. Set a 4 metre ladder that way and its foot is just under 1 metre out, and HL says the top must then be at one height only, about $\\sqrt{4^2 - 0.97^2} \\approx 3.9$ metres. So you know before you carry it out whether it reaches the gutter.",
+        image: {
+          src: ladderGutterImage,
+          caption: "A ladder against a house: with its length and its foot set 1 out for every 4 up, the right triangle it makes with the wall is fixed, so you know how high the top reaches.",
+          alt: "A ladder leaning against a house wall with its top just under the gutter; the right triangle of ladder, wall and ground is outlined in dashed gold, with the right angle at the foot of the wall.",
+        },
       },
     ],
 

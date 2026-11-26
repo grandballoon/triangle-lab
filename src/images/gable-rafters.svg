@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="560" cy="60" r="30" fill="#f2c14e"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M150 210 L320 96 L490 210 L490 304 L150 304 Z" fill="#f3ead8"/>
+    <rect x="290" y="232" width="60" height="72" rx="4" fill="#ef6b5b"/>
+    <circle cx="320" cy="166" r="22" fill="#5fb0e8"/>
+  </g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M110 210 L320 70 L530 210 M110 210 L530 210" stroke="#0b0f14" stroke-width="18"/>
+    <path d="M110 210 L320 70 L530 210 M110 210 L530 210" stroke="#b07a45" stroke-width="8"/>
+  </g>
+  <path d="M110 210 L320 70 L530 210 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M207 133 L222 145 M418 145 L433 133" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M170 210 A60 60 0 0 0 160 177 M470 210 A60 60 0 0 1 480 177" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -150,6 +150,26 @@
 
 .aside-item + .aside-item { margin-top: 14px; }
 
+/* A use's recommended picture, the column's width, with its caption under it. */
+.aside-figure { margin: 10px 0 0; }
+
+.aside-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.aside-figure figcaption {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(233, 240, 247, 0.6);
+}
+
 .aside-item h3 {
   font-size: 15px;
   font-weight: 700;

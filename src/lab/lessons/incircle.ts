@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { clamp, distToLine, dot, fmt, inBox, incenter, lerp, lineLine, mid, project, sub, type Vec } from "../geo.ts";
 import { agree, dropPerp, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import plywoodDiscImage from "../../images/plywood-disc.svg";
+import vCarveLetterImage from "../../images/v-carve-letter.svg";
 
 const FROM_A = C.gold;
 const FROM_B = C.blue;
@@ -77,10 +79,20 @@ export default lesson((s) => {
       {
         title: "Cutting the biggest disc from an offcut",
         text: "A woodworker with a triangular scrap of plywood wants the largest round coaster or wheel it will give. Bisect two of the corners with a protractor or by folding a paper template, and where the lines cross is the centre. The shortest distance from there to any edge is the radius, and the circle just touches all three edges.",
+        image: {
+          src: plywoodDiscImage,
+          caption: "A triangular plywood offcut: the angle bisectors meet at the centre of the largest disc it will give, which just touches all three edges.",
+          alt: "A wooden triangle on a bench with dashed bisectors from its corners meeting at a dot, a dashed circle touching all three edges, and a radius dropped square to the bottom edge.",
+        },
       },
       {
         title: "How deep a V-carving bit plunges",
         text: "Sign makers carve letters with a V-shaped router bit, letting it sink deeper where the shape is wider so that its edges just graze the outline. In a triangular part of a letter the bit goes deepest at the point farthest from every edge, which is the incentre, and it reaches that point by travelling along the angle bisectors from the corners. Carving software traces exactly these lines.",
+        image: {
+          src: vCarveLetterImage,
+          caption: "A V-carving bit plunges deepest at the incentre of a triangular part of a letter, reaching it along the angle bisectors from the corners.",
+          alt: "A triangular V-groove carved into a sign board, its three sloping faces meeting along dashed bisectors, with a steel router bit's tip at the incentre.",
+        },
       },
     ],
 

@@ -6,6 +6,7 @@
 // screen.
 
 import { describe, expect, it } from "vitest";
+import { imageFaults } from "../images/check.ts";
 import { chapters, lessons } from "../lessons.ts";
 import { Draw, type View } from "./draw.ts";
 import type { Feature } from "./highlight.ts";
@@ -174,6 +175,7 @@ describe.each(labLessons.map((l) => [l.slug, l] as const))("lesson %s", (slug, m
       expect(aside.text.trim()).not.toBe("");
       richHtml(aside.text, true);
     }
+    for (const { image } of uses) if (image) expect(imageFaults(image), image.caption).toEqual([]);
   });
 
   it("draws a mark for every formula term, at every step", () => {

@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { clamp, fmt, lerp, type Vec } from "../geo.ts";
 import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
+import oldTv43Image from "../../images/old-tv-4-3.svg";
+import sportsPitchCornerImage from "../../images/sports-pitch-corner.svg";
 
 // The right-angle corner, and how many lattice units fit at each zoom.
 const ORIGIN = { x: -6.5, y: -3.3 };
@@ -110,10 +112,20 @@ export default lesson((s) => {
       {
         title: "Old 4:3 TV screens",
         text: "Older TVs and computer monitors had a 4 to 3 shape, and screens are sold by their diagonal. Since $(3, 4, 5)$ is a triple, a 4:3 screen's width, height and diagonal are always in the ratio $4 : 3 : 5$. A 20-inch one is exactly 16 inches wide and 12 tall: the triple scaled by 4.",
+        image: {
+          src: oldTv43Image,
+          caption: "An old 4:3 television: its screen's width, height and diagonal are always in the ratio 4 : 3 : 5.",
+          alt: "A boxy wooden television with rabbit-ear aerials and two knobs, with a dashed gold right triangle on its screen marked 4, 3 and 5.",
+        },
       },
       {
         title: "Marking out a sports pitch",
         text: "Groundskeepers marking a football or rugby pitch need corners that are truly square over long distances. They scale up a triple to suit: 30, 40 and 50 metres, which is $(3, 4, 5)$ times 10. Measuring along longer sides makes a small error in the tape matter much less to the angle.",
+        image: {
+          src: sportsPitchCornerImage,
+          caption: "Marking out a pitch: tapes of 30, 40 and 50 metres, the triple 3, 4, 5 scaled by 10, set a truly square corner.",
+          alt: "Top-down view of a striped pitch corner with a corner flag, its touchline and goal line forming a dashed gold right triangle marked 30, 40 and 50, and the halfway line and centre circle beyond.",
+        },
       },
     ],
 

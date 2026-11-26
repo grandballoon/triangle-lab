@@ -5,6 +5,8 @@ import { C as COLOR } from "../draw.ts";
 import { centroid, dist, fmt, mid, type Vec } from "../geo.ts";
 import { CAPTION_AT, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson, type Readout } from "../scene.ts";
+import triangleGameCentreImage from "../../images/triangle-game-centre.svg";
+import triangleSignBalanceImage from "../../images/triangle-sign-balance.svg";
 
 export default lesson((s) => {
   s.terms("Term", ["centroid"]);
@@ -39,10 +41,20 @@ export default lesson((s) => {
       {
         title: "Finding a triangle's centre in a game",
         text: "Game engines and graphics programs often need a single point to stand for a triangle, for example to place a label or to sort triangles by distance. They use the centroid, which is simply the average of the three corners. For corners $(0, 0)$, $(6, 0)$ and $(0, 9)$, the centroid is $\\left(\\frac{0 + 6 + 0}{3}, \\frac{0 + 0 + 9}{3}\\right) = (2, 3)$.",
+        image: {
+          src: triangleGameCentreImage,
+          caption: "A game's triangle mesh: the engine stands each triangle for one point, its centroid, the average of the three corners.",
+          alt: "A computer monitor showing three coloured triangles; on the green one, dashed medians from each corner meet at a gold dot.",
+        },
       },
       {
         title: "Hanging a triangular sign level",
         text: "A flat triangular sign or a piece of a hanging mobile, made of one even material, has its centre of mass at the centroid. Hang it from a pivot at that point and it stays balanced whichever way it is turned, with no corner dipping down. To find that point on a cut-out, you only need to draw two medians and mark where they cross.",
+        image: {
+          src: triangleSignBalanceImage,
+          caption: "A flat triangular sign hung from a pivot at its centroid stays balanced however it is turned.",
+          alt: "A wooden triangle hanging on a cord from a beam, pinned where its three dashed medians cross.",
+        },
       },
     ],
 
