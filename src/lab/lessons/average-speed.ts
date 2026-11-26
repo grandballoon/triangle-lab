@@ -8,6 +8,9 @@ import { C } from "../draw.ts";
 import { fmt } from "../geo.ts";
 import { axes, onStage, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
+import halfTripDriveImage from "../../images/half-trip-drive.svg";
+import hillTrailHikeImage from "../../images/hill-trail-hike.svg";
+import hillyBikeCommuteImage from "../../images/hilly-bike-commute.svg";
 
 const OUT = C.cyan;
 const BACK = C.orange;
@@ -126,14 +129,29 @@ export default lesson((s) => {
       {
         title: "A hilly commute",
         text: "You cycle 6 km to work uphill at 10 km/h and home downhill at 30 km/h. That is 36 minutes there and 12 back: 12 km in 48 minutes, an average of 15 km/h, not the 20 you might guess.",
+        image: {
+          src: hillyBikeCommuteImage,
+          caption: "A hilly bike commute: the slow climb at 10 km/h takes three times as long as the 30 km/h descent, so the average is 15 km/h, not 20.",
+          alt: "A cyclist riding up a green hill from a house to an office block, with a gold dashed route along the slope, an arrow up marked 10 and an arrow down marked 30.",
+        },
       },
       {
         title: "You cannot make it up on the way back",
         text: "Drive the first half of a trip at 30 mph, hoping to average 60 for the whole thing. By halfway you have already used all the time a 60 mph trip would take, so no speed on the second half, however fast, brings the average up to 60.",
+        image: {
+          src: halfTripDriveImage,
+          caption: "A car at the halfway mark: driving the first half at 30 mph has already used all the time a 60 mph trip allows, so no speed on the rest can bring the average up to 60.",
+          alt: "A red car on a road at the halfway tick of a gold dashed trip line marked 30, with a finish flag ahead and a stopwatch above it already run all the way round.",
+        },
       },
       {
         title: "Timing a hike",
         text: "On a 6 km trail, the climb at 2 km/h takes 3 hours and the descent at 6 km/h takes 1. Plan for the true average of 3 km/h, 4 hours in all, not 4 km/h and 3 hours.",
+        image: {
+          src: hillTrailHikeImage,
+          caption: "A hike over a hill: the 2 km/h climb takes three hours and the 6 km/h descent one, so plan on 3 km/h and four hours, not 4 km/h.",
+          alt: "A hiker with a backpack and stick climbing a snow-capped mountain, with the trail up and down traced in gold dashes and arrows marked 2 going up and 6 coming down.",
+        },
       },
     ],
   };

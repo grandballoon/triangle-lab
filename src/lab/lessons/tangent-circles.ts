@@ -28,6 +28,8 @@ import {
   type Vec,
 } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import ballBearingRingsImage from "../../images/ball-bearing-rings.svg";
+import meshingGearsImage from "../../images/meshing-gears.svg";
 
 const R_MIN = 0.6;
 const R_MAX = 2.6;
@@ -193,10 +195,20 @@ export default lesson((s) => {
       {
         title: "Meshing gears",
         text: "Two gears mesh as if two circles, their pitch circles, were touching from outside, so the axles must be the sum of the pitch radii apart: gears of radius $3$ cm and $5$ cm sit $8$ cm apart. When a small gear runs inside a ring gear, as in a planetary gearbox, the circles touch from inside and the axles are the difference apart.",
+        image: {
+          src: meshingGearsImage,
+          caption: "Meshing gears: their pitch circles touch from outside, so gears of radius 5 cm and 3 cm sit 8 cm apart.",
+          alt: "A large grey gear meshing with a smaller orange one. Their pitch circles are dashed gold and touch at one point, with radii marked 5 and 3 along the line between the axles and a span marked 8 below.",
+        },
       },
       {
         title: "Sizing a ball bearing",
         text: "In a ball bearing each ball touches the inner ring from outside and the outer ring from inside. With an inner ring of radius $10$ mm and balls of radius $3$ mm, the ball centres sit $10 + 3 = 13$ mm from the axle, so the outer ring must have radius $13 + 3 = 16$ mm.",
+        image: {
+          src: ballBearingRingsImage,
+          caption: "A ball bearing: each ball touches the inner ring from outside and the outer ring from inside, so with a 10 mm inner ring and 3 mm balls the outer ring has radius 16 mm.",
+          alt: "Front view of a ball bearing: ten balls held between an inner and an outer steel ring. A gold dashed circle runs through the ball centres, and a gold radius is marked 10 at the inner ring and 16 at the outer ring.",
+        },
       },
     ],
 

@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { fmt, polar, toRad, vec } from "../geo.ts";
 import { agree, outline, tracedArea, type Arc } from "../kit/areas.ts";
 import { lesson } from "../scene.ts";
+import pipeWaterSegmentImage from "../../images/pipe-water-segment.svg";
+import segmentalArchWindowImage from "../../images/segmental-arch-window.svg";
 
 const O = vec(0, -0.2);
 const SIXTH = Math.PI / 3; // 60°
@@ -70,10 +72,20 @@ export default lesson((s) => {
       {
         title: "How much water is in a pipe?",
         text: "Water lying in a horizontal pipe fills a circular segment of its cross-section, and engineers find its area as sector minus triangle. In a pipe of radius 10 cm, a water surface that spans $60^\\circ$ at the centre gives $100\\left(\\frac{\\pi}{6} - \\frac{\\sqrt3}{4}\\right) \\approx 9.1$ square centimetres, from water only about 1.3 cm deep. The same sum, with other angles, gives the depth charts for fuel tanks lying on their side.",
+        image: {
+          src: pipeWaterSegmentImage,
+          caption: "Water lying in a pipe: the water fills a circular segment, found as the 60° sector minus the triangle under the water's surface.",
+          alt: "Cross-section of a steel pipe with a thin strip of blue water at the bottom. A dashed gold sector runs from the pipe's centre to the two edges of the water surface, with its angle marked 60°.",
+        },
       },
       {
         title: "Glass for an arched window",
         text: "A segmental arch, common over doors and windows, is a circular segment sitting on a straight top. The glass it needs is the sector of the arch's circle minus the triangle under the chord: for a $60^\\circ$ arch of radius 1 m, $\\frac{\\pi}{6} - \\frac{\\sqrt3}{4} \\approx 0.09$ square metres.",
+        image: {
+          src: segmentalArchWindowImage,
+          caption: "A segmental arch window: the glass above the frame's top bar is a circular segment, the sector of the arch's circle minus the triangle under the chord.",
+          alt: "A window in a cream wall, topped with a shallow red brick arch. The glass segment between the arch and the window's top bar is shaded gold, and dashed gold lines run from the arch's centre, low on the wall, up to the two ends of the arch.",
+        },
       },
     ],
 

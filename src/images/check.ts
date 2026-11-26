@@ -2,7 +2,7 @@
 // uses (UseImage, lab/scene.ts), and each file kept in this folder for one.
 // Pure: values in, the faults found out, so the tests can hold every lesson
 // and every file to them by plain equality (lab/lessons.test.ts,
-// pages.test.ts, images.test.ts).
+// pages.test.ts, images.test.ts), and the folder to them (tools/images.test.ts).
 
 import type { UseImage } from "../lab/scene.ts";
 
@@ -38,4 +38,13 @@ export function fileFaults(name: string, bytes: number): string[] {
     faults.push(`${name} is ${Math.round(bytes / 1024)} KB, over ${MAX_IMAGE_BYTES / 1024} KB: resize it to about 1200 pixels across`);
   }
   return faults;
+}
+
+/**
+ * The pictures among `pictures`, file names in this folder, that no module in
+ * `sources` imports: drawings left behind when a use changed its picture.
+ */
+export function unusedPictures(pictures: readonly string[], sources: readonly string[]): string[] {
+  const imported = new Set(sources.flatMap((source) => [...source.matchAll(/\/images\/([^/"'`]+)["'`]/g)].map((m) => m[1])));
+  return pictures.filter((name) => !imported.has(name));
 }

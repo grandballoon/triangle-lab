@@ -8,6 +8,9 @@ import { C } from "../draw.ts";
 import { clamp, fmt } from "../geo.ts";
 import { axes, onStage, plot, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
+import carBrakingDistanceImage from "../../images/car-braking-distance.svg";
+import fountainJetArcImage from "../../images/fountain-jet-arc.svg";
+import wellPebbleDropImage from "../../images/well-pebble-drop.svg";
 
 const ROCK = C.orange;
 const STEADY = C.cyan;
@@ -131,14 +134,29 @@ export default lesson((s) => {
       {
         title: "How deep is the well?",
         text: "Drop a pebble down a well and count 2 seconds to the splash. Ignoring the moment the sound takes to come back up, it fell $16t^2 = 16 \\cdot 2^2 = 64$ feet. For a well you know is 100 feet deep, you solve $16t^2 = 100$ instead: the splash comes after 2.5 seconds.",
+        image: {
+          src: wellPebbleDropImage,
+          caption: "A pebble dropped down a well: it falls 16t² feet in t seconds, so a splash after 2 seconds means the water is 64 feet down.",
+          alt: "A person dropping a pebble into a well shown in cross-section, the pebble drawn at equal moments with ever wider gaps, and a gold dashed line from the rim to the water marked 64.",
+        },
       },
       {
         title: "Anything thrown or dropped",
         text: "A ball's height, a fountain's jet and a diver's path all carry the same $-16t^2$ (in feet) or $-4.9t^2$ (in metres). Asking when they reach a given height is always a quadratic equation.",
+        image: {
+          src: fountainJetArcImage,
+          caption: "A fountain's jet follows a parabola, so asking when the water is at a given height is a quadratic equation with two answers, on the way up and on the way down.",
+          alt: "Two arcs of water from a fountain nozzle into a basin; one arc traced as a gold dashed parabola, crossed by a gold dashed height line at two gold dots.",
+        },
       },
       {
         title: "Stopping distance",
         text: "A car braking from speed $v$ travels $vt - \\tfrac12 a t^2$ in $t$ seconds, so the time to cover a given distance, or to stop short of something, comes from a quadratic.",
+        image: {
+          src: carBrakingDistanceImage,
+          caption: "A car braking before a zebra crossing: it covers less ground each second as it slows, so the time to stop comes from a quadratic.",
+          alt: "A purple car on a road heading towards a zebra crossing, with a gold dashed distance line whose ticks, one per second, get closer together until it stops.",
+        },
       },
     ],
   };

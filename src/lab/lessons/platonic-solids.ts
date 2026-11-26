@@ -8,6 +8,9 @@ import { polar, toRad, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { faces, Orbit, p3, point3, polygon3, scale3, type P3 } from "../solid.ts";
 import { convexHull, glass, len3, type Polyhedron } from "../kit/solids.ts";
+import fivePlatonicDiceImage from "../../images/five-platonic-dice.svg";
+import footballSeamsCountImage from "../../images/football-seams-count.svg";
+import geodesicDomeIcosahedronImage from "../../images/geodesic-dome-icosahedron.svg";
 
 const PHI = (1 + Math.sqrt(5)) / 2;
 const SIGNS = [-1, 1];
@@ -101,14 +104,29 @@ export default lesson((s) => {
       {
         title: "Fair dice",
         text: "Tabletop games use dice shaped like all five solids: four, six, eight, twelve and twenty sides. Because every face and every corner of a Platonic solid is exactly alike, no face is favoured, so each number is equally likely to land on top.",
+        image: {
+          src: fivePlatonicDiceImage,
+          caption: "Dice shaped like all five Platonic solids: every face is alike, so each number is equally likely to land on top.",
+          alt: "Four-, six-, eight-, twelve- and twenty-sided dice in a row on a table, one face of each outlined in gold dashes.",
+        },
       },
       {
         title: "Counting the seams on a football",
         text: "A classic football is stitched from $12$ pentagons and $20$ hexagons. Every seam joins two panels, so there are $\\tfrac{12 \\cdot 5 + 20 \\cdot 6}{2} = 90$ seams, and three panels meet at each corner, giving $\\tfrac{180}{3} = 60$ corners. Euler's formula checks the count: $60 - 90 + 32 = 2$.",
+        image: {
+          src: footballSeamsCountImage,
+          caption: "A classic football of 12 pentagons and 20 hexagons: counting its seams and corners checks Euler's formula.",
+          alt: "A black and white football; a gold dashed outline picks out one pentagon and the hexagon beside it, with a gold dot where three panels meet.",
+        },
       },
       {
         title: "Geodesic domes",
         text: "Geodesic domes and many 3D-modelled spheres start from an icosahedron and split each triangle into smaller ones. Splitting each of the $20$ faces into $4$ gives $80$ faces, $120$ edges and $42$ corners. Before building, a designer can check such counts with $V - E + F = 2$: here $42 - 120 + 80 = 2$.",
+        image: {
+          src: geodesicDomeIcosahedronImage,
+          caption: "A geodesic dome: each triangle of an icosahedron is split into four smaller ones, and V − E + F = 2 checks the counts.",
+          alt: "A dome of steel and glass triangles on grass; one large triangle split into four is dashed gold.",
+        },
       },
     ],
 

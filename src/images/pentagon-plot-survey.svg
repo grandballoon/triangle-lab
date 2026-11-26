@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="30" y="20" width="580" height="320" rx="14" fill="#2b3a2f"/>
+  <path d="M150 120 L330 64 L500 130 L452 290 L196 278 Z" fill="#5fbf72" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M150 120 L330 64 L500 130 L452 290 L196 278 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M179 111 A30 30 0 0 1 158 149 M358 75 A30 30 0 0 1 301 73 M491 159 A30 30 0 0 1 472 119 M422 289 A30 30 0 0 1 461 261 M188 249 A30 30 0 0 1 226 279" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#ef6b5b" stroke="#0b0f14" stroke-width="4"><circle cx="150" cy="120" r="8"/><circle cx="330" cy="64" r="8"/><circle cx="500" cy="130" r="8"/><circle cx="452" cy="290" r="8"/><circle cx="196" cy="278" r="8"/></g>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M118 112 L92 176 M118 112 L118 182 M118 112 L144 176" stroke="#0b0f14" stroke-width="14"/><path d="M118 112 L92 176 M118 112 L118 182 M118 112 L144 176" stroke="#8fa3b8" stroke-width="6"/></g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><rect x="102" y="70" width="34" height="40" rx="5" fill="#f2c14e"/><rect x="130" y="80" width="20" height="16" rx="3" fill="#5fb0e8"/></g>
+  <text x="330" y="196" font-family="system-ui, sans-serif" font-size="32" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">540°</text>
+</svg>

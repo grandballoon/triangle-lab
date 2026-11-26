@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="60" y="30" width="520" height="300" rx="14" fill="#1c2633"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M130 60 L320 60 L130 180 Z" fill="#b07a45"/><path d="M320 60 L510 60 L510 180 Z" fill="#b07a45"/><path d="M510 180 L510 300 L320 300 Z" fill="#b07a45"/><path d="M320 300 L130 300 L130 180 Z" fill="#b07a45"/><path d="M320 60 L510 180 L320 300 L130 180 Z" fill="#d9a066"/></g>
+  <path d="M250 120 Q320 112 390 122 M200 178 Q320 170 440 182 M250 240 Q320 232 390 242" fill="none" stroke="#b07a45" stroke-width="5" stroke-linecap="round"/>
+  <path d="M320 60 L510 180 L320 300 L130 180 Z" fill="#f2c14e" fill-opacity="0.2" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M420 112 L410 128 M420 248 L410 232 M220 248 L230 232 M220 112 L230 128" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="320" cy="60" r="7"/><circle cx="510" cy="180" r="7"/><circle cx="320" cy="300" r="7"/><circle cx="130" cy="180" r="7"/></g>
+</svg>

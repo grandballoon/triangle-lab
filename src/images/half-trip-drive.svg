@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#2b3a2f"/>
+  <rect y="256" width="640" height="48" fill="#2a3340"/>
+  <path d="M0 280 H640" stroke="#f3ead8" stroke-width="4" stroke-dasharray="24 20"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M216 262 V214 Q216 200 230 200 L254 200 L274 176 L330 176 L350 200 L370 200 Q384 200 384 214 V262 Z" fill="#ef6b5b"/>
+    <path d="M282 184 L326 184 L340 200 L270 200 Z" fill="#5fb0e8"/>
+    <circle cx="250" cy="262" r="18" fill="#0f1620"/><circle cx="350" cy="262" r="18" fill="#0f1620"/>
+    <rect x="590" y="140" width="10" height="120" fill="#8fa3b8"/>
+    <path d="M600 144 H630 V174 H600 Z" fill="#f3ead8"/>
+    <circle cx="384" cy="86" r="40" fill="#f3ead8"/>
+    <rect x="374" y="34" width="20" height="12" rx="3" fill="#8fa3b8"/>
+  </g>
+  <path d="M384 86 V54 A32 32 0 1 1 383 54 Z" fill="#ef6b5b" fill-opacity="0.8"/>
+  <path d="M384 86 V54" stroke="#0b0f14" stroke-width="6" stroke-linecap="round"/>
+  <path d="M40 158 H596" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8"/>
+  <path d="M40 144 V172 M384 144 V172 M596 144 V172" stroke="#f2c14e" stroke-width="4"/>
+  <text x="140" y="138" font-family="system-ui, sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="#f2c14e">30</text>
+</svg>

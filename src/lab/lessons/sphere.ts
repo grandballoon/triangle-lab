@@ -7,6 +7,8 @@ import { fmt } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { label3, Orbit, p3, point3, polygon3, ringY, segment3, sphere3 } from "../solid.ts";
 import { rightAngle3 } from "../kit/solids.ts";
+import globeLatitude60Image from "../../images/globe-latitude-60.svg";
+import lensSpherometerImage from "../../images/lens-spherometer.svg";
 
 const PLANE_HALF = 3.7;
 const GREAT = 0.05; // below this distance the cut passes through the centre
@@ -60,10 +62,20 @@ export default lesson((s) => {
       {
         title: "Lines of latitude",
         text: "Each line of latitude on a globe is the cut of a plane parallel to the equator. At $60^\\circ$ north the plane sits $d = R\\sin 60^\\circ$ above the centre, so the circle has radius $\\sqrt{R^2 - d^2} = R\\cos 60^\\circ = \\tfrac12 R$. That is why, near Oslo or Helsinki, one degree of longitude spans only about $56$ km, half the $111$ km it spans at the equator.",
+        image: {
+          src: globeLatitude60Image,
+          caption: "A globe: the 60° north line of latitude is a plane's cut parallel to the equator, a circle with half the radius of the equator.",
+          alt: "A globe on a stand with the equator drawn and a small gold dashed circle near the top, joined to the centre by a gold right triangle with a 60° angle.",
+        },
       },
       {
         title: "Measuring a lens with a spherometer",
         text: "Opticians measure how curved a lens is with a spherometer: three legs stand on a circle of radius $a$ and a central screw measures how far the surface bulges, $h$. The legs' circle is a cut of the sphere at distance $d = R - h$ from its centre, so $a^2 = R^2 - (R - h)^2$, giving $R = \\frac{a^2 + h^2}{2h}$. With $a = 2$ cm and $h = 0.1$ cm, the lens surface is part of a sphere of radius about $20$ cm.",
+        image: {
+          src: lensSpherometerImage,
+          caption: "A spherometer on a lens: its legs stand on a circle of radius a, its centre screw measures the bulge h, and the right triangle to the sphere's centre gives the radius R.",
+          alt: "A blue domed lens on a bench with a three-legged spherometer on top; the lens's sphere continues as a gold dashed arc below, with a gold right triangle labelled a, h and R.",
+        },
       },
     ],
 

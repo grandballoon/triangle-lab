@@ -5,6 +5,8 @@ import { C, tint } from "../draw.ts";
 import { fmt } from "../geo.ts";
 import { lesson } from "../scene.ts";
 import { faces, label3, Orbit, p3, polygon3, segment3, type P3 } from "../solid.ts";
+import game3dDistanceBoxImage from "../../images/game-3d-distance-box.svg";
+import suitcaseTripodDiagonalImage from "../../images/suitcase-tripod-diagonal.svg";
 
 export default lesson((s) => {
   const cam = s.orbit(new Orbit(0.65, 0.4, { x: 0, y: 0.6 }));
@@ -45,10 +47,20 @@ export default lesson((s) => {
       {
         title: "Packing a tripod in a suitcase",
         text: "A cabin suitcase measuring $55 \\times 40 \\times 20$ cm has no edge long enough for a $70$ cm tripod. Its space diagonal is $\\sqrt{55^2 + 40^2 + 20^2} \\approx 70.9$ cm, though, so a thin tripod laid from one corner to the opposite one just fits.",
+        image: {
+          src: suitcaseTripodDiagonalImage,
+          caption: "A cabin suitcase: no edge is long enough for a 70 cm tripod, but the space diagonal of about 70.9 cm just takes it.",
+          alt: "A purple wire-frame suitcase on wheels with a folded grey tripod lying along the gold dashed diagonal from a bottom front corner to the opposite top back corner.",
+        },
       },
       {
         title: "Distances in a 3D game",
         text: "A game engine stores every object's position as three coordinates. The straight-line distance between two of them is $\\sqrt{\\Delta x^2 + \\Delta y^2 + \\Delta z^2}$, exactly the box diagonal with the differences as $l$, $w$ and $h$. To check whether an enemy is within $10$ metres, engines often skip the square root and compare the sum of squares with $100$.",
+        image: {
+          src: game3dDistanceBoxImage,
+          caption: "Distance in a 3D game: the straight line from player to enemy is the diagonal of a box whose sides are the differences in the three coordinates.",
+          alt: "A game screen with a player on the floor and a floating purple monster at opposite corners of a dashed box, joined by a solid gold diagonal and a gold dashed path along three edges.",
+        },
       },
     ],
 

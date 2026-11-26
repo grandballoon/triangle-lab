@@ -7,6 +7,8 @@ import { fmt } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { dist3, faces, label3, Orbit, p3, polygon3, segment3 } from "../solid.ts";
 import { glass, mid3, rightAngle3 } from "../kit/solids.ts";
+import crushedIceCubesImage from "../../images/crushed-ice-cubes.svg";
+import umbrellaCubeBoxImage from "../../images/umbrella-cube-box.svg";
 
 const FACE_DIAGONAL = C.gold;
 const SPACE_DIAGONAL = C.pink;
@@ -73,10 +75,20 @@ export default lesson((s) => {
       {
         title: "Will it fit in the box?",
         text: "The longest straight thing that fits in a box runs along the space diagonal. A cube-shaped box with $50$ cm edges is too short for an $80$ cm umbrella along any edge, and even across a face ($50\\sqrt2 \\approx 70.7$ cm). But from corner to opposite corner it has $50\\sqrt3 \\approx 86.6$ cm, so the umbrella fits.",
+        image: {
+          src: umbrellaCubeBoxImage,
+          caption: "An umbrella in a cube-shaped box: too long for any 50 cm edge, it fits along the space diagonal of about 87 cm.",
+          alt: "A wire-frame cube with edges marked 50 and a closed red umbrella lying along the gold dashed diagonal from one corner to the opposite one, marked 87.",
+        },
       },
       {
         title: "Why crushed ice cools faster",
         text: "Cut an ice cube of edge $s$ into eight cubes of edge $\\tfrac{s}{2}$. The ice is the same, $s^3$, but the surface becomes $8 \\cdot 6\\left(\\tfrac{s}{2}\\right)^2 = 12s^2$, twice the $6s^2$ you started with. More surface touches the drink, so crushed ice cools it faster and melts sooner.",
+        image: {
+          src: crushedIceCubesImage,
+          caption: "An ice cube cut into eight smaller cubes: the same ice, but twice the surface touching the drink, so crushed ice cools it faster.",
+          alt: "A large ice cube with gold dashed cut lines halving each face, an arrow, and eight small ice cubes set slightly apart.",
+        },
       },
     ],
 

@@ -5,19 +5,29 @@
 // Text may hold `$…$` LaTeX.
 
 import type { Asides } from "./lab/scene.ts";
+import baseballDiamondThrowImage from "./images/baseball-diamond-throw.svg";
+import buildingClinometerImage from "./images/building-clinometer.svg";
+import diamondTilesImage from "./images/diamond-tiles.svg";
+import draftingSetSquareImage from "./images/drafting-set-square.svg";
+import eveningShadow30Image from "./images/evening-shadow-30.svg";
 import flowerBedCheckImage from "./images/flower-bed-check.svg";
 import framingSquareImage from "./images/framing-square.svg";
 import gablePaintImage from "./images/gable-paint.svg";
 import gableRaftersImage from "./images/gable-rafters.svg";
+import gameCharacterWalkImage from "./images/game-character-walk.svg";
 import gameMeshImage from "./images/game-mesh.svg";
 import gameMonsterDistanceImage from "./images/game-monster-distance.svg";
 import gameWallBounceImage from "./images/game-wall-bounce.svg";
 import gardenTriangulationImage from "./images/garden-triangulation.svg";
 import gateBraceImage from "./images/gate-brace.svg";
+import hexGridBoardImage from "./images/hex-grid-board.svg";
+import hexNut306090Image from "./images/hex-nut-30-60-90.svg";
 import mapTriangleImage from "./images/map-triangle.svg";
 import poolRackImage from "./images/pool-rack.svg";
+import rafterPitchRunImage from "./images/rafter-pitch-run.svg";
 import riverWidthImage from "./images/river-width.svg";
 import satnavStraightLineImage from "./images/satnav-straight-line.svg";
+import steepPathClimbImage from "./images/steep-path-climb.svg";
 import stringLines345Image from "./images/string-lines-3-4-5.svg";
 import stringRightAngleImage from "./images/string-right-angle.svg";
 import treeShadowImage from "./images/tree-shadow.svg";
@@ -338,14 +348,29 @@ export const asides: Record<string, Asides> = {
       {
         title: "Finding a building's height",
         text: "Stand $20$ metres from a building and measure the angle up to its top, say $35^\\circ$, with a clinometer or a phone app. The height above your eye is the opposite leg and the $20$ metres is the adjacent, so it is $20 \\tan 35^\\circ \\approx 14.0$ metres. Add the height of your eye above the ground for the whole building.",
+        image: {
+          src: buildingClinometerImage,
+          caption: "Measuring a building with a clinometer: from 20 metres away the angle up to the roof is 35°, so the height above your eye is 20 × tan 35°, about 14 metres.",
+          alt: "A person sights the top of a block of flats. A dashed gold right triangle runs from their eye to the building's top, with 35° marked at the eye and 20 along the ground leg.",
+        },
       },
       {
         title: "Cutting a rafter to length",
         text: "A roof pitched at $30^\\circ$ has to cover a run of $4$ metres from the wall to below the ridge. The run is the adjacent leg and the rafter is the hypotenuse, so the rafter is $\\frac{4}{\\cos 30^\\circ} \\approx 4.62$ metres long before the carpenter allows for the overhang.",
+        image: {
+          src: rafterPitchRunImage,
+          caption: "A rafter on a 30° roof: the run from wall to ridge is the adjacent leg and the rafter is the hypotenuse, so a 4 metre run needs a rafter of 4 ÷ cos 30°, about 4.62 metres.",
+          alt: "A small house with timber rafters meeting at the ridge. A dashed gold right triangle fills the left half of the roof, from the wall top up to the ridge, with 30° marked at the eaves.",
+        },
       },
       {
         title: "Moving a character in a game",
         text: "A character walks $5$ units per second in the direction it faces, at angle $\\theta$. Each second, the game moves it $5 \\cos \\theta$ across and $5 \\sin \\theta$ up. The walk is the hypotenuse; the two steps are its legs, and together they always cover exactly $5$ units.",
+        image: {
+          src: gameCharacterWalkImage,
+          caption: "A game character walking 5 units in the direction it faces: the game splits the walk into 5 cos θ across and 5 sin θ up, the legs of a right triangle.",
+          alt: "A screen showing a game character at the end of a teal arrow labelled 5. Dashed gold lines complete a right triangle under the arrow, one leg across and one up.",
+        },
       },
     ],
   },
@@ -364,10 +389,20 @@ export const asides: Record<string, Asides> = {
       {
         title: "The throw to second base",
         text: "A baseball diamond is a square with $90$ foot sides. A catcher throwing from home plate to second base throws along the diagonal, $90\\sqrt{2} \\approx 127.3$ feet, and that is the official distance between the two bases.",
+        image: {
+          src: baseballDiamondThrowImage,
+          caption: "A baseball diamond: the throw from home plate to second base runs along the diagonal of a 90 foot square, 90√2, about 127.3 feet.",
+          alt: "A baseball field seen from above, with the four bases at the corners of a square infield. A dashed gold 45°-45°-90° triangle joins home, first and second base, with the right angle at first base and 90 marked on one side.",
+        },
       },
       {
         title: "Laying tiles on the diagonal",
         text: "Tilers sometimes turn square tiles by $45^\\circ$ for a diamond pattern. A $30$ centimetre tile then spans its diagonal, $30\\sqrt{2} \\approx 42.4$ centimetres, from point to point, and the cut tiles along each wall are $45^\\circ$-$45^\\circ$-$90^\\circ$ halves of a whole tile.",
+        image: {
+          src: diamondTilesImage,
+          caption: "Square tiles laid on the diagonal: a 30 centimetre tile spans 30√2, about 42.4 centimetres, point to point, and the cut tiles along the wall are 45°-45°-90° halves.",
+          alt: "A floor of cream and blue square tiles turned 45° into diamonds against a wall. One whole tile is outlined in dashed gold with its diagonal drawn, and a half tile cut along the wall is shaded gold with its right angle marked.",
+        },
       },
     ],
   },
@@ -386,14 +421,29 @@ export const asides: Record<string, Asides> = {
       {
         title: "Sizing a spanner for a nut",
         text: "A hexagonal nut is six equilateral triangles round its centre, and a spanner grips it across two flat sides. Each triangle halves into two $30^\\circ$-$60^\\circ$-$90^\\circ$ triangles, so for a nut with $6$ millimetre edges the width across the flats is $6\\sqrt{3} \\approx 10.4$ millimetres, while across the corners it is twice the edge, $12$ millimetres.",
+        image: {
+          src: hexNut306090Image,
+          caption: "A spanner on a hexagonal nut: the nut is six equilateral triangles, and half of one is a 30°-60°-90° triangle, so a nut with 6 millimetre edges is 6√3, about 10.4 millimetres, across the flats.",
+          alt: "A red open-ended spanner gripping a steel hexagonal nut across two flat sides. Dashed gold lines divide the nut into six triangles from its centre, and one half-triangle with a right angle at the middle of the top flat is shaded.",
+        },
       },
       {
         title: "A drafting set square",
         text: "Technical drawing sets come with two triangular set squares, and one is a $30^\\circ$-$60^\\circ$-$90^\\circ$ triangle. Sliding it along a straight ruler, a drafter draws lines at exactly $30^\\circ$, $60^\\circ$ and $90^\\circ$ without a protractor, which is how the standard isometric views of objects are drawn.",
+        image: {
+          src: draftingSetSquareImage,
+          caption: "A 30°-60°-90° set square slid along a ruler lets a drafter draw lines at exactly 30°, 60° and 90° without a protractor.",
+          alt: "A teal triangular set square resting on a wooden ruler on drawing paper, with pencil lines running on from its sloping and upright edges. Its outline is traced in dashed gold, with 30°, 60° and the right angle marked.",
+        },
       },
       {
         title: "Shadows in the evening",
         text: "When the sun is $30^\\circ$ above the horizon, your height is the short leg opposite $30^\\circ$ and your shadow the long leg, so your shadow is $\\sqrt{3} \\approx 1.73$ times your height. When the sun is $60^\\circ$ up, the legs trade places and your shadow is about $0.58$ times your height.",
+        image: {
+          src: eveningShadow30Image,
+          caption: "An evening shadow: with the sun 30° above the horizon, your shadow is the long leg of a 30°-60°-90° triangle, about 1.73 times your height.",
+          alt: "A person standing on grass with a low sun behind them and a long shadow stretching away. A dashed gold right triangle joins the top of their head, their feet and the tip of the shadow, with 30° marked at the tip.",
+        },
       },
     ],
   },
@@ -412,10 +462,20 @@ export const asides: Record<string, Asides> = {
       {
         title: "Climbing a steep path",
         text: "Walkers can reckon height from a slope's angle using the table. On a path that climbs at $30^\\circ$, $\\sin 30^\\circ = \\frac{1}{2}$, so every $100$ metres walked along the path gains $50$ metres of height. At $45^\\circ$, the same walk gains about $71$ metres.",
+        image: {
+          src: steepPathClimbImage,
+          caption: "A walker on a path that climbs at 30°: since sin 30° is a half, every 100 metres along the path gains 50 metres of height.",
+          alt: "A walker heading up a straight path on a green hillside. A dashed gold right triangle sits under the path, with 30° at the bottom, 100 along the path and 50 up the vertical side.",
+        },
       },
       {
         title: "Laying out a hexagon grid",
         text: "Many board games and strategy video games use a grid of hexagons. For hexagons measuring $1$ from centre to corner, the width across two flat sides is $2\\cos 30^\\circ = \\sqrt{3}$, so the centres of neighbouring hexes in a row sit $\\sqrt{3} \\approx 1.73$ apart. Programmers place every hex from these exact values.",
+        image: {
+          src: hexGridBoardImage,
+          caption: "A hexagon game board: for hexes 1 from centre to corner, neighbouring centres in a row sit 2 cos 30°, which is √3, about 1.73, apart.",
+          alt: "A board of coloured hexagon tiles in three rows. Two neighbouring hex centres are marked with gold dots joined by a dashed gold line, and a small gold right triangle runs from one centre to the corner and flat side between them.",
+        },
       },
     ],
   },

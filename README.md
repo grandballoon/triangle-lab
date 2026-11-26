@@ -395,9 +395,10 @@ The pictures are part of the site's source, so they are reviewed, versioned and 
 The caption is plain text, without LaTeX.
 `alt` describes the picture for a reader who cannot see it; leave it out when the caption already says what is there.
 Importing the file, rather than linking to it, makes a missing or misspelt file fail the build, and gives the published file a fingerprinted name, so a replaced picture is never served stale.
-Every use in the Triangles chapter has a simple cartoon of its own, hand-written as an SVG in `src/images/` in one style: flat colours, thick dark outlines, and the lesson's triangle laid over the object as a dashed gold line.
+Every use in every lesson has a simple cartoon, hand-written as an SVG in `src/images/` in one style: flat colours, thick dark outlines, and the lesson's own figure (its triangle, circle, angle, graph or solid) laid over the object as a dashed gold line.
+Two uses that show the same thing share one drawing.
 To put a photo in place of a cartoon, save the photo and change the import to point at it; delete the cartoon once nothing imports it.
-`src/images/placeholder.svg` can stand in for a picture that is still to come.
+`npm test` fails on a picture that no lesson imports, so a replaced drawing cannot be left behind.
 The copy editor edits a use's title and text and leaves its image alone; edit a caption in the source.
 These pictures are separate from the reader's own background photo (`src/backdrop/`), which stays on the reader's device.
 

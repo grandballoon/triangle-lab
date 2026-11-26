@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="50" y="30" width="540" height="300" rx="6" fill="#f3ead8"/>
+    <rect x="70" y="262" width="500" height="42" rx="4" fill="#d9a066"/>
+  </g>
+  <path d="M110 262 v14 M150 262 v10 M190 262 v14 M230 262 v10 M270 262 v14 M310 262 v10 M350 262 v14 M390 262 v10 M430 262 v14 M470 262 v10 M510 262 v14" stroke="#0b0f14" stroke-width="3"/>
+  <path d="M420 123 L540 54 M420 123 V50" stroke="#0b0f14" stroke-width="4" stroke-linecap="round"/>
+  <path d="M420 262 L180 262 L420 123 Z M396 248 L250 248 L396 164 Z" fill="#38d9a9" fill-opacity="0.6" fill-rule="evenodd" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M420 262 L180 262 L420 123 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M404 262 V246 H420" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <path d="M250 262 A70 70 0 0 0 241 227 M420 173 A50 50 0 0 1 377 148" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="26" font-weight="700" text-anchor="middle" fill="#f2c14e"><text x="140" y="246">30°</text><text x="470" y="200">60°</text></g>
+</svg>

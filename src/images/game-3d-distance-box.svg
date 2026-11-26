@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="52" y="26" width="536" height="308" rx="12" fill="#1c2633" stroke="#0b0f14" stroke-width="6"/>
+  <path d="M56 300 H584 M100 250 H560 M56 330 L176 230 M176 330 L276 230 M296 330 L376 230 M416 330 L476 230 M536 330 L576 296" stroke="#2a3340" stroke-width="3"/>
+  <path d="M150 290 L390 290 L390 150 L150 150 L150 290 M230 230 L470 230 L470 90 L230 90 L230 230 M150 290 L230 230 M390 290 L470 230 M390 150 L470 90 M150 150 L230 90" fill="none" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="6 6"/>
+  <path d="M150 290 L390 290 L470 230 L470 90" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M150 290 L470 90" fill="none" stroke="#f2c14e" stroke-width="6"/>
+  <path d="M470 206 L452 206 L452 225" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="134" y="266" width="32" height="40" rx="10" fill="#5fb0e8"/>
+    <circle cx="150" cy="252" r="16" fill="#f3c9a0"/>
+    <path d="M440 114 V82 Q440 54 470 54 Q500 54 500 82 V114 L490 106 L480 114 L470 106 L460 114 L450 106 Z" fill="#a78bfa"/>
+  </g>
+  <g fill="#0b0f14"><circle cx="460" cy="78" r="5"/><circle cx="480" cy="78" r="5"/></g>
+</svg>

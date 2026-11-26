@@ -5,6 +5,9 @@
 import { C, tint } from "../draw.ts";
 import { add, angleOf, clamp, dist, fmt, normalize, perp, polar, scale, sub, vec, type Vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import eclipseSunCoveredImage from "../../images/eclipse-sun-covered.svg";
+import sprinklersOverlapLensImage from "../../images/sprinklers-overlap-lens.svg";
+import vennToScaleImage from "../../images/venn-to-scale.svg";
 
 const O1 = vec(-2, 0.6);
 // O₂ may swing this far (radians) either side of horizontal from O₁.
@@ -118,14 +121,29 @@ export default lesson((s) => {
       {
         title: "Overlapping sprinklers",
         text: "Two lawn sprinklers that each reach $5$ m, set $6$ m apart, water a lens twice. Here each central angle is $2\\cos^{-1}\\tfrac35 \\approx 1.85$ rad, so each segment is $\\tfrac12 \\cdot 25(1.85 - \\sin 1.85) \\approx 11.2$ square metres, and about $22.4$ square metres get a double dose. Gardeners spacing sprinklers trade this overlap against dry gaps.",
+        image: {
+          src: sprinklersOverlapLensImage,
+          caption: "Two lawn sprinklers set closer than twice their reach water a lens-shaped patch twice over.",
+          alt: "A lawn seen from above with two sprinkler heads and their overlapping blue watering circles, the lens where they overlap outlined and shaded in dashed gold.",
+        },
       },
       {
         title: "How much of the Sun is covered?",
         text: "During a partial solar eclipse, the Moon's disc covers a lens-shaped part of the Sun's. Astronomers report the obscuration, the fraction of the Sun's disc covered, which is exactly this lens area divided by the area of the Sun's disc, worked out from the two discs' sizes and how far apart their centres appear.",
+        image: {
+          src: eclipseSunCoveredImage,
+          caption: "A partial solar eclipse: the Moon's disc covers a lens-shaped part of the Sun's, and that lens's share of the Sun's area is the obscuration.",
+          alt: "A yellow Sun partly covered by a dark Moon disc, the covered lens outlined in dashed gold.",
+        },
       },
       {
         title: "Venn diagrams drawn to scale",
         text: "In an area-proportional Venn diagram, each circle's area matches the size of a group and the overlap matches the people in both. To draw one, software picks the radii from the group sizes and then adjusts the distance between centres until the lens area equals the overlap.",
+        image: {
+          src: vennToScaleImage,
+          caption: "A Venn diagram drawn to scale on a screen: the circles' areas match the two groups, and the centres are spaced so the lens matches the overlap.",
+          alt: "A computer monitor showing a large pink circle and a smaller teal circle overlapping, the lens outlined in dashed gold and a dashed gold line joining the two centres.",
+        },
       },
     ],
 

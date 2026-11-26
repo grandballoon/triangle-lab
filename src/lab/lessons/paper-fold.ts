@@ -6,6 +6,8 @@
 import { C, tint } from "../draw.ts";
 import { add, clamp, dist, dot, fmt, inBox, len, lerp, mid, normalize, perp, reflect, scale, sub, vec, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import fabricCutOnFoldImage from "../../images/fabric-cut-on-fold.svg";
+import origamiHagaFoldImage from "../../images/origami-haga-fold.svg";
 
 const WIDTH = 8;
 const HEIGHT = 5;
@@ -108,10 +110,20 @@ export default lesson((s) => {
       {
         title: "Finding fractions by folding",
         text: "Origami folders find exact fractions of a square without a ruler by folding a corner onto a chosen point, a method known as Haga's theorems. On a $20$ cm square, folding the corner $A$ onto the midpoint of the far side ($t = 10$) puts the crease at $x = \\frac{20^2 + 10^2}{2 \\cdot 20} = 12.5$ cm, which is $\\tfrac58$ of the side. The same fold also makes the flap's edge cross the next side exactly a third of the way along, which is how folders find thirds.",
+        image: {
+          src: origamiHagaFoldImage,
+          caption: "Folding a square of origami paper so a corner lands on the middle of the far side marks ⅝ of one side and ⅓ of the next, no ruler needed.",
+          alt: "A teal square with its corner A folded up onto the midpoint of the top edge, the cream flap showing; gold dashes mark where the corner was, with the crease points labelled ⅝ and ⅓.",
+        },
       },
       {
         title: "Cutting fabric on the fold",
         text: "Dressmakers cut symmetrical pieces, like the back of a shirt, by folding the fabric and cutting half the shape through both layers. Unfolded, the two halves are mirror images in the fold line, so they match exactly in every length and angle, just as the flap matches its dashed outline.",
+        image: {
+          src: fabricCutOnFoldImage,
+          caption: "Cutting on the fold: the pattern gives half a shirt back, and unfolded the second half is its reflection in the fold, so both sides match.",
+          alt: "A half shirt-back paper pattern pinned to folded purple fabric against the fold, with a gold fold line and the reflected other half outlined in gold dashes.",
+        },
       },
     ],
 

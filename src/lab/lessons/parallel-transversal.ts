@@ -8,6 +8,8 @@
 import { C } from "../draw.ts";
 import { add, angleAt, angleOf, clamp, fmt, lerp, normalize, onSegment, sub, toDeg, vec, type Vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import eratosthenesEarthImage from "../../images/eratosthenes-earth.svg";
+import setSquareParallelsImage from "../../images/set-square-parallels.svg";
 
 const TOP_Y = 1.8;
 const LOW_Y = -1.6;
@@ -117,10 +119,20 @@ export default lesson((s) => {
       {
         title: "Drawing parallel lines with a set square",
         text: "Draughtspeople and carpenters draw parallel lines by sliding a set square along a straight edge and drawing along its side at each stop. The side always meets the straight edge at the same angle, so, reading the rule backwards, every line drawn is parallel.",
+        image: {
+          src: setSquareParallelsImage,
+          caption: "Drawing parallel lines with a set square: sliding it along a straight edge keeps the same angle at each line, so every line drawn is parallel.",
+          alt: "A sheet of paper with a wooden ruler along the bottom and a green set square resting on it, a pencil at its slanted side; three earlier slanted lines are drawn, all dashed gold, each meeting the ruler at an equal marked angle.",
+        },
       },
       {
         title: "Measuring the Earth",
         text: "Sunlight arrives in parallel rays. In Eratosthenes' famous measurement, at noon on midsummer the Sun was overhead at Syene, while at Alexandria a stick's shadow showed the rays coming in $7.2^\\circ$ from vertical. The two vertical lines meet at the Earth's centre, and the alternate angle there is also $7.2^\\circ$, one fiftieth of a circle, so the Earth's circumference is fifty times the distance between the two cities.",
+        image: {
+          src: eratosthenesEarthImage,
+          caption: "Eratosthenes' measurement of the Earth: parallel sun rays make the same 7.2° angle at an Alexandria stick and at the Earth's centre.",
+          alt: "A globe with two upright sticks on its surface, one directly under a vertical sun ray and one further round; two parallel dashed gold rays come down, lines from both sticks meet at the centre, and equal angles at the tilted stick and the centre are marked 7.2° (drawn larger than life).",
+        },
       },
     ],
 

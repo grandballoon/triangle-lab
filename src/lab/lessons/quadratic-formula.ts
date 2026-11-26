@@ -9,6 +9,8 @@ import { fmt } from "../geo.ts";
 import { axes, EPS, onStage, plot, realRoots, texQuadratic, type Graph } from "../kit/algebra.ts";
 import { par } from "../kit/coordinates.ts";
 import { lesson, term, type Readout } from "../scene.ts";
+import ballOverFenceImage from "../../images/ball-over-fence.svg";
+import gateBraceImage from "../../images/gate-brace.svg";
 
 const AXIS = C.violet;
 const ROOT = C.gold;
@@ -153,10 +155,20 @@ export default lesson((s) => {
       {
         title: "A diagonal brace for a gate",
         text: "A gate is to be 0.6 m wider than it is tall, and the diagonal brace you have is 2 m long. Pythagoras gives $h^2 + (h + 0.6)^2 = 4$, or $2h^2 + 1.2h - 3.64 = 0$, which does not factor nicely. The formula gives $h \\approx 1.08$: the gate is about 1.08 m tall and 1.68 m wide.",
+        image: {
+          src: gateBraceImage,
+          caption: "A gate wider than it is tall with a 2 m diagonal brace: Pythagoras gives a quadratic that does not factor, and the formula gives a gate about 1.08 m tall.",
+          alt: "A wooden gate between two posts with a diagonal brace, the brace and the gate's bottom and side shown as a gold dashed right triangle.",
+        },
       },
       {
         title: "Will the ball get that high?",
         text: "A ball kicked upward at 10 m/s from 1 m up has height $-4.9t^2 + 10t + 1$ metres. Does it ever reach 3 m, the top of a fence? Setting the height to 3 gives $-4.9t^2 + 10t - 2 = 0$, with discriminant $100 - 4(4.9)(2) = 60.8 > 0$: yes, without working out when.",
+        image: {
+          src: ballOverFenceImage,
+          caption: "A ball kicked towards a fence: the discriminant of the height equation is positive, so the ball does rise above the 3 m fence top.",
+          alt: "A child kicking a ball towards a wooden fence, with a gold dashed line level with the fence top marked 3 and the ball's gold dashed parabola rising above it.",
+        },
       },
     ],
   };

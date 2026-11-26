@@ -7,6 +7,8 @@ import { C } from "../draw.ts";
 import { angleAt, cross, dist, fmt, polar, sub, toRad, vec, wrapAngle, type Constraint } from "../geo.ts";
 import { arcTex, bearing, degTex, nameOutside } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import rightLawnSprinklerImage from "../../images/right-lawn-sprinkler.svg";
+import roundTableCentreImage from "../../images/round-table-centre.svg";
 
 const O = vec(0, 0.2);
 const R = 3.8;
@@ -72,10 +74,20 @@ export default lesson((s) => {
       {
         title: "Finding the centre of a round table",
         text: "Lay a carpenter's square with its corner on the edge of the table and mark where its two edges cross the rim: the line joining the marks is a diameter. Do it again from another spot, and the two diameters cross at the centre.",
+        image: {
+          src: roundTableCentreImage,
+          caption: "Finding a round table's centre: a carpenter's square with its corner on the rim marks the ends of a diameter, and two such diameters cross at the centre.",
+          alt: "Top-down round wooden table with a steel carpenter's square whose corner touches the rim, gold dots where its edges cross the rim, and two dashed gold diameters crossing at a gold centre dot.",
+        },
       },
       {
         title: "One sprinkler for a right-angled lawn",
         text: "To reach all three corners of a lawn shaped like a right triangle with one sprinkler set to the shortest throw, put it at the midpoint of the longest side. That point is the same distance from all three corners.",
+        image: {
+          src: rightLawnSprinklerImage,
+          caption: "A right-angled lawn: a sprinkler at the midpoint of the longest side is the same distance from all three corners, so one throw reaches them all.",
+          alt: "Top-down right-triangle lawn with a sprinkler at the middle of its longest side, dashed gold lines to the three corners and a dashed gold circle through all three.",
+        },
       },
     ],
 

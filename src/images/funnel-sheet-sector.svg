@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<rect width="640" height="360" fill="#131a23"/>
+<rect y="300" width="640" height="60" fill="#2a3340"/>
+<g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+<path d="M190 190L250 86A120 120 0 1 1 130 86Z" fill="#8fa3b8"/>
+<path d="M392 112L568 112L492 252H468Z" fill="#8fa3b8"/>
+<rect x="466" y="248" width="28" height="46" rx="4" fill="#8fa3b8"/>
+<ellipse cx="480" cy="112" rx="88" ry="22" fill="#1c2633"/>
+</g>
+<path d="M332 190H368M354 176L370 190L354 204" fill="none" stroke="#f3ead8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round">
+<path d="M250 86A120 120 0 1 1 130 86"/>
+<ellipse cx="480" cy="112" rx="88" ry="22"/>
+</g>
+<path d="M216 175A30 30 0 1 1 164 175" fill="none" stroke="#f2c14e" stroke-width="4"/>
+<text x="190" y="262" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#0b0f14">240°</text>
+</svg>

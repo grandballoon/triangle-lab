@@ -43,6 +43,9 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import floorPlanProtractorImage from "../../images/floor-plan-protractor.svg";
+import leftRightSolesImage from "../../images/left-right-soles.svg";
+import webImageResizeImage from "../../images/web-image-resize.svg";
 
 const KINDS = ["translation", "rotation", "reflection", "distortion", "dilation"] as const;
 type Kind = (typeof KINDS)[number];
@@ -153,14 +156,29 @@ export default lesson((s) => {
       {
         title: "Making left and right shoes",
         text: "A shoe factory cuts the left sole from the right sole's pattern turned over. The two soles are congruent, every length matching, but a reflection reverses orientation, so no amount of sliding or turning makes a left shoe into a right one.",
+        image: {
+          src: leftRightSolesImage,
+          caption: "A pair of soles: the left is the right one's pattern turned over, every length matching, but the reflection reverses it so no slide or turn makes one into the other.",
+          alt: "Two shoe soles side by side, mirror images across a dashed gold mirror line, with a gold line joining matching toe points marked as equal halves meeting the mirror at a right angle.",
+        },
       },
       {
         title: "Resizing images on a web page",
         text: "Web designers keep a picture's aspect ratio when they resize it: an image $800$ by $600$ pixels can be shown at $400$ by $300$, scaling both directions by $\\frac{1}{2}$, and nothing looks wrong. Shown at $400$ by $400$, it is scaled by $\\frac{1}{2}$ across but only $\\frac{2}{3}$ down, a distortion, and round things turn into ovals.",
+        image: {
+          src: webImageResizeImage,
+          caption: "Resizing a picture on a web page: scaling both directions by the same factor keeps its shape, while squashing one direction turns a round ball into an oval.",
+          alt: "A browser window with a large picture of a red ball over a hill, a half-size copy whose gold diagonal is parallel to the original's, and a squarer copy with an oval ball, a steeper diagonal and a red cross.",
+        },
       },
       {
         title: "Measuring from an architect's plan",
         text: "A floor plan drawn at $1{:}50$ is a dilation of the building, so lengths on paper are $\\frac{1}{50}$ of the real ones while every angle is drawn true: a builder can measure an angle straight off the plan with a protractor. Areas scale by $\\left(\\frac{1}{50}\\right)^2$, so $1$ square centimetre of plan stands for $2500$ square centimetres, a quarter of a square metre, of floor.",
+        image: {
+          src: floorPlanProtractorImage,
+          caption: "A floor plan at 1:50: every length is shrunk but every angle is drawn true, so a builder can read an angle straight off the plan with a protractor.",
+          alt: "A cream sheet with a floor plan marked 1:50, its outline traced in dashed gold, and a protractor laid on the corner where an angled wall meets the top wall, with the angle marked in gold.",
+        },
       },
     ],
 

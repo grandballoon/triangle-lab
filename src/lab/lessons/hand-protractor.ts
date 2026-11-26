@@ -6,6 +6,9 @@ import { C } from "../draw.ts";
 import { angleAt, fmt, inBox, toDeg } from "../geo.ts";
 import { lesson } from "../scene.ts";
 import { protractorOf } from "../kit/two-hands.ts";
+import fistPoleStarImage from "../../images/fist-pole-star.svg";
+import handTrackingFingerImage from "../../images/hand-tracking-finger.svg";
+import kneeGoniometerImage from "../../images/knee-goniometer.svg";
 
 const RIGHT_TOLERANCE = 1.5;
 
@@ -45,14 +48,29 @@ export default lesson((s) => {
       {
         title: "Measuring the sky with your hand",
         text: "Stargazers and hikers estimate angles with an outstretched arm: a closed fist held at arm's length covers about $10^\\circ$ of sky. The Pole Star stands as high above the horizon as your latitude, so from London, at about $51^\\circ$ north, it is roughly five fists up.",
+        image: {
+          src: fistPoleStarImage,
+          caption: "Measuring the sky by hand: from London the Pole Star stands about 51° above the horizon, roughly five fists held at arm's length.",
+          alt: "A person at night with an arm stretched out and a fist raised; dashed gold lines run from their eye level to the horizon and up to a bright star, with the angle marked 51°.",
+        },
       },
       {
         title: "Measuring how far a joint bends",
         text: "Physiotherapists measure a joint with a goniometer, a protractor with two long arms laid along the limb and its pivot on the joint. Measuring a recovering knee week by week, say from $90^\\circ$ of bend to $120^\\circ$, shows how well the treatment is working.",
+        image: {
+          src: kneeGoniometerImage,
+          caption: "A physiotherapist's goniometer: its two arms lie along the thigh and shin, and the angle at its pivot shows how far the knee bends.",
+          alt: "A person sitting on a treatment table with the lower leg hanging over the edge; a steel goniometer's arms lie along the thigh and shin with its pivot on the knee, and a gold arc marks the angle as 120°.",
+        },
       },
       {
         title: "Hand tracking",
         text: "Headsets with hand tracking do what this page does: find points on the fingers in each camera frame and work out the angles between them. Whether a finger is bent or straight can be read from the angle at its knuckle.",
+        image: {
+          src: handTrackingFingerImage,
+          caption: "Hand tracking: a headset finds points on each finger and reads whether a finger is bent from the angle at its joint.",
+          alt: "An open hand with gold dots on every finger joint joined by dashed gold lines; the index finger is bent and a gold arc marks the angle at its middle joint. A headset with two camera lenses sits in the corner.",
+        },
       },
     ],
 

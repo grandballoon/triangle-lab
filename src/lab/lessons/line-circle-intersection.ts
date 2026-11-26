@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { both, fmt, inBox, snapToGrid, type Vec } from "../geo.ts";
 import { keepApart, lattice, num, pair, plane, texPoint, texShiftSquared, texSum } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import droneNoFlyZoneImage from "../../images/drone-no-fly-zone.svg";
+import rayTraceBallImage from "../../images/ray-trace-ball.svg";
 
 const R = 3;
 const MEET = C.gold;
@@ -106,10 +108,20 @@ export default lesson((s) => {
       {
         title: "Drawing pictures with rays",
         text: "Ray tracing, used for film effects and realistic games, follows a straight ray of light from the camera through each pixel. To see whether the ray hits a ball, the program puts the ray's equation into the ball's and gets a quadratic. A negative discriminant means a miss, so that pixel shows whatever is behind; otherwise the smaller solution is where the ray first meets the ball.",
+        image: {
+          src: rayTraceBallImage,
+          caption: "Ray tracing: a ray from the camera through one pixel is tested against the ball, and the first place it meets it colours that pixel.",
+          alt: "A camera, a grid of pixels with one cell lit, and a dashed gold ray running through it to touch a red ball on a stand.",
+        },
       },
       {
         title: "Steering clear of a no-fly zone",
         text: "Suppose a no-fly zone is the circle $x^2 + y^2 = 4$ around a point, in km, and a drone's planned route is $y = x + 3$. Substituting gives $2x^2 + 6x + 5 = 0$, with $D = 36 - 40 = -4 < 0$. No solutions: the route never enters the zone.",
+        image: {
+          src: droneNoFlyZoneImage,
+          caption: "A drone's straight route that never meets the circle of a no-fly zone, so the substitution has no solutions.",
+          alt: "A drone on a dashed gold straight route that passes just outside a red no-fly circle outlined in dashed gold.",
+        },
       },
     ],
 

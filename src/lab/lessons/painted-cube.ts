@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { lesson, type Readout } from "../scene.ts";
 import { Orbit, p3, type P3 } from "../solid.ts";
 import { boxFaces, facesViewer } from "../kit/solids.ts";
+import blockCubeVisibleFacesImage from "../../images/block-cube-visible-faces.svg";
+import puzzleCube4x4Image from "../../images/puzzle-cube-4x4.svg";
 
 const SIZE = 3.6; // edge of the assembled cube on the stage
 const SPREAD = 0.9; // extra spacing between blocks when fully pulled apart
@@ -80,10 +82,20 @@ export default lesson((s) => {
       {
         title: "Counting pieces on a bigger puzzle cube",
         text: "The $4 \\times 4 \\times 4$ puzzle cube has $8$ corners, $12 \\cdot 2 = 24$ edge pieces and $6 \\cdot 2^2 = 24$ centre pieces: $56$ visible pieces. The other $(4-2)^3 = 8$ positions are hidden inside, which is why the real puzzle replaces them with a mechanism. The stickers check out too: $8 \\cdot 3 + 24 \\cdot 2 + 24 \\cdot 1 = 96 = 6 \\cdot 4^2$.",
+        image: {
+          src: puzzleCube4x4Image,
+          caption: "A 4 × 4 × 4 puzzle cube: corners show three stickers, edge pieces two and centre pieces one, and the 8 hidden inside show none.",
+          alt: "A puzzle cube with red, cream and teal faces of 4 by 4 stickers, the centre 2 by 2 stickers on each face outlined in gold, and its height marked 4.",
+        },
       },
       {
         title: "Drawing only what you can see",
         text: "Block-building games draw only the faces of blocks that touch air. A solid $10 \\times 10 \\times 10$ cube of stone has $1000$ blocks, but only $6 \\cdot 10^2 = 600$ visible faces, and the $8^3 = 512$ blocks of the inside need no drawing at all. Skipping hidden faces this way is a large part of how such games run smoothly.",
+        image: {
+          src: blockCubeVisibleFacesImage,
+          caption: "A solid cube of blocks in a building game: only the outside faces need drawing, and the 8 × 8 × 8 blocks inside are never drawn.",
+          alt: "A large cube built of small grass-and-earth blocks in a 10 by 10 grid on each face, with a gold dashed inner cube showing the hidden blocks inside.",
+        },
       },
     ],
 

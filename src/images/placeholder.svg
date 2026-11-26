@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
-  <!-- Stands in for a recommended photo until the real one is added (README.md, "Adding a recommended image"). -->
-  <rect width="640" height="360" fill="#131a23"/>
-  <g fill="none" stroke="#e9f0f7" stroke-opacity="0.35" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M120 250 L320 110 L520 250 Z"/>
-    <path d="M220 250 L320 110 L420 250 M220 250 L270 180 M420 250 L370 180"/>
-  </g>
-  <text x="320" y="305" fill="#e9f0f7" fill-opacity="0.55" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">Photo to come</text>
-</svg>

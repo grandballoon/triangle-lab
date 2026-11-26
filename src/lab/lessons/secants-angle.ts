@@ -9,6 +9,8 @@ import { C, tint } from "../draw.ts";
 import { add, angleAt, both, dist, inBox, inRing, polar, sub, toRad, vec, wrapAngle, type Vec } from "../geo.ts";
 import { arcTex, bearing, degTex, farArc, farPair, nameOutside, nearPoint } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import geostationaryCoverageImage from "../../images/geostationary-coverage.svg";
+import issEarthHorizonImage from "../../images/iss-earth-horizon.svg";
 
 const O = vec(2.2, 0.2);
 const R = 3.3;
@@ -84,10 +86,20 @@ export default lesson((s) => {
       {
         title: "How much Earth the space station sees",
         text: "From the International Space Station, about $400$ km up, the Earth fills about $140^\\circ$ of the view, between two tangent lines to it. The arc of Earth it can see is $180^\\circ - 140^\\circ = 40^\\circ$, which puts the horizon about $20^\\circ$, roughly $2200$ km, away along the ground in every direction.",
+        image: {
+          src: issEarthHorizonImage,
+          caption: "The space station sees the Earth fill about 140° of view between two tangent lines, so the arc of Earth it can see is 180° − 140° = 40°.",
+          alt: "The space station just above a large Earth, with two dashed gold tangent lines spreading out from it to the horizon, labelled 140°, and the visible arc of Earth between them picked out in gold.",
+        },
       },
       {
         title: "Coverage from a geostationary satellite",
         text: "A geostationary satellite, about $36\\,000$ km up, sees the whole Earth across only about $17.4^\\circ$. The arc it can see is $180^\\circ - 17.4^\\circ \\approx 162.6^\\circ$, so it reaches about $81^\\circ$ either side of the point below it, which is why such satellites cannot serve the far polar regions.",
+        image: {
+          src: geostationaryCoverageImage,
+          caption: "A distant geostationary satellite sees the whole Earth across only about 17.4°, so the arc it covers is about 162.6°, leaving the far polar regions out of reach.",
+          alt: "A small Earth with ice caps at top and bottom and a satellite far to the right, with two dashed gold tangent lines meeting at the satellite and the large covered arc of Earth picked out in gold, the poles just beyond it.",
+        },
       },
     ],
 

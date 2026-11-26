@@ -9,6 +9,9 @@ import { fmt } from "../geo.ts";
 import { axes, onStage, type Graph } from "../kit/algebra.ts";
 import { texRatio } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import rainBarrelLeakImage from "../../images/rain-barrel-leak.svg";
+import twoMowersLawnImage from "../../images/two-mowers-lawn.svg";
+import twoPrintersJobImage from "../../images/two-printers-job.svg";
 
 const PIPE_A = C.cyan;
 const PIPE_B = C.orange;
@@ -117,14 +120,29 @@ export default lesson((s) => {
       {
         title: "Mowing with a friend",
         text: "You can mow the lawn in 60 minutes and a friend can in 90. Together you mow $\\tfrac{1}{60} + \\tfrac{1}{90} = \\tfrac{1}{36}$ of it a minute, so it takes 36 minutes.",
+        image: {
+          src: twoMowersLawnImage,
+          caption: "Two people mowing one lawn: their rates add, so together they finish in 36 minutes, the faster mower covering three fifths of it.",
+          alt: "A lawn seen from above with mown stripes, two people pushing mowers in from either side, and a gold dashed line dividing the lawn three fifths to two fifths.",
+        },
       },
       {
         title: "A rain barrel with a leak",
         text: "A downpipe fills a rain barrel in 2 hours, but a loose tap at the bottom would empty it in 6. Rates still add, with the leak's counted against: $\\tfrac12 - \\tfrac16 = \\tfrac13$ of the barrel an hour, so it fills in 3 hours.",
+        image: {
+          src: rainBarrelLeakImage,
+          caption: "A rain barrel filled by a downpipe and drained by a leaky tap: the leak's rate counts against the pipe's, so it fills in 3 hours instead of 2.",
+          alt: "A downpipe from a house dripping into a wooden barrel, with a leaky tap at the bottom; a gold dashed water level with an up arrow, the pipe marked 2 and the tap marked 6.",
+        },
       },
       {
         title: "Sharing a print job",
         text: "One printer takes 30 minutes for a big job and an older one takes 45. Splitting the job between them, they finish in $\\frac{30 \\cdot 45}{30 + 45} = 18$ minutes.",
+        image: {
+          src: twoPrintersJobImage,
+          caption: "Two printers sharing one big job: the faster one takes three fifths of it, and together they finish in 18 minutes.",
+          alt: "A newer grey printer marked 30 and an older tan printer marked 45 on a desk, under a gold dashed bar for the job split three fifths to two fifths.",
+        },
       },
     ],
   };

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<rect width="640" height="360" fill="#131a23"/>
+<rect x="60" y="30" width="520" height="300" rx="12" fill="#1c2633"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M180 300V60H460V180M100 300H540" stroke="#0b0f14" stroke-width="16"/>
+<path d="M180 300V60H460V180M100 300H540" stroke="#8fa3b8" stroke-width="8"/>
+<path d="M460 192V300" stroke="#0b0f14" stroke-width="16"/>
+<path d="M460 192V300" stroke="#8fa3b8" stroke-width="8"/>
+</g>
+<g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+<rect x="160" y="110" width="40" height="150" rx="16" fill="#d9a066"/>
+<rect x="440" y="214" width="40" height="72" rx="14" fill="#d9a066"/>
+</g>
+<g fill="none" stroke-width="8">
+<path d="M164 140H196M164 166H196M164 192H196" stroke="#ef6b5b"/>
+<path d="M164 226H196" stroke="#a78bfa"/>
+<path d="M444 234H476M444 252H476" stroke="#ef6b5b"/>
+<path d="M444 270H476" stroke="#a78bfa"/>
+</g>
+<g fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round">
+<path d="M180 84L460 300M460 192L180 300M367 228V300"/>
+</g>
+<circle cx="367" cy="228" r="8" fill="#f2c14e" stroke="#0b0f14" stroke-width="3"/>
+<g font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e">
+<text x="126" y="200">6</text><text x="516" y="256">3</text><text x="392" y="274">2</text>
+</g>
+</svg>

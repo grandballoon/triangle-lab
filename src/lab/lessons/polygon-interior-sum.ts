@@ -6,6 +6,8 @@ import { C, tint } from "../draw.ts";
 import { fmt, toDeg, vec } from "../geo.ts";
 import { convexPolygon, interiorAngles, pieceColor } from "../kit/polygons.ts";
 import { lesson, type Readout } from "../scene.ts";
+import footballPanelsImage from "../../images/football-panels.svg";
+import pentagonPlotSurveyImage from "../../images/pentagon-plot-survey.svg";
 
 const MAX_SIDES = 12;
 
@@ -51,10 +53,20 @@ export default lesson((s) => {
       {
         title: "Why a football is round",
         text: "A classic football is sewn from pentagons and hexagons. A regular pentagon's angles are $\\tfrac{540^\\circ}{5} = 108^\\circ$ and a regular hexagon's are $\\tfrac{720^\\circ}{6} = 120^\\circ$, so where one pentagon and two hexagons meet the angles total $348^\\circ$, short of a flat $360^\\circ$. That missing $12^\\circ$ at every corner is what curves the panels into a ball.",
+        image: {
+          src: footballPanelsImage,
+          caption: "A classic football: one pentagon and two hexagons meet at each corner, their angles totalling 348°, and the missing 12° curves the panels into a ball.",
+          alt: "A black and white football with one dark pentagon and the two hexagons meeting it at one marked corner outlined.",
+        },
       },
       {
         title: "Checking a survey of a plot",
         text: "A surveyor who measures every corner of a five-sided plot expects the angles to total $180^\\circ \\cdot 3 = 540^\\circ$. If they add to $540^\\circ\\,5'$, the extra five minutes of angle are measurement error, and the correction is shared out among the corners before the plan is drawn.",
+        image: {
+          src: pentagonPlotSurveyImage,
+          caption: "Surveying a five-sided plot: the five corner angles should total 540°, so any excess is measurement error to share out among them.",
+          alt: "A five-sided green plot seen from above with pegs and an angle arc at each corner, labelled 540°, and a surveyor's instrument on a tripod at one corner.",
+        },
       },
     ],
 

@@ -7,6 +7,8 @@ import { C, tint } from "../draw.ts";
 import { angleAt, both, dist, fmt, inBox, inRing, lerp, polar, vec } from "../geo.ts";
 import { degTex, farArc, nameOutside } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import centreFinderDowelImage from "../../images/centre-finder-dowel.svg";
+import curveJoiningRoadsImage from "../../images/curve-joining-roads.svg";
 
 const O = vec(2.3, 0);
 const R = 3;
@@ -122,10 +124,20 @@ export default lesson((s) => {
       {
         title: "Joining two straight roads with a curve",
         text: "Where two straight roads or railway lines meet at an angle, engineers join them with a circular curve that touches each one. The points where the curve begins and ends are the points of contact of two tangents from the corner, so they are the same distance back along each straight. Surveyors work out that distance once, measure it back from the corner along both roads, and start and end the curve there.",
+        image: {
+          src: curveJoiningRoadsImage,
+          caption: "Two straight roads joined by a circular curve: the curve starts and ends the same distance back from the corner along each road.",
+          alt: "A road bending in a circular curve between two straights, with dashed lines continuing the straights to their corner, equal tick marks on each, and dashed radii meeting the road at right angles.",
+        },
       },
       {
         title: "Finding the centre of a round bar",
         text: "A woodworker's centre finder is a V with a straight blade along the line that bisects it. Push a dowel or a round bar into the V and it touches both arms equally far from the tip, so the blade runs through its centre. Scribe a line along the blade, turn the bar a quarter turn, scribe again, and the centre is where the two lines cross.",
+        image: {
+          src: centreFinderDowelImage,
+          caption: "A woodworker's centre finder: a round bar touches both arms of the V equally far from its tip, so the blade crosses its centre.",
+          alt: "The end of a round wooden bar sitting in a V-shaped tool, touching both arms at marked points with equal ticks, a steel blade up the middle, and two dashed scribed lines crossing at its centre.",
+        },
       },
     ],
   };

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<rect width="640" height="360" fill="#131a23"/>
+<g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="120" y="300" width="400" height="56" rx="4" fill="#b07a45"/><path d="M120 328H520" fill="none"/></g>
+<g fill="#ef6b5b" stroke="#0b0f14" stroke-width="6"><circle cx="218" cy="266" r="33"/><circle cx="286" cy="266" r="33"/><circle cx="354" cy="266" r="33"/><circle cx="422" cy="266" r="33"/><circle cx="252" cy="211" r="33"/><circle cx="320" cy="211" r="33"/><circle cx="388" cy="211" r="33"/><circle cx="286" cy="155" r="33"/><circle cx="354" cy="155" r="33"/><circle cx="320" cy="99" r="33"/></g>
+<g fill="#5fbf72" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><path d="M218 235q8 -12 18 -8q-6 10 -18 8Z"/><path d="M286 235q8 -12 18 -8q-6 10 -18 8Z"/><path d="M354 235q8 -12 18 -8q-6 10 -18 8Z"/><path d="M422 235q8 -12 18 -8q-6 10 -18 8Z"/><path d="M252 180q8 -12 18 -8q-6 10 -18 8Z"/><path d="M320 180q8 -12 18 -8q-6 10 -18 8Z"/><path d="M388 180q8 -12 18 -8q-6 10 -18 8Z"/><path d="M286 124q8 -12 18 -8q-6 10 -18 8Z"/><path d="M354 124q8 -12 18 -8q-6 10 -18 8Z"/><path d="M320 68q8 -12 18 -8q-6 10 -18 8Z"/></g>
+<path d="M320 99L286 155L354 155Z" fill="#f2c14e" fill-opacity="0.25" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+<path d="M320 99V155" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="6 6"/>
+<path d="M200 99H232M200 155H232M216 99V155" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+<text x="166" y="138" font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#f2c14e">6.5</text>
+<g fill="#f2c14e"><circle cx="320" cy="99" r="6"/><circle cx="286" cy="155" r="6"/><circle cx="354" cy="155" r="6"/></g>
+</svg>

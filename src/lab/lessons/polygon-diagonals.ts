@@ -5,6 +5,8 @@
 import { C, tint } from "../draw.ts";
 import { dist, regularPolygon, vec, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import officeNetworkLinksImage from "../../images/office-network-links.svg";
+import roundRobinOctagonImage from "../../images/round-robin-octagon.svg";
 
 const CENTER = vec(0, 0.5);
 const RADIUS = 3.7;
@@ -55,10 +57,20 @@ export default lesson((s) => {
       {
         title: "Planning a round-robin tournament",
         text: "In a round robin every team plays every other team once. Each of $8$ teams has $7$ matches, which adds to $56$, but each match was counted for both teams, so there are $28$ to schedule. That is the $8$ sides plus the $\\tfrac{8 \\cdot 5}{2} = 20$ diagonals of an octagon.",
+        image: {
+          src: roundRobinOctagonImage,
+          caption: "A round robin for 8 teams: every match is a side or a diagonal of an octagon, 8 sides plus 20 diagonals making 28 matches.",
+          alt: "Eight coloured team badges at the corners of an octagon on a pitch, with every pair joined by a side or a dashed diagonal.",
+        },
       },
       {
         title: "Wiring every office to every other",
         text: "A network that links each of $10$ sites directly to each of the others needs $\\tfrac{10 \\cdot 9}{2} = 45$ links. Since that grows roughly with the square of the number of sites, large networks instead route traffic through hubs.",
+        image: {
+          src: officeNetworkLinksImage,
+          caption: "A fully connected network: linking each of 10 offices directly to every other takes 45 links.",
+          alt: "Ten small office buildings in a ring, every pair joined by a dashed line.",
+        },
       },
     ],
 

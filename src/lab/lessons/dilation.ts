@@ -16,6 +16,9 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import mapScaleDilationImage from "../../images/map-scale-dilation.svg";
+import photocopierA4A3Image from "../../images/photocopier-a4-a3.svg";
+import pizzaSizeCompareImage from "../../images/pizza-size-compare.svg";
 
 const AT_CENTRE = C.gold; // the angle at O that both triangles use
 const AT_VERTEX = C.pink; // the equal angles at A and A′
@@ -80,14 +83,29 @@ export default lesson((s) => {
       {
         title: "Comparing pizza sizes",
         text: "A $30$ cm pizza is a dilation of a $20$ cm one by $k = 1.5$, so it has $1.5^2 = 2.25$ times the area, more than twice as much to eat, though it is only half as wide again. That is why a large pizza is often better value than two small ones: compare the prices with the areas, not the diameters.",
+        image: {
+          src: pizzaSizeCompareImage,
+          caption: "Comparing pizzas: a 30 cm pizza is a 20 cm one enlarged by 1.5, so it has 2.25 times the area.",
+          alt: "A small and a large pepperoni pizza seen from above, their diameters drawn in dashed gold and marked 20 and 30.",
+        },
       },
       {
         title: "Reading a map scale",
         text: "A $1{:}25\\,000$ map is a dilation of the land by $k = \\frac{1}{25\\,000}$, so $4$ cm on the map is $1$ km on the ground, and every angle, like the bend of a road, is drawn true. Areas scale by $k^2$: a $1$ cm square on the map covers $250$ m by $250$ m, which is $62\\,500$ square metres.",
+        image: {
+          src: mapScaleDilationImage,
+          caption: "A map: the land shrunk by one scale factor, so every bend is drawn true while each map square stands for a far larger area.",
+          alt: "A paper map with a grid, a river, woods and a red road whose bend has a gold angle mark, one grid square shaded gold, and a scale bar.",
+        },
       },
       {
         title: "Enlarging A4 to A3 on a photocopier",
         text: "An A3 sheet has exactly twice the area of an A4 sheet and the same shape. Since areas scale by $k^2$, the copier needs $k^2 = 2$, so $k = \\sqrt{2} \\approx 1.41$. That is why the A4 to A3 button on a photocopier is marked $141\\%$.",
+        image: {
+          src: photocopierA4A3Image,
+          caption: "A photocopier: A3 is A4 enlarged by √2, about 141%, which doubles its area and keeps its shape.",
+          alt: "A photocopier whose screen reads 141% beside an A3 copy of a house drawing, with the A4 sheet outlined in gold dashes from the same corner and a gold diagonal through both far corners.",
+        },
       },
     ],
 

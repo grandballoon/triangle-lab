@@ -24,6 +24,8 @@ import {
 } from "../geo.ts";
 import { farArc, nameOutside } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
+import pipeWaterChordImage from "../../images/pipe-water-chord.svg";
+import vanArchImage from "../../images/van-arch.svg";
 
 const O = vec(0.4, 0.1);
 const R = 2.9;
@@ -178,10 +180,20 @@ export default lesson((s) => {
       {
         title: "Water in a round pipe",
         text: "A drain pipe 1 m across has water lying in it, and the water's surface is 80 cm wide. The surface is a chord, halved by the upright line through the centre, so with $r = 50$ cm, $40^2 = 50^2 - d^2$ and the surface is $d = 30$ cm from the centre. The water is 20 cm deep, or 80 cm if the pipe is more than half full.",
+        image: {
+          src: pipeWaterChordImage,
+          caption: "Water in a round pipe: its 80 cm surface is a chord halved by the upright line through the centre, 30 cm below it.",
+          alt: "A cross-section of a pipe with water in the bottom, a dashed right triangle from the centre with legs 30 and 40 and a 50 radius to the water's edge.",
+        },
       },
       {
         title: "Clearance in a round-topped tunnel",
         text: "A van 2 m wide drives down the middle of a semicircular tunnel of radius 3 m. Each side of the van is $d = 1$ m from the centre of the floor, and the halved chord straight up from there has $h^2 = r^2 - d^2 = 9 - 1 = 8$. So the roof is about 2.83 m above the van's sides, and the van must be lower than that to pass.",
+        image: {
+          src: vanArchImage,
+          caption: "A van in a semicircular tunnel: the height of the roof above the van's side squares to the product of the two parts of the floor it cuts.",
+          alt: "A van inside a semicircular tunnel, with a dashed right triangle inscribed in the semicircle and a dashed upright from the floor through the van's side to the roof.",
+        },
       },
     ],
   };

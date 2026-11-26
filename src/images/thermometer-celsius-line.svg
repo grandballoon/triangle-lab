@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="88" y="44" width="44" height="236" rx="22" fill="#f3ead8"/>
+    <circle cx="110" cy="284" r="34" fill="#ef6b5b"/>
+  </g>
+  <rect x="102" y="140" width="16" height="140" fill="#ef6b5b"/>
+  <path d="M132 90 H118 M132 140 H118 M132 190 H118 M132 240 H118" stroke="#0b0f14" stroke-width="4"/>
+  <path d="M280 40 V300 H590" fill="none" stroke="#f3ead8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M240 278 L580 46" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M540 300 V73 M280 73 H540" fill="none" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="4 8"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="280" cy="251" r="10"/><circle cx="540" cy="73" r="10"/></g>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#f3ead8"><text x="242" y="262">32</text><text x="234" y="84">212</text><text x="540" y="334">100</text></g>
+</svg>

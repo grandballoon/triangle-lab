@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="30" y="20" width="580" height="320" rx="14" fill="#2b3a2f"/>
+  <rect x="140" y="45" width="360" height="270" fill="#d9a066" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M185 48 V312 M230 48 V312 M275 48 V312 M320 48 V312 M365 48 V312 M410 48 V312 M455 48 V312" stroke="#b07a45" stroke-width="5"/>
+  <g fill="#8a5a34" stroke="#0b0f14" stroke-width="5"><rect x="126" y="31" width="28" height="28" rx="4"/><rect x="486" y="31" width="28" height="28" rx="4"/><rect x="486" y="301" width="28" height="28" rx="4"/><rect x="126" y="301" width="28" height="28" rx="4"/></g>
+  <path d="M140 45 L500 315 M500 45 L140 315" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M236 104 L224 120 M416 240 L404 256 M416 120 L404 104 M236 256 L224 240" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="320" cy="180" r="8" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <rect x="470" y="290" width="56" height="46" rx="10" fill="#ef6b5b" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="498" cy="313" r="9" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="320" y="118" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">5</text>
+  <text x="320" y="268" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">5</text>
+</svg>

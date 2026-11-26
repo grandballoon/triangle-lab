@@ -5,6 +5,8 @@
 import { C, tint, type Draw } from "../draw.ts";
 import { fmt, mid, polygonArea, vec, type Vec } from "../geo.ts";
 import { lesson, type Frame } from "../scene.ts";
+import mapLakeAreaImage from "../../images/map-lake-area.svg";
+import pizzaSizeCompareImage from "../../images/pizza-size-compare.svg";
 
 const BASE_Y = -2.9;
 const ORIGINAL_X = -7.3; // left edge of the original figure
@@ -149,10 +151,20 @@ export default lesson((s) => {
       {
         title: "Which pizza is better value?",
         text: "A 30 cm pizza is $1.5$ times as wide as a 20 cm one, so it has $1.5^2 = 2.25$ times as much pizza. Unless it costs more than $2.25$ times as much, the big one is the better deal, even if its price looks steep.",
+        image: {
+          src: pizzaSizeCompareImage,
+          caption: "A 20 cm pizza beside a 30 cm one: the larger is 1.5 times as wide but has 2.25 times as much pizza.",
+          alt: "Two pepperoni pizzas seen from above, a small one with its diameter marked 20 and a larger one with its diameter marked 30, the diameters drawn in dashed gold.",
+        },
       },
       {
         title: "Areas on a map",
         text: "On a 1:25,000 walking map, 1 cm stands for 250 m. A lake that covers 4 squares of 1 cm by 1 cm on the map is not 4 times 250 m across, but 4 squares of 250 m by 250 m: $4 \\times 62{,}500 = 250{,}000$ square metres, or 25 hectares. Every map area is multiplied by the scale squared.",
+        image: {
+          src: mapLakeAreaImage,
+          caption: "A lake on a 1:25,000 map: it covers four 1 cm squares, and each square stands for 250 m by 250 m on the ground.",
+          alt: "A gridded map with a blue lake filling a block of two by two squares outlined in dashed gold, one square's side marked 250, plus a red road and some green trees.",
+        },
       },
     ],
 

@@ -3,7 +3,7 @@
 // which can read the disk.
 
 import { describe, expect, it } from "vitest";
-import { MAX_IMAGE_BYTES, fileFaults, imageFaults } from "./check.ts";
+import { MAX_IMAGE_BYTES, fileFaults, imageFaults, unusedPictures } from "./check.ts";
 
 describe("imageFaults", () => {
   it("finds nothing wrong with a picture that has a source and a plain caption", () => {
@@ -34,5 +34,18 @@ describe("fileFaults", () => {
       "Roof Truss.JPG is not named in lower-case words joined by hyphens",
     ]);
     expect(fileFaults("truss.jpg", 2 * 1024 * 1024)).toEqual(["truss.jpg is 2048 KB, over 400 KB: resize it to about 1200 pixels across"]);
+  });
+});
+
+describe("unusedPictures", () => {
+  it("names the pictures no module imports, from either kind of page", () => {
+    const sources = [
+      'import truss from "../../images/roof-truss.svg";\nimport other from "../draw.ts";',
+      "import ramp from './images/wheelchair-ramp.svg';",
+    ];
+    expect(unusedPictures(["roof-truss.svg", "wheelchair-ramp.svg", "old-truss.svg", "truss.svg"], sources)).toEqual([
+      "old-truss.svg",
+      "truss.svg",
+    ]);
   });
 });

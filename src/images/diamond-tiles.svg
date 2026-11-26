@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <clipPath id="f"><rect x="60" y="60" width="520" height="260"/></clipPath>
+  <rect x="60" y="60" width="520" height="260" fill="#f3ead8"/>
+  <g clip-path="url(#f)" stroke="#0b0f14" stroke-width="5" fill="none">
+    <path d="M200 120 L260 180 L200 240 L140 180 Z M440 120 L500 180 L440 240 L380 180 Z M320 240 L380 300 L320 360 L260 300 Z M140 60 L260 60 L200 120 Z M560 240 L620 300 L560 360 L500 300 Z M80 240 L140 300 L80 360 L20 300 Z" fill="#5fb0e8" stroke="none"/>
+    <path d="M-120 40 L160 320 M0 40 L280 320 M120 40 L400 320 M240 40 L520 320 M360 40 L640 320 M480 40 L760 320 M160 40 L-120 320 M280 40 L0 320 M400 40 L120 320 M520 40 L240 320 M640 40 L360 320 M760 40 L480 320"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="60" y="60" width="520" height="260" fill="none"/>
+    <rect x="40" y="30" width="560" height="30" rx="4" fill="#b07a45"/>
+  </g>
+  <path d="M320 120 L380 180 L320 240 L260 180 Z M260 180 H380" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M380 60 L500 60 L440 120 Z" fill="#f2c14e" fill-opacity="0.25" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M429 109 L440 98 L451 109" fill="none" stroke="#f2c14e" stroke-width="4"/>
+</svg>
