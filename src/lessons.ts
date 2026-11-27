@@ -27,6 +27,7 @@ import { potpourri } from "./chapters/potpourri.ts";
 import { power } from "./chapters/power.ts";
 import { quadratic } from "./chapters/quadratic.ts";
 import { quadrilaterals } from "./chapters/quadrilaterals.ts";
+import { sequences } from "./chapters/sequences.ts";
 import { solids } from "./chapters/solids.ts";
 import { transformations } from "./chapters/transformations.ts";
 import { trianglesCentres } from "./chapters/triangles-centres.ts";
@@ -339,6 +340,25 @@ export const chapters: Chapter[] = [
       "Polynomial factor theorem",
     ],
     lessons: quadratic,
+  },
+  {
+    title: "Sequences and Series",
+    blurb: "Lists that grow by equal steps or equal ratios, their sums finite and infinite, and the means between their terms.",
+    axioms: [
+      "nth term a + (n − 1)d",
+      "Arithmetic series n(first + last)/2",
+      "nth term arⁿ⁻¹",
+      "Geometric series a(1 − rⁿ)/(1 − r)",
+      "Infinite series a/(1 − r)",
+      "Repeating decimals as series",
+      "Σ notation",
+      "Sum of squares n(n + 1)(2n + 1)/6",
+      "Recursive sequences",
+      "Fixed point c/(1 − m)",
+      "Arithmetic and geometric means",
+      "AM–GM inequality",
+    ],
+    lessons: sequences,
   },
   {
     title: "Power of a Point",

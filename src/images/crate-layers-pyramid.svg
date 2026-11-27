@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="149" y="90" width="46" height="46" fill="#5fb0e8"/><rect x="126" y="136" width="46" height="46" fill="#5fb0e8"/><rect x="172" y="136" width="46" height="46" fill="#5fb0e8"/><rect x="103" y="182" width="46" height="46" fill="#5fb0e8"/><rect x="149" y="182" width="46" height="46" fill="#5fb0e8"/><rect x="195" y="182" width="46" height="46" fill="#5fb0e8"/><rect x="80" y="228" width="46" height="46" fill="#5fb0e8"/><rect x="126" y="228" width="46" height="46" fill="#5fb0e8"/><rect x="172" y="228" width="46" height="46" fill="#5fb0e8"/><rect x="218" y="228" width="46" height="46" fill="#5fb0e8"/><rect x="57" y="274" width="46" height="46" fill="#f2c14e"/><rect x="103" y="274" width="46" height="46" fill="#f2c14e"/><rect x="149" y="274" width="46" height="46" fill="#f2c14e"/><rect x="195" y="274" width="46" height="46" fill="#f2c14e"/><rect x="241" y="274" width="46" height="46" fill="#f2c14e"/></g>
+  <path d="M157 98 L187 128 M187 98 L157 128 M134 144 L164 174 M164 144 L134 174 M180 144 L210 174 M210 144 L180 174 M111 190 L141 220 M141 190 L111 220 M157 190 L187 220 M187 190 L157 220 M203 190 L233 220 M233 190 L203 220 M88 236 L118 266 M118 236 L88 266 M134 236 L164 266 M164 236 L134 266 M180 236 L210 266 M210 236 L180 266 M226 236 L256 266 M256 236 L226 266 M65 282 L95 312 M95 282 L65 312 M111 282 L141 312 M141 282 L111 312 M157 282 L187 312 M187 282 L157 312 M203 282 L233 312 M233 282 L203 312 M249 282 L279 312 M279 282 L249 312" stroke="#0b0f14" stroke-width="3" stroke-opacity="0.45" stroke-linecap="round"/>
+  <text x="137" y="122" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#8fa3b8">1</text>
+  <text x="114" y="168" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#8fa3b8">4</text>
+  <text x="91" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#8fa3b8">9</text>
+  <text x="68" y="260" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#8fa3b8">16</text>
+  <text x="45" y="306" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#f2c14e">25</text>
+  <text x="430" y="112" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">5</text>
+  <text x="430" y="172" font-family="system-ui, sans-serif" font-weight="700" font-size="64" text-anchor="middle" fill="#f3ead8">Σ</text>
+  <text x="430" y="204" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">k = 1</text>
+  <text x="470" y="164" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="start" fill="#f3ead8">k² = <tspan fill="#f2c14e">55</tspan></text>
+  <path d="M370 236 H630" stroke="#5a6878" stroke-width="3"/>
+  <text x="500" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">1 + 4 + 9 + 16 + 25</text>
+</svg>

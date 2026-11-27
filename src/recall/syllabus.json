@@ -1629,6 +1629,86 @@
         "quadratic-formula"
       ]
     },
+    "arithmetic-series": {
+      "source": "e3316accd735",
+      "teaches": [
+        "An arithmetic sequence $a, a + d, a + 2d, \\ldots$ goes up by a common difference $d$; its $n$th term is $a + (n - 1)d$.",
+        "An arithmetic series is the sum of its terms: $S = \\frac{n}{2}(\\text{first} + \\text{last}) = \\frac{n}{2}\\big(2a + (n - 1)d\\big)$, since a copy turned over pairs every term to make first + last.",
+        "$1 + 2 + \\cdots + 100 = \\frac{100 \\cdot 101}{2} = 5050$.",
+        "From first to last there are $\\frac{\\text{last} - \\text{first}}{d}$ steps, so $\\frac{\\text{last} - \\text{first}}{d} + 1$ terms.",
+        "The odd numbers $1 + 3 + \\cdots + (2n - 1)$ add to $n^2$."
+      ],
+      "builds_on": []
+    },
+    "geometric-series": {
+      "source": "0f463e12b975",
+      "teaches": [
+        "A geometric sequence $a, ar, ar^2, \\ldots$ is multiplied by a common ratio $r$; its $n$th term is $ar^{n-1}$.",
+        "Multiplying $S = a + ar + \\cdots + ar^{n-1}$ by $r$ shifts every term one place along, and $S - rS = a - ar^n$.",
+        "So for $r \\ne 1$, $S = \\frac{a(1 - r^n)}{1 - r}$; for $r = 1$, $S = na$.",
+        "The formula holds for any ratio, negative or fractional: $1 + 2 + 4 + \\cdots + 512 = 1023$ and $1 - 2 + 4 - 8 + 16 = 11$."
+      ],
+      "builds_on": [
+        "exponent-product-rule"
+      ]
+    },
+    "infinite-geometric-series": {
+      "source": "afc9e895d65c",
+      "teaches": [
+        "$\\frac{1}{2} + \\frac{1}{4} + \\cdots + \\frac{1}{2^n} = 1 - \\frac{1}{2^n}$, and the infinite series $\\frac{1}{2} + \\frac{1}{4} + \\frac{1}{8} + \\cdots$ adds to 1.",
+        "An infinite series has a sum when its partial sums come as close as you please to one number.",
+        "When $-1 < r < 1$, $r^n$ shrinks to 0 and $a + ar + ar^2 + \\cdots = \\frac{a}{1 - r}$; when $|r| \\ge 1$ the series has no sum.",
+        "For negative $r$ the partial sums close in on $\\frac{a}{1 - r}$ from both sides in turn.",
+        "A repeating decimal is an infinite geometric series: $0.333\\ldots = \\frac{3/10}{1 - 1/10} = \\frac{1}{3}$ and $0.999\\ldots = 1$."
+      ],
+      "builds_on": [
+        "geometric-series"
+      ]
+    },
+    "sigma-notation": {
+      "source": "214395988fec",
+      "teaches": [
+        "$\\sum_{k=m}^{n} a_k$ means let $k$ run through the whole numbers from $m$ to $n$ and add the terms $a_k$; it has $n - m + 1$ terms, and none (sum 0) when the top is below the bottom.",
+        "Sums split term by term and constants come out: $\\sum (a_k + b_k) = \\sum a_k + \\sum b_k$, $\\sum c\\,a_k = c \\sum a_k$, and $\\sum_{k=1}^{n} c = cn$.",
+        "$\\sum_{k=1}^{n} k = \\frac{n(n + 1)}{2}$, $\\sum_{k=1}^{n} (2k - 1) = n^2$, $\\sum_{k=0}^{n} 2^k = 2^{n+1} - 1$ and $\\sum_{k=1}^{n} k^2 = \\frac{n(n + 1)(2n + 1)}{6}$.",
+        "A sum that starts partway is a whole sum less its start: $\\sum_{k=m}^{n} a_k = \\sum_{k=1}^{n} a_k - \\sum_{k=1}^{m-1} a_k$.",
+        "The index is only a counter and can be shifted: $j = k - 1$ turns $\\sum_{k=1}^{n} 2^{k-1}$ into $\\sum_{j=0}^{n-1} 2^j$."
+      ],
+      "builds_on": [
+        "arithmetic-series",
+        "geometric-series"
+      ]
+    },
+    "recursive-sequences": {
+      "source": "04abee2d9fc7",
+      "teaches": [
+        "An explicit formula gives $a_n$ from $n$; a recursive rule gives each term from the ones before, with a start.",
+        "$a_{n+1} = m a_n + c$ is arithmetic when $m = 1$ and geometric when $c = 0$.",
+        "The Fibonacci numbers $F_1 = F_2 = 1$, $F_{n+1} = F_n + F_{n-1}$ give $1, 1, 2, 3, 5, 8, \\ldots$, and $\\frac{F_{n+1}}{F_n}$ closes in on the golden ratio $\\varphi = \\frac{1 + \\sqrt{5}}{2}$, the root of $x^2 = x + 1$.",
+        "If the terms of $a_{n+1} = m a_n + c$ settle, they settle at the fixed point $L = mL + c$, $L = \\frac{c}{1 - m}$, where $y = mx + c$ crosses $y = x$ in the cobweb.",
+        "The gap to $L$ is geometric, $a_n = L + m^{n-1}(a_1 - L)$, so the terms settle on $L$ exactly when $-1 < m < 1$, hopping from side to side when $m$ is negative."
+      ],
+      "builds_on": [
+        "geometric-series",
+        "line-equation"
+      ]
+    },
+    "sequence-means": {
+      "source": "76b645d957a6",
+      "teaches": [
+        "To fit $k$ terms between $a$ and $b$ in an arithmetic sequence, the step is $d = \\frac{b - a}{k + 1}$; with one term between it is the arithmetic mean $\\frac{a + b}{2}$.",
+        "$x, y, z$ are in arithmetic sequence exactly when $y = \\frac{x + z}{2}$.",
+        "To fit $k$ terms between $a$ and $b$ in a geometric sequence, the ratio is $r = \\left(\\frac{b}{a}\\right)^{1/(k+1)}$; with one term between it is the geometric mean $\\sqrt{ab}$.",
+        "Positive $x, y, z$ are in geometric sequence exactly when $y^2 = xz$.",
+        "AM–GM: $\\sqrt{ab} \\le \\frac{a + b}{2}$, with equality only when $a = b$, since in a semicircle on diameter $a + b$ the half-chord where $a$ and $b$ meet is $\\sqrt{ab}$ and no longer than the radius."
+      ],
+      "builds_on": [
+        "arithmetic-series",
+        "geometric-series",
+        "exponent-fractional",
+        "altitude-on-hypotenuse"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [
