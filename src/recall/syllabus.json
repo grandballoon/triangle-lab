@@ -1153,6 +1153,65 @@
         "exponent-fractional"
       ]
     },
+    "complex-i": {
+      "source": "623075387bf3",
+      "teaches": [
+        "Multiplying by $-1$ is a half turn about 0 on the number plane, so a number whose square is $-1$ must be a quarter turn: that number is $i$, with $i^2 = -1$.",
+        "The powers of $i$ repeat every four: $i, -1, -i, 1$, so $i^n$ depends only on the remainder of $n$ divided by 4.",
+        "For $b > 0$, $\\sqrt{-b} = i\\sqrt{b}$, so every negative number has square roots $\\pm i\\sqrt{b}$."
+      ],
+      "builds_on": [
+        "exponent-product-rule"
+      ]
+    },
+    "complex-add": {
+      "source": "d8d0bc76df8a",
+      "teaches": [
+        "A complex number $a + bi$ has a real part $a$ and an imaginary part $b$, and is drawn as the point $(a, b)$ or an arrow from 0 on the complex plane.",
+        "Complex numbers add and subtract part by part: $(a + bi) + (c + di) = (a + c) + (b + d)i$.",
+        "Adding on the plane lays the arrows head to tail, like adding vectors; $z - w$ is the arrow from $w$ to $z$."
+      ],
+      "builds_on": [
+        "complex-i"
+      ]
+    },
+    "complex-multiply": {
+      "source": "691e86c817a5",
+      "teaches": [
+        "$(a + bi)(c + di) = (ac - bd) + (ad + bc)i$, found by multiplying term by term and using $i^2 = -1$.",
+        "Multiplying by a positive real number stretches an arrow; multiplying by $i$ turns it a quarter turn: $i(a + bi) = -b + ai$.",
+        "In general $|zw| = |z|\\,|w|$, and the angle of $zw$ from the real axis is the angle of $z$ plus the angle of $w$."
+      ],
+      "builds_on": [
+        "complex-add"
+      ]
+    },
+    "complex-conjugate": {
+      "source": "38f32b239b3a",
+      "teaches": [
+        "The conjugate of $z = a + bi$ is $\\bar{z} = a - bi$, the reflection of $z$ in the real axis.",
+        "$z\\bar{z} = a^2 + b^2 = |z|^2$, a real number, so $|z| = \\sqrt{a^2 + b^2}$.",
+        "To divide, multiply top and bottom by the conjugate of the bottom: $\\frac{z}{w} = \\frac{z\\bar{w}}{|w|^2}$, the same move as rationalizing a denominator.",
+        "$z + \\bar{z} = 2\\operatorname{Re} z$ is real, $z - \\bar{z}$ is pure imaginary, and $\\overline{zw} = \\bar{z}\\,\\bar{w}$."
+      ],
+      "builds_on": [
+        "complex-multiply",
+        "radical-rationalize",
+        "pythagoras"
+      ]
+    },
+    "complex-square-root": {
+      "source": "ce363e26cb01",
+      "teaches": [
+        "To find $\\sqrt{a + bi}$, set $(x + yi)^2 = a + bi$ and match parts: $x^2 - y^2 = a$ and $2xy = b$.",
+        "The length gives a third equation, $x^2 + y^2 = \\sqrt{a^2 + b^2}$, which with $x^2 - y^2 = a$ gives $x^2$ and $y^2$; the sign of $b$ fixes the signs.",
+        "Every nonzero complex number has exactly two square roots, $r$ and $-r$, each with length $\\sqrt{|w|}$ and half of $w$'s angle (or half plus a half turn)."
+      ],
+      "builds_on": [
+        "complex-multiply",
+        "complex-conjugate"
+      ]
+    },
     "linear-balance": {
       "source": "7f11e50d76d6",
       "teaches": [

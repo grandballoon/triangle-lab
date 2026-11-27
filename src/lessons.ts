@@ -14,6 +14,7 @@ import { anglesLines } from "./chapters/angles-lines.ts";
 import { areas } from "./chapters/areas.ts";
 import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
+import { complex } from "./chapters/complex.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -213,6 +214,24 @@ export const chapters: Chapter[] = [
       "Change of base",
     ],
     lessons: exponents,
+  },
+  {
+    title: "Complex Numbers",
+    blurb: "A square root for −1, and the plane of numbers it opens up.",
+    axioms: [
+      "Imaginary unit",
+      "Powers of i",
+      "Square roots of negatives",
+      "Complex addition",
+      "Complex multiplication",
+      "Multiplying by i is a quarter turn",
+      "Lengths multiply, angles add",
+      "Complex conjugate",
+      "Modulus",
+      "Complex division",
+      "Complex square roots",
+    ],
+    lessons: complex,
   },
   {
     title: "Linear Equations",

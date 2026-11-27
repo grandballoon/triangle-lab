@@ -111,7 +111,7 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 ### Gaps within covered chapters
 
-- [ ] 6.5 Square roots of irrationals and imaginaries: no lesson touches complex numbers yet (see chapters 2 and 8 below).
+- [x] 6.5 Square roots of irrationals and imaginaries: square roots of negative numbers are taught in The Square Root of −1 (`complex-i`), and of complex numbers in `complex-square-root`.
 - [ ] 10.6 The Burden of Proof: the lessons step through proofs, but none teaches how to write one.
 - [ ] 19.7 Transformation Proofs: proving a result by moving the figure.
 
@@ -121,7 +121,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 - [x] 1 Exponents and Logarithms: integer and fractional exponents, simplifying radicals, rationalizing denominators, logarithms.
   Now the Exponents & Logarithms chapter (`exponents.ts`), seven lab lessons.
-- [ ] 2 Complex Numbers: the square root of −1, complex number operations.
+- [x] 2 Complex Numbers: the square root of −1, complex number operations.
+  Now the Complex Numbers chapter (`complex.ts`), five lab lessons.
 - [ ] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
 - [ ] 7 Special Factorizations and Clever Manipulations.
 
