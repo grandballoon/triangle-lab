@@ -75,6 +75,7 @@ export default lesson((s) => {
       {
         title: "Fixing a ship's position",
         text: "Coastal navigators measure the angle between two landmarks, such as two lighthouses, with a sextant held sideways. Every point from which that angle looks the same lies on one circle through the two landmarks, the inscribed-angle fact at the heart of this lesson. A second angle to a third landmark gives a second circle, and the ship is where they cross.",
+        tags: ["navigation"],
         image: {
           src: shipSextantFixImage,
           caption: "A navigator's fix: every point that sees two lighthouses at the same angle lies on one arc through both, so the ship is somewhere on that arc.",
@@ -84,6 +85,7 @@ export default lesson((s) => {
       {
         title: "A round flower bed in a triangular garden",
         text: "The largest circle that fits inside a triangular plot is centred at the incentre $I$, the point equally far from all three sides. That is where to put a round flower bed, a fountain or a rotating sprinkler meant to reach each fence equally. The lesson gives a way to find $I$ with a compass: it is where the circle about $D$ through $B$ and $C$ meets the bisector $AD$.",
+        tags: ["gardening"],
         image: {
           src: triangleGardenRoundBedImage,
           caption: "A triangular garden: the largest round flower bed that fits is centred at the incentre, the point equally far from all three fences.",

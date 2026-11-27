@@ -87,6 +87,7 @@ export default lesson((s) => {
       {
         title: "Finding a phone from two masts",
         text: "If a phone is 5 km from a mast at $(0, 0)$, it lies on $x^2 + y^2 = 25$; if it is also 5 km from a mast at $(8, 0)$, it lies on $(x - 8)^2 + y^2 = 25$. Subtracting the equations leaves $x = 4$, so $y = \\pm 3$, and a third mast settles which. GPS works on the same idea, with spheres round satellites.",
+        tags: ["computing", "navigation"],
         image: {
           src: phoneTwoMastsImage,
           caption: "Finding a phone from two masts: it lies on a circle round each mast, so it is where the two circles cross.",
@@ -96,6 +97,7 @@ export default lesson((s) => {
       {
         title: "Is the address in the delivery zone?",
         text: "A takeaway delivers within 5 km. A house 3 km east and 4 km north of it has $3^2 + 4^2 = 25 = 5^2$, so it is right on the edge. Testing the squared distance against $R^2$ answers inside, on or outside without taking a square root.",
+        tags: ["navigation"],
         image: {
           src: takeawayDeliveryZoneImage,
           caption: "A takeaway's delivery zone is a circle of radius 5 km, and a house 3 km east and 4 km north sits right on its edge.",

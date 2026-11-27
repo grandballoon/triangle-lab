@@ -8,6 +8,7 @@ import { add, angleAt, fmt, inBox, normalize, scale, sub, toDeg, type Constraint
 import { lesson } from "../scene.ts";
 import { triangleOf } from "../kit/two-hands.ts";
 import fireLookoutImage from "../../images/fire-lookout.svg";
+import halfMoonRightAngleImage from "../../images/half-moon-right-angle.svg";
 import roofRidgeAngleImage from "../../images/roof-ridge-angle.svg";
 
 const ALPHA = C.gold;
@@ -62,6 +63,7 @@ export default lesson((s) => {
       {
         title: "The peak of a roof",
         text: "A simple roof truss is a triangle. If the roof rises at $35^\\circ$ at each eave, the angle at the ridge must be $180^\\circ - 2 \\cdot 35^\\circ = 110^\\circ$, which tells the carpenter how to cut the rafters where they meet.",
+        tags: ["carpentry", "building"],
         image: {
           src: roofRidgeAngleImage,
           caption: "A roof truss: with the roof rising at 35° at each eave, the angle at the ridge must be 110°.",
@@ -71,10 +73,21 @@ export default lesson((s) => {
       {
         title: "Spotting a fire from two towers",
         text: "Two fire lookouts $5$ km apart both sight the same smoke, one at $60^\\circ$ and the other at $70^\\circ$ from the line joining the towers. The angle at the fire must be $180^\\circ - 60^\\circ - 70^\\circ = 50^\\circ$, so the whole triangle is known and the distance to the fire can be worked out.",
+        tags: ["navigation"],
         image: {
           src: fireLookoutImage,
           caption: "Two fire lookouts: knowing the angle each one sights the smoke at tells you the third angle, at the fire, and so the whole triangle.",
           alt: "Two lookouts on posts on the ground and smoke and flames on a hill; a dashed gold triangle joins the two lookouts and the fire, with the angles at the lookouts marked.",
+        },
+      },
+      {
+        title: "How far away is the Sun?",
+        text: "When the Moon is exactly half lit, sunlight strikes it square to our line of sight, so Earth, Moon and Sun make a triangle with its right angle at the Moon. In the third century BC Aristarchus judged the angle between the Moon and the Sun, seen from Earth, to be $87^\\circ$. That leaves $180^\\circ - 90^\\circ - 87^\\circ = 3^\\circ$ at the Sun, and a triangle that thin puts the Sun about $19$ times as far away as the Moon. The true angle is about $89.85^\\circ$, leaving only $0.15^\\circ$ at the Sun, which is really about $390$ times as far: the method was sound, but the angle is too close to $90^\\circ$ to judge by eye.",
+        tags: ["astronomy"],
+        image: {
+          src: halfMoonRightAngleImage,
+          caption: "The half Moon: Earth, Moon and Sun make a triangle with a right angle at the Moon, so the angle at the Sun is whatever the right angle and the angle at Earth leave of 180°.",
+          alt: "Earth at the lower left, a half-lit Moon above it and the Sun at the right, joined by a dashed gold triangle against a starry sky, with a right-angle mark at the Moon labelled 90° and the angle at Earth labelled 87°.",
         },
       },
     ],

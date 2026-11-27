@@ -353,3 +353,45 @@ html[data-layout="stacked"] #step-list[data-last] .aside { display: block; }
    at least 36px tall. */
 html[data-layout="stacked"] .column-tabs { padding: 0 6px; }
 html[data-layout="stacked"] .column-tab { min-height: 36px; padding: 0 6px; }
+
+/* --- The uses, the column's first tab (steps.ts showUses) ------------------
+
+   What the lesson is used for, each use under its title with its topics, its
+   text and its picture, and a link on to every lesson's uses (uses.html). */
+
+.uses-pane { padding: 14px 22px 18px 25px; }
+
+.uses-heading {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.uses-pane .aside-item + .aside-item {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.uses-more:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.uses-more {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.uses-more::after { content: " →"; }
+.uses-more:hover { text-decoration: underline; }
+
+html[data-layout="stacked"] .uses-pane { padding: 10px 14px 14px 16px; }
+html[data-layout="stacked"] .uses-pane .aside-item p { font-size: 14.5px; line-height: 1.4; }

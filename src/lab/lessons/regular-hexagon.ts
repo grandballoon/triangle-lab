@@ -6,8 +6,10 @@
 import { C, tint } from "../draw.ts";
 import { angleOf, dist, fmt, inRing, polygonArea, regularPolygon, sub, vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import hexMoveRangeImage from "../../images/hex-move-range.svg";
 import hexNutSpannerImage from "../../images/hex-nut-spanner.svg";
 import hexagonFloorTilesImage from "../../images/hexagon-floor-tiles.svg";
+import offsetPlantingRowsImage from "../../images/offset-planting-rows.svg";
 
 const O = vec(0, 0.3);
 const SIDE = C.gold;
@@ -65,6 +67,7 @@ export default lesson((s) => {
       {
         title: "Choosing a spanner",
         text: "A hex nut is sized by its width across the flats, which is the short diagonal $s\\sqrt3$. A $13$ mm nut therefore has sides of $\\tfrac{13}{\\sqrt3} \\approx 7.5$ mm and measures $2s \\approx 15$ mm across the corners, so a socket for it must grip $13$ mm flats while leaving room for $15$ mm corners to turn inside it.",
+        tags: ["machines"],
         image: {
           src: hexNutSpannerImage,
           caption: "A spanner on a hex nut: its jaws grip the 13 mm flats, while the corners, 15 mm apart, need room to turn inside a socket.",
@@ -74,10 +77,31 @@ export default lesson((s) => {
       {
         title: "Ordering hexagonal floor tiles",
         text: "A hexagonal tile with $10$ cm sides covers $\\tfrac{3\\sqrt3}{2} \\cdot 10^2 \\approx 260$ square centimetres, so a square metre of floor takes about $\\tfrac{10000}{260} \\approx 38.5$ tiles. Tilers work from that figure and add a margin for the cut pieces at the edges.",
+        tags: ["building", "home"],
         image: {
           src: hexagonFloorTilesImage,
           caption: "A floor of hexagonal tiles: each tile with 10 cm sides covers about 260 square centimetres, so a square metre takes about 38 and a half tiles.",
           alt: "A honeycomb of cream, teal and grey hexagonal tiles filling a floor, with one tile outlined in dashed gold and its side marked 10.",
+        },
+      },
+      {
+        title: "Planting in offset rows",
+        text: "Gardeners often set plants in offset rows, each at a corner of equilateral triangles, rather than in a square grid. At spacing $d$ each plant then has a hexagon of ground $d$ across its flats, so its side is $\\frac{d}{\\sqrt3}$ and its area is $\\frac{3\\sqrt3}{2} \\cdot \\frac{d^2}{3} \\approx 0.866\\,d^2$, against $d^2$ in a square grid. At $30$ cm spacing a $3$ m by $3$ m bed holds $100$ plants in squares but about $115$ in offset rows, every one still $30$ cm from its neighbours.",
+        tags: ["gardening", "trade-tricks"],
+        image: {
+          src: offsetPlantingRowsImage,
+          caption: "A bed planted in offset rows: each plant has a hexagon of ground 30 cm across its flats, so the bed holds about 15% more than a square grid.",
+          alt: "A brown soil bed with four rows of green plants, every other row shifted half a space along. One plant sits in a dashed gold hexagon touching its neighbours' halfway points, and a gold line to the next plant is marked 30.",
+        },
+      },
+      {
+        title: "How far a piece reaches on hexes",
+        text: "In board and video games played on hexes, a piece that can move $n$ steps reaches a big hexagon of cells around it. Like the hexagon in this lesson it splits into six triangular wedges, and ring $k$ out holds $6k$ cells, so the count is $1 + 6(1 + 2 + \\dots + n) = 3n(n + 1) + 1$. A move of $3$ reaches $37$ hexes and a move of $6$ reaches $127$, more than three times as many.",
+        tags: ["game-design"],
+        image: {
+          src: hexMoveRangeImage,
+          caption: "A playing piece on a hex grid: the cells it can reach in 3 moves make a big hexagon of six wedges, 37 cells in all.",
+          alt: "A grid of small hexagons with a red playing piece on a cream cell in the middle, surrounded by rings of blue, teal and green cells. A dashed gold hexagon joins the six corner cells of the outer ring, with dashed gold spokes from the piece to each corner.",
         },
       },
     ],

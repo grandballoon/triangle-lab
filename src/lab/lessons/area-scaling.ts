@@ -5,8 +5,10 @@
 import { C, tint, type Draw } from "../draw.ts";
 import { fmt, mid, polygonArea, vec, type Vec } from "../geo.ts";
 import { lesson, type Frame } from "../scene.ts";
+import cableCoreSizesImage from "../../images/cable-core-sizes.svg";
 import mapLakeAreaImage from "../../images/map-lake-area.svg";
 import pizzaSizeCompareImage from "../../images/pizza-size-compare.svg";
+import telescopeLightGraspImage from "../../images/telescope-light-grasp.svg";
 
 const BASE_Y = -2.9;
 const ORIGINAL_X = -7.3; // left edge of the original figure
@@ -151,6 +153,7 @@ export default lesson((s) => {
       {
         title: "Which pizza is better value?",
         text: "A 30 cm pizza is $1.5$ times as wide as a 20 cm one, so it has $1.5^2 = 2.25$ times as much pizza. Unless it costs more than $2.25$ times as much, the big one is the better deal, even if its price looks steep.",
+        tags: ["money", "home"],
         image: {
           src: pizzaSizeCompareImage,
           caption: "A 20 cm pizza beside a 30 cm one: the larger is 1.5 times as wide but has 2.25 times as much pizza.",
@@ -160,10 +163,31 @@ export default lesson((s) => {
       {
         title: "Areas on a map",
         text: "On a 1:25,000 walking map, 1 cm stands for 250 m. A lake that covers 4 squares of 1 cm by 1 cm on the map is not 4 times 250 m across, but 4 squares of 250 m by 250 m: $4 \\times 62{,}500 = 250{,}000$ square metres, or 25 hectares. Every map area is multiplied by the scale squared.",
+        tags: ["navigation"],
         image: {
           src: mapLakeAreaImage,
           caption: "A lake on a 1:25,000 map: it covers four 1 cm squares, and each square stands for 250 m by 250 m on the ground.",
           alt: "A gridded map with a blue lake filling a block of two by two squares outlined in dashed gold, one square's side marked 250, plus a red road and some green trees.",
+        },
+      },
+      {
+        title: "Cable sized by its copper",
+        text: "Electric cable is sold by the area of its copper core, not its width: $1.5$ mm² for a lighting circuit, $6$ mm² for a cooker. Since area grows as the square of the width, the cooker cable has $4$ times the copper but a core only $\\sqrt4 = 2$ times as wide, about $2.8$ mm across against $1.4$ mm for a solid core.",
+        tags: ["electrical"],
+        image: {
+          src: cableCoreSizesImage,
+          caption: "Two cable ends: the 6 mm² core holds four times the copper of the 1.5 mm² core, but it is only twice as wide.",
+          alt: "The cut ends of two round cables side by side, a small cream one and a large grey one, each with red insulation around a copper core. Each core is circled in dashed gold with a gold line across it, the small one marked 1.5 and the large one 6.",
+        },
+      },
+      {
+        title: "How much light a telescope gathers",
+        text: "A telescope collects light over the area of its main mirror or lens. A $200$ mm mirror is twice as wide as a $100$ mm one, so it gathers $2^2 = 4$ times as much light. That lets it show stars about $1.5$ magnitudes fainter, since each magnitude is a factor of about $2.5$ in brightness and $2.5^{1.5} \\approx 4$.",
+        tags: ["astronomy"],
+        image: {
+          src: telescopeLightGraspImage,
+          caption: "Two telescopes under the stars: the 200 mm one is twice as wide as the 100 mm one, so it gathers four times the light.",
+          alt: "A narrow grey telescope and a wide tan telescope pointing straight up on tripods, each with a blue mirror at the bottom. Dashed gold lines of starlight fall into each, two into the narrow tube and four into the wide one, marked 100 and 200.",
         },
       },
     ],

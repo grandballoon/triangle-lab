@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="10" y="30" width="620" height="300" rx="10" fill="#2b3a2f" stroke="#0b0f14" stroke-width="6"/>
+  <path d="M70 34 V326 M140 34 V326 M210 34 V326 M280 34 V326 M350 34 V326 M420 34 V326 M490 34 V326 M560 34 V326 M14 80 H626 M14 150 H626 M14 220 H626 M14 290 H626" stroke="#38d9a9" stroke-width="2" stroke-opacity="0.3"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="22" y="110" width="596" height="160" fill="#f3ead8"/>
+    <path d="M40 270 L224.8 270 L132.4 110 Z" fill="#f472b6"/>
+    <path d="M132.4 110 L317.1 110 L224.8 270 Z" fill="#5fb0e8"/>
+    <path d="M224.8 270 L409.5 270 L317.1 110 Z" fill="#a78bfa"/>
+    <path d="M317.1 110 L501.9 110 L409.5 270 Z" fill="#38d9a9"/>
+    <path d="M409.5 270 L594.2 270 L501.9 110 Z" fill="#f472b6"/>
+  </g>
+  <path d="M224.8 270 L409.5 270 L317.1 110 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M317.1 260 V280 M262.2 185 L279.6 195 M354.6 195 L372 185" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M260 270 A35 35 0 0 0 242.3 239.7 M374.5 270 A35 35 0 0 1 392 239.7 M299.6 140.3 A35 35 0 0 0 334.6 140.3" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke"><text x="317" y="226">60°</text></g>
+</svg>

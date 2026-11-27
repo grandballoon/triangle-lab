@@ -81,6 +81,10 @@ On a canvas taller than wide, `pythagoras.ts` shows its proof below the triangle
 A lab lesson is a function from a `Scene` to a `LessonView`: it asks the scene for draggable points, sliders and toggles, and returns its proof steps, a `draw` function, the live formulas to show, and its asides: what its idea is like, in everyday terms (`likes`), and its real-world uses (`uses`), each of which may carry a recommended picture with a caption (`UseImage`), its file kept in `src/images/` and imported by the lesson.
 It never touches the DOM.
 
+What a lesson is for comes first: the step column opens on a Uses tab, ahead of the steps, which turns to the steps once a step is asked for by key, gesture or link (`steps.ts`).
+Each use names its topics in `tags`, ids from `TOPICS` in `src/uses/topics.ts`, written beside the use in its lesson so the copy editor still finds it there and a lesson's uses never drift from a separate list.
+The tab shows them as links to the gallery (see "The gallery of uses" below).
+
 A lesson that defines terms, one at a time, asks the scene for a row of them with `s.terms`: a `Choice` whose option n is step n.
 Picking a term goes to its step, and moving to a step picks its term (`followStep`), so the pills at the top and the step column always agree, and the lesson draws only the term picked.
 `circle-parts` defines its parts this way, and the triangle-parts lessons (perimeter, semiperimeter, medians, centroid, bisectors) define one term each, with edge cases such as the isosceles apex as further pills.
@@ -94,7 +98,7 @@ Those five share one triangle and its knobs from `lab/kit/triangle-stage.ts`, ov
 | `lab/solid.ts` | Orbit camera and helpers for 3D figures. |
 | `lab/math.ts` | KaTeX typesetting for step text and formulas. |
 | `lab/shell.ts` | The page around a lesson: canvas, panels, pointer input, frame loop. |
-| `lab/steps.ts` | The step column: every step as a section of one scrolling list, then the lesson's asides; and a pane beside the steps under a tab of its own. |
+| `lab/steps.ts` | The step column: the lesson's uses under the first tab; every step as a section of one scrolling list, then what its idea is like; and a pane beside the steps under a tab of its own. |
 | `lab/formulas.ts` | The formula band: the live readouts, re-typeset only as they change. |
 | `lab/layout.ts` | Where the step column, formula band and controls go for a window size, and the room left for the figure. Pure. |
 | `lab/arrange.ts` | Writes a layout onto the page. |
@@ -187,6 +191,22 @@ The curriculum rail lists every chapter, lesson and axiom down the left of a les
 On a wide screen it docks: it publishes the width it takes as `--rail-inset` on `<html>` and fires `resize`.
 Standalone pages honour that through their `#stage` rule and size their figure from the canvas box; the lab shell takes it as `leftInset` and fits the stage beside it.
 The entries live in per-chapter files under `src/chapters/`.
+
+## The gallery of uses (`uses.html`, `src/uses`)
+
+Every lesson's uses, gathered on one page by topic, as a grid of their pictures, and a viewer that walks one topic's pictures in sequence, by buttons, arrow keys or a swipe.
+The page gathers the uses as the lessons give them: a lab lesson is built against a `Scene`, which is DOM-free, and its view read; a standalone page's come from `asides.ts`.
+So there is no second list of uses to keep in step, and a use added to a lesson is in the gallery at once.
+`?topic=<id>` shows one topic, as the topic links in a lesson's Uses tab ask.
+
+| File | Role | Pure |
+| --- | --- | --- |
+| `topics.ts` | The topics, in the order lists show them; a use's tags checked and sorted; every lesson's uses in reading order, grouped by topic; the topic an address picks; stepping through a sequence | yes |
+| `markup.ts` | What the Uses tab and the gallery both draw: a use's topics as links, and its picture | no |
+| `page.ts` | The gallery: gathering the lessons' uses, the topics row, the grid, the viewer | no |
+
+The topics are tags rather than a hierarchy, so a list can be curated across chapters: `trade-tricks` gathers the rules of thumb people learn on the job, whatever trade they come from.
+Later rounds are meant to make the pictures interactive, with photos in place of cartoons and the lesson's figure laid over them, adjustable in perspective as on the AR page; a use's `image` is the place that will grow, and the tags stay as they are.
 
 ## AR (`ar.html`, `src/ar`)
 

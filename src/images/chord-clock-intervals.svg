@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <circle cx="230" cy="180" r="150" fill="#8fa3b8"/>
+    <circle cx="230" cy="180" r="134" fill="#1c2633"/>
+  </g>
+  <path d="M230 70 L325.3 235 L175 275.3 L175 84.7 Z M230 70 L175 275.3 M325.3 235 L175 84.7" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <g fill="#8fa3b8" stroke="#0b0f14" stroke-width="3"><circle cx="285" cy="84.7" r="6"/><circle cx="325.3" cy="125" r="6"/><circle cx="340" cy="180" r="6"/><circle cx="285" cy="275.3" r="6"/><circle cx="230" cy="290" r="6"/><circle cx="134.7" cy="235" r="6"/><circle cx="120" cy="180" r="6"/><circle cx="134.7" cy="125" r="6"/></g>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="230" cy="70" r="11"/><circle cx="325.3" cy="235" r="11"/><circle cx="175" cy="275.3" r="11"/><circle cx="175" cy="84.7" r="11"/></g>
+  <g font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#f3ead8" text-anchor="middle"><text x="230" y="18">C</text><text x="377.2" y="273">E</text><text x="145" y="335.2">G</text><text x="145" y="40.8">B</text></g>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <path fill="#f3ead8" d="M420 100 h27 v160 h-27 Z M447 100 h27 v160 h-27 Z M474 100 h27 v160 h-27 Z M501 100 h27 v160 h-27 Z M528 100 h27 v160 h-27 Z M555 100 h27 v160 h-27 Z M582 100 h27 v160 h-27 Z"/>
+    <path fill="#0b0f14" d="M439 100 h16 v95 h-16 Z M466 100 h16 v95 h-16 Z M520 100 h16 v95 h-16 Z M547 100 h16 v95 h-16 Z M574 100 h16 v95 h-16 Z"/>
+  </g>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="433.5" cy="238" r="8"/><circle cx="487.5" cy="238" r="8"/><circle cx="541.5" cy="238" r="8"/><circle cx="595.5" cy="238" r="8"/></g>
+</svg>

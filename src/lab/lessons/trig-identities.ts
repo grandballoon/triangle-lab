@@ -9,6 +9,7 @@ import { inSector, sq } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
 import framingSquareRafterRunImage from "../../images/framing-square-rafter-run.svg";
 import gameDiagonalSpeedImage from "../../images/game-diagonal-speed.svg";
+import guardViewConeImage from "../../images/guard-view-cone.svg";
 import solarPanelSunImage from "../../images/solar-panel-sun.svg";
 
 const A = vec(-4.5, -3);
@@ -80,6 +81,7 @@ export default lesson((s) => {
       {
         title: "Fixing diagonal speed in games",
         text: "If a game moves a character 1 step right and 1 step up each frame for a diagonal, it actually travels $\\sqrt2 \\approx 1.41$ steps, faster than in a straight line. Games fix this by moving $\\cos A$ across and $\\sin A$ up for a direction $A$. Because $\\sin^2 A + \\cos^2 A = 1$, the step is exactly 1 in every direction.",
+        tags: ["game-design"],
         image: {
           src: gameDiagonalSpeedImage,
           caption: "Diagonal movement in a game: a step of 1 across and 1 up goes about 1.41, too far, while a step of cos A across and sin A up lands on the circle of radius 1 in every direction.",
@@ -89,6 +91,7 @@ export default lesson((s) => {
       {
         title: "Rafter length per foot of run",
         text: "A carpenter's framing square has a table giving the length of a rafter for every foot it spans horizontally. For a roof that rises 6 inches per foot, $\\tan A = \\tfrac{6}{12}$, and $\\sec^2 A = 1 + \\tan^2 A = 1.25$. So each foot of run needs $12\\sqrt{1.25} \\approx 13.4$ inches of rafter, the number printed on the square.",
+        tags: ["carpentry", "building", "trade-tricks"],
         image: {
           src: framingSquareRafterRunImage,
           caption: "A framing square under a rafter that rises 6 inches per foot: the 12 and 6 legs make a hypotenuse of 12√1.25, about 13.4 inches of rafter for every foot of run.",
@@ -98,10 +101,21 @@ export default lesson((s) => {
       {
         title: "Sunlight on a flat solar panel",
         text: "A flat panel catches the most light with the sun straight overhead. When the sun is $A$ above the horizon, it is $90^\\circ - A$ from overhead, and the panel catches the fraction $\\cos(90^\\circ - A) = \\sin A$ of the full amount. With the sun $30^\\circ$ up, that is half, which is why installers tilt panels toward the sun.",
+        tags: ["electrical", "building"],
         image: {
           src: solarPanelSunImage,
           caption: "A flat solar panel with the sun 30° up: it catches sin 30°, half the light it would get with the sun straight overhead, which is why installers tilt panels toward the sun.",
           alt: "A flat blue solar panel on short legs, with the sun low to the right. A dashed gold right triangle runs from the panel's surface up to the sun, with 30° marked at the panel.",
+        },
+      },
+      {
+        title: "Can the guard see the player?",
+        text: "A game gives a guard a view $45^\\circ$ either side of the way it faces. It stores that direction, and the direction to the player, as steps of length $1$, $(\\cos A, \\sin A)$ and $(\\cos B, \\sin B)$, which $\\sin^2 + \\cos^2 = 1$ makes certain. Then $\\cos A \\cos B + \\sin A \\sin B$ is the cosine of the angle between them, and the guard sees the player when it is at least $\\cos 45^\\circ \\approx 0.71$. A player $30^\\circ$ to one side gives $\\cos 30^\\circ \\approx 0.87$, so the guard sees them, without the game ever working out an angle.",
+        tags: ["game-design"],
+        image: {
+          src: guardViewConeImage,
+          caption: "A guard's view cone in a game: the cosine of the angle between where the guard faces and where the player stands decides whether the player is seen.",
+          alt: "A top-down game screen with a red guard facing right inside a dashed gold cone 45° either side. A teal player stands inside the cone, joined to the guard by a dashed gold line 30° from the guard's facing arrow.",
         },
       },
     ],

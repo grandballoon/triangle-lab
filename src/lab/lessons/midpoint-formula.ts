@@ -9,6 +9,7 @@ import { keepApart, num, pair, par, plane, riseRun, settle, snapping, X_COLOR, Y
 import { lesson, type Readout } from "../scene.ts";
 import colourGradientMidpointImage from "../../images/colour-gradient-midpoint.svg";
 import gameLerpGlideImage from "../../images/game-lerp-glide.svg";
+import guitarOctaveFretImage from "../../images/guitar-octave-fret.svg";
 
 const POINT = C.gold;
 /** Legs shorter than this are too small to carry marks. */
@@ -70,6 +71,7 @@ export default lesson((s) => {
       {
         title: "Smooth movement in games and animation",
         text: "Animation software and game engines move an object from $A$ to $B$ by computing $A + t(B - A)$ for $t$ running from $0$ to $1$, a step called linear interpolation, or “lerp”. Going from $(0, 0)$ to $(10, 4)$, a quarter of the way along at $t = 0.25$ the object is at $(2.5, 1)$.",
+        tags: ["game-design"],
         image: {
           src: gameLerpGlideImage,
           caption: "Smooth movement in a game: the object glides from A to B along a straight line, a fraction t of the way at each moment.",
@@ -79,10 +81,21 @@ export default lesson((s) => {
       {
         title: "Blending colours",
         text: "Screens mix red, green and blue light, so a colour is three numbers, like coordinates. A gradient from red $(255, 0, 0)$ to blue $(0, 0, 255)$ finds each colour along the way with the same formula, and halfway across it shows about $(128, 0, 128)$, a purple.",
+        tags: ["art", "light", "game-design"],
         image: {
           src: colourGradientMidpointImage,
           caption: "A colour gradient from red to blue: halfway along, the midpoint of the two colours' numbers is a purple.",
           alt: "A screen with bands shading from red through purple to blue, and a dashed gold line across them with its midpoint ringed on the purple.",
+        },
+      },
+      {
+        title: "The octave on a guitar",
+        text: "A guitar string vibrates between the nut and the saddle, 648 mm apart on many electric guitars. Lay a ruler along the neck with the nut at 0 and the saddle at 648, and the 12th fret sits at the midpoint, $\\frac{0 + 648}{2} = 324$ mm. Pressing the string there halves the length that vibrates, which doubles its frequency: the open A string at 110 Hz sounds 220 Hz, the same note an octave higher.",
+        tags: ["music"],
+        image: {
+          src: guitarOctaveFretImage,
+          caption: "A guitar's 12th fret: it sits at the midpoint of the string, so it halves the vibrating length and sounds an octave higher.",
+          alt: "A guitar lying left to right, with a dashed gold line above the strings from the nut to the bridge marked 0, 324 and 648, and a gold tick dropping from 324 to the 12th fret.",
         },
       },
     ],

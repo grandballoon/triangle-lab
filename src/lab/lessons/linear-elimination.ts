@@ -12,6 +12,7 @@ import { INSIDE, keepApart, lattice, pair, plane, texPoint, texRatio } from "../
 import { lesson, type Handle, type Readout } from "../scene.ts";
 import doubledReceiptImage from "../../images/doubled-receipt.svg";
 import twoBearingsFixImage from "../../images/two-bearings-fix.svg";
+import twoLoopCircuitImage from "../../images/two-loop-circuit.svg";
 import twoReceiptsImage from "../../images/two-receipts.svg";
 
 const FIRST = C.cyan;
@@ -185,6 +186,7 @@ export default lesson((s) => {
       {
         title: "Two receipts",
         text: "Three coffees and two muffins cost 16; one coffee and two muffins cost 9. Subtract the second receipt from the first and the muffins cancel: two coffees cost 7. So a coffee is 3.50, and putting that back in, a muffin is 2.75.",
+        tags: ["money"],
         image: {
           src: twoReceiptsImage,
           caption: "Two café receipts: subtracting one from the other cancels the muffins, and the two price lines cross at a coffee of 3.50 and a muffin of 2.75.",
@@ -194,6 +196,7 @@ export default lesson((s) => {
       {
         title: "A fix from two bearings",
         text: "A sailor takes compass bearings on a lighthouse and a church spire and draws a line on the chart through each, along its bearing. The boat is on both lines, so it is where they cross. Landmarks in nearly the same direction give nearly parallel lines and a poor fix, so navigators pick ones far apart in bearing.",
+        tags: ["navigation"],
         image: {
           src: twoBearingsFixImage,
           caption: "A boat's position from two bearings: the lines from a lighthouse and a church spire cross where the boat is.",
@@ -203,10 +206,21 @@ export default lesson((s) => {
       {
         title: "A receipt that tells you nothing new",
         text: "Suppose the second receipt had been six coffees and four muffins for 32: the first one doubled. Eliminating then leaves $0 = 0$. Endless pairs of prices fit both, and only a genuinely different purchase can pin them down.",
+        tags: ["money"],
         image: {
           src: doubledReceiptImage,
           caption: "A second receipt that is just the first one doubled: its line lies on top of the first, so endless prices fit both.",
           alt: "A receipt of three coffees and two muffins for 16 beside one of six coffees and four muffins for 32, and a graph where a teal line and a dashed gold line coincide.",
+        },
+      },
+      {
+        title: "Currents in a two-battery circuit",
+        text: "A 14 V and an 8 V battery each drive a loop, through a 4 Ω and a 2 Ω resistor, and the two loops share a third 2 Ω resistor that carries both currents, $I_1 + I_2$. Round each loop the resistors use up the battery's voltage, so $4I_1 + 2(I_1 + I_2) = 14$ and $2I_2 + 2(I_1 + I_2) = 8$, that is $6I_1 + 2I_2 = 14$ and $2I_1 + 4I_2 = 8$. Triple the second and subtract the first: $I_1$ cancels, leaving $10I_2 = 10$, so $I_2 = 1$ A and $I_1 = 2$ A. Circuit simulators solve networks of thousands of loops by eliminating unknowns in the same way.",
+        tags: ["electrical"],
+        image: {
+          src: twoLoopCircuitImage,
+          caption: "A circuit with two batteries: going round each loop gives one equation, and eliminating a current between them gives both.",
+          alt: "A circuit board with a green 14 V battery on the left, a purple 8 V battery on the right and three striped resistors, two on top and one shared in the middle, with dashed gold loops labelled I₁ and I₂ circling each half.",
         },
       },
     ],

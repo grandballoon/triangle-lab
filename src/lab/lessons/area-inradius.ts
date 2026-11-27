@@ -82,6 +82,7 @@ export default lesson((s) => {
       {
         title: "The biggest pond in a corner garden",
         text: "A triangular garden has sides of 5, 12 and 13 metres, so it is right-angled with area $\\frac12 \\cdot 5 \\cdot 12 = 30$ square metres. Its semiperimeter is 15, so $r = 30 / 15 = 2$ metres. A round pond or trampoline any wider than 4 metres across will not fit inside.",
+        tags: ["gardening", "home"],
         image: {
           src: cornerPondImage,
           caption: "A round pond in a 5-12-13 corner garden: the widest that fits is the inscribed circle, 2 metres in radius.",
@@ -91,6 +92,7 @@ export default lesson((s) => {
       {
         title: "A round duct in a roof space",
         text: "The space under a roof is 8 metres wide with sloping sides of 5 metres each, so it is 3 metres high and its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres. The semiperimeter is 9, so the largest round duct that fits has radius $12 / 9 \\approx 1.33$ metres.",
+        tags: ["building"],
         image: {
           src: roofDuctImage,
           caption: "A round duct in a loft: the widest that fits under the roof is the circle touching both slopes and the floor.",

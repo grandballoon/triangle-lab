@@ -77,6 +77,7 @@ export default lesson((s) => {
       {
         title: "Drawing a polygon with a turtle",
         text: "In turtle graphics, a common first programming exercise, a cursor walks forward and turns. To draw a regular pentagon it repeats “forward 100, turn $72^\\circ$” five times, because five equal turns must add to $360^\\circ$. For any regular $n$-gon the turn is $\\tfrac{360^\\circ}{n}$.",
+        tags: ["computing", "art"],
         image: {
           src: turtlePentagonImage,
           caption: "Turtle graphics: to draw a regular pentagon the turtle walks forward and turns 72° five times, one full turn in all.",
@@ -86,6 +87,7 @@ export default lesson((s) => {
       {
         title: "Bending a frame from one strip",
         text: "A metalworker bending a single flat strip into a closed frame knows the bends must add to one full turn. For a regular hexagon that is six bends of $60^\\circ$ each; for a regular octagon, eight of $45^\\circ$.",
+        tags: ["machines"],
         image: {
           src: bentStripHexagonImage,
           caption: "A hexagonal frame bent from one steel strip: its six bends of 60° each add up to one full turn.",

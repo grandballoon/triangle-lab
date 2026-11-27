@@ -11,7 +11,9 @@ import {
 import { labelAway } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
 import gablePaintImage from "../../images/gable-paint.svg";
+import mulchTriangleBedImage from "../../images/mulch-triangle-bed.svg";
 import oddFieldImage from "../../images/odd-field.svg";
+import tapInsideTriangleImage from "../../images/tap-inside-triangle.svg";
 
 const A = vec(-2, -2.2);
 const B = vec(2, -2.2);
@@ -87,6 +89,7 @@ export default lesson((s) => {
       {
         title: "Painting a gable end",
         text: "The triangular end wall of a house under a pitched roof is 8 metres wide at the eaves and 3 metres from there up to the peak. Its area is $\\frac12 \\cdot 8 \\cdot 3 = 12$ square metres, which is what you need to buy enough paint. The peak does not have to be in the middle for this to work.",
+        tags: ["home", "building"],
         image: {
           src: gablePaintImage,
           caption: "Painting a gable end: half its 8 metre base times its 3 metre height gives the 12 square metres to buy paint for.",
@@ -95,10 +98,31 @@ export default lesson((s) => {
       {
         title: "Measuring an odd-shaped field",
         text: "Surveyors find the area of an irregular field by splitting it into triangles. For each triangle they measure one side along the ground and the perpendicular distance to the opposite corner, then add up half of each product. It works for any shape with straight edges, however lopsided the triangles are.",
+        tags: ["navigation"],
         image: {
           src: oddFieldImage,
           caption: "Surveying an irregular field: split it into triangles, and measure a base and the perpendicular height of each.",
           alt: "A lopsided five-sided green field seen from above, divided by dashed gold lines from one corner into three triangles, each with a dashed gold height meeting its base at a right angle.",
+        },
+      },
+      {
+        title: "Mulching a triangular bed",
+        text: "A triangular flower bed is $3$ metres along its front edge, and its far corner is $2$ metres back from that edge, measured square to it. It covers $\\frac12 \\cdot 3 \\cdot 2 = 3$ square metres. Spreading bark mulch $5$ centimetres deep takes $3 \\cdot 0.05 = 0.15$ cubic metres, which is $150$ litres: three $50$ litre bags.",
+        tags: ["gardening"],
+        image: {
+          src: mulchTriangleBedImage,
+          caption: "Mulching a triangular bed: half the 3 metre front edge times the 2 metre height gives 3 square metres to cover.",
+          alt: "A triangular bed of brown mulch on a lawn with a few plants, its outline and height traced in dashed gold and labelled 3 m and 2 m, beside a bag of mulch marked 50 L.",
+        },
+      },
+      {
+        title: "Did the tap land on the button?",
+        text: "A game can tell whether a tap at $P$ landed on a triangular button by adding areas. Join $P$ to the three corners: when $P$ is inside, the three small triangles exactly fill the button, and when it is outside they overlap and add up to more. For corners at $(0, 0)$, $(8, 0)$ and $(0, 6)$ the button's area is $\\frac12 \\cdot 8 \\cdot 6 = 24$, and a tap at $(2, 2)$ makes triangles of area $8$, $6$ and $10$, which add up to $24$, so it counts.",
+        tags: ["game-design"],
+        image: {
+          src: tapInsideTriangleImage,
+          caption: "Testing a tap on a triangular button: the tap is inside exactly when the three triangles it makes with the corners add up to the button's area.",
+          alt: "A phone screen showing a triangular button split into three coloured triangles that meet at a tap point, their edges dashed in gold and their areas labelled 8, 6 and 10.",
         },
       },
     ],

@@ -126,6 +126,7 @@ export default lesson((s) => {
       {
         title: "A frame to hug a round clock",
         text: "You want a frame shaped like a symmetric trapezium, 30 cm along the top and 50 cm along the bottom, that touches a round clock face on all four sides. The top and bottom add to 80 cm, so the two slanted sides must add to 80 too: each is 40 cm. The frame's height is then $\\sqrt{40^2 - 10^2} \\approx 38.7$ cm, and that is the diameter of clock it holds.",
+        tags: ["carpentry", "home"],
         image: {
           src: clockTrapeziumFrameImage,
           caption: "A clock in a trapezium frame: the top and bottom, 30 and 50 cm, add to the same 80 cm as the two slanted sides, so one round face can touch all four.",
@@ -135,6 +136,7 @@ export default lesson((s) => {
       {
         title: "Checking a plan before you cut",
         text: "Before cutting wood for a four-sided frame meant to touch a round mirror on every side, add up the opposite sides of the plan. Sides of 60, 45, 50 and 45 cm in turn fail the test, since $60 + 50$ is not $45 + 45$: no circle can touch all four, and the mirror would sit loose against one side. Change the lengths until the two sums agree, then cut.",
+        tags: ["carpentry"],
         image: {
           src: mirrorFramePlanCheckImage,
           caption: "A mirror frame cut to the wrong plan: 60 + 50 is not 45 + 45, so the round mirror touches three sides and sits loose against the fourth.",

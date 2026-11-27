@@ -22,12 +22,15 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { asides } from "../src/asides.ts";
 import { directions } from "../src/directions.ts";
 import { lessons } from "../src/lessons.ts";
 import { course, problems, readSyllabus, saveSyllabus, stale, type Syllabus } from "../src/recall/syllabus.ts";
 import { entryParams, writtenOf, type LessonFile } from "./syllabus-claude.ts";
 import { devVar } from "./dev-vars.ts";
+// src/asides.ts imports the pictures beside its uses, which plain Node cannot
+// load until tools/pictures.ts teaches it to; so it is imported after that.
+import "./pictures.ts";
+const { asides } = await import("../src/asides.ts");
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 

@@ -67,6 +67,7 @@ export default lesson((s) => {
       {
         title: "A triangular cake for six",
         text: "A triangular tray bake can be shared among six people without measuring anything but the edges. Find the middle of each edge, and cut from each corner to the middle of the opposite edge. The six pieces have different shapes but exactly equal amounts of cake.",
+        tags: ["home"],
         image: {
           src: triangleCakeSixImage,
           caption: "A triangular tray bake cut from each corner to the middle of the opposite edge: the six pieces differ in shape but hold exactly the same amount of cake.",
@@ -76,6 +77,7 @@ export default lesson((s) => {
       {
         title: "Three equal plots",
         text: "To split a triangular field among three owners, find the point $G$ where two medians cross, and run fences from $G$ to the three corners. Each plot is two of the six equal pieces, so each owner gets exactly a third, and each plot keeps a whole side of the field as its frontage.",
+        tags: ["navigation"],
         image: {
           src: fieldThreePlotsImage,
           caption: "A triangular field fenced from the point where its medians cross to each corner, giving three owners exactly a third each, every plot with a whole side as frontage.",

@@ -69,6 +69,7 @@ export default lesson((s) => {
       {
         title: "A projector in a dome",
         text: "In a round dome, a projector set away from the centre throws its picture across a fixed angle, say $60^\\circ$. The arc of screen it covers in front, plus the arc on the same lines behind it, always totals $120^\\circ$, so moving the projector back towards the rear wall makes one picture cover more of the front screen.",
+        tags: ["light", "astronomy"],
         image: {
           src: domeProjectorImage,
           caption: "A projector set back in a round dome throws a 60° picture: the arc it lights in front plus the arc behind it on the same lines always total 120°.",
@@ -78,6 +79,7 @@ export default lesson((s) => {
       {
         title: "A camera in a round lobby",
         text: "A security camera with a $90^\\circ$ view, mounted away from the centre of a round lobby, sees an arc of wall in front; the arc behind it on the same lines makes the two total $180^\\circ$. Mounted near one wall, it sees well over a quarter of the far wall.",
+        tags: ["light", "building"],
         image: {
           src: lobbyCameraImage,
           caption: "A 90° security camera mounted near the wall of a round lobby: the arc of wall it sees plus the arc behind it total 180°, so it covers well over a quarter of the far wall.",

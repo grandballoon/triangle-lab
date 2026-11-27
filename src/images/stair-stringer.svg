@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="300" width="640" height="60" fill="#1c2633"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M100 300 V250 H170 V200 H240 V150 H310 V100 H380 V50 H450 V130 L212 300 Z" fill="#d9a066"/>
+  </g>
+  <g fill="none" stroke-linejoin="miter">
+    <path d="M310 160 V100 H392" stroke="#0b0f14" stroke-width="22"/>
+    <path d="M310 160 V100 H392" stroke="#8fa3b8" stroke-width="14" stroke-linecap="butt"/>
+  </g>
+  <g fill="#b07a45" stroke="#0b0f14" stroke-width="4"><circle cx="310" cy="150" r="9"/><circle cx="380" cy="100" r="9"/></g>
+  <path d="M100 300 V250 H170 V200 H240 V150 H310 V100 H380 V50 H450 M100 300 L450 50" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M100 268 H118 V250" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">
+    <text x="74" y="286">18</text><text x="135" y="238">25</text>
+  </g>
+</svg>

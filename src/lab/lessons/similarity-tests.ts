@@ -11,6 +11,7 @@ import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson } from "../scene.ts";
 import aFrameBraceImage from "../../images/a-frame-brace.svg";
 import buildingShadowImage from "../../images/building-shadow.svg";
+import dragonflyInterceptImage from "../../images/dragonfly-intercept.svg";
 import projectorPictureImage from "../../images/projector-picture.svg";
 
 type Mode = "AA" | "SAS" | "SSS" | "Midsegment";
@@ -125,6 +126,7 @@ export default lesson((s) => {
       {
         title: "How tall is that building?",
         text: "On a sunny day, measure your own shadow and the building's. Sunlight arrives in parallel rays, so you and your shadow form a triangle similar to the building and its shadow (AA). If you are 1.8 metres tall with a 1.2 metre shadow, and the building's shadow is 20 metres, the building is $20 \\cdot \\tfrac{1.8}{1.2} = 30$ metres tall.",
+        tags: ["navigation"],
         image: {
           src: buildingShadowImage,
           caption: "Measuring a building by its shadow: sunlight falls in parallel rays, so you and your shadow make a triangle similar to the building and its shadow.",
@@ -134,6 +136,7 @@ export default lesson((s) => {
       {
         title: "Sizing a projector picture",
         text: "Light from a projector spreads from one point, so the picture and the lens form similar triangles at every distance. If the picture is 2 metres wide with the projector 3 metres from the wall, moving it back to 4.5 metres makes the picture $2 \\cdot \\tfrac{4.5}{3} = 3$ metres wide. Installers use this ratio, often printed as the throw ratio, to choose where to mount it.",
+        tags: ["light"],
         image: {
           src: projectorPictureImage,
           caption: "A projector on a table: its light spreads from the lens, so the picture grows in proportion to the distance from the wall.",
@@ -143,10 +146,21 @@ export default lesson((s) => {
       {
         title: "A brace for an A-frame",
         text: "An A-frame sign or stepladder whose feet stand 80 centimetres apart can be braced with a bar joining the midpoints of its two legs. By the midsegment, that bar is parallel to the floor and exactly 40 centimetres long, so you can cut it before assembling anything.",
+        tags: ["carpentry", "home"],
         image: {
           src: aFrameBraceImage,
           caption: "An A-frame braced at the midpoints of its legs: the brace is parallel to the floor and half the distance between the feet.",
           alt: "Two wooden legs meet at the top, with a steel bar joining their midpoints; a dashed gold triangle runs along the legs and the floor, with tick marks showing each leg cut in equal halves.",
+        },
+      },
+      {
+        title: "How a dragonfly heads off its prey",
+        text: "Dragonflies filmed hunting do not fly straight at a midge; they steer so that it stays in the same direction in their view, which takes them to where the two paths will cross. While both fly straight and steady, the dragonfly, the midge and that meeting point make a triangle that shrinks without changing shape. The angle at the meeting point stays the same and the two distances to it shrink in the same ratio, so each triangle is similar to the last by SAS: a dragonfly flying twice as fast as its prey is always twice as far from the meeting point.",
+        tags: ["nature"],
+        image: {
+          src: dragonflyInterceptImage,
+          caption: "A dragonfly intercepting its prey: holding the prey in a fixed direction keeps the triangle to the meeting point the same shape as it shrinks.",
+          alt: "A dragonfly flying up and to the right toward a small fly, with a dashed gold triangle joining them to the point where their paths meet, and a smaller similar triangle inside it marking where both will be later.",
         },
       },
     ],

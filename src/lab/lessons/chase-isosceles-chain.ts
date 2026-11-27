@@ -96,6 +96,7 @@ export default lesson((s) => {
       {
         title: "Corner reflectors",
         text: "A ray bouncing between two mirrors set at an angle $\\phi$ is turned through $2\\phi$ in all, wherever it comes in: chasing angles round the triangle it makes with the mirrors shows the angle of entry cancels. With the mirrors at $90^\\circ$ the ray is sent straight back the way it came, and the same idea with three mirrors in a cube corner is behind the reflectors on a bicycle.",
+        tags: ["light", "travel"],
         image: {
           src: cornerReflectorMirrorsImage,
           caption: "Two mirrors at a right angle: a ray bounces off both and goes straight back the way it came, as in a bicycle reflector.",
@@ -105,6 +106,7 @@ export default lesson((s) => {
       {
         title: "Looking through a periscope",
         text: "A periscope has two parallel mirrors, each at $45^\\circ$ to the tube. Light coming in level meets the top mirror at $45^\\circ$, leaves it at $45^\\circ$, and so is turned through $90^\\circ$ down the tube; the second mirror, parallel to the first, turns it back through $90^\\circ$ by the same chase. The light comes out travelling the way it went in, just lower down, at your eye.",
+        tags: ["light"],
         image: {
           src: periscopeMirrorsImage,
           caption: "A periscope: two parallel mirrors at 45° turn the light down the tube and back again, so it reaches your eye travelling the way it set off.",

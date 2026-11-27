@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="290" width="640" height="70" fill="#2b3a2f"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" fill="none">
+    <path d="M110 236 L60 290 M140 244 L110 292 M210 240 L260 290 M226 232 L282 276" stroke="#d9a066" stroke-width="14"/>
+    <path d="M94 222 Q50 200 36 160" stroke="#d9a066" stroke-width="12"/>
+    <path d="M430 230 L390 290 M450 236 L430 292 M500 232 L520 292 M510 226 L556 280" stroke="#b07a45" stroke-width="10"/>
+    <path d="M540 186 L530 150 M550 186 L552 148"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <ellipse cx="170" cy="228" rx="82" ry="28" fill="#d9a066"/>
+    <circle cx="266" cy="214" r="24" fill="#d9a066"/>
+    <ellipse cx="470" cy="216" rx="58" ry="24" fill="#b07a45"/>
+    <path d="M512 206 L534 180 L550 186 L540 214 Z" fill="#b07a45"/>
+    <circle cx="548" cy="196" r="15" fill="#b07a45"/>
+    <path d="M420 212 Q412 200 404 206" fill="none"/>
+  </g>
+  <g fill="#0b0f14"><circle cx="120" cy="222" r="5"/> <circle cx="146" cy="212" r="5"/> <circle cx="172" cy="226" r="5"/> <circle cx="198" cy="214" r="5"/> <circle cx="222" cy="228" r="5"/> <circle cx="132" cy="240" r="5"/> <circle cx="186" cy="242" r="5"/> <circle cx="160" cy="206" r="5"/> <circle cx="210" cy="244" r="5"/><circle cx="276" cy="208" r="4"/><circle cx="552" cy="192" r="3"/></g>
+  <path d="M424 224 Q470 238 514 222" fill="none" stroke="#f3ead8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M290 330 H410 M290 316 V344 M410 316 V344" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="28" text-anchor="middle"><text x="350" y="318">50 m</text><text x="180" y="170">25 m/s</text><text x="470" y="158">20 m/s</text></g>
+</svg>

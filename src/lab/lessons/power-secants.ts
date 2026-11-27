@@ -157,6 +157,7 @@ export default lesson((s) => {
       {
         title: "How far is the horizon?",
         text: "Your line of sight to the horizon is a tangent to the Earth, and the line straight down through its centre is a secant: its outside part is your height $h$ and the whole of it is $h + 2R$, with $R \\approx 6371$ km. So the horizon is $\\sqrt{h(2R + h)}$ away. With your eyes 1.7 m above the sea that is about 4.7 km; from the top of a 100 m cliff, about 36 km. The air bends light slightly, so in practice you see a little further.",
+        tags: ["navigation"],
         image: {
           src: horizonTangentImage,
           caption: "Seeing the horizon: your line of sight is a tangent to the Earth, and your height h plus the diameter make the secant.",
@@ -166,6 +167,7 @@ export default lesson((s) => {
       {
         title: "When a lighthouse comes into view",
         text: "A light 30 m above the sea has its own horizon about 19.6 km away, and a lookout 10 m up has one about 11.3 km away. Their two lines of sight can just meet at a shared horizon point, so the light first shows over the edge of the sea about 31 km out. Navigators work out a light's range in this way, with a small allowance for the air bending light.",
+        tags: ["navigation", "travel"],
         image: {
           src: lighthouseHorizonImage,
           caption: "A lighthouse coming into view: its line of sight and a ship's lookout's meet at a shared horizon point, 19.6 km and 11.3 km away.",

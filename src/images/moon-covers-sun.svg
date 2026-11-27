@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M55 180 L535 100 M55 180 L535 260" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="535" cy="180" r="80" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="175" cy="180" r="20" fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="170" cy="174" r="4" fill="#8fa3b8"/>
+  <circle cx="181" cy="187" r="3" fill="#8fa3b8"/>
+  <path d="M20 180 Q45 146 76 180 Q45 214 20 180 Z" fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="52" cy="180" r="11" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="52" cy="180" r="4" fill="#0b0f14"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="26"><text x="175" y="140">1</text><text x="535" y="320">400</text></g>
+</svg>

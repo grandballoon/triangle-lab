@@ -255,6 +255,7 @@ export default lesson((s) => {
       {
         title: "A pinhole camera",
         text: "In a pinhole camera, light from the top and bottom of a person crosses at the pinhole and lands upside down on the back of the box, which is parallel to them. That is the trapezoid's figure: two similar triangles meeting at $E$. A person 1.8 m tall standing 6 m away from a box 15 cm deep makes an image $\\frac{0.15}{6} = \\frac{1}{40}$ as tall, 4.5 cm.",
+        tags: ["light"],
         image: {
           src: pinholeCameraImage,
           caption: "A pinhole camera: light from a person's head and feet crosses at the pinhole, so the image on the back of the box is upside down and smaller by the ratio of the box's depth to the person's distance.",
@@ -264,6 +265,7 @@ export default lesson((s) => {
       {
         title: "Measuring across a river",
         text: "To find the width of a river without crossing it, pick a tree $A$ on the far bank and stand at $B$ opposite it. Walk 20 paces along the bank to a post $E$, then 10 more to $D$, and turn away from the river until you see $E$ and the tree lined up; say that point $C$ is 15 paces from $D$. Triangles $ABE$ and $CDE$ are similar with $AB$ twice $CD$, so the river is 30 paces wide.",
+        tags: ["navigation", "trade-tricks"],
         image: {
           src: riverWidthSimilarImage,
           caption: "Measuring across a river: pacing 20 along the bank to a post and 10 more, then stepping back until the post lines up with a tree, makes two similar triangles, so the river is twice the short side.",

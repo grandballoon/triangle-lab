@@ -5,6 +5,7 @@ import { C as COLOR } from "../draw.ts";
 import { centroid, dist, fmt, mid, type Vec } from "../geo.ts";
 import { CAPTION_AT, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson, type Readout } from "../scene.ts";
+import threePhaseCentroidImage from "../../images/three-phase-centroid.svg";
 import triangleGameCentreImage from "../../images/triangle-game-centre.svg";
 import triangleSignBalanceImage from "../../images/triangle-sign-balance.svg";
 
@@ -41,6 +42,7 @@ export default lesson((s) => {
       {
         title: "Finding a triangle's centre in a game",
         text: "Game engines and graphics programs often need a single point to stand for a triangle, for example to place a label or to sort triangles by distance. They use the centroid, which is simply the average of the three corners. For corners $(0, 0)$, $(6, 0)$ and $(0, 9)$, the centroid is $\\left(\\frac{0 + 6 + 0}{3}, \\frac{0 + 0 + 9}{3}\\right) = (2, 3)$.",
+        tags: ["game-design"],
         image: {
           src: triangleGameCentreImage,
           caption: "A game's triangle mesh: the engine stands each triangle for one point, its centroid, the average of the three corners.",
@@ -50,10 +52,21 @@ export default lesson((s) => {
       {
         title: "Hanging a triangular sign level",
         text: "A flat triangular sign or a piece of a hanging mobile, made of one even material, has its centre of mass at the centroid. Hang it from a pivot at that point and it stays balanced whichever way it is turned, with no corner dipping down. To find that point on a cut-out, you only need to draw two medians and mark where they cross.",
+        tags: ["home"],
         image: {
           src: triangleSignBalanceImage,
           caption: "A flat triangular sign hung from a pivot at its centroid stays balanced however it is turned.",
           alt: "A wooden triangle hanging on a cord from a beam, pinned where its three dashed medians cross.",
+        },
+      },
+      {
+        title: "Three-phase mains",
+        text: "In a balanced three-phase supply, the voltages between the three lines can be drawn as the sides of an equilateral triangle, with the neutral at its centroid. In Britain each side is $400$ volts, so each median is $400 \\cdot \\tfrac{\\sqrt3}{2} \\approx 346$ volts, and the centroid is two thirds of the way down it: $\\tfrac23 \\cdot 346 \\approx 231$ volts from each corner. That is the $230$ volts between a line and the neutral, the supply at an ordinary socket.",
+        tags: ["electrical"],
+        image: {
+          src: threePhaseCentroidImage,
+          caption: "Three-phase mains: the neutral sits at the centroid of the triangle of line voltages, two thirds down each median, so 400 volts between lines gives 230 to neutral.",
+          alt: "Three cable terminals coloured brown, black and grey at the corners of an equilateral triangle on a panel, with a blue neutral terminal at its centre, joined by dashed gold lines and labelled 400 V and 230 V.",
         },
       },
     ],

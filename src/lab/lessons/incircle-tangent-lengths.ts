@@ -168,6 +168,7 @@ export default lesson((s) => {
       {
         title: "The biggest round pond in a corner plot",
         text: "A triangular plot has sides 3 m, 4 m and 5 m, with a right angle between the two shorter ones. The biggest round pond that fits touches all three sides: it is the incircle, of radius $r = \\tfrac12(3 + 4 - 5) = 1$ m. To peg it out, use the tangent lengths: with $s = 6$, the pond touches the sides 1 m from the right-angled corner, 2 m from the corner where the 3 m side meets the longest, and 3 m from the corner where the 4 m side does.",
+        tags: ["gardening"],
         image: {
           src: pond345IncircleImage,
           caption: "The biggest round pond in a 3, 4, 5 corner plot: the incircle, pegged out where it touches each side 1, 2 and 3 m from the corners.",
@@ -177,6 +178,7 @@ export default lesson((s) => {
       {
         title: "Cutting a disc from an offcut",
         text: "A plywood offcut is a right triangle with short edges 30 cm and 40 cm, and a long edge of 50 cm. The largest disc you can cut from it has radius $\\tfrac12(30 + 40 - 50) = 10$ cm, a 20 cm clock face. Its centre is 10 cm in from each short edge, so you can mark it with a square from the right-angled corner before reaching for the compass.",
+        tags: ["carpentry"],
         image: {
           src: plywoodDiscCornerImage,
           caption: "Cutting a disc from a 30, 40, 50 plywood offcut: the largest disc has its centre 10 cm in from each short edge, found with a square.",

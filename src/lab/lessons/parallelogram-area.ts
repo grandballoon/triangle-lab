@@ -85,6 +85,7 @@ export default lesson((s) => {
       {
         title: "Valuing a slanted plot",
         text: "A plot of land between two parallel roads, $30$ m apart, with $20$ m of frontage on one of them has an area of $20 \\cdot 30 = 600$ square metres, however much its side boundaries slant. A surveyor needs the frontage and the distance straight across between the roads, not the length of the slanting sides.",
+        tags: ["navigation", "money"],
         image: {
           src: slantedPlotRoadsImage,
           caption: "A slanted plot between two parallel roads: its area is the frontage times the distance straight across between the roads, however much its sides slant.",
@@ -94,6 +95,7 @@ export default lesson((s) => {
       {
         title: "Areas in computer graphics",
         text: "Game engines and drawing programs describe a triangle by two edge vectors from one corner. The parallelogram they span has area $ab\\sin\\theta$, which is the size of their cross product, and the triangle is half of it. The same calculation's sign also tells the program which way the triangle faces, so it can skip drawing the back of a model.",
+        tags: ["game-design"],
         image: {
           src: screenEdgeVectorsImage,
           caption: "A triangle in a graphics program: two edge vectors from one corner span a parallelogram, and the triangle's area is half of it.",

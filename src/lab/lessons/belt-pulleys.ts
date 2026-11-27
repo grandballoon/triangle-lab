@@ -99,6 +99,7 @@ export default lesson((s) => {
       {
         title: "Ordering the right belt",
         text: "Mechanics work out belt length from the pulleys and their spacing alone. With wheels of radius $R = 10$ cm and $r = 5$ cm, $40$ cm apart, each straight run is $\\sqrt{40^2 - 5^2} \\approx 39.7$ cm and $\\cos\\alpha = \\tfrac{5}{40}$, so $\\alpha \\approx 1.45$ rad. Adding the two runs to the arcs, $10(2\\pi - 2\\alpha) \\approx 33.9$ cm and $5 \\cdot 2\\alpha \\approx 14.5$ cm, gives a belt of about $127.7$ cm.",
+        tags: ["machines"],
         image: {
           src: beltOpenPulleysImage,
           caption: "A belt over two pulleys of different sizes: its length comes from the two straight runs and the two arcs, all worked out from the radii and the spacing.",
@@ -108,6 +109,7 @@ export default lesson((s) => {
       {
         title: "Reversing a machine with a crossed belt",
         text: "In old workshops driven by belts from one overhead shaft, a crossed belt made a machine turn the opposite way to the shaft. It also grips better: with the sizes above, the crossed belt wraps about $224^\\circ$ of the small wheel, where the open belt wraps only about $166^\\circ$, and more contact means less slipping.",
+        tags: ["machines"],
         image: {
           src: beltCrossedPulleysImage,
           caption: "A crossed belt makes the second wheel turn the opposite way, and it wraps about 224° of the small wheel, so it grips better than an open belt.",

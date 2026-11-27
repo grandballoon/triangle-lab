@@ -20,6 +20,7 @@ import {
   texSum,
 } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import fertiliserBagsMixImage from "../../images/fertiliser-bags-mix.svg";
 import pottingSoilMixImage from "../../images/potting-soil-mix.svg";
 import raisedBedBoardsImage from "../../images/raised-bed-boards.svg";
 
@@ -208,6 +209,7 @@ export default lesson((s) => {
       {
         title: "Boards for a raised bed",
         text: "You want a rectangular raised bed whose long sides are 40 cm longer than its short ones, from 240 cm of board in all. So $\\ell = s + 40$ and $2\\ell + 2s = 240$. Substituting the first into the second gives $2(s + 40) + 2s = 240$: the short sides are 40 cm and the long ones 80 cm.",
+        tags: ["gardening", "carpentry"],
         image: {
           src: raisedBedBoardsImage,
           caption: "A raised bed from 240 cm of board, its long sides 40 cm longer than its short ones: 80 cm by 40 cm.",
@@ -217,10 +219,21 @@ export default lesson((s) => {
       {
         title: "Mixing potting soil",
         text: "A houseplant wants soil that is 30% perlite, and you have bags that are 50% and 20% perlite. For 10 litres, $x + y = 10$ and $0.5x + 0.2y = 3$. Putting $x = 10 - y$ into the second gives $5 - 0.3y = 3$: about 6.7 litres from the 20% bag and 3.3 from the 50% one.",
+        tags: ["gardening"],
         image: {
           src: pottingSoilMixImage,
           caption: "Ten litres of 30% perlite soil mixed from two bags: about 3.3 litres of the 50% mix and 6.7 of the 20% one.",
           alt: "Bags marked 50% and 20% pouring into a pot, labelled 3.3 and 6.7, with a gold bar below split in that ratio.",
+        },
+      },
+      {
+        title: "Feeding a vegetable bed",
+        text: "Suppose a soil test says a bed needs 35 g of nitrogen and 60 g of potash, and the shed holds Growmore, which is 7% each of nitrogen, phosphate and potash, and sulphate of potash, which is 50% potash and no nitrogen. With $x$ g of Growmore and $y$ g of sulphate, $0.07x = 35$ and $0.07x + 0.5y = 60$. The first gives $x = 500$, and substituting it into the second leaves $35 + 0.5y = 60$, so $y = 50$ g.",
+        tags: ["gardening"],
+        image: {
+          src: fertiliserBagsMixImage,
+          caption: "Two fertilisers for one bed: the nitrogen fixes the Growmore, and substituting it into the potash equation gives the sulphate of potash.",
+          alt: "A green sack labelled 7-7-7 and a blue sack labelled 0-0-50 beside a vegetable bed, with dashed gold arcs from each sack to the bed marked 500 g and 50 g.",
         },
       },
     ],

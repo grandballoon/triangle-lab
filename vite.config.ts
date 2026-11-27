@@ -17,7 +17,8 @@ const mediapipe = JSON.parse(
 // standalone lesson is its own HTML entry point; lab.html hosts every lab
 // lesson (src/lab/lessons), loading each one on demand; ar.html places one
 // lab lesson's figure in the camera view in perspective (src/ar); recall.html
-// asks back the questions noted in the lessons (src/recall).
+// asks back the questions noted in the lessons (src/recall); uses.html shows
+// every lesson's uses, by topic (src/uses).
 //
 // The built site is served from the root of its own origin by the Worker in
 // wrangler.jsonc, which also signs learners in at /auth/*, holds their recall
@@ -62,6 +63,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.html"),
         lab: resolve(__dirname, "lab.html"),
         recall: resolve(__dirname, "recall.html"),
+        uses: resolve(__dirname, "uses.html"),
         ar: resolve(__dirname, "ar.html"),
         signin: resolve(__dirname, "signin.html"),
         angles: resolve(__dirname, "angles.html"),

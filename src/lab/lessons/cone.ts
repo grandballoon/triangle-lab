@@ -60,6 +60,7 @@ export default lesson((s) => {
       {
         title: "Cutting a funnel from sheet metal",
         text: "To make a funnel with a rim of radius $10$ cm and sides $15$ cm long, a metalworker cuts a sector of a circle of radius $15$ cm. Its arc must be as long as the rim, so it is $\\tfrac{10}{15}$ of the full circle: an angle of $\\tfrac23 \\cdot 360^\\circ = 240^\\circ$. Rolled up and seamed, it is the cone.",
+        tags: ["machines"],
         image: {
           src: funnelSheetSectorImage,
           caption: "Cutting a funnel: a 240° sector of sheet metal rolls up into a cone whose rim is exactly as long as the sector's arc.",
@@ -69,6 +70,7 @@ export default lesson((s) => {
       {
         title: "How much gravel is in the pile?",
         text: "Sand and gravel poured from a chute settle into a cone. A pile $4$ m across and $1.5$ m tall holds about $\\tfrac13 \\pi \\cdot 2^2 \\cdot 1.5 = 2\\pi \\approx 6.3$ cubic metres. Builders' merchants and quarries estimate stockpiles this way from just the width and height.",
+        tags: ["building", "trade-tricks"],
         image: {
           src: gravelPileConeImage,
           caption: "A gravel pile poured from a conveyor settles into a cone, so its volume follows from just its width and height.",

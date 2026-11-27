@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g fill="#8fa3b8"><circle cx="70" cy="40" r="3"/><circle cx="150" cy="96" r="2"/><circle cx="220" cy="30" r="3"/><circle cx="470" cy="60" r="2"/><circle cx="560" cy="36" r="3"/><circle cx="590" cy="140" r="2"/><circle cx="60" cy="180" r="2"/><circle cx="520" cy="200" r="2"/><circle cx="110" cy="250" r="3"/><circle cx="600" cy="280" r="3"/></g>
+  <ellipse cx="320" cy="300" rx="150" ry="36" fill="none" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="6 8"/>
+  <path d="M170 300 L320 40" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="6 8"/>
+  <path d="M320 300 L470 300 L320 40 Z" fill="#f2c14e" fill-opacity="0.15" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M338 300 V282 H320" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <path d="M320 110 A70 70 0 0 0 355 100.6" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <circle cx="320" cy="300" r="28" fill="#f2c14e"/>
+    <circle cx="470" cy="300" r="15" fill="#5fb0e8"/>
+    <circle cx="170" cy="300" r="15" fill="#5fb0e8"/>
+    <path d="M320 18 L327 33 L342 40 L327 47 L320 62 L313 47 L298 40 L313 33 Z" fill="#f3ead8"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke"><text x="398" y="290" font-size="24">1 AU</text><text x="342" y="148" font-size="24">p</text></g>
+</svg>

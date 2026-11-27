@@ -8,6 +8,7 @@ import { fmt } from "../geo.ts";
 import { perimeterOf, walkedPath } from "../kit/triangle-parts.ts";
 import { CAPTION_AT, edgeWalker, labelSides, stageTriangle } from "../kit/triangle-stage.ts";
 import { lesson } from "../scene.ts";
+import buntingFlagBindingImage from "../../images/bunting-flag-binding.svg";
 import fencingPlotImage from "../../images/fencing-plot.svg";
 import quiltBindingImage from "../../images/quilt-binding.svg";
 
@@ -35,6 +36,7 @@ export default lesson((s) => {
       {
         title: "Buying fencing",
         text: "A triangular corner plot has sides of $9$, $12$ and $15$ metres. Fencing it all the way round takes $9 + 12 + 15 = 36$ metres of fence, which is what you would order before allowing a little extra for posts and offcuts.",
+        tags: ["gardening", "home"],
         image: {
           src: fencingPlotImage,
           caption: "Fencing a corner plot: sides of 9, 12 and 15 metres add up to 36 metres of fence all the way round.",
@@ -44,10 +46,21 @@ export default lesson((s) => {
       {
         title: "Binding the edge of a quilt",
         text: "Quilters finish a quilt by sewing a strip of fabric, the binding, all the way round its edge. To know how long a strip to cut, they add up the lengths of every side, the perimeter, and then add some extra for turning the corners and joining the ends.",
+        tags: ["fiber-arts"],
         image: {
           src: quiltBindingImage,
           caption: "Binding a quilt: the strip sewn round its edge must be as long as the perimeter, plus a little extra for the corners and the join.",
           alt: "A quilt of coloured triangle patches with a red binding strip round its edge, and a dashed gold line tracing the whole edge.",
+        },
+      },
+      {
+        title: "Binding bunting flags",
+        text: "When each triangular flag of a string of fabric bunting has its raw edges finished with bias binding, the binding runs all the way round the flag. A flag $20$ centimetres across the top with two sloping sides of $25$ centimetres has a perimeter of $20 + 25 + 25 = 70$ centimetres. Ten flags then take $7$ metres of binding, plus a little extra for folding round each point.",
+        tags: ["fiber-arts", "home"],
+        image: {
+          src: buntingFlagBindingImage,
+          caption: "Binding bunting flags: the binding goes all the way round each flag, so each one takes its perimeter, 20 + 25 + 25 = 70 centimetres.",
+          alt: "A string of five coloured triangular bunting flags with pale bound edges, the middle flag's edge traced in dashed gold and labelled 20, 25 and 25.",
         },
       },
     ],

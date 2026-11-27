@@ -9,6 +9,7 @@ import { clamp, fmt } from "../geo.ts";
 import { axes, onStage, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
 import bikeCatchingWalkerImage from "../../images/bike-catching-walker.svg";
+import cheetahChaseImage from "../../images/cheetah-chase.svg";
 import cyclistsMeetingImage from "../../images/cyclists-meeting.svg";
 import navAppArrivalImage from "../../images/nav-app-arrival.svg";
 
@@ -147,6 +148,7 @@ export default lesson((s) => {
       {
         title: "Catching up on a bike",
         text: "A friend sets off walking to the park at 5 km/h, and you leave 20 minutes later on a bike at 15 km/h. Setting the distances equal, $5t = 15\\left(t - \\tfrac13\\right)$, gives $t = \\tfrac12$ hour: you catch them 2.5 km from home, ten minutes after you set off.",
+        tags: ["travel"],
         image: {
           src: bikeCatchingWalkerImage,
           caption: "A cyclist leaving 20 minutes after a walker: their distance–time lines meet 2.5 km from home, where the bike catches up.",
@@ -156,6 +158,7 @@ export default lesson((s) => {
       {
         title: "Meeting on the road",
         text: "Two friends 30 km apart cycle toward each other at 12 and 18 km/h. Their distances add up to the gap, $12t + 18t = 30$, so they meet after 1 hour, 12 km from the slower rider's house: not halfway, because the faster one covers more.",
+        tags: ["travel"],
         image: {
           src: cyclistsMeetingImage,
           caption: "Two cyclists riding towards each other from 30 km apart: they meet after an hour, 12 km from the slower rider's house.",
@@ -165,10 +168,21 @@ export default lesson((s) => {
       {
         title: "Arrival estimates",
         text: "A navigation app predicts when you will reach someone driving ahead of you, or meet someone coming the other way, by setting two distance equations equal and solving for the time.",
+        tags: ["travel", "navigation"],
         image: {
           src: navAppArrivalImage,
           caption: "A navigation app working out when you reach a car ahead: it sets the two distance equations equal and solves for the time.",
           alt: "A phone map with a red car, a teal car further along the road and a gold pin between them, beside a red and a teal line crossing at a gold dot.",
+        },
+      },
+      {
+        title: "A cheetah's sprint",
+        text: "A cheetah creeps as close as it can before it sprints, because most of its chases are over within a few hundred metres. Suppose it starts 50 m behind a gazelle, running at 25 m/s to the gazelle's 20 m/s. Setting the distances equal, $25t = 50 + 20t$, gives $t = 10$ seconds and a run of 250 m. From 100 m back it would need 20 seconds and 500 m, longer than most chases last.",
+        tags: ["nature"],
+        image: {
+          src: cheetahChaseImage,
+          caption: "A cheetah chasing a gazelle: it closes a 50 m gap at the difference of their speeds, 5 m/s, so it catches up in 10 seconds.",
+          alt: "A spotted cheetah stretched out at full sprint behind a running gazelle, with their speeds 25 m/s and 20 m/s above them and a dashed gold bracket on the ground between them marked 50 m.",
         },
       },
     ],

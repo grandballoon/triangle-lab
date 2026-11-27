@@ -72,6 +72,7 @@ export default lesson((s) => {
       {
         title: "How much water is in a pipe?",
         text: "Water lying in a horizontal pipe fills a circular segment of its cross-section, and engineers find its area as sector minus triangle. In a pipe of radius 10 cm, a water surface that spans $60^\\circ$ at the centre gives $100\\left(\\frac{\\pi}{6} - \\frac{\\sqrt3}{4}\\right) \\approx 9.1$ square centimetres, from water only about 1.3 cm deep. The same sum, with other angles, gives the depth charts for fuel tanks lying on their side.",
+        tags: ["plumbing"],
         image: {
           src: pipeWaterSegmentImage,
           caption: "Water lying in a pipe: the water fills a circular segment, found as the 60° sector minus the triangle under the water's surface.",
@@ -81,6 +82,7 @@ export default lesson((s) => {
       {
         title: "Glass for an arched window",
         text: "A segmental arch, common over doors and windows, is a circular segment sitting on a straight top. The glass it needs is the sector of the arch's circle minus the triangle under the chord: for a $60^\\circ$ arch of radius 1 m, $\\frac{\\pi}{6} - \\frac{\\sqrt3}{4} \\approx 0.09$ square metres.",
+        tags: ["building"],
         image: {
           src: segmentalArchWindowImage,
           caption: "A segmental arch window: the glass above the frame's top bar is a circular segment, the sector of the arch's circle minus the triangle under the chord.",
