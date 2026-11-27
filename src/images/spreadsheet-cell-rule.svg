@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="60" y="24" width="520" height="54" rx="8" fill="#f3ead8"/><path d="M130 24 V78" fill="none"/></g>
+  <text x="95" y="61" font-family="system-ui, sans-serif" font-weight="700" font-size="26" font-style="italic" text-anchor="middle" fill="#5a6878">fx</text>
+  <text x="152" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="30" fill="#0b0f14">=2*A1+1</text>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="60" y="100" width="520" height="40" fill="#5a6878"/><rect x="60" y="140" width="520" height="66" fill="#f3ead8"/><rect x="60" y="140" width="40" height="66" fill="#5a6878"/><path d="M100 100 V206 M300 100 V206 M500 100 V206" fill="none"/></g>
+  <rect x="302.5" y="142.5" width="195" height="61" fill="none" stroke="#f2c14e" stroke-width="6"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8"><text x="200" y="129">A</text><text x="400" y="129">B</text><text x="540" y="129">C</text><text x="80" y="182">1</text></g>
+  <text x="200" y="186" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#0b0f14">3</text>
+  <text x="400" y="186" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#0b0f14">7</text>
+  <path d="M200 222 V292 H250" fill="none" stroke="#f3ead8" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M264 292 L250 284 L250 300 Z" fill="#f3ead8"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="268" y="258" width="104" height="68" rx="10" fill="#5fb0e8"/></g>
+  <text x="320" y="306" font-family="system-ui, sans-serif" font-weight="700" font-size="40" font-style="italic" text-anchor="middle" fill="#0b0f14">f</text>
+  <path d="M376 292 H400 V236" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M400 222 L392 236 L408 236 Z" fill="#f2c14e"/>
+  <text x="150" y="268" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#8fa3b8">x = 3</text>
+  <text x="430" y="268" font-family="system-ui, sans-serif" font-weight="700" font-size="24" fill="#f2c14e">2·3 + 1 = 7</text>
+</svg>

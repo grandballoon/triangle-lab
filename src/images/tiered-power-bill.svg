@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#5a6878" stroke-width="3" stroke-dasharray="8 7" fill="none"><path d="M402.5 296 V175 H94"/></g>
+  <g stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 7" fill="none"><path d="M527.5 296 V100 H94"/></g>
+  <path d="M90 40 V300 H604" fill="none" stroke="#8fa3b8" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M90 300 L402.5 175 L590 62.5" fill="none" stroke="#5fb0e8" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="402.5" cy="175" r="8" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="527.5" cy="100" r="10" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="22" fill="#8fa3b8"><g text-anchor="end"><text x="80" y="183">50</text><text x="80" y="308">0</text></g><g text-anchor="middle"><text x="90" y="326">0</text><text x="402.5" y="326">500</text><text x="604" y="326">kWh</text></g><text x="102" y="36">dollars</text></g>
+  <text x="80" y="108" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#f2c14e">80</text>
+  <text x="527.5" y="326" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f2c14e">700</text>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#5fb0e8"><text x="218" y="214">10¢/kWh</text><text x="582" y="142">15¢/kWh</text></g>
+  <text x="270" y="66" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">50 + 0.15 × 200 = <tspan fill="#f2c14e">80</tspan></text>
+</svg>

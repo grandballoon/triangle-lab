@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M100 290 L100 100 L110 88 L121 81 L131 80 L142 85 L152 95 L162 110 L173 129 L183 151 L194 173 L204 196 L215 216 L225 234 L235 248 L246 257 L256 260 L267 257 L277 249 L288 236 L298 219 L308 198 L319 176 L329 153 L340 132 L350 112 L360 97 L371 86 L381 81 L392 81 L402 87 L412 98 L423 114 L433 133 L444 155 L454 178 L465 200 L475 220 L485 237 L496 250 L506 258 L517 260 L527 256 L538 247 L548 233 L558 215 L569 194 L579 171 L590 149 L600 128 L600 290 Z" fill="#1d3f5c"/>
+  <path d="M100 100 L110 88 L121 81 L131 80 L142 85 L152 95 L162 110 L173 129 L183 151 L194 173 L204 196 L215 216 L225 234 L235 248 L246 257 L256 260 L267 257 L277 249 L288 236 L298 219 L308 198 L319 176 L329 153 L340 132 L350 112 L360 97 L371 86 L381 81 L392 81 L402 87 L412 98 L423 114 L433 133 L444 155 L454 178 L465 200 L475 220 L485 237 L496 250 L506 258 L517 260 L527 256 L538 247 L548 233 L558 215 L569 194 L579 171 L590 149 L600 128" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M100 40 V290 H604" fill="none" stroke="#8fa3b8" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#8fa3b8" stroke-width="4"><path d="M92 50 H100 M92 170 H100 M92 230 H100 M225 290 V298 M350 290 V298 M600 290 V298"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="22" fill="#8fa3b8"><g text-anchor="end"><text x="86" y="58">4</text><text x="86" y="178">2</text><text x="86" y="238">1</text><text x="86" y="298">0</text></g><g text-anchor="middle"><text x="100" y="322">12 am</text><text x="225" y="322">6 am</text><text x="350" y="322">noon</text><text x="600" y="322">12 am</text></g><text x="112" y="36">height (m)</text></g>
+  <path d="M412.5 288 V98 H104" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 7" stroke-linejoin="round"/>
+  <circle cx="412.5" cy="98" r="9" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <text x="412.5" y="322" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f2c14e">3 pm</text>
+  <text x="86" y="106" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#f2c14e">3.2 m</text>
+</svg>

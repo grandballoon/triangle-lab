@@ -1709,6 +1709,84 @@
         "altitude-on-hypotenuse"
       ]
     },
+    "function-machine": {
+      "source": "13c3836816d0",
+      "teaches": [
+        "A function is a rule that takes each input to exactly one output, written $f(x)$; the letter $x$ only holds the input's place.",
+        "The domain is the set of inputs a function accepts and the range the set of outputs it actually gives: $\\sqrt{x}$ has domain $x \\ge 0$ and $x^2$ has range $y \\ge 0$.",
+        "Two inputs may share an output, but no input may have two outputs, so $\\pm\\sqrt{x}$ is not a function.",
+        "The composition $f(g(x))$ feeds the output of $g$ into $f$, read from the inside out; it usually differs from $g(f(x))$."
+      ],
+      "builds_on": []
+    },
+    "function-graphs": {
+      "source": "10eb7f5dac18",
+      "teaches": [
+        "The graph of $f$ is the set of all points $(x, f(x))$.",
+        "The vertical line $x = a$ meets the graph at $(a, f(a))$, so the height where it crosses is $f(a)$.",
+        "Vertical line test: a curve is the graph of a function of $x$ exactly when no vertical line meets it more than once, so a circle such as $x^2 + y^2 = 9$ is not.",
+        "The domain is the graph's shadow on the $x$-axis and the range its shadow on the $y$-axis."
+      ],
+      "builds_on": [
+        "function-machine",
+        "coordinate-plane",
+        "circle-equation"
+      ]
+    },
+    "even-odd-functions": {
+      "source": "a7c1f1ef7ff8",
+      "teaches": [
+        "$f$ is even when $f(-x) = f(x)$ for every $x$; its graph is its own mirror image in the $y$-axis, as for any function of even powers of $x$.",
+        "$f$ is odd when $f(-x) = -f(x)$; half a turn about the origin carries its graph onto itself, and an odd function defined at $0$ has $f(0) = 0$.",
+        "Most functions are neither, and one input with $f(-a) \\ne \\pm f(a)$ settles it; adding a constant spoils oddness.",
+        "Every function splits as $f(x) = E(x) + O(x)$ with even part $E(x) = \\frac{f(x) + f(-x)}{2}$ and odd part $O(x) = \\frac{f(x) - f(-x)}{2}$; for a polynomial these are its even and odd powers."
+      ],
+      "builds_on": [
+        "function-graphs",
+        "reflection",
+        "point-reflection"
+      ]
+    },
+    "absolute-value-piecewise": {
+      "source": "c3ac5fe23a1c",
+      "teaches": [
+        "$|x|$ is the distance from $x$ to $0$, never negative; $y = |x|$ is a V with its corner at the origin, and it is even.",
+        "$|x| = x$ when $x \\ge 0$ and $|x| = -x$ when $x < 0$, so the V is the lines $y = -x$ and $y = x$ joined at the corner.",
+        "$|x - c|$ is the distance from $x$ to $c$; $|x - c| = d$ has two solutions $c \\pm d$ when $d > 0$, one when $d = 0$, none when $d < 0$.",
+        "A piecewise function uses a different rule on each interval: find which interval $x$ is in first; a filled dot shows a piece includes its end, an open dot that it stops short."
+      ],
+      "builds_on": [
+        "even-odd-functions"
+      ]
+    },
+    "floor-function": {
+      "source": "749382f84693",
+      "teaches": [
+        "The floor $\\lfloor x \\rfloor$ is the greatest integer not more than $x$, rounding down the number line even for negatives: $\\lfloor -3.7 \\rfloor = -4$.",
+        "$\\lfloor x \\rfloor = n$ exactly when $n \\le x < n + 1$, so its graph is a staircase of steps closed on the left and open on the right, and $\\lfloor x \\rfloor = 3$ has the solutions $3 \\le x < 4$.",
+        "The ceiling $\\lceil x \\rceil$ is the least integer not less than $x$, and $\\lceil x \\rceil = -\\lfloor -x \\rfloor$.",
+        "The fractional part is $\\{x\\} = x - \\lfloor x \\rfloor$, with $0 \\le \\{x\\} < 1$, a sawtooth graph.",
+        "For an integer $n$, $\\lfloor x + n \\rfloor = \\lfloor x \\rfloor + n$."
+      ],
+      "builds_on": [
+        "absolute-value-piecewise"
+      ]
+    },
+    "graph-transformations": {
+      "source": "3b626db85fc7",
+      "teaches": [
+        "$y = f(x) + k$ moves the graph up $k$, or down when $k < 0$.",
+        "$y = f(x - h)$ moves the graph $h$ to the right, so $y = (x + 3)^2$ moves left.",
+        "$y = a f(x)$ stretches the graph away from the $x$-axis by $a$, squashes it when $0 < a < 1$, and a negative $a$ also flips it over the $x$-axis.",
+        "$y = f(bx)$ moves each point to $\\frac{1}{b}$ of its distance from the $y$-axis, and a negative $b$ also flips it over the $y$-axis.",
+        "$y = a f(b(x - h)) + k$ sends each point $(x, y)$ of $y = f(x)$ to $\\left(\\frac{x}{b} + h,\\ ay + k\\right)$."
+      ],
+      "builds_on": [
+        "even-odd-functions",
+        "translation",
+        "distortion"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [

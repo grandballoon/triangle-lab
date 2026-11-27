@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="20" y="30" width="600" height="250" rx="10" fill="#0f1a16" stroke="#0b0f14" stroke-width="5"/>
+  <g stroke="#1f3a2c" stroke-width="2"><path d="M80 32 V278 M140 32 V278 M200 32 V278 M260 32 V278 M320 32 V278 M380 32 V278 M440 32 V278 M500 32 V278 M560 32 V278 M22 80 H618 M22 130 H618 M22 180 H618 M22 230 H618"/></g>
+  <path d="M24 220 H60 Q74 206 88 220 H108 L114 234 L120 100 L128 244 L136 220 H160 Q182 196 204 220 H268 L274 234 L280 100 L288 244 L296 220 H320 Q342 196 364 220 H428 L434 234 L440 100 L448 244 L456 220 H480 Q502 196 524 220 H588 L594 234 L600 100 L608 244 L614 220 H616" fill="none" stroke="#69db7c" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M540 106 V272" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 7"/>
+  <circle cx="540" cy="220" r="9" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <path d="M280 88 V74 H440 V88" fill="none" stroke="#f3ead8" stroke-width="4" stroke-linejoin="round"/>
+  <text x="360" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8">0.8 s</text>
+  <text x="320" y="328" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">60 ÷ 0.8 = <tspan fill="#f2c14e">75 beats a minute</tspan></text>
+</svg>

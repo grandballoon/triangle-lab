@@ -19,6 +19,7 @@ import { proportions } from "./chapters/proportions.ts";
 import { integers } from "./chapters/integers.ts";
 import { factorizations } from "./chapters/factorizations.ts";
 import { numbers } from "./chapters/numbers.ts";
+import { functions } from "./chapters/functions.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -359,6 +360,25 @@ export const chapters: Chapter[] = [
       "AM–GM inequality",
     ],
     lessons: sequences,
+  },
+  {
+    title: "Functions",
+    blurb: "Rules that turn each input into one output, drawn as graphs you can mirror, cut into pieces and move.",
+    axioms: [
+      "Function, domain and range",
+      "Composition of functions",
+      "Vertical line test",
+      "Even functions: f(−x) = f(x)",
+      "Odd functions: f(−x) = −f(x)",
+      "Even part plus odd part",
+      "Absolute value as distance",
+      "Piecewise functions",
+      "Floor and ceiling",
+      "Fractional part",
+      "Shifting a graph",
+      "Stretching and reflecting a graph",
+    ],
+    lessons: functions,
   },
   {
     title: "Power of a Point",
