@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M40 70 H200 V300 L184 290 L168 300 L152 290 L136 300 L120 290 L104 300 L88 290 L72 300 L56 290 L40 300 Z" fill="#f3ead8" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="40" y="70" width="160" height="44" fill="#5fb0e8" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"/>
+  <text x="120" y="101" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">PARKING</text>
+  <text x="120" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">2 h 10 min</text>
+  <path d="M60 184 H180" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="6 6"/>
+  <text x="120" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="52" text-anchor="middle" fill="#0b0f14">$9</text>
+  <path d="M250 40 V300 H620" fill="none" stroke="#8fa3b8" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#5a6878" stroke-width="2" stroke-dasharray="4 6"><path d="M340 296 V240 M430 296 V180 M520 296 V120 M610 296 V60"/></g>
+  <g stroke="#5fb0e8" stroke-width="6" stroke-linecap="round"><path d="M256 240 H340 M346 180 H430 M436 120 H520 M526 60 H610"/></g>
+  <g stroke="#0b0f14" stroke-width="3.5"><circle cx="340" cy="240" r="7" fill="#5fb0e8"/><circle cx="430" cy="180" r="7" fill="#5fb0e8"/><circle cx="520" cy="120" r="7" fill="#5fb0e8"/><circle cx="610" cy="60" r="7" fill="#5fb0e8"/></g>
+  <g stroke="#5fb0e8" stroke-width="3.5" fill="#131a23"><circle cx="250" cy="240" r="6"/><circle cx="340" cy="180" r="6"/><circle cx="430" cy="120" r="6"/><circle cx="520" cy="60" r="6"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="22" fill="#8fa3b8"><g text-anchor="end"><text x="238" y="248">3</text><text x="238" y="188">6</text><text x="238" y="68">12</text></g><g text-anchor="middle"><text x="250" y="326">0</text><text x="340" y="326">1</text><text x="430" y="326">2</text><text x="520" y="326">3</text><text x="610" y="326">4</text></g><text x="620" y="352" text-anchor="end">hours</text><text x="262" y="36">dollars</text></g>
+  <text x="238" y="128" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#f2c14e">9</text>
+  <path d="M445.3 296 V130" stroke="#f2c14e" stroke-width="3" stroke-dasharray="8 6"/>
+  <circle cx="445.3" cy="120" r="8" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <text x="445.3" y="98" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f2c14e">2.17</text>
+  <text x="370" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">3⌈t⌉</text>
+</svg>

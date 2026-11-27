@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5"><ellipse cx="120" cy="200" rx="70" ry="128" fill="#1f2a36"/><ellipse cx="360" cy="200" rx="76" ry="128" fill="#1f2a36"/></g>
+  <text x="120" y="50" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">w (kg)</text>
+  <text x="360" y="50" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">d (mg)</text>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8"><text x="120" y="128">10</text><text x="120" y="183">15</text><text x="120" y="293">25</text><text x="360" y="128">150</text><text x="360" y="183">225</text><text x="360" y="293">375</text></g>
+  <text x="120" y="238" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f2c14e">20</text>
+  <text x="360" y="238" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f2c14e">300</text>
+  <g stroke="#5fb0e8" stroke-width="4" fill="none"><path d="M160 117 H290 M160 172 H290 M160 282 H290"/></g>
+  <g fill="#5fb0e8"><path d="M304 117 L290 109 L290 125 Z M304 172 L290 164 L290 180 Z M304 282 L290 274 L290 290 Z"/></g>
+  <path d="M160 227 H290" stroke="#f2c14e" stroke-width="5" fill="none"/>
+  <path d="M304 227 L290 218 L290 236 Z" fill="#f2c14e"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="508" y="112" width="44" height="22" rx="4" fill="#ef6b5b"/><rect x="498" y="132" width="64" height="20" fill="#f3ead8"/><rect x="476" y="150" width="108" height="168" rx="16" fill="#e0913f"/><rect x="486" y="190" width="88" height="80" rx="6" fill="#f3ead8"/></g>
+  <text x="530" y="226" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">15</text>
+  <text x="530" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#0b0f14">mg / kg</text>
+  <text x="530" y="74" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">d(w) = 15w</text>
+</svg>
