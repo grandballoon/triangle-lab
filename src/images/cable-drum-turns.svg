@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="316" width="640" height="44" fill="#2a3340"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="150" y="96" width="250" height="168" fill="#ef6b5b"/>
+  </g>
+  <path d="M166 99 V261 M182 99 V261 M198 99 V261 M214 99 V261 M230 99 V261 M246 99 V261 M262 99 V261 M278 99 V261 M294 99 V261 M310 99 V261 M326 99 V261 M342 99 V261 M358 99 V261 M374 99 V261 M390 99 V261" stroke="#0b0f14" stroke-width="3"/>
+  <path d="M392 100 C450 96 500 150 560 300 L600 300" fill="none" stroke="#0b0f14" stroke-width="18" stroke-linecap="round"/>
+  <path d="M392 100 C450 96 500 150 560 300 L600 300" fill="none" stroke="#ef6b5b" stroke-width="8" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="116" y="40" width="34" height="276" rx="14" fill="#d9a066"/>
+    <rect x="400" y="40" width="34" height="276" rx="14" fill="#d9a066"/>
+    <circle cx="133" cy="178" r="9" fill="#1c2633"/><circle cx="417" cy="178" r="9" fill="#1c2633"/>
+  </g>
+  <ellipse cx="270" cy="180" rx="16" ry="84" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8"/>
+  <path d="M80 96 V264 M68 96 H92 M68 264 H92" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">
+    <text x="56" y="190">40</text><text x="270" y="30">1.26</text>
+  </g>
+</svg>

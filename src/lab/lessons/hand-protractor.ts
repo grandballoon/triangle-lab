@@ -48,6 +48,7 @@ export default lesson((s) => {
       {
         title: "Measuring the sky with your hand",
         text: "Stargazers and hikers estimate angles with an outstretched arm: a closed fist held at arm's length covers about $10^\\circ$ of sky. The Pole Star stands as high above the horizon as your latitude, so from London, at about $51^\\circ$ north, it is roughly five fists up.",
+        tags: ["astronomy", "navigation", "trade-tricks"],
         image: {
           src: fistPoleStarImage,
           caption: "Measuring the sky by hand: from London the Pole Star stands about 51° above the horizon, roughly five fists held at arm's length.",
@@ -57,6 +58,7 @@ export default lesson((s) => {
       {
         title: "Measuring how far a joint bends",
         text: "Physiotherapists measure a joint with a goniometer, a protractor with two long arms laid along the limb and its pivot on the joint. Measuring a recovering knee week by week, say from $90^\\circ$ of bend to $120^\\circ$, shows how well the treatment is working.",
+        tags: ["health"],
         image: {
           src: kneeGoniometerImage,
           caption: "A physiotherapist's goniometer: its two arms lie along the thigh and shin, and the angle at its pivot shows how far the knee bends.",
@@ -66,6 +68,7 @@ export default lesson((s) => {
       {
         title: "Hand tracking",
         text: "Headsets with hand tracking do what this page does: find points on the fingers in each camera frame and work out the angles between them. Whether a finger is bent or straight can be read from the angle at its knuckle.",
+        tags: ["computing", "game-design"],
         image: {
           src: handTrackingFingerImage,
           caption: "Hand tracking: a headset finds points on each finger and reads whether a finger is bent from the angle at its joint.",

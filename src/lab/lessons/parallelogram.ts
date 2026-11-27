@@ -8,6 +8,7 @@ import { add, angleAt, clamp, dist, fmt, lineLine, mid, normalize, scale, sub, t
 import { GLASS, same } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
 import cantileverToolboxImage from "../../images/cantilever-toolbox.svg";
+import doorDiagonalsCentreImage from "../../images/door-diagonals-centre.svg";
 import parallelRulersChartImage from "../../images/parallel-rulers-chart.svg";
 
 const A = vec(-5, -3);
@@ -74,6 +75,7 @@ export default lesson((s) => {
       {
         title: "Parallel rulers on a chart",
         text: "Navigators move a bearing across a paper chart with parallel rulers: two straight edges joined by two equal hinged links. The edges and links form a parallelogram, so however far you walk the rulers across the chart, the edges stay parallel to where they started, carrying a direction from the compass rose to the ship's position.",
+        tags: ["navigation"],
         image: {
           src: parallelRulersChartImage,
           caption: "Parallel rulers on a navigator's chart: the two edges and two equal links form a parallelogram, so the edges stay parallel as the rulers walk across the chart.",
@@ -83,10 +85,21 @@ export default lesson((s) => {
       {
         title: "A cantilever toolbox",
         text: "The trays of a cantilever toolbox swing out on pairs of equal arms. Each pair of arms, the tray and the box form a parallelogram, so the tray's edge stays parallel to the box's edge: the trays stay level as they open and nothing slides out.",
+        tags: ["machines"],
         image: {
           src: cantileverToolboxImage,
           caption: "A cantilever toolbox: the two equal arms, the tray and the box form a parallelogram, so the tray stays level as it swings open.",
           alt: "A side view of a red toolbox with a tray of tools raised on two equal, parallel arms, the parallelogram of arms, tray and box outlined.",
+        },
+      },
+      {
+        title: "Finding the centre of a panel",
+        text: "To fit a knob in the middle of a cabinet door, a carpenter does not measure and halve: they draw light pencil lines from corner to corner, and the knob goes where the lines cross. A door is a parallelogram, so its diagonals bisect each other and the crossing is halfway along both. On a door $60$ cm tall and $40$ cm wide it lands $30$ cm from the top and $20$ cm from each side, with no awkward fractions to halve.",
+        tags: ["carpentry", "trade-tricks", "home"],
+        image: {
+          src: doorDiagonalsCentreImage,
+          caption: "Finding the centre of a cabinet door: its two diagonals bisect each other, so they cross exactly in the middle, where the knob goes.",
+          alt: "A wooden cabinet door with a recessed panel and two hinges, gold dashed diagonals drawn corner to corner, a grey knob where they cross, and a pencil lying beside it.",
         },
       },
     ],

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g fill="#f3ead8"><circle cx="500" cy="60" r="3"/><circle cx="560" cy="150" r="3"/><circle cx="604" cy="44" r="3"/><circle cx="470" cy="260" r="3"/><circle cx="584" cy="306" r="3"/><circle cx="430" cy="150" r="2"/></g>
+  <circle cx="30" cy="210" r="40" fill="#f2c14e"/>
+  <path d="M74 80 H250 M74 130 H148 M74 210 H120 M74 290 H148" fill="none" stroke="#f3ead8" stroke-width="3" stroke-linecap="round" stroke-opacity="0.6"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M250 80 A130 130 0 0 1 250 340 Z" fill="#2a3340"/>
+    <path d="M250 80 A130 130 0 0 0 250 340 Z" fill="#f3ead8"/>
+    <path d="M320 101 L360 80 L346 123 Z" fill="#2a3340"/>
+    <circle cx="190" cy="250" r="18" fill="#8fa3b8"/>
+    <circle cx="170" cy="160" r="11" fill="#8fa3b8"/>
+  </g>
+  <path d="M360 80 L348 86 L356 93 Z" fill="#f3ead8"/>
+  <path d="M250 210 L250 80 L360 80 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M250 98 H268 V80" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="250" cy="210" r="7"/><circle cx="360" cy="80" r="7"/></g>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">
+    <text x="230" y="156">R</text><text x="305" y="66">d</text><text x="350" y="168">R + h</text>
+  </g>
+</svg>

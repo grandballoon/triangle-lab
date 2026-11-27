@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <ellipse cx="510" cy="180" rx="118" ry="120" fill="#ef6b5b"/>
+    <circle cx="470" cy="180" r="34" fill="#0b0f14"/>
+    <rect x="16" y="140" width="64" height="80" rx="10" fill="#d9a066"/>
+    <rect x="76" y="156" width="330" height="48" fill="#8a5a34"/>
+    <rect x="550" y="150" width="22" height="60" rx="4" fill="#1c2633"/>
+  </g>
+  <path d="M107 158 V202 M132 158 V202 M156 158 V202 M179 158 V202 M200 158 V202 M221 158 V202 M240 158 V202 M258 158 V202 M275 158 V202 M291 158 V202 M306 158 V202 M320 158 V202 M333 158 V202 M346 158 V202 M358 158 V202 M370 158 V202" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M80 156 V204" stroke="#f3ead8" stroke-width="6"/>
+  <g fill="#f3ead8"><circle cx="144" cy="180" r="5"/><circle cx="190" cy="180" r="5"/><circle cx="230" cy="180" r="5"/><circle cx="266" cy="180" r="5"/><circle cx="313" cy="170" r="5"/><circle cx="313" cy="190" r="5"/></g>
+  <path d="M80 166 H560 M80 175 H560 M80 185 H560 M80 194 H560" stroke="#f3ead8" stroke-width="2"/>
+  <g fill="#8fa3b8" stroke="#0b0f14" stroke-width="3"><circle cx="34" cy="158" r="6"/><circle cx="62" cy="158" r="6"/><circle cx="34" cy="202" r="6"/><circle cx="62" cy="202" r="6"/></g>
+  <path d="M80 120 H560 M80 106 V134 M320 106 V134 M560 106 V134" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M320 134 V206" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="28" text-anchor="middle"><text x="80" y="94">0</text><text x="320" y="94">324</text><text x="560" y="94">648</text></g>
+</svg>

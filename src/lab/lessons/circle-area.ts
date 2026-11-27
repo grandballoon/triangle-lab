@@ -8,6 +8,7 @@ import { C, tint } from "../draw.ts";
 import { add, fmt, lerp, TAU, vec } from "../geo.ts";
 import { turnBetween } from "../kit/circles.ts";
 import { lesson } from "../scene.ts";
+import copperPipeBoresImage from "../../images/copper-pipe-bores.svg";
 import lawnSprinklerImage from "../../images/lawn-sprinkler.svg";
 import pizzaSizesCompareImage from "../../images/pizza-sizes-compare.svg";
 import roundWaterTankImage from "../../images/round-water-tank.svg";
@@ -58,6 +59,7 @@ export default lesson((s) => {
       {
         title: "Comparing pizza sizes",
         text: "A $30$ cm pizza has area $\\pi \\cdot 15^2 \\approx 707$ square centimetres, while a $20$ cm one has $\\pi \\cdot 10^2 \\approx 314$. One large pizza is more than two small ones, because the area grows with the square of the radius.",
+        tags: ["home", "money"],
         image: {
           src: pizzaSizesCompareImage,
           caption: "Comparing pizzas: one 30 cm pizza has more area than two 20 cm ones, because area grows with the square of the radius.",
@@ -67,6 +69,7 @@ export default lesson((s) => {
       {
         title: "Watering a lawn",
         text: "A sprinkler that throws water $4$ metres wets a circle of $\\pi \\cdot 4^2 \\approx 50$ square metres. One that throws $8$ metres waters four times as much lawn, not twice.",
+        tags: ["gardening"],
         image: {
           src: lawnSprinklerImage,
           caption: "A lawn sprinkler: water thrown 4 metres wets a circle of about 50 square metres, and double the reach waters four times the lawn.",
@@ -76,10 +79,21 @@ export default lesson((s) => {
       {
         title: "Round water tanks",
         text: "For the same length of wall, a round tank holds $\\frac{4}{\\pi} \\approx 1.27$ times as much as a square one of the same height. Using less wall for the same water is one reason tanks, silos and paddling pools are so often round.",
+        tags: ["building", "plumbing"],
         image: {
           src: roundWaterTankImage,
           caption: "Water tanks: for the same length of wall, a round tank holds about 1.27 times as much as a square one of the same height.",
           alt: "A square water tank beside a round one of the same height, with the water surface of each shaded and outlined in gold.",
+        },
+      },
+      {
+        title: "Copper pipe sizes",
+        text: "A pipe twice as wide has four times the area for water to flow through. Copper water pipe in the UK is named by its outside diameter: a $15$ mm pipe has a bore about $13.6$ mm across and a $22$ mm pipe one about $20.2$ mm. The bigger pipe is less than half as wide again, but its bore has $\\left(\\frac{20.2}{13.6}\\right)^2 \\approx 2.2$ times the area. That is why plumbers run $22$ mm pipe for the main runs and branch off in $15$ mm to each tap or radiator.",
+        tags: ["plumbing", "home"],
+        image: {
+          src: copperPipeBoresImage,
+          caption: "15 mm and 22 mm copper pipe: the area of a bore grows with the square of its width, so the 22 mm pipe has about 2.2 times the room for water.",
+          alt: "The cut ends of two copper pipes, a smaller one marked 15 and a larger one marked 22, with blue water filling each bore and dashed gold lines across the bores marked 13.6 and 20.2.",
         },
       },
     ],

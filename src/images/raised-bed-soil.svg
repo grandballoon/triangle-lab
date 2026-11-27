@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="296" width="640" height="64" fill="#2b3a2f"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M120 220 L520 220 L520 300 L120 300 Z" fill="#b07a45"/>
+    <path d="M520 220 L580 170 L580 250 L520 300 Z" fill="#8a5a34"/>
+    <path d="M120 220 L520 220 L580 170 L180 170 Z" fill="#8d5a3b"/>
+  </g>
+  <path d="M120 260 H520 M520 260 L580 210" stroke="#0b0f14" stroke-width="4"/>
+  <g transform="translate(220 200)"><path d="M0 0 Q-22 -24 -6 -40 Q0 -20 0 0 Q22 -24 6 -40 Q0 -20 0 0 Z" fill="#5fbf72" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g><g transform="translate(330 192)"><path d="M0 0 Q-22 -24 -6 -40 Q0 -20 0 0 Q22 -24 6 -40 Q0 -20 0 0 Z" fill="#5fbf72" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g><g transform="translate(440 184)"><path d="M0 0 Q-22 -24 -6 -40 Q0 -20 0 0 Q22 -24 6 -40 Q0 -20 0 0 Z" fill="#5fbf72" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g><g transform="translate(280 212)"><path d="M0 0 Q-22 -24 -6 -40 Q0 -20 0 0 Q22 -24 6 -40 Q0 -20 0 0 Z" fill="#5fbf72" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></g>
+  <path d="M120 220 L520 220 L520 300 L120 300 Z M520 220 L580 170 L180 170 L120 220 M580 170 V250 L520 300" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="26"><text x="320" y="336">2.4</text><text x="588" y="206" text-anchor="start">1.2</text><text x="92" y="270">0.3</text></g>
+</svg>

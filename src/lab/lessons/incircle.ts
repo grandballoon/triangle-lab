@@ -79,6 +79,7 @@ export default lesson((s) => {
       {
         title: "Cutting the biggest disc from an offcut",
         text: "A woodworker with a triangular scrap of plywood wants the largest round coaster or wheel it will give. Bisect two of the corners with a protractor or by folding a paper template, and where the lines cross is the centre. The shortest distance from there to any edge is the radius, and the circle just touches all three edges.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: plywoodDiscImage,
           caption: "A triangular plywood offcut: the angle bisectors meet at the centre of the largest disc it will give, which just touches all three edges.",
@@ -88,6 +89,7 @@ export default lesson((s) => {
       {
         title: "How deep a V-carving bit plunges",
         text: "Sign makers carve letters with a V-shaped router bit, letting it sink deeper where the shape is wider so that its edges just graze the outline. In a triangular part of a letter the bit goes deepest at the point farthest from every edge, which is the incentre, and it reaches that point by travelling along the angle bisectors from the corners. Carving software traces exactly these lines.",
+        tags: ["carpentry", "machines"],
         image: {
           src: vCarveLetterImage,
           caption: "A V-carving bit plunges deepest at the incentre of a triangular part of a letter, reaching it along the angle bisectors from the corners.",

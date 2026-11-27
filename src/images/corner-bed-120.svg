@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="10" y="10" width="620" height="340" rx="10" fill="#2b3a2f"/>
+  <path d="M180 100 L480 100 L80 273.2 Z" fill="#8a5a34" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"/>
+  <g fill="#5fbf72" stroke="#0b0f14" stroke-width="5">
+    <circle cx="300" cy="140" r="16"/><circle cx="385" cy="122" r="12"/><circle cx="215" cy="172" r="16"/><circle cx="150" cy="222" r="13"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M610 100 L180 100 L40 342.5" stroke="#0b0f14" stroke-width="22"/>
+    <path d="M610 100 L180 100 L40 342.5" stroke="#b07a45" stroke-width="12"/>
+  </g>
+  <path d="M180 100 L480 100 L80 273.2 Z" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M220 100 A40 40 0 0 1 160 134.6" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke"><text x="330" y="78">3</text><text x="88" y="170">2</text><text x="250" y="152" font-size="24">120°</text></g>
+</svg>

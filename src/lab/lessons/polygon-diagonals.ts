@@ -5,6 +5,7 @@
 import { C, tint } from "../draw.ts";
 import { dist, regularPolygon, vec, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import chordClockIntervalsImage from "../../images/chord-clock-intervals.svg";
 import officeNetworkLinksImage from "../../images/office-network-links.svg";
 import roundRobinOctagonImage from "../../images/round-robin-octagon.svg";
 
@@ -57,6 +58,7 @@ export default lesson((s) => {
       {
         title: "Planning a round-robin tournament",
         text: "In a round robin every team plays every other team once. Each of $8$ teams has $7$ matches, which adds to $56$, but each match was counted for both teams, so there are $28$ to schedule. That is the $8$ sides plus the $\\tfrac{8 \\cdot 5}{2} = 20$ diagonals of an octagon.",
+        tags: ["sport"],
         image: {
           src: roundRobinOctagonImage,
           caption: "A round robin for 8 teams: every match is a side or a diagonal of an octagon, 8 sides plus 20 diagonals making 28 matches.",
@@ -66,10 +68,21 @@ export default lesson((s) => {
       {
         title: "Wiring every office to every other",
         text: "A network that links each of $10$ sites directly to each of the others needs $\\tfrac{10 \\cdot 9}{2} = 45$ links. Since that grows roughly with the square of the number of sites, large networks instead route traffic through hubs.",
+        tags: ["computing", "electrical"],
         image: {
           src: officeNetworkLinksImage,
           caption: "A fully connected network: linking each of 10 offices directly to every other takes 45 links.",
           alt: "Ten small office buildings in a ring, every pair joined by a dashed line.",
+        },
+      },
+      {
+        title: "The intervals in a chord",
+        text: "Musicians often draw the twelve notes of the octave as points round a clock face, so a chord becomes a polygon. Each interval in the chord joins two of its notes, so it is a side or a diagonal: a four-note seventh chord such as C, E, G, B holds $4 + \\tfrac{4 \\cdot 1}{2} = 6$ intervals, and a five-note chord $5 + \\tfrac{5 \\cdot 2}{2} = 10$. Music theorists tally a chord's intervals by size in its interval vector, to compare chords by the intervals they contain.",
+        tags: ["music"],
+        image: {
+          src: chordClockIntervalsImage,
+          caption: "A seventh chord on the clock of twelve notes: its four notes make a quadrilateral, and its six intervals are the four sides and two diagonals.",
+          alt: "A round clock face with twelve dots for the twelve notes. The dots for C, E, G and B are gold and joined by a dashed gold quadrilateral and both its diagonals. Beside it, a short piano keyboard has gold dots on the C, E, G and B keys.",
         },
       },
     ],

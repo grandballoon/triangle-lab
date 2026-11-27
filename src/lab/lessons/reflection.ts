@@ -21,7 +21,9 @@ import {
 import { lesson, type Readout } from "../scene.ts";
 import ambulanceMirrorWritingImage from "../../images/ambulance-mirror-writing.svg";
 import fabricCutOnFoldImage from "../../images/fabric-cut-on-fold.svg";
+import knittedHorseshoeCableImage from "../../images/knitted-horseshoe-cable.svg";
 import snookerCushionBankImage from "../../images/snooker-cushion-bank.svg";
+import spriteMirrorFlipImage from "../../images/sprite-mirror-flip.svg";
 
 const EQUAL = C.gold; // the two equal angles at the mirror
 /** Closer to the mirror than this, a point is treated as lying on it. */
@@ -105,6 +107,7 @@ export default lesson((s) => {
       {
         title: "Writing on an ambulance",
         text: "The word AMBULANCE is often painted on the front of the vehicle in mirror writing. A driver ahead sees it in their rear-view mirror, which reflects it a second time and turns it the right way round, so they can read it at a glance and pull over.",
+        tags: ["travel", "light"],
         image: {
           src: ambulanceMirrorWritingImage,
           caption: "An ambulance: the word on its front is painted in mirror writing, so a rear-view mirror reflects it back the right way round.",
@@ -114,6 +117,7 @@ export default lesson((s) => {
       {
         title: "Banking a ball off a cushion",
         text: "In snooker and pool, to bounce the cue ball off a cushion onto a target, players aim at the target's reflection in the cushion. The straight line to that reflection crosses the cushion at the bounce point, and since the real path and its reflection meet the cushion at equal angles, the ball comes off the cushion heading straight for the real target.",
+        tags: ["sport"],
         image: {
           src: snookerCushionBankImage,
           caption: "Banking a snooker ball: aim at the target's reflection in the cushion, and the ball bounces off at equal angles straight to the real target.",
@@ -123,10 +127,31 @@ export default lesson((s) => {
       {
         title: "Cutting on the fold",
         text: "Sewing patterns for symmetric pieces, like the back of a shirt, give only half the shape and say place on fold. You fold the fabric, line the pattern's straight edge up with the fold and cut through both layers at once. Unfolded, the second half is the reflection of the first in the fold, so the two sides match exactly.",
+        tags: ["fiber-arts", "trade-tricks"],
         image: {
           src: fabricCutOnFoldImage,
           caption: "Cutting on the fold: the pattern gives half a shirt back, and unfolded the second half is its reflection in the fold, so both sides match.",
           alt: "A half shirt-back paper pattern pinned to folded purple fabric against the fold, with a gold fold line and the reflected other half outlined in gold dashes.",
+        },
+      },
+      {
+        title: "Mirror-image cables in knitting",
+        text: "A knitted cable crosses stitches over one another. Holding two stitches at the front of the work while knitting the next two makes the cross lean left; holding them at the back makes it lean right. A horseshoe cable sets a cross of each kind side by side, so the right half of the pattern is the reflection of the left half in the line down its middle.",
+        tags: ["fiber-arts"],
+        image: {
+          src: knittedHorseshoeCableImage,
+          caption: "A horseshoe cable: a left-leaning cross beside a right-leaning one, each half the mirror image of the other.",
+          alt: "A purple knitted cable panel with two pairs of crossing strands, the left pair leaning one way and the right pair the other, either side of a gold dashed vertical mirror line, with a ball of yarn and a knitting needle beside it.",
+        },
+      },
+      {
+        title: "Flipping a sprite to face the other way",
+        text: "Games often store a character drawn facing one way and flip it to face the other, reflecting it in the vertical line through its middle. In a sprite $16$ pixels wide, with columns numbered $0$ to $15$, the pixel in column $x$ moves to column $15 - x$: column $3$ goes to column $12$, and the mirror falls between columns $7$ and $8$. The NES games console could flip any sprite this way with a single bit, which saved storing a second picture.",
+        tags: ["game-design"],
+        image: {
+          src: spriteMirrorFlipImage,
+          caption: "Flipping a game sprite: the character facing left is the reflection of the one facing right in a vertical mirror line.",
+          alt: "A game screen with two green pixel-art birds facing each other on the grass, one the mirror image of the other in a gold dashed vertical line between them.",
         },
       },
     ],

@@ -117,6 +117,7 @@ export default lesson((s) => {
       {
         title: "Are the diagonals equal?",
         text: "Carpenters check that a frame, a drawer or a door opening is truly rectangular by measuring both diagonals with a tape. The diagonals of a four-sided frame with parallel opposite sides cut each other in half. If they are equal too, their crossing point is equally far from all four corners, which is the median test: every corner is a right angle.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: frameDiagonalsImage,
           caption: "Checking a frame with a tape: when both diagonals measure the same, every corner is a right angle.",
@@ -126,6 +127,7 @@ export default lesson((s) => {
       {
         title: "Finding a diameter with a set square",
         text: "Put the square corner of a set square or a sheet of paper on the edge of a round plate or a disc of wood, and mark where its two edges cross the rim. Because the right angle sits on the circle, those two marks are the ends of a diameter. Do it twice, and the diameters cross at the centre.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: setSquareDiameterImage,
           caption: "Finding a diameter: with a set square's corner on the rim of a disc, the two points where its edges cross the rim are the ends of a diameter.",

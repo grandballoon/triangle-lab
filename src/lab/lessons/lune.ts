@@ -70,6 +70,7 @@ export default lesson((s) => {
       {
         title: "Turf for a curved lawn",
         text: "A lawn is a 6 m by 4 m rectangle with a semicircular end of radius 2 m, and a round pond of radius 1 m in the middle. No formula covers that shape, but adding and taking away simple pieces does: $24 + \\tfrac12 \\pi \\cdot 2^2 - \\pi \\cdot 1^2 = 24 + \\pi \\approx 27.1$ square metres of turf.",
+        tags: ["gardening"],
         image: {
           src: curvedLawnTurfImage,
           caption: "Turf for a curved lawn: a 6 m by 4 m rectangle plus a half circle of radius 2 m, less a round pond, adds up to about 27 square metres.",
@@ -79,6 +80,7 @@ export default lesson((s) => {
       {
         title: "How much of the Moon is lit?",
         text: "A crescent Moon's lit part is bounded by the edge of the disc, a semicircle, and the line between day and night, which we see as half an ellipse. Neither piece is a crescent, but the crescent is the half disc with the half ellipse taken away, and both of those have simple areas. That subtraction gives the percentage illuminated that almanacs and moon-phase apps list.",
+        tags: ["astronomy"],
         image: {
           src: crescentMoonLitImage,
           caption: "A crescent Moon: the lit part is the half disc with the half ellipse of the day–night line taken away.",

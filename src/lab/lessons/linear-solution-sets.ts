@@ -11,6 +11,7 @@ import { pair, par, plane, snapping } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
 import coinsNickelsDimesImage from "../../images/coins-nickels-dimes.svg";
 import gardenBedEdgingShapesImage from "../../images/garden-bed-edging-shapes.svg";
+import stairRiseGoingImage from "../../images/stair-rise-going.svg";
 
 const FOUND = C.gold;
 /** At most this many found solutions are kept on the figure. */
@@ -189,6 +190,7 @@ export default lesson((s) => {
       {
         title: "Making change",
         text: "How many ways can you pay 50 cents in nickels and dimes? With $x$ nickels and $y$ dimes, $5x + 10y = 50$. The answers (10, 0), (8, 1), (6, 2), (4, 3), (2, 4) and (0, 5) lie on one straight line, because each dime you add replaces exactly two nickels.",
+        tags: ["money"],
         image: {
           src: coinsNickelsDimesImage,
           caption: "Ways to make 50 cents from nickels and dimes: every combination lies on one straight line, since each dime replaces two nickels.",
@@ -198,10 +200,21 @@ export default lesson((s) => {
       {
         title: "Edging for a garden bed",
         text: "With 12 m of edging for a rectangular bed, the length and width must satisfy $2x + 2y = 12$: 5 by 1, 4 by 2 and 3 by 3 all use it up, and they line up. Ask instead for a bed of area 8 m², $xy = 8$, and the shapes that work (8 by 1, 4 by 2, 2 by 4…) curve away instead.",
+        tags: ["gardening"],
         image: {
           src: gardenBedEdgingShapesImage,
           caption: "Garden beds from 12 m of edging: the far corners of the 5 by 1, 4 by 2 and 3 by 3 beds line up, while beds of equal area curve away.",
           alt: "Three overlapping rectangular beds sharing a corner, their opposite corners on a dashed gold straight line, with a fainter dotted gold curve beside it.",
+        },
+      },
+      {
+        title: "Rise and going on a staircase",
+        text: "UK building rules ask a staircase to keep twice the rise of a step plus its going, $2R + G$, between 550 and 700 mm, within separate limits on each, so every step suits a walking stride. Choose 600 mm and every pair on the line $2R + G = 600$ fits: rises of 170, 180 or 190 mm go with goings of 260, 240 or 220 mm. A joiner climbing 2.52 m in 14 equal steps has $R = 180$, and the line gives $G = 240$.",
+        tags: ["carpentry", "building", "trade-tricks"],
+        image: {
+          src: stairRiseGoingImage,
+          caption: "A staircase: every rise and going with 2R + G = 600 mm lies on one line, so choosing the rise fixes the going.",
+          alt: "A side view of a wooden staircase climbing to a landing, with a handrail, one step's rise and going traced in dashed gold and labelled R and G, and 2R + G written above.",
         },
       },
     ],

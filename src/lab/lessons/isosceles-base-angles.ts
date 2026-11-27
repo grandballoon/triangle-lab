@@ -61,6 +61,7 @@ export default lesson((s) => {
       {
         title: "The 45 degree trick for heights",
         text: "To estimate how tall a tree or building is, walk back from it until you see its top at $45^\\circ$ above level, using a set square or a folded sheet of paper to sight along. The triangle you, the base and the top make has a right angle and two $45^\\circ$ angles, so it has two equal sides: the height above your eyes equals your distance from the base. Pace that distance out and add your eye height.",
+        tags: ["navigation", "trade-tricks"],
         image: {
           src: tree45DegreesImage,
           caption: "The 45° trick: sighting a treetop at 45° makes a right triangle with two equal sides, so the tree's height above your eyes equals your distance from it.",
@@ -70,6 +71,7 @@ export default lesson((s) => {
       {
         title: "Both sides of a gable roof",
         text: "On a symmetrical gable roof, the rafters on both sides are the same length and meet at the ridge above the middle of the span. The two slopes then meet the walls at the same angle, so the roofer only needs to work out the pitch once, and the tiles on both sides sit at the same slope.",
+        tags: ["building", "carpentry"],
         image: {
           src: gableRaftersImage,
           caption: "A gable roof: equal rafters meet above the middle of the span, so both slopes meet the walls at the same angle and one pitch serves both sides.",

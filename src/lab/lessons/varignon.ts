@@ -87,6 +87,7 @@ export default lesson((s) => {
       {
         title: "Finding the centre of a mesh cell",
         text: "Simulation programs often split a surface into four-sided cells and take each cell's centre to be the average of its four corners. That point is where the two lines joining midpoints of opposite sides cross, since they are the diagonals of $EFGH$ and bisect each other. For corners $(0, 0)$, $(4, 0)$, $(5, 3)$ and $(1, 2)$ both lines meet at $(2.5, 1.25)$.",
+        tags: ["game-design"],
         image: {
           src: meshCellCentreImage,
           caption: "A simulation mesh: the lines joining midpoints of a cell's opposite sides cross at its centre, the average of its four corners.",
@@ -96,6 +97,7 @@ export default lesson((s) => {
       {
         title: "A diamond panel from a board",
         text: "A woodworker who joins the midpoints of a rectangular board's sides gets a diamond, since a rectangle's diagonals are equal and so are the sides of $EFGH$. Whatever the board's size, the diamond uses exactly half of it, and the four corner offcuts make up the other half.",
+        tags: ["carpentry"],
         image: {
           src: boardDiamondImage,
           caption: "A diamond cut from a board: joining the midpoints of a rectangle's sides gives a diamond with equal sides that uses exactly half the board.",

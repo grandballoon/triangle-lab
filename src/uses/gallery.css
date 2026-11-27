@@ -1,0 +1,238 @@
+/* The gallery of every lesson's uses (uses.html, page.ts). Same ground, type
+   and accent as the lesson menu. Each card and the viewer take the accent of
+   the lesson their use comes from, as --accent. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+body {
+  background: radial-gradient(1200px 600px at 50% -10%, #12202a 0%, #0b0f14 60%);
+  background-color: #0b0f14;
+  color: #e9f0f7;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px 64px;
+}
+
+.ug-page { width: 100%; max-width: 1080px; }
+
+.ug-back {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: rgba(233, 240, 247, 0.6);
+  text-decoration: none;
+}
+
+.ug-back:hover { color: #fff; }
+
+.ug-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 13px;
+  font-weight: 600;
+  color: #38d9a9;
+  margin-bottom: 10px;
+}
+
+h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: -0.02em; }
+
+.ug-sub { color: rgba(233, 240, 247, 0.6); margin-top: 10px; font-size: 17px; max-width: 640px; }
+
+/* --- The topics, each a link to its own list ------------------------------ */
+
+#topics { margin-top: 28px; }
+
+.ug-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.ug-topics a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e9f0f7;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ug-topics a:hover { border-color: #38d9a9; background: rgba(255, 255, 255, 0.07); }
+
+.ug-topics a[aria-current="page"] { color: #06110d; background: #38d9a9; border-color: #38d9a9; }
+
+.ug-count {
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(233, 240, 247, 0.5);
+}
+
+.ug-topics a[aria-current="page"] .ug-count { color: rgba(6, 17, 13, 0.65); }
+
+/* --- A topic's pictures ---------------------------------------------------- */
+
+#gallery { margin-top: 8px; color: rgba(233, 240, 247, 0.6); }
+
+.ug-topic { margin-top: 44px; scroll-margin-top: 24px; color: #e9f0f7; }
+
+.ug-topic h2 { font-size: 24px; font-weight: 750; letter-spacing: -0.01em; }
+
+.ug-blurb { color: rgba(233, 240, 247, 0.55); margin-top: 4px; font-size: 15px; }
+
+.ug-grid {
+  margin-top: 18px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.ug-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 14px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.ug-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: var(--accent);
+}
+
+.ug-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ug-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #131a23;
+  margin-bottom: 8px;
+}
+
+.ug-card-title { padding: 0 14px; font-size: 16px; font-weight: 700; line-height: 1.3; }
+
+.ug-card-where {
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* --- The viewer: one topic's pictures, one at a time ------------------------ */
+
+#viewer {
+  margin: auto;
+  width: min(960px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: #0f151c;
+  color: #e9f0f7;
+}
+
+#viewer::backdrop { background: rgba(5, 8, 12, 0.78); backdrop-filter: blur(4px); }
+
+.ug-viewer-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 10px 20px;
+}
+
+.ug-viewer-count {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+#viewer button {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 15, 22, 0.7);
+  color: #e9f0f7;
+  font: 600 22px/1 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#viewer button:hover { border-color: var(--accent); }
+#viewer button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#viewer button[hidden] { display: none; }
+
+.ug-close { width: 36px; height: 36px; }
+
+.ug-viewer-figure { position: relative; touch-action: pan-y; }
+
+.ug-viewer-figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #131a23;
+}
+
+.ug-turn {
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
+.ug-prev { left: 12px; }
+.ug-next { right: 12px; }
+
+.ug-viewer-body { padding: 18px 22px 22px; }
+
+.ug-viewer-body h2 { font-size: 22px; font-weight: 750; letter-spacing: -0.01em; margin-bottom: 6px; }
+
+.ug-viewer-caption { font-size: 14px; line-height: 1.45; color: rgba(233, 240, 247, 0.6); }
+
+.ug-viewer-text { margin-top: 10px; font-size: 16px; line-height: 1.5; color: rgba(233, 240, 247, 0.88); }
+
+.ug-viewer-foot { margin-top: 16px; }
+
+.ug-lesson { font-size: 15px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.ug-lesson::after { content: " →"; }
+.ug-lesson:hover { text-decoration: underline; }
+.ug-lesson:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 600px) {
+  body { padding: 32px 16px 48px; }
+  .ug-topic { margin-top: 36px; }
+  .ug-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .ug-card-title { font-size: 15px; padding: 0 12px; }
+  .ug-card-where { padding: 0 12px; }
+  #viewer { width: calc(100vw - 16px); max-height: calc(100vh - 16px); border-radius: 14px; }
+  .ug-viewer-body { padding: 14px 16px 18px; }
+  .ug-turn { width: 38px; height: 38px; }
+}

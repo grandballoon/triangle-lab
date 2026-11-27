@@ -86,6 +86,7 @@ export default lesson((s) => {
       {
         title: "How much Earth the space station sees",
         text: "From the International Space Station, about $400$ km up, the Earth fills about $140^\\circ$ of the view, between two tangent lines to it. The arc of Earth it can see is $180^\\circ - 140^\\circ = 40^\\circ$, which puts the horizon about $20^\\circ$, roughly $2200$ km, away along the ground in every direction.",
+        tags: ["astronomy"],
         image: {
           src: issEarthHorizonImage,
           caption: "The space station sees the Earth fill about 140° of view between two tangent lines, so the arc of Earth it can see is 180° − 140° = 40°.",
@@ -95,6 +96,7 @@ export default lesson((s) => {
       {
         title: "Coverage from a geostationary satellite",
         text: "A geostationary satellite, about $36\\,000$ km up, sees the whole Earth across only about $17.4^\\circ$. The arc it can see is $180^\\circ - 17.4^\\circ \\approx 162.6^\\circ$, so it reaches about $81^\\circ$ either side of the point below it, which is why such satellites cannot serve the far polar regions.",
+        tags: ["astronomy"],
         image: {
           src: geostationaryCoverageImage,
           caption: "A distant geostationary satellite sees the whole Earth across only about 17.4°, so the arc it covers is about 162.6°, leaving the far polar regions out of reach.",

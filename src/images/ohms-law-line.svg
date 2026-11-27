@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="236" y="36" width="380" height="288" rx="10" fill="#1c2633"/>
+    <rect x="40" y="50" width="160" height="200" rx="18" fill="#ef6b5b"/>
+    <rect x="60" y="70" width="120" height="56" rx="6" fill="#5fb0e8"/>
+    <circle cx="120" cy="184" r="36" fill="#1c2633"/>
+    <path d="M120 184 L140 160" fill="none" stroke="#f3ead8"/>
+    <path d="M90 250 L64 300 M150 250 L176 300" fill="none"/>
+    <path d="M30 300 H210" fill="none" stroke-width="12"/>
+  </g>
+  <path d="M30 300 H210" stroke="#8fa3b8" stroke-width="5"/>
+  <rect x="80" y="286" width="80" height="28" rx="12" fill="#d9a066" stroke="#0b0f14" stroke-width="5"/>
+  <path d="M100 288 V312 M116 288 V312 M132 288 V312" stroke-width="6" stroke="#5fb0e8"/>
+  <path d="M90 250 L64 296" stroke="#ef6b5b" stroke-width="4"/>
+  <text x="120" y="108" font-family="system-ui, sans-serif" font-size="28" font-weight="800" text-anchor="middle" fill="#0b0f14">6 Ω</text>
+  <path d="M280 290 H596 M280 290 V54" fill="none" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#8fa3b8"><text x="256" y="72" text-anchor="middle">V</text><text x="588" y="316" text-anchor="middle">I</text></g>
+  <path d="M280 290 L580 70" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M380 216.7 H480 V143.3" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="280" cy="290" r="7"/><circle cx="380" cy="216.7" r="7"/><circle cx="480" cy="143.3" r="7"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="30"><text x="496" y="190">R</text></g>
+</svg>

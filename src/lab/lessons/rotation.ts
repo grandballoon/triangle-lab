@@ -34,6 +34,7 @@ import {
   type Triple,
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
+import circleOfFifthsTurnImage from "../../images/circle-of-fifths-turn.svg";
 import clockMinuteHandTurnImage from "../../images/clock-minute-hand-turn.svg";
 import photoQuarterTurnImage from "../../images/photo-quarter-turn.svg";
 
@@ -123,6 +124,7 @@ export default lesson((s) => {
       {
         title: "Reading the angle on a clock",
         text: "The minute hand rotates about the centre of the clock face, a full $360^\\circ$ every hour, so it turns $6^\\circ$ each minute. In $20$ minutes it turns $120^\\circ$. The hour hand turns only $30^\\circ$ an hour, half a degree a minute, which is how you can work out that at $3{:}00$ the hands are exactly $90^\\circ$ apart.",
+        tags: ["home"],
         image: {
           src: clockMinuteHandTurnImage,
           caption: "A clock: the minute hand rotates 6° a minute about the centre, so in 20 minutes it turns through 120°.",
@@ -132,10 +134,21 @@ export default lesson((s) => {
       {
         title: "Rotating a photo",
         text: "When a photo app turns a picture a quarter-turn anticlockwise, it moves each pixel by the rotation rule $(x, y) \\to (-y, x)$ about the centre of the picture. The pixel at $(4, 1)$ goes to $(-1, 4)$, still the same distance from the centre. Because a rotation keeps every length, nothing in the photo is squashed or stretched; it is simply turned.",
+        tags: ["light", "game-design"],
         image: {
           src: photoQuarterTurnImage,
           caption: "Rotating a photo: a quarter-turn anticlockwise moves every pixel about the picture's centre and keeps every length, so nothing is stretched.",
           alt: "A landscape photo outline in gold dashes and the same photo turned a quarter-turn to portrait, with a curved gold arrow and gold lines from the centre to a point and its image.",
+        },
+      },
+      {
+        title: "Going round the circle of fifths",
+        text: "Set the twelve notes of the octave round a circle in order, like the hours on a clock, each a semitone and $30^\\circ$ from the next. Going up a fifth is $7$ semitones, a rotation by $7 \\cdot 30^\\circ = 210^\\circ$: C to G, G to D, D to A. Because $7$ and $12$ share no factor, twelve of these turns, $2520^\\circ$ or exactly seven full circles, pass through every note once before landing back on C, and the order they visit is the circle of fifths. A turn of $4$ semitones, a major third, only ever reaches C, E and G sharp, since three of them make $12$.",
+        tags: ["music"],
+        image: {
+          src: circleOfFifthsTurnImage,
+          caption: "The circle of fifths: each step up a fifth turns 210° round the twelve notes, and twelve steps visit every note before coming back to C.",
+          alt: "The twelve note names round a dark circle like a clock face, C at the top, joined by a gold dashed twelve-pointed star that steps from each note to the one a fifth above, with two musical notes beside the circle.",
         },
       },
     ],

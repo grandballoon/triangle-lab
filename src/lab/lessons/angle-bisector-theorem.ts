@@ -69,6 +69,7 @@ export default lesson((s) => {
       {
         title: "Splitting a corner plot",
         text: "A triangular garden has fences of 12 metres and 8 metres meeting at a corner. A path from that corner that splits it into two equal angles meets the far fence in the ratio $12 : 8 = 3 : 2$. The two beds share the same height from the corner, so their areas are split $3 : 2$ as well, before anyone measures them.",
+        tags: ["gardening"],
         image: {
           src: cornerPlotImage,
           caption: "A triangular garden split by a path that halves the corner angle: the path meets the far fence in the ratio 12 : 8, and the two beds share their area the same way.",
@@ -78,6 +79,7 @@ export default lesson((s) => {
       {
         title: "Placing a bracket under a corner shelf",
         text: "A triangular shelf fits a square corner, with edges of 60 and 40 centimetres along the walls and a front edge of about 72 centimetres. A support running straight out from the corner, halfway between the walls, meets the front edge in the ratio $60 : 40$: about 43 centimetres from one end and 29 from the other. You can mark the spot before fixing anything.",
+        tags: ["carpentry", "home"],
         image: {
           src: cornerShelfImage,
           caption: "A corner shelf seen from above: a bracket running straight out from the corner, halfway between the walls, meets the front edge in the ratio 60 : 40.",

@@ -6,6 +6,7 @@ import { fmt } from "../geo.ts";
 import { lesson } from "../scene.ts";
 import { faces, label3, Orbit, p3, polygon3, segment3, type P3 } from "../solid.ts";
 import game3dDistanceBoxImage from "../../images/game-3d-distance-box.svg";
+import rollingPipeOffsetImage from "../../images/rolling-pipe-offset.svg";
 import suitcaseTripodDiagonalImage from "../../images/suitcase-tripod-diagonal.svg";
 
 export default lesson((s) => {
@@ -47,6 +48,7 @@ export default lesson((s) => {
       {
         title: "Packing a tripod in a suitcase",
         text: "A cabin suitcase measuring $55 \\times 40 \\times 20$ cm has no edge long enough for a $70$ cm tripod. Its space diagonal is $\\sqrt{55^2 + 40^2 + 20^2} \\approx 70.9$ cm, though, so a thin tripod laid from one corner to the opposite one just fits.",
+        tags: ["travel", "home"],
         image: {
           src: suitcaseTripodDiagonalImage,
           caption: "A cabin suitcase: no edge is long enough for a 70 cm tripod, but the space diagonal of about 70.9 cm just takes it.",
@@ -56,10 +58,21 @@ export default lesson((s) => {
       {
         title: "Distances in a 3D game",
         text: "A game engine stores every object's position as three coordinates. The straight-line distance between two of them is $\\sqrt{\\Delta x^2 + \\Delta y^2 + \\Delta z^2}$, exactly the box diagonal with the differences as $l$, $w$ and $h$. To check whether an enemy is within $10$ metres, engines often skip the square root and compare the sum of squares with $100$.",
+        tags: ["game-design"],
         image: {
           src: game3dDistanceBoxImage,
           caption: "Distance in a 3D game: the straight line from player to enemy is the diagonal of a box whose sides are the differences in the three coordinates.",
           alt: "A game screen with a player on the floor and a floating purple monster at opposite corners of a dashed box, joined by a solid gold diagonal and a gold dashed path along three edges.",
+        },
+      },
+      {
+        title: "Measuring a rolling offset",
+        text: "A rolling offset takes a pipe sideways and upwards at once, round an obstacle. Measured between centre lines, a pipe that must rise $40$ cm, the set, and shift $30$ cm sideways, the roll, has a true offset of $\\sqrt{40^2 + 30^2} = 50$ cm across the end of the box. With $45^\\circ$ fittings it also advances $50$ cm along the run, so the travel piece is the space diagonal $\\sqrt{40^2 + 30^2 + 50^2} \\approx 70.7$ cm. That is the plumber's rule for $45^\\circ$ offsets: travel is the true offset times $1.414$.",
+        tags: ["plumbing", "trade-tricks"],
+        image: {
+          src: rollingPipeOffsetImage,
+          caption: "A rolling offset: the travel pipe that climbs and shifts sideways at once is the space diagonal of a box made by the rise, the roll and the run.",
+          alt: "A grey pipe coming in low from the left, climbing diagonally through a gold dashed box drawn in perspective, and leaving high on the right into a wall, with orange elbow fittings at both bends and the box edges marked 50, 40 and 30.",
         },
       },
     ],

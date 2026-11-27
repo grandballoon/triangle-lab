@@ -156,6 +156,7 @@ export default lesson((s) => {
       {
         title: "Making left and right shoes",
         text: "A shoe factory cuts the left sole from the right sole's pattern turned over. The two soles are congruent, every length matching, but a reflection reverses orientation, so no amount of sliding or turning makes a left shoe into a right one.",
+        tags: ["home"],
         image: {
           src: leftRightSolesImage,
           caption: "A pair of soles: the left is the right one's pattern turned over, every length matching, but the reflection reverses it so no slide or turn makes one into the other.",
@@ -165,6 +166,7 @@ export default lesson((s) => {
       {
         title: "Resizing images on a web page",
         text: "Web designers keep a picture's aspect ratio when they resize it: an image $800$ by $600$ pixels can be shown at $400$ by $300$, scaling both directions by $\\frac{1}{2}$, and nothing looks wrong. Shown at $400$ by $400$, it is scaled by $\\frac{1}{2}$ across but only $\\frac{2}{3}$ down, a distortion, and round things turn into ovals.",
+        tags: ["computing", "light"],
         image: {
           src: webImageResizeImage,
           caption: "Resizing a picture on a web page: scaling both directions by the same factor keeps its shape, while squashing one direction turns a round ball into an oval.",
@@ -174,6 +176,7 @@ export default lesson((s) => {
       {
         title: "Measuring from an architect's plan",
         text: "A floor plan drawn at $1{:}50$ is a dilation of the building, so lengths on paper are $\\frac{1}{50}$ of the real ones while every angle is drawn true: a builder can measure an angle straight off the plan with a protractor. Areas scale by $\\left(\\frac{1}{50}\\right)^2$, so $1$ square centimetre of plan stands for $2500$ square centimetres, a quarter of a square metre, of floor.",
+        tags: ["building"],
         image: {
           src: floorPlanProtractorImage,
           caption: "A floor plan at 1:50: every length is shrunk but every angle is drawn true, so a builder can read an angle straight off the plan with a protractor.",

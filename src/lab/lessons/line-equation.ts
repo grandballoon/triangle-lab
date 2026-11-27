@@ -18,6 +18,7 @@ import {
   texSum,
 } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
+import ohmsLawLineImage from "../../images/ohms-law-line.svg";
 import taxiFareLineImage from "../../images/taxi-fare-line.svg";
 import thermometerCelsiusLineImage from "../../images/thermometer-celsius-line.svg";
 
@@ -118,6 +119,7 @@ export default lesson((s) => {
       {
         title: "Converting temperatures",
         text: "Water freezes at $0^\\circ$C, which is $32^\\circ$F, and boils at $100^\\circ$C, which is $212^\\circ$F. Those two points give the slope $\\frac{212 - 32}{100 - 0} = 1.8$ and the intercept $32$, so $F = 1.8C + 32$. Its $x$-intercept says that $0^\\circ$F is about $-17.8^\\circ$C.",
+        tags: ["home"],
         image: {
           src: thermometerCelsiusLineImage,
           caption: "Converting temperatures: freezing at 0°C and 32°F and boiling at 100°C and 212°F fix the straight line F = 1.8C + 32.",
@@ -127,10 +129,21 @@ export default lesson((s) => {
       {
         title: "A taxi fare",
         text: "A taxi that charges 3 pounds when you get in and 2 pounds a mile costs $y = 2x + 3$ pounds for $x$ miles. The intercept is the fixed charge and the slope the rate, so you can price a 7 mile trip, 17 pounds, before you set off.",
+        tags: ["money", "travel"],
         image: {
           src: taxiFareLineImage,
           caption: "A taxi fare: the 3 pound fixed charge is where the line starts and 2 pounds a mile is its slope, so 7 miles costs 17 pounds.",
           alt: "A red taxi beside a graph whose dashed gold line starts at 3 on the up axis and rises to a point marked 17.",
+        },
+      },
+      {
+        title: "Ohm's law is a line",
+        text: "The voltage across a resistor is its resistance times the current through it, $V = RI$: a line with intercept 0 and slope $R$. Measure 3 V at 0.5 A and 9 V at 1.5 A, and the slope is $\\frac{9 - 3}{1.5 - 0.5} = 6$ ohms, while the intercept $3 - 6 \\times 0.5 = 0$ confirms the line runs through the origin. On a 12 V supply the same resistor then draws $\\frac{12}{6} = 2$ A.",
+        tags: ["electrical"],
+        image: {
+          src: ohmsLawLineImage,
+          caption: "A resistor on a meter: Ohm's law, V = RI, is a straight line through the origin whose slope is the resistance.",
+          alt: "A red multimeter reading 6 ohms with its probes on a striped resistor, beside a graph of voltage against current whose dashed gold line rises from the origin through two points, with a rise-and-run step labelled R.",
         },
       },
     ],

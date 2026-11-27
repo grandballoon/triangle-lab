@@ -72,6 +72,7 @@ export default lesson((s) => {
       {
         title: "Will the van fit through the arch?",
         text: "A semicircular tunnel is 8 metres across. A van 2.5 metres wide drives through the middle, so each side of the van is 2.75 metres from one end of the floor and 5.25 metres from the other. Any point on the arch makes a right angle with the two ends of the floor, so the height above each side of the van is $\\sqrt{2.75 \\cdot 5.25} \\approx 3.8$ metres, the tallest the van can be.",
+        tags: ["travel", "building"],
         image: {
           src: vanArchImage,
           caption: "A van in a semicircular tunnel: any point on the arch makes a right angle with the ends of the floor, so the height above the side of the van is fixed.",
@@ -81,6 +82,7 @@ export default lesson((s) => {
       {
         title: "The strongest beam from a log",
         text: "An old carpenters' rule cuts the strongest rectangular beam from a round log: divide a diameter into three equal parts and draw perpendiculars from the two dividing points to the rim. Joining the rim points to the ends of the diameter gives the beam. Each leg squared is the diameter times the piece of it beside that leg, so from a 30 centimetre log the beam is $\\sqrt{30 \\cdot 10} \\approx 17$ centimetres wide and $\\sqrt{30 \\cdot 20} \\approx 24.5$ centimetres deep.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: logBeamImage,
           caption: "The carpenters' rule for the strongest beam: split a diameter of the log into thirds and draw perpendiculars to the rim to find the beam's corners.",

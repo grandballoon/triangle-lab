@@ -1,0 +1,32 @@
+/* A use's topics, as a row of small links (markup.ts topicChips), in a
+   lesson's Uses tab and in the gallery alike. Each takes the --accent of
+   what it sits in. */
+
+.topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 2px 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.topic-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(233, 240, 247, 0.7);
+  text-decoration: none;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+
+.topic-chip:hover { border-color: var(--accent); color: #e9f0f7; }
+
+.topic-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

@@ -73,6 +73,7 @@ export default lesson((s) => {
       {
         title: "A one-litre tetrahedral carton",
         text: "Some of the earliest Tetra Pak milk cartons were tetrahedra. A regular tetrahedron that holds one litre, $1000$ cubic centimetres, needs $\\tfrac{\\sqrt2}{12}s^3 = 1000$, so an edge of about $20.4$ cm. Doubling the edge would hold eight litres.",
+        tags: ["home"],
         image: {
           src: tetraMilkCartonImage,
           caption: "A tetrahedral milk carton: a regular tetrahedron with edges of about 20.4 cm holds one litre.",
@@ -82,6 +83,7 @@ export default lesson((s) => {
       {
         title: "How tall is a stack of oranges?",
         text: "Greengrocers stack oranges in triangular layers, each one resting in the dip between three below. Every new layer raises the stack by the height of a regular tetrahedron whose edge is one orange's width. For oranges $8$ cm across that is $\\tfrac{\\sqrt6}{3} \\cdot 8 \\approx 6.5$ cm per layer, a little less than the oranges' width.",
+        tags: ["home"],
         image: {
           src: orangeStackPyramidImage,
           caption: "A greengrocer's stack of oranges: each layer rests in the dips below and adds the height of a regular tetrahedron of orange centres.",

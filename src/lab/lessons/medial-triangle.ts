@@ -57,6 +57,7 @@ export default lesson((s) => {
       {
         title: "Smoother 3D models",
         text: "3D modelling programs and game engines often refine a surface made of triangles by splitting each triangle into four, joining the midpoints of its sides. Each new triangle is a quarter of the old one, so every round multiplies the count by 4. A sphere built this way from a 20-triangle starting shape goes 20, 80, 320, 1280 triangles as it gets rounder.",
+        tags: ["game-design"],
         image: {
           src: meshSubdivisionImage,
           caption: "A 3D model being refined: joining the midpoints of each triangle's sides splits it into four, so each round multiplies the triangle count by 4.",
@@ -66,6 +67,7 @@ export default lesson((s) => {
       {
         title: "Splitting a triangular plot four ways",
         text: "To divide a triangular field into four plots of exactly the same size and shape, you do not need to measure any angles or areas. Find the middle of each side with a tape measure, run fences between the three midpoints, and the four pieces are congruent.",
+        tags: ["navigation"],
         image: {
           src: triangleFieldFourPlotsImage,
           caption: "A triangular field with fences run between the midpoints of its sides, giving four plots of exactly the same size and shape.",

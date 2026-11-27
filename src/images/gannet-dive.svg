@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M0 296 Q40 284 80 296 T160 296 T240 296 T320 296 T400 296 T480 296 T560 296 T640 296 V360 H0 Z" fill="#5fb0e8"/>
+    <path d="M410 186 L370 60 L404 130 Z" fill="#0b0f14"/>
+    <path d="M430 186 L470 60 L436 130 Z" fill="#0b0f14"/>
+    <path d="M410 200 L374 86 L414 160 Z" fill="#f3ead8"/>
+    <path d="M430 200 L466 86 L426 160 Z" fill="#f3ead8"/>
+    <path d="M410 128 L420 98 L430 128 Z" fill="#f3ead8"/>
+    <ellipse cx="420" cy="190" rx="24" ry="64" fill="#f3ead8"/>
+    <circle cx="420" cy="250" r="20" fill="#f3c9a0"/>
+    <path d="M412 264 L420 290 L428 264 Z" fill="#8fa3b8"/>
+  </g>
+  <circle cx="428" cy="246" r="4" fill="#0b0f14"/>
+  <path d="M300 40 V290" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M286 40.0 H314 M286 55.6 H314 M286 102.5 H314 M286 180.6 H314 M286 290.0 H314" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="30" text-anchor="end"><text x="272" y="176">30 m</text></g>
+</svg>

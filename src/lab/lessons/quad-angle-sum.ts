@@ -68,6 +68,7 @@ export default lesson((s) => {
       {
         title: "Fitting a worktop into a wonky corner",
         text: "Walls in old houses are rarely square. A kitchen fitter who measures three corners of a four-sided worktop piece as $90^\\circ$, $92^\\circ$ and $95^\\circ$ knows the fourth must be $360^\\circ - 277^\\circ = 83^\\circ$, without having to reach the awkward one behind the cooker.",
+        tags: ["carpentry", "home", "trade-tricks"],
         image: {
           src: worktopWonkyCornerImage,
           caption: "A kitchen worktop in a wonky corner: with three corners measured, the fourth behind the cooker is whatever is left of 360°.",
@@ -77,6 +78,7 @@ export default lesson((s) => {
       {
         title: "Checking a survey of a field",
         text: "A surveyor who measures all four corner angles of a four-sided field expects them to total $360^\\circ$. If they come to $360^\\circ\\,2'$, the two extra minutes of angle are measurement error, and the usual practice is to share the correction out among the corners before drawing the plan.",
+        tags: ["navigation"],
         image: {
           src: fieldCornerAnglesImage,
           caption: "A surveyed four-sided field: its four corner angles should add up to 360°, and any small excess is measurement error shared out among the corners.",

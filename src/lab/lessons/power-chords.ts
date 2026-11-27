@@ -126,6 +126,7 @@ export default lesson((s) => {
       {
         title: "Sizing a broken plate",
         text: "A piece of a round plate's rim is enough to tell how big the whole plate was. Lay a ruler across the curved edge as a chord, say 16 cm long, and measure how far the curve bulges out from the ruler's midpoint, say 2 cm. The line through that midpoint at right angles to the ruler is a diameter $D$, cut into 2 cm and $D - 2$, so $8 \\cdot 8 = 2(D - 2)$ and the plate was $D = 34$ cm across. The same works for any arc: a broken wheel, a round tabletop, a pipe.",
+        tags: ["home"],
         image: {
           src: brokenPlateChordImage,
           caption: "A broken plate: a 16 cm ruler across the rim and a 2 cm bulge give the whole plate's diameter of 34 cm.",
@@ -135,6 +136,7 @@ export default lesson((s) => {
       {
         title: "Setting out an arch",
         text: "A builder wants a round-topped arch 2 m wide that rises 0.5 m above the level where the curve starts, and needs its radius to cut the curved former it is built on. The span is a chord halved by the arch's centre line, which is a diameter, so $1 \\cdot 1 = 0.5\\,(2R - 0.5)$. That gives $2R = 2.5$, a radius of 1.25 m.",
+        tags: ["building", "carpentry"],
         image: {
           src: archSettingOutImage,
           caption: "A round-topped arch 2 m wide rising 0.5 m: the halved span and the centre line give a radius of 1.25 m.",

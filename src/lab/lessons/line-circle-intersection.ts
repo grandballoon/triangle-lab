@@ -8,6 +8,7 @@ import { both, fmt, inBox, snapToGrid, type Vec } from "../geo.ts";
 import { keepApart, lattice, num, pair, plane, texPoint, texShiftSquared, texSum } from "../kit/coordinates.ts";
 import { lesson, type Readout } from "../scene.ts";
 import droneNoFlyZoneImage from "../../images/drone-no-fly-zone.svg";
+import moonOccultationImage from "../../images/moon-occultation.svg";
 import rayTraceBallImage from "../../images/ray-trace-ball.svg";
 
 const R = 3;
@@ -108,6 +109,7 @@ export default lesson((s) => {
       {
         title: "Drawing pictures with rays",
         text: "Ray tracing, used for film effects and realistic games, follows a straight ray of light from the camera through each pixel. To see whether the ray hits a ball, the program puts the ray's equation into the ball's and gets a quadratic. A negative discriminant means a miss, so that pixel shows whatever is behind; otherwise the smaller solution is where the ray first meets the ball.",
+        tags: ["game-design", "light"],
         image: {
           src: rayTraceBallImage,
           caption: "Ray tracing: a ray from the camera through one pixel is tested against the ball, and the first place it meets it colours that pixel.",
@@ -117,10 +119,21 @@ export default lesson((s) => {
       {
         title: "Steering clear of a no-fly zone",
         text: "Suppose a no-fly zone is the circle $x^2 + y^2 = 4$ around a point, in km, and a drone's planned route is $y = x + 3$. Substituting gives $2x^2 + 6x + 5 = 0$, with $D = 36 - 40 = -4 < 0$. No solutions: the route never enters the zone.",
+        tags: ["navigation"],
         image: {
           src: droneNoFlyZoneImage,
           caption: "A drone's straight route that never meets the circle of a no-fly zone, so the substitution has no solutions.",
           alt: "A drone on a dashed gold straight route that passes just outside a red no-fly circle outlined in dashed gold.",
+        },
+      },
+      {
+        title: "A star passing behind the Moon",
+        text: "As the Moon moves across the sky it hides the stars in its path. Take the Moon's radius as 1, so its edge is $x^2 + y^2 = 1$, and a star's path past it as the line $y = 0.6$. Substituting gives $x^2 = 0.64$, so the star vanishes at $x = -0.8$ and returns at $x = 0.8$; the Moon moves about its own width in an hour, so the star is hidden for about 48 minutes. Where the line just touches the circle the quadratic has one root, and observers along that grazing line can watch the star flicker between lunar mountains.",
+        tags: ["astronomy"],
+        image: {
+          src: moonOccultationImage,
+          caption: "A star hidden by the Moon: where its straight path meets the Moon's circle gives the moments it disappears and reappears.",
+          alt: "The cratered Moon against a starry sky, crossed by two dashed gold lines from stars on the left, one cutting through the disc with a 0.6, 0.8, 1 right triangle inside, one just touching its top edge.",
         },
       },
     ],

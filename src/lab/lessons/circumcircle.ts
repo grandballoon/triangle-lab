@@ -112,6 +112,7 @@ export default lesson((s) => {
       {
         title: "How big was the broken plate?",
         text: "Archaeologists often find only a curved piece of the rim of a pot or plate, yet want its original size. One way is to mark three points along the rim and join them into two chords. The perpendicular bisectors of those chords cross at the centre of the whole rim, and the distance from there to the rim is its radius.",
+        tags: ["home"],
         image: {
           src: brokenPlateImage,
           caption: "A broken plate rim: the perpendicular bisectors of two chords between three rim points cross at the centre of the whole plate.",
@@ -121,6 +122,7 @@ export default lesson((s) => {
       {
         title: "Turning survey points into a landscape",
         text: "Mapping software and game engines build terrain by joining measured points into triangles. A popular rule, the Delaunay triangulation, picks the triangles so that no other point lies inside any triangle's circumcircle. This avoids long thin slivers, so the surface between the points looks natural and smooth.",
+        tags: ["game-design", "navigation"],
         image: {
           src: terrainTrianglesImage,
           caption: "A landscape built from survey points: in a Delaunay triangulation no other point lies inside any triangle's circumcircle.",

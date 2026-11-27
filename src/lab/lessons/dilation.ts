@@ -17,6 +17,7 @@ import {
 } from "../kit/transformations.ts";
 import { lesson, type Readout } from "../scene.ts";
 import mapScaleDilationImage from "../../images/map-scale-dilation.svg";
+import moonCoversSunImage from "../../images/moon-covers-sun.svg";
 import photocopierA4A3Image from "../../images/photocopier-a4-a3.svg";
 import pizzaSizeCompareImage from "../../images/pizza-size-compare.svg";
 
@@ -83,6 +84,7 @@ export default lesson((s) => {
       {
         title: "Comparing pizza sizes",
         text: "A $30$ cm pizza is a dilation of a $20$ cm one by $k = 1.5$, so it has $1.5^2 = 2.25$ times the area, more than twice as much to eat, though it is only half as wide again. That is why a large pizza is often better value than two small ones: compare the prices with the areas, not the diameters.",
+        tags: ["home", "money"],
         image: {
           src: pizzaSizeCompareImage,
           caption: "Comparing pizzas: a 30 cm pizza is a 20 cm one enlarged by 1.5, so it has 2.25 times the area.",
@@ -92,6 +94,7 @@ export default lesson((s) => {
       {
         title: "Reading a map scale",
         text: "A $1{:}25\\,000$ map is a dilation of the land by $k = \\frac{1}{25\\,000}$, so $4$ cm on the map is $1$ km on the ground, and every angle, like the bend of a road, is drawn true. Areas scale by $k^2$: a $1$ cm square on the map covers $250$ m by $250$ m, which is $62\\,500$ square metres.",
+        tags: ["navigation"],
         image: {
           src: mapScaleDilationImage,
           caption: "A map: the land shrunk by one scale factor, so every bend is drawn true while each map square stands for a far larger area.",
@@ -101,10 +104,21 @@ export default lesson((s) => {
       {
         title: "Enlarging A4 to A3 on a photocopier",
         text: "An A3 sheet has exactly twice the area of an A4 sheet and the same shape. Since areas scale by $k^2$, the copier needs $k^2 = 2$, so $k = \\sqrt{2} \\approx 1.41$. That is why the A4 to A3 button on a photocopier is marked $141\\%$.",
+        tags: ["home", "light"],
         image: {
           src: photocopierA4A3Image,
           caption: "A photocopier: A3 is A4 enlarged by √2, about 141%, which doubles its area and keeps its shape.",
           alt: "A photocopier whose screen reads 141% beside an A3 copy of a house drawing, with the A4 sheet outlined in gold dashes from the same corner and a gold diagonal through both far corners.",
+        },
+      },
+      {
+        title: "Why the Moon just covers the Sun",
+        text: "The Sun is about $400$ times as wide as the Moon, about $1.39$ million km against $3470$ km, and it is also about $400$ times as far away, $150$ million km against $384\\,000$ km. So, seen from the Earth, the Sun's disc is close to a dilation of the Moon's from the eye with $k \\approx 400$, and both look about half a degree wide. That coincidence is why the Moon can cover the Sun almost exactly in a total eclipse.",
+        tags: ["astronomy"],
+        image: {
+          src: moonCoversSunImage,
+          caption: "The Moon and the Sun: the Sun is about 400 times as wide and about 400 times as far away, so from the eye it is a dilation of the Moon and looks the same size.",
+          alt: "An eye on the left with two gold dashed lines spreading from it, just touching the top and bottom of a small pale Moon marked 1 nearby and of a large yellow Sun marked 400 far to the right.",
         },
       },
     ],

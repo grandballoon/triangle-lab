@@ -83,6 +83,7 @@ export default lesson((s) => {
       {
         title: "Drawing a fifteen-degree angle with compasses",
         text: "With only a straight edge and compasses you can draw a square and an equilateral triangle on one of its sides. Joining the triangle's tip to the far corner of the square, as in this lesson, gives a $15^\\circ$ angle at the tip, a classic way to mark angles that are not on a set square.",
+        tags: ["art", "building"],
         image: {
           src: compassFifteenDegreesImage,
           caption: "A square and an equilateral triangle drawn with compasses: joining the triangle's tip to the far corner of the square marks a 15° angle.",
@@ -92,6 +93,7 @@ export default lesson((s) => {
       {
         title: "Folding sixty degrees in origami",
         text: "Paper folders make a $60^\\circ$ angle from a square without a protractor: fold the square in half to make a crease, then fold one bottom corner up so that it lands on the crease while the fold passes through the other bottom corner. Where the corner lands is the same distance from both bottom corners, and a whole side away from the corner the fold passes through, so it is the tip of an equilateral triangle on the bottom side, like $E$ here.",
+        tags: ["art"],
         image: {
           src: origamiSixtyFoldImage,
           caption: "Folding a square of paper so a bottom corner lands on the centre crease makes an equilateral triangle on the bottom side, and so a 60° angle.",

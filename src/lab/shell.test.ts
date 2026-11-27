@@ -14,8 +14,8 @@ import { chapters, lessons } from "../lessons.ts";
 import { mountPager } from "../pager.ts";
 import { toScreen, type View } from "./draw.ts";
 import build from "./lessons/triangle-angle-sum.ts";
-import { term, type Scene } from "./scene.ts";
-import { LIKES_HEADING, StepList, USES_HEADING, whenStepColumn } from "./steps.ts";
+import { term, type LessonView, type Scene } from "./scene.ts";
+import { LIKES_HEADING, StepList, USES_HEADING, USES_TAB, whenStepColumn } from "./steps.ts";
 import { Shell, type ShellElements } from "./shell.ts";
 
 let frames: FrameRequestCallback[] = [];
@@ -178,24 +178,71 @@ describe("Shell", () => {
     expect(currentStep(el)).toBe("0");
   });
 
-  it("lists what a lesson's idea is like, then its real-world uses, after its steps", () => {
+  it("lists what a lesson's idea is like after its steps, folded", () => {
     const el = page();
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
       ...build(s),
       likes: [{ title: "A walk round the block", text: "You turn $360^\\circ$ to face the way you set off." }],
-      uses: [{ title: "Surveying", text: "Turns add to $360^\\circ$." }],
     }));
-    const [likes, uses] = el.steps.querySelectorAll(".aside");
+    const asides = el.steps.querySelectorAll(".aside");
+    expect(asides).toHaveLength(1);
+    const [likes] = asides;
     expect(likes.querySelector("summary h2")!.textContent).toBe(LIKES_HEADING);
     expect(likes.querySelector("h3")!.textContent).toBe("A walk round the block");
-    expect(uses.querySelector("summary h2")!.textContent).toBe(USES_HEADING);
-    expect(uses.querySelector("h3")!.textContent).toBe("Surveying");
-    for (const aside of [likes, uses]) {
-      expect((aside as HTMLDetailsElement).open).toBe(false);
-      expect(aside.querySelector(".katex")).not.toBeNull();
-    }
-    expect(el.steps.lastElementChild!.previousElementSibling).toBe(uses);
+    expect((likes as HTMLDetailsElement).open).toBe(false);
+    expect(likes.querySelector(".katex")).not.toBeNull();
+    expect(el.steps.lastElementChild!.previousElementSibling).toBe(likes);
+  });
+
+  it("opens on the lesson's uses, under the first tab, each with its topics linking to the gallery", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
+      ...build(s),
+      uses: [{ title: "Surveying", text: "Turns add to $360^\\circ$.", tags: ["navigation", "carpentry"] }],
+    }));
+    const tabs = [...el.column.querySelectorAll<HTMLButtonElement>(".column-tab")];
+    expect(tabs.map((t) => [t.textContent, t.getAttribute("aria-selected")])).toEqual([[USES_TAB, "true"], ["Steps", "false"]]);
+    expect(el.column.hasAttribute("data-pane")).toBe(true);
+    const pane = el.column.querySelector<HTMLElement>(".uses-pane")!;
+    expect(pane.hidden).toBe(false);
+    expect(pane.querySelector("h2")!.textContent).toBe(USES_HEADING);
+    expect(pane.querySelector("h3")!.textContent).toBe("Surveying");
+    expect(pane.querySelector(".katex")).not.toBeNull();
+    // Topics in the order of TOPICS, whatever order the lesson wrote them in.
+    expect([...pane.querySelectorAll<HTMLAnchorElement>(".topic-chip")].map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
+      ["Carpentry", "uses.html?topic=carpentry"],
+      ["Maps, surveying and navigation", "uses.html?topic=navigation"],
+    ]);
+    expect(pane.querySelector<HTMLAnchorElement>(".uses-more")!.getAttribute("href")).toBe("uses.html");
+    expect(el.steps.querySelector(".uses-pane, .aside-figure")).toBeNull();
+  });
+
+  it("turns from the uses to the steps when a step is asked for, and back to the uses for the next lesson", () => {
+    const el = page();
+    const shell = new Shell(el, () => []);
+    const withUses = (s: Scene): LessonView => ({ ...build(s), uses: [{ title: "Surveying", text: "Turns.", tags: ["navigation"] }] });
+    shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, withUses);
+    const [uses, steps] = el.column.querySelectorAll<HTMLButtonElement>(".column-tab");
+    shell.stepBy(1);
+    expect(el.column.hasAttribute("data-pane")).toBe(false);
+    expect(steps.getAttribute("aria-selected")).toBe("true");
+    expect(currentStep(el)).toBe("1");
+
+    uses.click();
+    expect(el.column.hasAttribute("data-pane")).toBe(true);
+    shell.load({ eyebrow: "Angles", title: "U", accent: "#f472b6" }, withUses);
+    expect(uses.getAttribute("aria-selected")).toBe("true");
+    steps.click();
+    shell.load({ eyebrow: "Angles", title: "V", accent: "#f472b6" }, withUses);
+    expect(uses.getAttribute("aria-selected")).toBe("true");
+    expect(el.column.querySelectorAll(".column-tab")).toHaveLength(2);
+
+    // A lesson without uses has no Uses tab, and opens on its steps.
+    shell.load({ eyebrow: "Angles", title: "W", accent: "#f472b6" }, (s) => ({ ...build(s), uses: [] }));
+    expect(uses.hidden).toBe(true);
+    expect(el.column.hasAttribute("data-pane")).toBe(false);
   });
 
   it("shows a use's recommended picture under its text, captioned, and none for a use without one", () => {
@@ -204,12 +251,12 @@ describe("Shell", () => {
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({
       ...build(s),
       uses: [
-        { title: "Trusses", text: "Rigid.", image: { src: "/assets/truss.jpg", caption: "A roof truss.", alt: "Timber triangles." } },
-        { title: "Ramps", text: "Sloped.", image: { src: "/assets/ramp.jpg", caption: "A ramp at a door." } },
-        { title: "Surveying", text: "Angles." },
+        { title: "Trusses", text: "Rigid.", tags: ["building"], image: { src: "/assets/truss.jpg", caption: "A roof truss.", alt: "Timber triangles." } },
+        { title: "Ramps", text: "Sloped.", tags: ["building"], image: { src: "/assets/ramp.jpg", caption: "A ramp at a door." } },
+        { title: "Surveying", text: "Angles.", tags: ["navigation"] },
       ],
     }));
-    const items = [...el.steps.querySelectorAll(".aside")].at(-1)!.querySelectorAll(".aside-item");
+    const items = el.column.querySelectorAll(".uses-pane .aside-item");
     const figures = [...items].map((item) => {
       const figure = item.querySelector("figure.aside-figure");
       const img = figure?.querySelector("img");
@@ -248,7 +295,7 @@ describe("Shell", () => {
     const el = page();
     const shell = new Shell(el, () => []);
     shell.load({ eyebrow: "Angles", title: "T", accent: "#f472b6" }, (s) => ({ ...build(s), likes: [] }));
-    expect([...el.steps.querySelectorAll(".aside summary h2")].map((h) => h.textContent)).toEqual([USES_HEADING]);
+    expect(el.steps.querySelectorAll(".aside")).toHaveLength(0);
   });
 
   it("leads from a hovered formula term to its marks on the figure", () => {
@@ -454,7 +501,7 @@ describe("StepList, paged", () => {
     });
     steps.show([1, 2, 3].map((n) => ({ title: `Step ${n}`, text: "Look." })), {
       likes: [{ title: "Stacking chairs", text: "Each rests on the one below." }],
-      uses: [{ title: "Bridges", text: "Trusses." }],
+      uses: [],
     });
     steps.setPaged(true);
     return { steps, host, picks };

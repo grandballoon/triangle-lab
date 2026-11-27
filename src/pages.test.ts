@@ -12,6 +12,7 @@ import { linkTex } from "./lab/link.ts";
 import { richHtml } from "./lab/math.ts";
 import { anchorOf, chapters, lessons } from "./lessons.ts";
 import { moveBy } from "./pager.ts";
+import { tagFaults } from "./uses/topics.ts";
 
 const pages = import.meta.glob<string>("../*.html", { query: "?raw", import: "default", eager: true });
 const viteConfig = Object.values(
@@ -64,6 +65,7 @@ describe("standalone pages", () => {
       richHtml(aside.text, true);
     }
     for (const { image } of uses) if (image) expect(imageFaults(image), image.caption).toEqual([]);
+    for (const { title, tags } of uses) expect(tagFaults(tags), title).toEqual([]);
   });
 
   it("brings in the Pythagoras proof at the step that scrubs it", () => {

@@ -90,6 +90,7 @@ export default lesson((s) => {
       {
         title: "Reading a soil texture triangle",
         text: "Soil scientists and gardeners classify soil with a triangle chart whose three sides stand for sand, silt and clay. A point's distances to the sides give the three percentages, and they always total $100\\%$ because the triangle is equilateral: they add to the altitude. A sample with $40\\%$ sand, $40\\%$ silt and $20\\%$ clay lands in the region called loam.",
+        tags: ["gardening"],
         image: {
           src: soilTextureTriangleImage,
           caption: "A soil texture triangle: a sample's distances to the three sides give its sand, silt and clay, which always add to 100%.",
@@ -99,6 +100,7 @@ export default lesson((s) => {
       {
         title: "Mixing three ingredients",
         text: "Metallurgists and chemists plot mixtures of three ingredients, such as three metals in an alloy, on the same kind of equilateral triangle. Each corner is a pure ingredient, and any point inside is a mix whose three amounts add to the whole. Viviani's result is what makes every point a valid recipe.",
+        tags: ["machines"],
         image: {
           src: alloyMixTriangleImage,
           caption: "Mixing an alloy from three metals: any point in the equilateral triangle is a recipe whose three amounts add to the whole.",

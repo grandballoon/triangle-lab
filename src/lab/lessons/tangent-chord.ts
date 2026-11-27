@@ -103,6 +103,7 @@ export default lesson((s) => {
       {
         title: "Setting out a curved road",
         text: "Surveyors peg out a circular curve from the point where it leaves a straight. From there they turn off from the straight by the tangent–chord angle, half the arc, to sight each peg. On a curve of radius $200$ m with pegs $20$ m apart, each arc is $\\frac{20}{200}$ radians, about $5.73^\\circ$, so each peg is a further $2.86^\\circ$ round from the straight.",
+        tags: ["navigation", "travel", "trade-tricks"],
         image: {
           src: roadCurvePegsImage,
           caption: "Setting out a road curve: from where it leaves the straight, the surveyor turns half each arc's angle off the straight line to sight every peg in turn.",
@@ -112,6 +113,7 @@ export default lesson((s) => {
       {
         title: "Joining a straight to a curve",
         text: "When a designer runs a straight path or track into a circular bend, the bend's centre must lie on the line square to the straight at the join, because a radius meets its tangent at a right angle. Put the centre anywhere else and there is a kink where they meet.",
+        tags: ["travel", "building"],
         image: {
           src: railwayStraightToCurveImage,
           caption: "A straight track running into a circular bend: the bend's centre lies on the line square to the straight at the join, so the track meets the curve without a kink.",

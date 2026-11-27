@@ -190,6 +190,7 @@ export default lesson((s) => {
       {
         title: "Marking out a rectangular bed with string",
         text: "To mark out a rectangular flower bed without a set square, take two equal lengths of string and peg them so they cross at their midpoints. The four ends are the corners of a rectangle: equal diagonals that bisect each other force all four right angles.",
+        tags: ["gardening", "trade-tricks"],
         image: {
           src: stringCrossBedImage,
           caption: "Marking out a flower bed: two equal strings pegged to cross at their midpoints put the four pegs at the corners of a rectangle.",
@@ -199,6 +200,7 @@ export default lesson((s) => {
       {
         title: "Cutting fabric for a kite",
         text: "A kite with a $90$ cm spine and a $60$ cm crossbar at right angles to it needs a sail of $\\tfrac12 \\cdot 90 \\cdot 60 = 2700$ square centimetres, wherever along the spine the crossbar is fixed. That tells you how much ripstop to buy before you have decided on the exact shape.",
+        tags: ["fiber-arts", "sport"],
         image: {
           src: kiteSailImage,
           caption: "A kite sail: with a 90 cm spine crossed at right angles by a 60 cm bar, the sail is half the 90 by 60 rectangle around it, 2700 square centimetres.",

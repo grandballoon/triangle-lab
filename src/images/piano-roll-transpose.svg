@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="40" y="30" width="560" height="300" rx="14" fill="#1c2633" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="60" y="58" width="520" height="252" fill="#0f1620"/>
+  <path d="M116 310 H570 M116 292 H570 M116 274 H570 M116 256 H570 M116 238 H570 M116 220 H570 M116 202 H570 M116 184 H570 M116 166 H570 M116 148 H570 M116 130 H570 M116 112 H570 M116 94 H570 M116 76 H570 " stroke="#2a3340" stroke-width="2"/>
+  <rect x="60" y="292" width="56" height="18" fill="#f3ead8"/><rect x="60" y="274" width="56" height="18" fill="#0b0f14"/><rect x="60" y="256" width="56" height="18" fill="#f3ead8"/><rect x="60" y="238" width="56" height="18" fill="#0b0f14"/><rect x="60" y="220" width="56" height="18" fill="#f3ead8"/><rect x="60" y="202" width="56" height="18" fill="#f3ead8"/><rect x="60" y="184" width="56" height="18" fill="#0b0f14"/><rect x="60" y="166" width="56" height="18" fill="#f3ead8"/><rect x="60" y="148" width="56" height="18" fill="#0b0f14"/><rect x="60" y="130" width="56" height="18" fill="#f3ead8"/><rect x="60" y="112" width="56" height="18" fill="#0b0f14"/><rect x="60" y="94" width="56" height="18" fill="#f3ead8"/><rect x="60" y="76" width="56" height="18" fill="#f3ead8"/>
+  <path d="M60 58 V310 H116 V58 Z" fill="none" stroke="#0b0f14" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="4"><rect x="150" y="292" width="90" height="18" rx="3" fill="#8fa3b8"/><rect x="262" y="256" width="90" height="18" rx="3" fill="#8fa3b8"/><rect x="374" y="220" width="90" height="18" rx="3" fill="#8fa3b8"/><rect x="150" y="166" width="90" height="18" rx="3" fill="#f472b6"/><rect x="262" y="130" width="90" height="18" rx="3" fill="#f472b6"/><rect x="374" y="94" width="90" height="18" rx="3" fill="#f472b6"/></g>
+  <path d="M195 288 V190 M307 252 V154 M419 216 V118 " fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M185 202 L195 188 L205 202 M297 166 L307 152 L317 166 M409 130 L419 116 L429 130 " fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="26"><text x="510" y="228">+7</text></g>
+</svg>

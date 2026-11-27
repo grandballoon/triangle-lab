@@ -62,6 +62,7 @@ export default lesson((s) => {
       {
         title: "Lines of latitude",
         text: "Each line of latitude on a globe is the cut of a plane parallel to the equator. At $60^\\circ$ north the plane sits $d = R\\sin 60^\\circ$ above the centre, so the circle has radius $\\sqrt{R^2 - d^2} = R\\cos 60^\\circ = \\tfrac12 R$. That is why, near Oslo or Helsinki, one degree of longitude spans only about $56$ km, half the $111$ km it spans at the equator.",
+        tags: ["navigation", "travel"],
         image: {
           src: globeLatitude60Image,
           caption: "A globe: the 60° north line of latitude is a plane's cut parallel to the equator, a circle with half the radius of the equator.",
@@ -71,6 +72,7 @@ export default lesson((s) => {
       {
         title: "Measuring a lens with a spherometer",
         text: "Opticians measure how curved a lens is with a spherometer: three legs stand on a circle of radius $a$ and a central screw measures how far the surface bulges, $h$. The legs' circle is a cut of the sphere at distance $d = R - h$ from its centre, so $a^2 = R^2 - (R - h)^2$, giving $R = \\frac{a^2 + h^2}{2h}$. With $a = 2$ cm and $h = 0.1$ cm, the lens surface is part of a sphere of radius about $20$ cm.",
+        tags: ["light"],
         image: {
           src: lensSpherometerImage,
           caption: "A spherometer on a lens: its legs stand on a circle of radius a, its centre screw measures the bulge h, and the right triangle to the sphere's centre gives the radius R.",

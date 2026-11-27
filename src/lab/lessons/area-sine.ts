@@ -11,6 +11,7 @@ import {
 } from "../geo.ts";
 import { inSector } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
+import cornerBed120Image from "../../images/corner-bed-120.svg";
 import gameMeshImage from "../../images/game-mesh.svg";
 import hexagonTileTrianglesImage from "../../images/hexagon-tile-triangles.svg";
 import surveyorTwoSidesAngleImage from "../../images/surveyor-two-sides-angle.svg";
@@ -89,6 +90,7 @@ export default lesson((s) => {
       {
         title: "Measuring a plot from one corner",
         text: "A surveyor standing at one corner of a triangular plot can measure two sides, 40 and 30 metres, and the angle between them, $50^\\circ$, without walking to the far side. The area is $\\frac12 \\cdot 40 \\cdot 30 \\cdot \\sin 50^\\circ \\approx 460$ square metres. No height needs to be found.",
+        tags: ["navigation"],
         image: {
           src: surveyorTwoSidesAngleImage,
           caption: "A surveyor at one corner of a triangular plot measures two sides and the angle between them, which is enough to give the area without walking to the far side.",
@@ -98,6 +100,7 @@ export default lesson((s) => {
       {
         title: "How much a hexagon tile covers",
         text: "A regular hexagon splits into six equilateral triangles. A hexagonal floor tile with 20 centimetre sides therefore covers $6 \\cdot \\frac{\\sqrt3}{4} \\cdot 20^2 \\approx 1039$ square centimetres, which is how you work out how many to order for a room.",
+        tags: ["building", "home"],
         image: {
           src: hexagonTileTrianglesImage,
           caption: "A hexagonal floor tile: it splits into six equilateral triangles, so its area tells you how many tiles to order for a room.",
@@ -107,10 +110,21 @@ export default lesson((s) => {
       {
         title: "Triangles in 3D graphics",
         text: "Game engines and 3D modelling software describe every surface as triangles, and often need their areas, for lighting or for scattering grass evenly over terrain. They get them with the cross product of two sides, whose length is $ab \\sin C$: twice the area, from two sides and the angle between them.",
+        tags: ["game-design"],
         image: {
           src: gameMeshImage,
           caption: "A 3D model on screen is built from triangles, and the engine finds each one's area from two sides and the angle between them, for lighting or scattering grass.",
           alt: "A monitor showing a surface made of coloured triangles, one outlined in gold.",
+        },
+      },
+      {
+        title: "Mulching a bed in a corner",
+        text: "Where a garden fence bends, a gardener fills the corner with a triangular bed running $3$ metres along one fence and $2$ metres along the other, with $120^\\circ$ between them. Its area is $\\frac12 \\cdot 3 \\cdot 2 \\cdot \\sin 120^\\circ \\approx 2.6$ square metres, the same as if the corner were $60^\\circ$, since an angle and its supplement have the same sine. Mulch $5$ centimetres deep then takes $2.6 \\cdot 0.05 = 0.13$ cubic metres, about $130$ litres, or three $50$ litre bags.",
+        tags: ["gardening"],
+        image: {
+          src: cornerBed120Image,
+          caption: "A triangular bed where a fence bends at 120°: the two sides along the fences and the angle between them give its area, half of 3 × 2 × sin 120°.",
+          alt: "Seen from above, a wooden fence bends at a wide corner, with a triangular bed of soil and plants between its two arms. The bed is traced in dashed gold, with 3 and 2 along the fences and 120° marked at the corner.",
         },
       },
     ],

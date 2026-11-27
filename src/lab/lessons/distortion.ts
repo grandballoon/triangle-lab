@@ -130,6 +130,7 @@ export default lesson((s) => {
       {
         title: "Stretching an old TV programme to widescreen",
         text: "Old programmes were made for screens $4$ units wide and $3$ high; a widescreen TV is $16$ wide and $9$ high. Stretching the old picture sideways to fill the screen at the same height multiplies every width by $\\frac{16/9}{4/3} = \\frac{4}{3}$ and leaves heights alone. A round ball becomes an oval $\\frac{4}{3}$ as wide as it is tall, faces look broader, and every area on screen grows by $\\frac{4}{3}$.",
+        tags: ["light", "home"],
         image: {
           src: widescreenStretchedBallImage,
           caption: "Stretching an old programme to widescreen: widths grow by 4/3 while heights stay, so a round ball becomes an oval.",
@@ -139,6 +140,7 @@ export default lesson((s) => {
       {
         title: "The area of an oval table",
         text: "An ellipse with half-width $a$ and half-height $b$ is a circle of radius $b$ stretched sideways by $k = a/b$. The circle's area is $\\pi b^2$, so the ellipse's is $\\pi b^2 \\cdot \\frac{a}{b} = \\pi a b$. An oval table top $2$ m long and $1$ m wide has $a = 1$ and $b = 0.5$, so about $1.57$ square metres to varnish.",
+        tags: ["home", "carpentry"],
         image: {
           src: ovalTableStretchedCircleImage,
           caption: "An oval table: its top is a circle stretched sideways, so its area is π times half-length times half-width.",

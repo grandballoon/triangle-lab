@@ -67,6 +67,7 @@ export default lesson((s) => {
       {
         title: "How tall a mirror you need",
         text: "To see yourself head to toe in a wall mirror, the mirror needs to be only half your height. Light from your feet bounces off the mirror at the point level with halfway between your feet and eyes, and light from the top of your head at halfway between your eyes and the top. For someone $1.70$ m tall, an $85$ cm mirror, hung at the right height, is enough, wherever they stand.",
+        tags: ["light", "home"],
         image: {
           src: mirrorHalfHeightImage,
           caption: "A wall mirror only half your height shows you head to toe: light from your head and feet reflects at points halfway up to your eyes and halfway down.",
@@ -76,6 +77,7 @@ export default lesson((s) => {
       {
         title: "Bank shots in pool",
         text: "To hit a ball off the cushion into a pocket, players aim at the pocket's mirror image on the far side of the cushion. The straight line to that image crosses the cushion at the right spot to bounce off, because the ball leaves at the same angle it arrives. Spin and a soft cushion change this a little in practice.",
+        tags: ["sport"],
         image: {
           src: poolBankShotImage,
           caption: "A bank shot in pool: aim at the pocket's mirror image beyond the cushion, and the ball bounces off the cushion at the right spot to drop in.",

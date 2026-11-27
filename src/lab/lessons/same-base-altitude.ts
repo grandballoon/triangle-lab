@@ -75,6 +75,7 @@ export default lesson((s) => {
       {
         title: "Sharing a field fairly",
         text: "Two buyers want parts of a triangular field that both reach the corner at the gate. A straight fence from that corner to the far side splits the area in the same ratio as it splits the far side. To give one buyer twice as much as the other, put the fence two thirds of the way along.",
+        tags: ["navigation"],
         image: {
           src: fieldFenceRatioImage,
           caption: "A triangular field with a fence from the gate corner two thirds of the way along the far side, so one buyer gets twice the area of the other.",
@@ -84,6 +85,7 @@ export default lesson((s) => {
       {
         title: "Straightening a crooked fence",
         text: "A fence between two fields runs from $A$ to a bend at $P$ and on to $B$ on a road. To replace it with one straight fence from $A$, surveyors draw a line through $P$ parallel to $AB$; where it meets the road is the new corner $Q$. Triangles $ABP$ and $ABQ$ share the base $AB$ and have the same altitude, so they have equal areas, and each owner keeps exactly as much land as before.",
+        tags: ["navigation", "trade-tricks"],
         image: {
           src: crookedFenceStraightenedImage,
           caption: "A crooked fence from A through P to B is replaced by a straight one from A to Q, found by drawing through P parallel to AB, so each field keeps the same area.",

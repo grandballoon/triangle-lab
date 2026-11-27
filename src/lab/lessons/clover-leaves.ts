@@ -63,6 +63,7 @@ export default lesson((s) => {
       {
         title: "Sprinklers on a square lawn",
         text: "Put a half-circle sprinkler at the middle of each side of a 4 m square lawn, each reaching 2 m inward. Together they water the whole lawn, but the four leaf-shaped patches get watered twice: $\\left(\\frac{\\pi}{2} - 1\\right) \\cdot 4^2 \\approx 9.1$ square metres, more than half the lawn. Gardeners plan overlap like this on purpose, so no patch is missed.",
+        tags: ["gardening"],
         image: {
           src: squareLawnSprinklersImage,
           caption: "Sprinklers on a square lawn: four half-circle sprinklers at the middles of the sides water the whole 4 m lawn, and the four leaf-shaped patches get watered twice.",
@@ -72,6 +73,7 @@ export default lesson((s) => {
       {
         title: "Phone-mast coverage",
         text: "Phone networks place masts so that their coverage areas overlap, letting a call hand over from one mast to the next without dropping. Planners keep the same books as this lesson: the area covered is the sum of the masts' areas with every overlap counted only once, and the overlap is what is left when you take the covered area from that sum.",
+        tags: ["computing", "navigation"],
         image: {
           src: phoneMastCoverageImage,
           caption: "Phone-mast coverage: two masts' coverage areas overlap, so a call can hand over from one to the next, and the overlap must be counted only once.",
