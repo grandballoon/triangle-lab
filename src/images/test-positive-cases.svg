@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g fill="none" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"><path d="M30 160 L120 85 H286 M30 160 L120 235 H286"/><path d="M286 85 L350 120 M286 235 L350 270"/></g>
+  <g fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"><path d="M286 85 L350 50 M286 235 L350 200"/></g>
+  <circle cx="30" cy="160" r="8" fill="#f3ead8" stroke="#0b0f14" stroke-width="3"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" fill="#f3ead8"><text x="132" y="76">has the disease</text><text x="132" y="226">does not</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" fill="#8fa3b8"><text x="132" y="110">0.01</text><text x="132" y="260">0.99</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" fill="#f3ead8"><text x="358" y="57">positive 0.9</text><text x="358" y="207">positive 0.05</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" fill="#8fa3b8"><text x="358" y="127">negative 0.1</text><text x="358" y="277">negative 0.95</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#f3ead8"><text x="612" y="58">0.009</text><text x="612" y="208">0.0495</text></g>
+  <text x="612" y="336" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="end" fill="#f3ead8">0.009 + 0.0495 = <tspan fill="#f2c14e">0.0585</tspan></text>
+</svg>

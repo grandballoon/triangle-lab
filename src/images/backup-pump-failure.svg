@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M40 70 H60 V250 H360 V70 H380 V270 H40 Z" fill="#5a6878"/><rect x="60" y="160" width="300" height="90" fill="#2f6f99"/></g>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round" fill="#8fa3b8"><rect x="111" y="40" width="18" height="140"/><rect x="85" y="172" width="70" height="70" rx="12"/><rect x="261" y="40" width="18" height="140"/><rect x="235" y="172" width="70" height="70" rx="12"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8"><text x="120" y="304">fails 0.01</text><text x="270" y="304">fails 0.01</text></g>
+  <path d="M120 316 V334 H270 V316 M270 334 H420 V232 H436" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="530" y="110" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">both fail</text>
+  <text x="530" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">0.01 × 0.01</text>
+  <text x="530" y="246" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#f2c14e">0.0001</text>
+  <text x="530" y="290" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">one day in 10000</text>
+</svg>

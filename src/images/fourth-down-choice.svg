@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M320 30 V330" stroke="#5a6878" stroke-width="3"/>
+  <rect x="40" y="200" width="240" height="50" fill="#3f8f80" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M160 222 V160 M110 160 H210 M110 160 V56 M210 160 V56" fill="none" stroke="#0b0f14" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M160 222 V160 M110 160 H210 M110 160 V56 M210 160 V56" fill="none" stroke="#f3ead8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="360" y="140" width="240" height="110" fill="#3f8f80"/><rect x="360" y="56" width="240" height="84" fill="#5fb0e8"/></g>
+  <path d="M362 177 H598 M362 214 H598" stroke="#f3ead8" stroke-width="3"/>
+  <text x="480" y="107" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14">END ZONE</text>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8"><text x="160" y="284">field goal</text><text x="480" y="284">touchdown</text></g>
+  <text x="160" y="330" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">0.9 × 3 = 2.7</text>
+  <text x="480" y="330" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f2c14e">0.5 × 7 = 3.5</text>
+</svg>
