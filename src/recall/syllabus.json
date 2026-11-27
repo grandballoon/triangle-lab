@@ -1072,6 +1072,87 @@
         "line-equation"
       ]
     },
+    "exponent-product-rule": {
+      "source": "1f3f55f5b251",
+      "teaches": [
+        "$a^m$ is $m$ factors of $a$ multiplied together; $a$ is the base and $m$ the exponent.",
+        "Product of powers: $a^m \\cdot a^n = a^{m+n}$, for powers of the same base only.",
+        "Quotient of powers: $\\frac{a^m}{a^n} = a^{m-n}$ when $m > n$, since each factor below cancels one above."
+      ],
+      "builds_on": []
+    },
+    "exponent-zero-negative": {
+      "source": "3790d63a1ef9",
+      "teaches": [
+        "Going down a power of $a$ divides by $a$: $a^k = a^{k+1} \\div a$.",
+        "$a^0 = 1$ for any $a \\ne 0$, which also follows from $\\frac{a^m}{a^m} = a^{m-m}$.",
+        "$a^{-n} = \\frac{1}{a^n}$, and the product rule still holds: $a^n \\cdot a^{-n} = a^0 = 1$.",
+        "A negative exponent flips a fraction, $\\left(\\frac{a}{b}\\right)^{-n} = \\left(\\frac{b}{a}\\right)^n$, and $\\frac{1}{a^{-n}} = a^n$."
+      ],
+      "builds_on": [
+        "exponent-product-rule"
+      ]
+    },
+    "exponent-power-of-power": {
+      "source": "88fda979f9b8",
+      "teaches": [
+        "Power of a power: $(a^m)^n = a^{mn}$, since $n$ rows of $m$ factors make $mn$ factors.",
+        "$(a^m)^n$ differs from the tower $a^{m^n}$, which is worked out from the top: $(2^3)^2 = 64$ but $2^{3^2} = 512$.",
+        "Power of a product: $(ab)^n = a^n b^n$; a sum does not split this way, $(a+b)^2 \\ne a^2 + b^2$."
+      ],
+      "builds_on": [
+        "exponent-product-rule"
+      ]
+    },
+    "exponent-fractional": {
+      "source": "8900ff794367",
+      "teaches": [
+        "$b^{1/2} = \\sqrt{b}$, because the product rule forces $b^{1/2} \\cdot b^{1/2} = b$.",
+        "$b^{1/q} = \\sqrt[q]{b}$, the $q$-th root: $q$ copies of it multiply to $b$.",
+        "$b^{p/q} = (\\sqrt[q]{b})^p = \\sqrt[q]{b^p}$, and $b^{-p/q} = \\frac{1}{b^{p/q}}$.",
+        "The curve $y = b^x$ is defined between the whole numbers, giving a value to every real exponent."
+      ],
+      "builds_on": [
+        "exponent-zero-negative",
+        "exponent-power-of-power"
+      ]
+    },
+    "radical-simplify": {
+      "source": "9f568b51ae07",
+      "teaches": [
+        "A square of area $n$ has side $\\sqrt{n}$.",
+        "$\\sqrt{k^2 m} = k\\sqrt{m}$: take out the largest perfect square factor, an instance of $\\sqrt{ab} = \\sqrt{a}\\sqrt{b}$.",
+        "A square root is in simplest form when what is under it has no square factor but 1.",
+        "The diagonal of a square with side $s$ is $s\\sqrt2$."
+      ],
+      "builds_on": [
+        "exponent-fractional"
+      ]
+    },
+    "radical-rationalize": {
+      "source": "87471c7335f4",
+      "teaches": [
+        "$\\frac{1}{\\sqrt2} = \\frac{\\sqrt2}{2}$: both are the leg of a right isosceles triangle with hypotenuse 1, half a unit square's diagonal.",
+        "To rationalize, multiply by a form of 1: $\\frac{a}{\\sqrt{b}} = \\frac{a\\sqrt{b}}{b}$.",
+        "For a sum or difference underneath, multiply by its conjugate, using $(x+y)(x-y) = x^2 - y^2$: $\\frac{1}{1+\\sqrt2} = \\sqrt2 - 1$."
+      ],
+      "builds_on": [
+        "radical-simplify",
+        "pythagoras"
+      ]
+    },
+    "logarithms": {
+      "source": "022c51367e88",
+      "teaches": [
+        "$\\log_b x$ is the exponent that turns $b$ into $x$: $b^y = x$ means $y = \\log_b x$.",
+        "The graph of $y = \\log_b x$ is $y = b^x$ reflected in $y = x$; it passes through $(1, 0)$ and is undefined for $x \\le 0$.",
+        "$\\log_b(xy) = \\log_b x + \\log_b y$, $\\log_b \\frac{x}{y} = \\log_b x - \\log_b y$ and $\\log_b x^k = k\\log_b x$.",
+        "Change of base: $\\log_b x = \\frac{\\log_c x}{\\log_c b}$."
+      ],
+      "builds_on": [
+        "exponent-fractional"
+      ]
+    },
     "linear-balance": {
       "source": "7f11e50d76d6",
       "teaches": [

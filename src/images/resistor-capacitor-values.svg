@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M30 110 H250" fill="none" stroke-width="14"/>
+    <path d="M30 110 H250" fill="none" stroke="#8fa3b8" stroke-width="6"/>
+    <rect x="80" y="86" width="120" height="48" rx="20" fill="#d9b98a" stroke-width="6"/>
+    <rect x="102" y="89" width="12" height="42" fill="#f2c14e" stroke="none"/>
+    <rect x="124" y="89" width="12" height="42" fill="#a78bfa" stroke="none"/>
+    <rect x="146" y="89" width="12" height="42" fill="#e8655f" stroke="none"/>
+    <rect x="176" y="89" width="8" height="42" fill="#c9a06a" stroke="none"/>
+    <rect x="80" y="86" width="120" height="48" rx="20" fill="none" stroke-width="6"/>
+    <path d="M128 260 L120 334 M152 260 L160 334" fill="none" stroke-width="14"/>
+    <path d="M128 260 L120 334 M152 260 L160 334" fill="none" stroke="#8fa3b8" stroke-width="6"/>
+    <circle cx="140" cy="230" r="44" fill="#e8945f" stroke-width="6"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#f3ead8">
+    <text x="272" y="120">4.7 kΩ = 4.7 × 10³ Ω</text>
+    <text x="272" y="240">100 nF = 10⁻⁷ F</text>
+  </g>
+</svg>
