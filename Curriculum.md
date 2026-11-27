@@ -123,7 +123,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
   Now the Exponents & Logarithms chapter (`exponents.ts`), seven lab lessons.
 - [x] 2 Complex Numbers: the square root of −1, complex number operations.
   Now the Complex Numbers chapter (`complex.ts`), five lab lessons.
-- [ ] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
+- [x] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
+  Now the Proportions chapter (`proportions.ts`), five lab lessons.
 - [ ] 7 Special Factorizations and Clever Manipulations.
 
 **Numbers**

@@ -15,6 +15,7 @@ import { areas } from "./chapters/areas.ts";
 import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
 import { complex } from "./chapters/complex.ts";
+import { proportions } from "./chapters/proportions.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -246,6 +247,24 @@ export const chapters: Chapter[] = [
       "Work rates add",
     ],
     lessons: linear,
+  },
+  {
+    title: "Proportions",
+    blurb: "Quantities that grow together or trade off, and the ratios and products that stay fixed.",
+    axioms: [
+      "Direct variation",
+      "Constant of proportionality",
+      "Inverse variation",
+      "Cross-multiplying",
+      "Adding tops and bottoms",
+      "Dividing in a ratio",
+      "Conversion factors equal 1",
+      "Squared units need the factor squared",
+      "Percent as hundredths",
+      "Percent change as a multiplier",
+      "Successive changes multiply",
+    ],
+    lessons: proportions,
   },
   {
     title: "Quadratic Equations",
