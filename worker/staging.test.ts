@@ -17,6 +17,7 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { holdRuntime, RUNTIME_WAIT } from "../tools/runtime-lock.ts";
 import type { FeedbackEntry } from "../src/dev/feedback/entry.ts";
 import type { CopyEdit } from "../src/dev/copy/wire.ts";
 import { readHistory } from "../src/dev/copy/history.ts";
@@ -65,8 +66,14 @@ let keys: { privateKey: KeyObject; publicKey: KeyObject };
 let standIn: Server;
 let issuer: string;
 let harness: TestHarness;
+let release: (() => Promise<void>) | undefined;
 let base: string;
 let dir: string;
+
+// One local Workers runtime at a time across every worktree (tools/runtime-lock.ts).
+beforeAll(async () => {
+  release = await holdRuntime();
+}, RUNTIME_WAIT);
 
 beforeAll(async () => {
   keys = generateKeyPairSync("rsa", { modulusLength: 2048 });
@@ -193,9 +200,13 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await harness?.close();
-  await new Promise((done) => standIn?.close(done));
-  await rm(dir, { recursive: true, force: true });
+  try {
+    await harness?.close();
+    await new Promise((done) => standIn?.close(done));
+    await rm(dir, { recursive: true, force: true });
+  } finally {
+    await release?.();
+  }
 });
 
 /** A token as Access would forward it, signed with the stand-in team's key. */

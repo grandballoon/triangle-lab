@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M50 60 L56.5 58.3 L63 56.6 L69.5 54.9 L76 53.2 L82.5 51.6 L89 50 L95.5 48.5 L102 47.1 L108.5 45.7 L115 44.4 L121.5 43.3 L128 42.2 L134.5 41.2 L141 40.4 L147.5 39.7 L154 39.1 L160.5 38.6 L167 38.3 L173.5 38.1 L180 38 L186.5 38.1 L193 38.3 L199.5 38.6 L206 39.1 L212.5 39.7 L219 40.4 L225.5 41.2 L232 42.2 L238.5 43.3 L245 44.4 L251.5 45.7 L258 47.1 L264.5 48.5 L271 50 L277.5 51.6 L284 53.2 L290.5 54.9 L297 56.6 L303.5 58.3 L310 60 L310 60 L303.5 61.7 L297 63.4 L290.5 65.1 L284 66.8 L277.5 68.4 L271 70 L264.5 71.5 L258 72.9 L251.5 74.3 L245 75.6 L238.5 76.7 L232 77.8 L225.5 78.8 L219 79.6 L212.5 80.3 L206 80.9 L199.5 81.4 L193 81.7 L186.5 81.9 L180 82 L173.5 81.9 L167 81.7 L160.5 81.4 L154 80.9 L147.5 80.3 L141 79.6 L134.5 78.8 L128 77.8 L121.5 76.7 L115 75.6 L108.5 74.3 L102 72.9 L95.5 71.5 L89 70 L82.5 68.4 L76 66.8 L69.5 65.1 L63 63.4 L56.5 61.7 L50 60 Z" fill="#8fa3b8" fill-opacity="0.18" stroke="#8fa3b8" stroke-width="2" stroke-opacity="0.6"/>
+  <path d="M50 60 H310" stroke="#f3ead8" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><path d="M42 90 L50 60 L58 90 Z" fill="#5a6878"/><path d="M302 90 L310 60 L318 90 Z" fill="#5a6878"/></g>
+  <text x="336" y="71" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="start" fill="#f3ead8">660 Hz</text>
+  <path d="M50 112 H310" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M50 104 V120" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M180 104 V120" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M310 104 V120" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="115" y="138" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">1</text>
+  <text x="245" y="138" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">2</text>
+  <text x="336" y="120" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">2 units</text>
+  <path d="M50 180 L59.8 178.3 L69.5 176.6 L79.2 174.9 L89 173.2 L98.8 171.6 L108.5 170 L118.2 168.5 L128 167.1 L137.8 165.7 L147.5 164.4 L157.2 163.3 L167 162.2 L176.8 161.2 L186.5 160.4 L196.2 159.7 L206 159.1 L215.8 158.6 L225.5 158.3 L235.2 158.1 L245 158 L254.8 158.1 L264.5 158.3 L274.2 158.6 L284 159.1 L293.8 159.7 L303.5 160.4 L313.2 161.2 L323 162.2 L332.8 163.3 L342.5 164.4 L352.2 165.7 L362 167.1 L371.8 168.5 L381.5 170 L391.2 171.6 L401 173.2 L410.8 174.9 L420.5 176.6 L430.2 178.3 L440 180 L440 180 L430.2 181.7 L420.5 183.4 L410.8 185.1 L401 186.8 L391.2 188.4 L381.5 190 L371.8 191.5 L362 192.9 L352.2 194.3 L342.5 195.6 L332.8 196.7 L323 197.8 L313.2 198.8 L303.5 199.6 L293.8 200.3 L284 200.9 L274.2 201.4 L264.5 201.7 L254.8 201.9 L245 202 L235.2 201.9 L225.5 201.7 L215.8 201.4 L206 200.9 L196.2 200.3 L186.5 199.6 L176.8 198.8 L167 197.8 L157.2 196.7 L147.5 195.6 L137.8 194.3 L128 192.9 L118.2 191.5 L108.5 190 L98.8 188.4 L89 186.8 L79.2 185.1 L69.5 183.4 L59.8 181.7 L50 180 Z" fill="#8fa3b8" fill-opacity="0.18" stroke="#8fa3b8" stroke-width="2" stroke-opacity="0.6"/>
+  <path d="M50 180 H440" stroke="#f3ead8" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><path d="M42 210 L50 180 L58 210 Z" fill="#5a6878"/><path d="M432 210 L440 180 L448 210 Z" fill="#5a6878"/></g>
+  <text x="466" y="191" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="start" fill="#f3ead8">440 Hz</text>
+  <path d="M50 232 H440" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M50 224 V240" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M180 224 V240" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M310 224 V240" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M440 224 V240" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="115" y="258" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">1</text>
+  <text x="245" y="258" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">2</text>
+  <text x="375" y="258" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">3</text>
+  <text x="466" y="240" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">3 units</text>
+  <text x="320" y="335" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#f3ead8"><tspan fill="#f2c14e">660/440 = 3/2</tspan></text>
+</svg>
