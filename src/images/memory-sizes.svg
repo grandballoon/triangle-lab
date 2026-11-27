@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="110" y="164" width="32" height="32" fill="#5fb0e8" stroke-width="6"/>
+    <rect x="300" y="52" width="256" height="256" fill="#5fb0e8" stroke-width="6"/>
+    <path d="M332 52 V308 M364 52 V308 M396 52 V308 M428 52 V308 M460 52 V308 M492 52 V308 M524 52 V308 M300 84 H556 M300 116 H556 M300 148 H556 M300 180 H556 M300 212 H556 M300 244 H556 M300 276 H556" fill="none" stroke-width="3"/>
+    <rect x="300" y="52" width="256" height="256" fill="none" stroke-width="6"/>
+  </g>
+  <path d="M150 170 L284 76" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round"/>
+  <path d="M272 74 L292 70 L282 88" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#f3ead8">
+    <text x="126" y="244">2¹⁰</text>
+    <text x="598" y="192">2²⁰</text>
+  </g>
+</svg>

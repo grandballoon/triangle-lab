@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g fill="#2a3340" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="70" y="102" width="512" height="22"/><rect x="70" y="140" width="512" height="22"/><rect x="70" y="178" width="512" height="22"/><rect x="70" y="216" width="512" height="22"/><rect x="70" y="254" width="512" height="22"/><rect x="70" y="308" width="512" height="22"/>
+  </g>
+  <g fill="#5fb0e8" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="70" y="64" width="512" height="22"/>
+    <rect x="326" y="102" width="256" height="22"/>
+    <rect x="326" y="140" width="128" height="22"/>
+    <rect x="390" y="178" width="64" height="22"/>
+    <rect x="390" y="216" width="32" height="22"/>
+    <rect x="406" y="254" width="16" height="22"/>
+  </g>
+  <path d="M326 96 V130 M454 134 V168 M390 172 V206 M422 210 V244 M406 248 V282 M414 300 V338" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f3ead8"><circle cx="40" cy="285" r="3"/><circle cx="40" cy="293" r="3"/><circle cx="40" cy="301" r="3"/></g>
+  <g font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#f3ead8">
+    <text x="70" y="52">1</text><text x="582" y="52" text-anchor="end">1,000,000</text>
+    <g text-anchor="middle"><text x="40" y="121">1</text><text x="40" y="159">2</text><text x="40" y="197">3</text><text x="40" y="235">4</text><text x="40" y="273">5</text><text x="40" y="327">20</text></g>
+  </g>
+</svg>

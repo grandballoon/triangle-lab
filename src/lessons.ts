@@ -15,6 +15,7 @@ import { areas } from "./chapters/areas.ts";
 import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
 import { coordinates } from "./chapters/coordinates.ts";
+import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
 import { polygons } from "./chapters/polygons.ts";
 import { potpourri } from "./chapters/potpourri.ts";
@@ -192,6 +193,26 @@ export const chapters: Chapter[] = [
       "Centroid as vertex average",
     ],
     lessons: coordinates,
+  },
+  {
+    title: "Exponents & Logarithms",
+    blurb: "Powers as counted factors, roots as fractional powers, and logarithms as powers read backwards.",
+    axioms: [
+      "Product of powers",
+      "Quotient of powers",
+      "Zero exponent",
+      "Negative exponents",
+      "Power of a power",
+      "Power of a product",
+      "Fractional exponents as roots",
+      "Simplest radical form",
+      "Rationalizing the denominator",
+      "Conjugate radicals",
+      "Logarithm as an exponent",
+      "Laws of logarithms",
+      "Change of base",
+    ],
+    lessons: exponents,
   },
   {
     title: "Linear Equations",

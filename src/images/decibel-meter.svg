@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="78" y="174" width="26" height="32" fill="#8fa3b8"/>
+    <circle cx="54" cy="190" r="34" fill="#8fa3b8"/>
+    <rect x="98" y="46" width="514" height="290" rx="30" fill="#2a3340"/>
+    <rect x="116" y="66" width="478" height="250" rx="10" fill="#0f1620"/>
+  </g>
+  <path d="M34 178 H74 M30 190 H78 M34 202 H74" stroke="#0b0f14" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="140" cy="128" r="24" fill="#f3c9a0"/>
+    <rect x="158" y="122" width="10" height="30" rx="5" fill="#f3c9a0"/>
+    <path d="M262 130 L256 148 L276 131 Z" fill="#5fb0e8"/>
+    <rect x="248" y="98" width="46" height="34" rx="10" fill="#5fb0e8"/>
+    <path d="M310 156 L318 172 L298 157 Z" fill="#a78bfa"/>
+    <rect x="278" y="124" width="46" height="34" rx="10" fill="#a78bfa"/>
+    <path d="M392 162 V142 Q392 134 400 134 L410 134 L422 118 L446 118 L458 134 L462 134 Q470 134 470 142 V162 Z" fill="#e8655f"/>
+    <circle cx="408" cy="162" r="9" fill="#0f1620"/><circle cx="454" cy="162" r="9" fill="#0f1620"/>
+  </g>
+  <circle cx="148" cy="122" r="3" fill="#0b0f14"/>
+  <path d="M140 220 H572" fill="none" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M140 202 V238 M284 202 V238 M428 202 V238 M572 202 V238 M188 212 V228 M236 212 V228 M332 212 V228 M380 212 V228 M476 212 V228 M524 212 V228" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M142 206 Q164 186 186 206 M190 206 Q212 186 234 206 M238 206 Q260 186 282 206 M286 206 Q308 186 330 206 M334 206 Q356 186 378 206 M382 206 Q404 186 426 206 M430 206 Q452 186 474 206 M478 206 Q500 186 522 206 M526 206 Q548 186 570 206" fill="none" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="26" font-weight="700" text-anchor="middle" fill="#f3ead8">
+    <text x="548" y="180">×10</text>
+    <text x="140" y="266">30</text><text x="284" y="266">60</text><text x="428" y="266">90</text><text x="572" y="266" text-anchor="end" dx="22">120</text>
+    <text x="356" y="300">dB</text>
+  </g>
+</svg>
