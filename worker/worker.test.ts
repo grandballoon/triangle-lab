@@ -15,6 +15,7 @@ import { join, resolve } from "node:path";
 import ts from "typescript";
 import { createTestHarness, type TestHarness } from "wrangler";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { holdRuntime, RUNTIME_WAIT } from "../tools/runtime-lock.ts";
 import { addCard, editCard, EMPTY_DECK, newCard, removeCard, saveDeck, setExplanation, setResponse, setWriting, type Deck } from "../src/recall/deck.ts";
 import { RecallSync } from "../src/recall/remote.ts";
 import { RecallStore } from "../src/recall/store.ts";
@@ -46,6 +47,7 @@ async function untilRefused(request: () => Promise<Response>, limit: number): Pr
 }
 
 let harness: TestHarness;
+let release: (() => Promise<void>) | undefined;
 let base: string;
 /**
  * Where the harness runs: away from the project, so the developer's own
@@ -105,6 +107,11 @@ async function signIn(email: string): Promise<string> {
   expect(session.status).toBe(200);
   return session.headers.get("Set-Cookie")!.split(";")[0];
 }
+
+// One local Workers runtime at a time across every worktree (tools/runtime-lock.ts).
+beforeAll(async () => {
+  release = await holdRuntime();
+}, RUNTIME_WAIT);
 
 beforeAll(async () => {
   claudeServer = createServer((req, res) => {
@@ -186,9 +193,13 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await harness?.close();
-  await new Promise((done) => claudeServer?.close(done));
-  await rm(dir, { recursive: true, force: true });
+  try {
+    await harness?.close();
+    await new Promise((done) => claudeServer?.close(done));
+    await rm(dir, { recursive: true, force: true });
+  } finally {
+    await release?.();
+  }
 });
 
 const call = (method: string, body?: unknown, headers: Record<string, string> = {}, path = "/deck") =>
