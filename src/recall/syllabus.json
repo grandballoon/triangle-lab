@@ -1299,6 +1299,67 @@
         "catching-up"
       ]
     },
+    "direct-variation": {
+      "source": "10b81a3cf9ae",
+      "teaches": [
+        "$y$ varies directly as $x$ when $y = kx$ for a fixed $k$, the constant of proportionality: doubling $x$ doubles $y$.",
+        "In direct variation the ratio $\\frac{y}{x} = k$ is the same for every pair, and the graph is a line through the origin with slope $k$.",
+        "Adding a fixed amount, $y = kx + b$ with $b \\ne 0$, breaks direct variation: the ratio changes and doubling $x$ no longer doubles $y$.",
+        "A proportion solves for a missing value without finding $k$: $y_2 = y_1 \\cdot \\frac{x_2}{x_1}$."
+      ],
+      "builds_on": [
+        "slope",
+        "linear-balance"
+      ]
+    },
+    "inverse-variation": {
+      "source": "4952a315dd6b",
+      "teaches": [
+        "$y$ varies inversely as $x$ when $xy = k$ for a fixed $k$, so $y = \\frac{k}{x}$.",
+        "In inverse variation doubling $x$ halves $y$: $\\frac{y_2}{y_1} = \\frac{x_1}{x_2}$.",
+        "The graph of $y = \\frac{k}{x}$ is a hyperbola that approaches but never meets the axes.",
+        "Direct variation keeps the ratio $\\frac{y}{x}$ fixed; inverse variation keeps the product $xy$ fixed, as in worker-days for a job."
+      ],
+      "builds_on": [
+        "direct-variation"
+      ]
+    },
+    "equal-ratios": {
+      "source": "1d8bb4674d0a",
+      "teaches": [
+        "A proportion $\\frac{a}{b} = \\frac{c}{d}$ means the points $(b, a)$ and $(d, c)$ lie on one line through the origin.",
+        "Cross-multiplying: $\\frac{a}{b} = \\frac{c}{d}$ exactly when $ad = bc$ (for nonzero $b$, $d$).",
+        "If $\\frac{a}{b} = \\frac{c}{d}$ then $\\frac{a + c}{b + d}$, $\\frac{a}{c} = \\frac{b}{d}$ and $\\frac{a + b}{b} = \\frac{c + d}{d}$ hold too.",
+        "To divide an amount in the ratio $a : b$, split it into $a + b$ equal parts; the shares are $\\frac{a}{a+b}$ and $\\frac{b}{a+b}$ of the whole."
+      ],
+      "builds_on": [
+        "direct-variation"
+      ]
+    },
+    "conversion-factors": {
+      "source": "cd04ebb8ecb2",
+      "teaches": [
+        "A conversion factor such as $\\frac{2.54\\text{ cm}}{1\\text{ in}}$ equals 1, so multiplying by it changes the units but not the amount.",
+        "Units cancel like common factors; choose each factor so the unit to remove is on the opposite side of the fraction bar, and turn a factor over to convert back.",
+        "Conversion factors chain: multiply several in a row to go through intermediate units.",
+        "Square and cubic units need the factor squared or cubed: $1\\text{ in}^2 = 2.54^2\\text{ cm}^2 \\approx 6.45\\text{ cm}^2$."
+      ],
+      "builds_on": [
+        "direct-variation",
+        "equal-ratios"
+      ]
+    },
+    "percent": {
+      "source": "eeadabd4f7ec",
+      "teaches": [
+        "$p\\%$ means $\\frac{p}{100}$, so $p\\%$ of a number is $\\frac{p}{100}$ times it.",
+        "Increasing by $p\\%$ multiplies by $1 + \\frac{p}{100}$; decreasing by $p\\%$ multiplies by $1 - \\frac{p}{100}$.",
+        "Successive percent changes multiply rather than add: a $20\\%$ rise then a $20\\%$ cut multiplies by $1.2 \\times 0.8 = 0.96$, a $4\\%$ loss."
+      ],
+      "builds_on": [
+        "direct-variation"
+      ]
+    },
     "quadratic-falling-rock": {
       "source": "b7b808f26104",
       "teaches": [

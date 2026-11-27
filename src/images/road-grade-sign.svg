@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M0 230 C120 170 220 190 330 150 C420 120 520 140 640 100 V360 H0 Z" fill="#1c2630"/>
+  <path d="M0 268 L640 229.6 L640 360 L0 360 Z" fill="#3d5443"/>
+  <path d="M-10 262.6 L650 223" fill="none" stroke="#0b0f14" stroke-width="20" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M-10 262.6 L650 223" fill="none" stroke="#5a6878" stroke-width="14" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M-10 262.6 L650 223" stroke="#f3ead8" stroke-width="3" stroke-dasharray="24 18"/>
+  <path d="M110 277.4 L560 277.4 L560 250.4 Z" fill="#f2c14e" fill-opacity="0.25" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round"/>
+  <text x="335" y="313.4" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f2c14e">100 ft</text>
+  <text x="572" y="273.9" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="start" fill="#f2c14e">6 ft</text>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="144" y="112" width="12" height="133.0" fill="#8fa3b8"/></g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><path d="M150 46 L216 112 L150 178 L84 112 Z" fill="#e8c34a"/></g>
+  <path d="M112 142 L188 142 L188 120 Z" fill="#0b0f14"/>
+  <g transform="translate(146 126) rotate(-15.9)" fill="#0b0f14"><rect x="-20" y="-28" width="26" height="22"/><path d="M8 -20 H18 L24 -12 V-6 H8 Z"/><circle cx="-12" cy="-4" r="5"/><circle cx="14" cy="-4" r="5"/></g>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="106" y="186" width="88" height="44" rx="4" fill="#e8c34a"/></g>
+  <text x="150" y="220" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">6%</text>
+  <text x="470" y="64" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">up 6 ft per 100 ft</text>
+</svg>

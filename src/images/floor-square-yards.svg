@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="130" y="64" width="300" height="240" fill="#8fa3b8"/>
+  <rect x="130" y="244" width="60" height="60" fill="#f2c14e"/>
+  <path d="M150 244 V304 M130 264 H190 M170 244 V304 M130 284 H190" stroke="#b8862a" stroke-width="2"/>
+  <path d="M190 64 V304 M250 64 V304 M310 64 V304 M370 64 V304 M130 124 H430 M130 184 H430 M130 244 H430" stroke="#0b0f14" stroke-width="3"/>
+  <rect x="130" y="64" width="300" height="240" fill="none" stroke="#0b0f14" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M139.8 40 L420.2 40" stroke="#f3ead8" stroke-width="3"/>
+  <path d="M430 40 L417.4 33.9 L417.4 46.1 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M130 40 L142.6 46.1 L142.6 33.9 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="280" y="50" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">15 ft</text>
+  <path d="M106 73.8 L106 294.2" stroke="#f3ead8" stroke-width="3"/>
+  <path d="M106 304 L112.1 291.4 L99.9 291.4 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M106 64 L99.9 76.6 L112.1 76.6 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="92" y="194" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="end" fill="#f3ead8">12 ft</text>
+  <text x="204" y="344" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#f2c14e">1 yd² = 9 ft²</text>
+  <text x="530" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f3ead8">180 ft²</text>
+  <text x="530" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f3ead8">=</text>
+  <text x="530" y="244" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f2c14e">20 yd²</text>
+  <path d="M160.0 308 V328 H198" fill="none" stroke="#f2c14e" stroke-width="3"/>
+</svg>
