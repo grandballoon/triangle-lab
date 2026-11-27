@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="78" y="26" width="484" height="246" rx="14" fill="#f3ead8"/></g>
+  <g fill="#0b0f14"><rect x="130" y="46" width="4" height="186"/><rect x="138" y="46" width="4" height="186"/><rect x="150" y="46" width="8" height="168"/><rect x="166" y="46" width="4" height="168"/><rect x="178" y="46" width="4" height="168"/><rect x="190" y="46" width="8" height="168"/><rect x="202" y="46" width="16" height="168"/><rect x="222" y="46" width="4" height="168"/><rect x="230" y="46" width="4" height="168"/><rect x="246" y="46" width="8" height="168"/><rect x="258" y="46" width="8" height="168"/><rect x="278" y="46" width="4" height="168"/><rect x="286" y="46" width="4" height="168"/><rect x="294" y="46" width="16" height="168"/><rect x="314" y="46" width="4" height="186"/><rect x="322" y="46" width="4" height="186"/><rect x="330" y="46" width="4" height="168"/><rect x="346" y="46" width="4" height="168"/><rect x="358" y="46" width="4" height="168"/><rect x="370" y="46" width="4" height="168"/><rect x="386" y="46" width="12" height="168"/><rect x="402" y="46" width="4" height="168"/><rect x="414" y="46" width="12" height="168"/><rect x="434" y="46" width="4" height="168"/><rect x="442" y="46" width="8" height="168"/><rect x="458" y="46" width="8" height="168"/><rect x="470" y="46" width="8" height="168"/><rect x="482" y="46" width="8" height="168"/><rect x="498" y="46" width="4" height="186"/><rect x="506" y="46" width="4" height="186"/></g>
+  <text x="184" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">2</text>
+  <text x="212" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">3</text>
+  <text x="240" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">4</text>
+  <text x="268" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">5</text>
+  <text x="296" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">6</text>
+  <text x="344" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">7</text>
+  <text x="372" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">8</text>
+  <text x="400" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">9</text>
+  <text x="428" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">0</text>
+  <text x="456" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="108" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">1</text>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="516" y="222" width="34" height="38" rx="6" fill="#f2c14e"/></g>
+  <text x="533" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#0b0f14">2</text>
+  <text x="320" y="328" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#f3ead8">3 × 26 + 20 + <tspan fill="#f2c14e">2</tspan> = 100</text>
+</svg>
