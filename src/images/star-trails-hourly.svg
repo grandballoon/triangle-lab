@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <defs><clipPath id="sky"><rect width="640" height="290"/></clipPath></defs>
+  <path clip-path="url(#sky)" d="M300 238 A28 28 0 0 0 319.8 229.8 M309.5 259.1 A50 50 0 0 0 341.5 238 M290.5 160.9 A50 50 0 0 0 261.1 178.5 M361.1 248.2 A72 72 0 0 0 370.2 193.8 M295.1 303.9 A94 94 0 0 0 362.9 279.9 M185.8 189.9 A116 116 0 0 0 205 276.5 M414.2 230.1 A116 116 0 0 0 400.5 152 M162 212.4 A138 138 0 0 0 204.1 309.3 M192.9 328.9 A160 160 0 0 0 308.4 369.8 M122.7 169.1 A182 182 0 0 0 145.7 306.4 M477.3 250.9 A182 182 0 0 0 462.2 127.4 M369.8 18.3 A204 204 0 0 0 213.8 25.1 M335.4 -13.2 A226 226 0 0 0 167.2 27.2 M147.3 14.6 A248 248 0 0 0 53.8 179.8 M452.7 405.4 A248 248 0 0 0 542.6 261.6 M405.5 -38.5 A270 270 0 0 0 198.9 -40.3 M552.9 356 A292 292 0 0 0 582.1 134.4 M596.9 312.2 A314 314 0 0 0 582.2 72.4 M3.1 107.8 A314 314 0 0 0 6.9 322.5 M596.7 52.3 A336 336 0 0 0 398.2 -111.3 M600.2 405 A358 358 0 0 0 650.2 135.6" fill="none" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M438.6 130 A160 160 0 0 0 413.1 96.9" fill="none" stroke="#f3ead8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M300 210 L438.6 130 M300 210 L413.1 96.9" stroke="#f2c14e" stroke-width="4" stroke-dasharray="8 6"/>
+  <path d="M360.6 175 A70 70 0 0 0 349.5 160.5" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <text x="459.5" y="102.7" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="start" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">15°</text>
+  <path d="M300 194 L296.5 206.5 L284 210 L296.5 213.5 L300 226 L303.5 213.5 L316 210 L303.5 206.5 Z" fill="#f3ead8" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M0 290 Q120 262 230 284 T420 278 T640 270 V360 H0 Z" fill="#0f1620" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"/>
+  <g fill="#0b0f14" stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><path d="M520 300 L540 230 L560 300 Z"/><path d="M552 300 L568 248 L584 300 Z"/><path d="M80 300 L96 252 L112 300 Z"/></g>
+</svg>
