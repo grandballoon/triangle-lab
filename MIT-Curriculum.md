@@ -13,19 +13,12 @@ Concept names were written from lecture titles, so a concept inside a unit may b
 
 ## Editions
 
-Most topic orders come from the edition Scott took.
-These do not, because web.archive.org could not be reached when the list was made, and the live pages for the edition he took are gone:
+Every topic order comes from the edition Scott took, except two:
 
-| Course | Edition Scott took | Read instead |
-| --- | --- | --- |
-| 6.042J | OCW, Spring 2010 | OCW, Fall 2010 (same lecturers) |
-| 6.003 | OCW, Spring 2010 | OCW, Fall 2011 |
-| 6.033 | OCW, Spring 2009 | The course's own Spring 2009 schedule on web.mit.edu (same edition) |
-| 6.837 | OCW, Fall 2003 | OCW, Fall 2012 |
-| Theory of Computation | Georgetown COSC 545, Spring 2012 | Nothing yet: its topics are still to be read |
+- **6.046J** is the Spring 2015 OCW edition, since Scott's Fall 2011 site needs an MIT login.
+- **6.033** is read from the course's own Spring 2009 schedule on web.mit.edu, the same edition, since OCW's pages for it are gone.
 
-6.046J was always going to be the Spring 2015 OCW edition, since Scott's Fall 2011 site needs an MIT login.
-The archived pages to recheck these against are listed in luaturtleweb's `spec-compsci.md`.
+Four calendars survive only on web.archive.org and were read there: 6.042J, 6.003, 6.837 and Theory of Computation.
 
 ## Courses
 
@@ -88,19 +81,20 @@ Lectures: 26.
 *Notes:* The calendar gives weeks only, and lecture 26, a wrap-up, is left out.
 
 ### 6. 6.042J Mathematics for Computer Science
-Topic order from: [OCW, Fall 2010 calendar (current OCW site)](https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/pages/calendar/)
-Lectures: 25.
+Topic order from: [OCW, Spring 2010 calendar (archived)](https://web.archive.org/web/20120922074002/http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-spring-2010/calendar/)
+Lectures: 39.
 
-1. **Proofs and induction**: what a proof is and proof methods; ordinary induction; strong induction and well ordering
-2. **Number theory**: divisibility and primes; modular arithmetic and gcd; inverses and Euler's theorem
-3. **Graph theory**: graph basics and coloring; matching problems; minimum spanning trees; communication network design; further graph topics
-4. **Relations and scheduling**: relations; partial orders; scheduling with precedence constraints
-5. **Sums and recurrences**: closed forms for sums; asymptotic notation and estimating sums; divide-and-conquer recurrences; linear recurrences
-6. **Counting**: basic counting rules; counting with overlaps and repeated choices
-7. **Probability**: sample spaces and events; conditional probability; independence; random variables
-8. **Expectation and deviation**: expected value and linearity; expectation of products and applications; large deviation bounds; random walks
+1. **Proofs**: good and bad proofs; proof by contradiction; the well ordering principle
+2. **Logic and sets**: propositional logic; sets and relations; the sizes of sets and the mapping lemma; predicates and quantifiers; set theory and Russell's paradox
+3. **Induction and orders**: induction and strong induction; partial orders; scheduling with partial orders
+4. **State machines**: directed graphs; state machines and preserved invariants; derived variables and termination; stable matching
+5. **Graphs**: simple graphs, degrees and isomorphism; connectedness and trees; graph coloring; bipartite matching; recursive data and structural induction; planar graphs
+6. **Number theory**: the GCD and integer linear combinations; modular arithmetic; inverses mod n; RSA encryption
+7. **Sums and asymptotics**: harmonic sums; Stirling's approximation; asymptotic notation
+8. **Counting**: counting with bijections; the pigeonhole principle; the division rule; counting with repetition; inclusion–exclusion; the binomial theorem and combinatorial identities; generating functions for counting; generating functions for recurrences
+9. **Probability**: sample spaces and events; conditional probability; independence; random variables; expectation; variance; sampling and confidence; random processes
 
-*Notes:* Read from the Fall 2010 edition, with the same lecturers, since Spring 2010 is only on web.archive.org (see Editions); its order may differ slightly. The number theory units are grouped from lecture titles.
+*Notes:* Recursive data comes between graph coloring and planar graphs on the calendar, and keeps that place here.
 
 ### 7. 6.006 Introduction to Algorithms
 Topic order from: [OCW, Spring 2008 calendar](https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2008/pages/calendar/)
@@ -186,16 +180,16 @@ Lectures: 23.
 *Notes:* Lecture 1, the introduction, is left out.
 
 ### 13. 6.003 Signals and Systems
-Topic order from: [OCW, 6.003 Fall 2011 calendar](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/pages/calendar/)
+Topic order from: [OCW, Spring 2010 calendar (archived)](https://web.archive.org/web/20121031234317/http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-003-signals-and-systems-spring-2010/calendar/)
 Lectures: 25.
 
-1. **Discrete-time systems and feedback**: signals and systems; difference equations and block diagrams; feedback, poles, and fundamental modes
-2. **Continuous-time systems**: differential equations and block diagrams; Z transform; Laplace transform; discrete approximation of continuous-time systems; convolution
-3. **Frequency response and control**: frequency response; feedback and control; Bode plots; continuous-time feedback and control
-4. **Fourier representations**: Fourier series; Fourier transform; discrete-time Fourier representations; relations among Fourier representations; applications of Fourier transforms
-5. **Sampling and modulation**: sampling; quantization; amplitude modulation; audio CD as a worked system
+1. **Discrete-time systems**: signals and systems; discrete-time systems, difference equations and block diagrams; feedback, poles and fundamental modes
+2. **Continuous-time systems and transforms**: continuous-time systems and differential equations; the Laplace transform (revisits 18.03); the Z transform; relations between continuous and discrete time; convolution (revisits 6.02)
+3. **Frequency response and control**: frequency response; Bode plots; feedback and control; continuous-time feedback and control
+4. **Fourier representations**: continuous-time Fourier series (revisits 18.03); the continuous-time Fourier transform; discrete-time frequency representations; discrete-time Fourier representations; relations among Fourier representations
+5. **Sampling and modulation**: sampling; quantization; amplitude modulation
 
-*Notes:* Read from the Fall 2011 edition, since Spring 2010 is only on web.archive.org (see Editions); its order may differ. Concepts inside each unit are inferred from lecture titles.
+*Notes:* Lecture 25, on applications of the course, is left out.
 
 ### 14. 6.004 Computation Structures
 Topic order from: [OCW, Spring 2009](https://ocw.mit.edu/courses/6-004-computation-structures-spring-2009/pages/calendar/)
@@ -290,21 +284,30 @@ Lectures: 25.
 *Notes:* Lecture 14, on Euler equations, is placed under binary images by a guess (the Euler number); it may belong with shape from shading.
 
 ### 21. 6.837 Computer Graphics
-Topic order from: [OCW, Fall 2012 offering (the Fall 2003 course URL redirects here)](https://ocw.mit.edu/courses/6-837-computer-graphics-fall-2012/pages/calendar/)
-Lectures: 25.
+Topic order from: [OCW, Fall 2003 calendar (archived)](https://web.archive.org/web/20100905080520/http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-837-computer-graphics-fall-2003/calendar/)
+Lectures: 23.
 
-1. **Curves, surfaces and transformations**: Bezier curves and splines; curve properties and conversion; surface representations; coordinates and transformations; hierarchical modeling
-2. **Color and animation**: color; skinning and enveloping; particle systems and ODEs; ODE solvers; mass-spring modeling; implicit integration; collision detection and response
-3. **Ray casting and tracing**: ray casting and rendering; ray tracing; acceleration structures
-4. **Appearance and light**: shading and material appearance; texture mapping and shaders; sampling, aliasing and mipmaps; global illumination and Monte Carlo; image-based rendering and lighting
-5. **Rasterization and hardware**: output devices; graphics pipeline and rasterization; real-time shadows; graphics hardware and games
+1. **Ray casting**: generating rays from a camera; ray–object intersection
+2. **Transformations**: translation, rotation and scale (revisits 18.06); transformations in modeling and hierarchies
+3. **Ray tracing**: ray tracing with reflection, refraction and shadow rays; local illumination and shading models; acceleration data structures
+4. **Curves and surfaces**: splines and Bézier curves; surfaces
+5. **Animation**: interpolation and kinematics; orientation and quaternions (revisits 6.801); dynamics and particle systems
+6. **The graphics pipeline**: perspective transformations; line clipping; line rasterization; polygon rasterization; polygon clipping
+7. **Shadows and global illumination**: shadows; radiosity; Monte Carlo ray tracing
+8. **Color and texture**: color vision and color spaces; color effects and production; texture mapping; sampling, aliasing and MIP mapping
 
-*Notes:* Read from the Fall 2012 edition, since the Fall 2003 calendar is only on web.archive.org (see Editions), and the 2003 order may differ. Lecture 0, an introduction, is counted; the two exams are not.
+*Notes:* Lecture 1, the overview with a C++ tutorial, is left out; the quizzes are not lectures.
 
 ### 22. Theory of Computation (Georgetown COSC 545)
-Topic order from: [Archived course page, 2014-01-31 snapshot](https://web.archive.org/web/20140131080651/http://cs.georgetown.edu/~cnewport/teaching/cosc545-spring12/)
-Lectures: unknown.
+Topic order from: [Course page, Spring 2012 (archived)](https://web.archive.org/web/20140131080651/http://cs.georgetown.edu/~cnewport/teaching/cosc545-spring12/)
+Lectures: 23.
 
-Not yet read.
+1. **Regular languages**: finite automata; nondeterminism; regular expressions and regular languages; the pumping lemma for regular languages
+2. **Context-free languages**: context-free grammars; Chomsky normal form; pushdown automata; the pumping lemma for context-free languages
+3. **Computability**: Turing machines; decidable languages; undecidable and unrecognizable languages; reducibility and mapping reductions; linear-bounded automata and computation histories; the Post correspondence problem
+4. **Advanced computability**: the recursion theorem; decidability of logical theories; Gödel's incompleteness theorem (revisits 24.242); Kolmogorov complexity
+5. **Time complexity**: TIME and NTIME; P and NP (revisits 6.046J); NP-completeness and the Cook–Levin theorem; more NP-complete problems
+6. **Space complexity**: SPACE and NSPACE; Savitch's theorem; PSPACE and PSPACE-completeness; games and generalized geography; L, NL and NL-completeness; NL = coNL
+7. **Beyond P and NP**: the hierarchy theorems; intractable problems; approximation algorithms (revisits 6.046J); probabilistic computation and BPP
 
-*Notes:* The topic order is still to be read: the course page survives only on web.archive.org (see Editions), and its live address now shows a department page. No syllabus has been guessed in its place.
+*Notes:* The course follows Sipser's *Introduction to the Theory of Computation*, 2nd edition, chapters 1–10, which the schedule cites lecture by lecture. Of 27 classes, the midterm, final review, an open overflow class and a cancelled class are left out.
