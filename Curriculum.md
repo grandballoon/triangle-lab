@@ -125,7 +125,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
   Now the Complex Numbers chapter (`complex.ts`), five lab lessons.
 - [x] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
   Now the Proportions chapter (`proportions.ts`), five lab lessons.
-- [ ] 7 Special Factorizations and Clever Manipulations.
+- [x] 7 Special Factorizations and Clever Manipulations: squares of binomials, difference of squares, sums and differences of cubes, completing the rectangle, symmetric sums.
+  Now the Special Factorizations chapter (`factorizations.ts`), five lab lessons.
 
 **Numbers**
 

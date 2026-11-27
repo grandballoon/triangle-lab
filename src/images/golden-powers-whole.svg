@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><rect x="40" y="30" width="196" height="196" fill="#8fa3b8"/><rect x="236" y="30" width="121.1" height="121.1" fill="#5fb0e8"/><rect x="282.3" y="151.1" width="74.9" height="74.9" fill="#5a6878"/><rect x="236" y="179.7" width="46.3" height="46.3" fill="#a78bfa"/><rect x="236" y="151.1" width="28.6" height="28.6" fill="#8fa3b8"/><rect x="264.6" y="151.1" width="17.7" height="17.7" fill="#5fb0e8"/><rect x="271.3" y="168.8" width="10.9" height="10.9" fill="#5a6878"/></g>
+  <path d="M40 226 A196 196 0 0 1 236 30 A121.1 121.1 0 0 1 357.1 151.1 A74.9 74.9 0 0 1 282.3 226 A46.3 46.3 0 0 1 236 179.7 A28.6 28.6 0 0 1 264.6 151.1 A17.7 17.7 0 0 1 282.3 168.8 A10.9 10.9 0 0 1 271.3 179.7" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M40 226 A196 196 0 0 1 236 30 A121.1 121.1 0 0 1 357.1 151.1 A74.9 74.9 0 0 1 282.3 226 A46.3 46.3 0 0 1 236 179.7 A28.6 28.6 0 0 1 264.6 151.1 A17.7 17.7 0 0 1 282.3 168.8 A10.9 10.9 0 0 1 271.3 179.7" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="40" y="30" width="317.1" height="196" fill="none" stroke="#0b0f14" stroke-width="5"/>
+  <text x="500" y="78" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">φ ≈ 1.618</text>
+  <text x="500" y="116" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">−1/φ ≈ −0.618</text>
+  <text x="500" y="172" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">φ¹⁰ ≈ <tspan fill="#f2c14e">122.99</tspan></text>
+  <text x="500" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">(−1/φ)¹⁰ ≈ 0.01</text>
+  <text x="84" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">2</text>
+  <text x="96" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="120" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">1</text>
+  <text x="132" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="156" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">3</text>
+  <text x="168" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="192" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">4</text>
+  <text x="204" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="228" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">7</text>
+  <text x="240" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="272" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">11</text>
+  <text x="292" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="324" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">18</text>
+  <text x="344" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="376" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">29</text>
+  <text x="396" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="428" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">47</text>
+  <text x="448" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="480" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f3ead8">76</text>
+  <text x="500" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#8fa3b8">,</text>
+  <text x="540" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="27" text-anchor="middle" fill="#f2c14e">123</text>
+  <text x="320" y="330" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8">φ¹⁰ + (−1/φ)¹⁰ = <tspan fill="#f2c14e">123</tspan></text>
+</svg>
