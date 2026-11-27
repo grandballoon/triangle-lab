@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M188.7 168.5 L371.3 175.3 L274.1 330 Z" fill="#8fa3b8" fill-opacity="0.12" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="9 7" stroke-linejoin="round"/>
+  <path d="M274.1 330 L276.6 40" stroke="#f2c14e" stroke-width="4" stroke-dasharray="12 8" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L188.7 168.5" stroke="#0b0f14" stroke-width="13" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L188.7 168.5" stroke="#eef4fb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L371.3 175.3" stroke="#0b0f14" stroke-width="13" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L371.3 175.3" stroke="#eef4fb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L276.6 40" stroke="#0b0f14" stroke-width="13" stroke-linecap="round"/>
+  <path d="M275.9 119.1 L276.6 40" stroke="#eef4fb" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="275.9" cy="119.1" r="11" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <path d="M174.7 180.5 V164.5 L188.7 151.5 L202.7 164.5 V180.5 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M357.3 187.3 V171.3 L371.3 158.3 L385.3 171.3 V187.3 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M262.6 52 V36 L276.6 23 L290.6 36 V52 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"/>
+  <text x="156.7" y="176.5" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">A</text>
+  <text x="403.3" y="183.3" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">B</text>
+  <text x="306.6" y="44" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">C</text>
+  <text x="300.1" y="338" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">D</text>
+  <text x="325.9" y="115.1" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#f2c14e" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">hub</text>
+  <text x="540" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">roads meet</text>
+  <text x="540" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">at 120°</text>
+</svg>
