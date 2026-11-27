@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="26" y="108" width="240" height="178" rx="22" fill="#2a3340"/></g>
+  <path d="M85.9 172.1 A64 64 0 0 1 206.1 172.1" fill="none" stroke="#8fa3b8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M146 194 L174 145.5" stroke="#e8655f" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="146" cy="194" r="8" fill="#8fa3b8" stroke="#0b0f14" stroke-width="3"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="54" y="206" width="184" height="62" rx="8" fill="#0f1620"/></g>
+  <text x="146" y="252" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#f2c14e">30<tspan font-size="24" fill="#f3ead8"> MPG</tspan></text>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="374" y="108" width="240" height="178" rx="22" fill="#2a3340"/></g>
+  <path d="M433.9 172.1 A64 64 0 0 1 554.1 172.1" fill="none" stroke="#8fa3b8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M494 194 L522 145.5" stroke="#e8655f" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="494" cy="194" r="8" fill="#8fa3b8" stroke="#0b0f14" stroke-width="3"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="402" y="206" width="184" height="62" rx="8" fill="#0f1620"/></g>
+  <text x="494" y="252" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#f2c14e">12.8<tspan font-size="24" fill="#f3ead8"> km/L</tspan></text>
+  <path d="M278 220 L346.6 220" stroke="#f2c14e" stroke-width="7" stroke-linecap="round"/>
+  <path d="M362 220 L342.2 210.4 L342.2 229.6 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M30 70 C60 24 120 18 172 44" fill="none" stroke="#0b0f14" stroke-width="19" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M30 70 C60 24 120 18 172 44" fill="none" stroke="#2a3340" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M246 50 L300 64 L314 84" fill="none" stroke="#0b0f14" stroke-width="17" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M246 50 L300 64 L314 84" fill="none" stroke="#8fa3b8" stroke-width="9" stroke-linejoin="round" stroke-linecap="butt"/>
+  <g stroke="#0b0f14" stroke-width="11" stroke-linejoin="round"><path d="M222 70 Q238 98 262 70" fill="none"/></g>
+  <path d="M222 70 Q238 98 262 70" fill="none" stroke="#5a6878" stroke-width="5"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M168 34 H240 L252 46 V66 H200 L190 96 H166 L172 66 Z" fill="#e8655f"/></g>
+  <text x="320" y="328" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f3ead8">× 1.609 km per mi</text>
+  <text x="320" y="354" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f3ead8">÷ 3.785 L per gal</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><path d="M420 180 C420 96 470 74 520 92 C560 70 640 80 640 120 V240 C640 280 560 290 520 268 C470 286 420 264 420 180 Z" fill="#b07a45"/></g>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><circle cx="500" cy="180" r="34" fill="#0f1620"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="26" y="146" width="387.1224204161952" height="68" fill="#5a3f2a"/><rect x="22" y="142" width="14" height="76" fill="#f3ead8"/></g>
+  <path d="M71.4 146 V214 M101.1 146 V214 M129.1 146 V214 M155.5 146 V214 M180.5 146 V214 M204 146 V214 M226.2 146 V214 M247.2 146 V214 M267 146 V214 M285.7 146 V214 M303.4 146 V214 M320 146 V214 M335.7 146 V214 M350.5 146 V214 M364.5 146 V214 M377.8 146 V214 M390.2 146 V214 M402 146 V214 M413.1 146 V214" stroke="#c8d3de" stroke-width="3"/>
+  <g fill="#f3ead8"><circle cx="115.1" cy="180" r="5"/><circle cx="168" cy="180" r="5"/><circle cx="215.1" cy="180" r="5"/><circle cx="257.1" cy="180" r="5"/><circle cx="311.7" cy="163" r="5"/><circle cx="311.7" cy="197" r="5"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="594" y="138" width="14" height="84" rx="3" fill="#f3ead8"/><rect x="578" y="132" width="46" height="96" rx="8" fill="#3a2a1c"/></g>
+  <g stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><rect x="596" y="138" width="10" height="84" rx="3" fill="#f3ead8"/></g>
+  <path d="M36 154 H602" stroke="#c8d3de" stroke-width="2.5"/>
+  <path d="M36 164.4 H602" stroke="#c8d3de" stroke-width="2.5"/>
+  <path d="M36 174.8 H602" stroke="#c8d3de" stroke-width="2.5"/>
+  <path d="M36 195.6 H602" stroke="#c8d3de" stroke-width="2.5"/>
+  <path d="M36 206 H602" stroke="#c8d3de" stroke-width="2.5"/>
+  <path d="M36 185.2 H320" stroke="#c8d3de" stroke-width="3"/>
+  <path d="M320 185.2 H602" stroke="#f2c14e" stroke-width="5"/>
+  <circle cx="308" cy="185.2" r="13" fill="#f3c9a0" stroke="#0b0f14" stroke-width="4"/>
+  <path d="M49.8 66 L590.2 66" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M600 66 L587.4 59.9 L587.4 72.1 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M40 66 L52.6 72.1 L52.6 59.9 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="300" y="52" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">full length</text>
+  <path d="M329.8 296 L590.2 296" stroke="#f2c14e" stroke-width="4"/>
+  <path d="M600 296 L587.4 289.9 L587.4 302.1 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M320 296 L332.6 302.1 L332.6 289.9 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <text x="460" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">½ length</text>
+  <text x="460" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f2c14e">× 2 frequency</text>
+  <text x="320" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8">12th fret</text>
+  <path d="M40 74 V138 M601 74 V130 M320 218 V232 M320 262 V304 M601 230 V304" stroke="#8fa3b8" stroke-width="2" stroke-dasharray="4 4"/>
+</svg>
