@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="110" y="78" width="288" height="201.6" fill="#f3ead8"/></g>
+  <path d="M138.8 78 V279.6 M167.6 78 V279.6 M196.4 78 V279.6 M225.2 78 V279.6 M254 78 V279.6 M282.8 78 V279.6 M311.6 78 V279.6 M340.4 78 V279.6 M369.2 78 V279.6 M110 106.8 H398 M110 135.6 H398 M110 164.4 H398 M110 193.2 H398 M110 222 H398 M110 250.8 H398" stroke="#8fa3b8" stroke-width="3"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="110" y="250.8" width="28.8" height="28.8" fill="#f2c14e"/></g>
+  <rect x="110" y="78" width="288" height="201.6" fill="none" stroke="#0b0f14" stroke-width="6"/>
+  <path d="M119.8 56 L388.2 56" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M398 56 L385.4 49.9 L385.4 62.1 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M110 56 L122.6 62.1 L122.6 49.9 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="254" y="65" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">120 cm</text>
+  <path d="M94 87.8 L94 269.8" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M94 279.6 L100.1 267 L87.9 267 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M94 78 L87.9 90.6 L100.1 90.6 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="56" y="176.8" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">84</text>
+  <text x="56" y="204.8" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8">cm</text>
+  <path d="M110 291.6 V307.6 M138.8 291.6 V307.6 M110 299.6 H138.8" stroke="#f2c14e" stroke-width="4"/>
+  <text x="110" y="333.6" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#f2c14e">12 cm</text>
+  <text x="530" y="136" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">gcd(120, 84)</text>
+  <text x="530" y="180" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#f2c14e">= 12 cm</text>
+  <text x="530" y="256" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">10 × 7</text>
+  <text x="530" y="292" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8">tiles</text>
+</svg>

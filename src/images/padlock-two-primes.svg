@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M110 150 V104 A60 60 0 0 1 230 104 V150" fill="none" stroke="#0b0f14" stroke-width="32" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M110 150 V104 A60 60 0 0 1 230 104 V150" fill="none" stroke="#8fa3b8" stroke-width="20" stroke-linejoin="round" stroke-linecap="butt"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="66" y="140" width="208" height="164" rx="18" fill="#e8655f"/></g>
+  <text x="170" y="212" font-family="system-ui, sans-serif" font-weight="700" font-size="50" text-anchor="middle" fill="#f3ead8">3233</text>
+  <path d="M170 240 m-11 0 a11 11 0 1 1 22 0 a11 11 0 0 1 -5 9 l4 26 h-20 l4 -26 a11 11 0 0 1 -5 -9 Z" fill="#0b0f14"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M400 95 H582 V113 H570 V132 H554 V113 H538 V126 H522 V113 H400 Z" fill="#f2c14e"/><circle cx="370" cy="104" r="40" fill="#f2c14e"/></g>
+  <text x="370" y="115" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">61</text>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M400 213 H582 V231 H570 V250 H554 V231 H538 V244 H522 V231 H400 Z" fill="#f2c14e"/><circle cx="370" cy="222" r="40" fill="#f2c14e"/></g>
+  <text x="370" y="233" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">53</text>
+  <text x="320" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8"><tspan fill="#f2c14e">61</tspan> × <tspan fill="#f2c14e">53</tspan> = 3233</text>
+</svg>
