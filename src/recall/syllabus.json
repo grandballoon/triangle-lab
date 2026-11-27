@@ -1493,6 +1493,59 @@
         "quadratic-formula"
       ]
     },
+    "number-sets": {
+      "source": "1689709baf10",
+      "teaches": [
+        "The counting numbers are closed under addition and multiplication, but subtraction such as $3 - 5$ needs the integers, which add 0 and the negatives.",
+        "Division needs the rational numbers, the fractions $\\frac{p}{q}$ of integers with $q \\ne 0$; every division except by zero then has an answer.",
+        "No fraction squares to 2 or 5, so roots need the real numbers, which fill every gap on the number line and include irrationals such as $\\sqrt{2}$ and $\\pi$.",
+        "Square roots of negatives need the complex numbers $x + yi$ with $i^2 = -1$, so $\\sqrt{-9} = 3i$.",
+        "The sets nest, $\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R} \\subset \\mathbb{C}$, and a result belongs to the smallest one that holds it."
+      ],
+      "builds_on": [
+        "division-remainder"
+      ]
+    },
+    "lowest-terms": {
+      "source": "278ed880215d",
+      "teaches": [
+        "Putting $\\frac{p}{q}$ at the point $(q, p)$, equal fractions lie on one line through the origin with slope $\\frac{p}{q}$.",
+        "A fraction in lowest terms is the first lattice point on that line; dividing $p$ and $q$ by $\\gcd(p, q)$ reaches it, as in $\\frac{6}{9} = \\frac{2}{3}$.",
+        "A fraction is in lowest terms exactly when $\\gcd(p, q) = 1$.",
+        "For positive denominators, $\\frac{p}{q} < \\frac{r}{s}$ exactly when $ps < qr$.",
+        "The mediant $\\frac{p + r}{q + s}$ always lies between $\\frac{p}{q}$ and $\\frac{r}{s}$."
+      ],
+      "builds_on": [
+        "gcd-lcm",
+        "number-sets"
+      ]
+    },
+    "repeating-decimals": {
+      "source": "3cf9ea64cf96",
+      "teaches": [
+        "Long division of $p$ by $q$ multiplies each remainder by 10 and takes out as many $q$'s as fit, writing that count as the next digit.",
+        "The remainders lie in $0, 1, \\ldots, q - 1$, so the decimal either stops at remainder 0 or repeats in a block at most $q - 1$ digits long.",
+        "Any repeating decimal is a fraction: for $x = 0.\\overline{27}$, $100x - x = 27$, so $x = \\frac{27}{99} = \\frac{3}{11}$.",
+        "A fraction in lowest terms has a stopping decimal exactly when its denominator has no prime factors other than 2 and 5, since $10^n = 2^n 5^n$."
+      ],
+      "builds_on": [
+        "lowest-terms",
+        "prime-factorization"
+      ]
+    },
+    "irrational-root-two": {
+      "source": "b22d66b94c61",
+      "teaches": [
+        "If $\\sqrt{2} = \\frac{p}{q}$ then $p^2 = 2q^2$, but $p^2$ has an even number of factors 2 and $2q^2$ an odd number, so $\\sqrt{2}$ is irrational.",
+        "Two $q$-squares in opposite corners of a $p$-square overlap in a square of side $2q - p$ and miss two corners of side $p - q$, and $(2q - p)^2 - 2(p - q)^2 = -(p^2 - 2q^2)$.",
+        "So a fraction equal to $\\sqrt{2}$ would give a smaller one, $\\frac{2q - p}{p - q}$, without end, which is impossible for whole numbers.",
+        "The fractions $\\frac{1}{1}, \\frac{3}{2}, \\frac{7}{5}, \\frac{17}{12}, \\frac{41}{29}, \\ldots$, each $\\frac{p + 2q}{p + q}$ from the last, satisfy $p^2 - 2q^2 = \\pm 1$ and close in on $\\sqrt{2}$."
+      ],
+      "builds_on": [
+        "number-sets",
+        "prime-factorization"
+      ]
+    },
     "quadratic-falling-rock": {
       "source": "b7b808f26104",
       "teaches": [

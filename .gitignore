@@ -46,3 +46,6 @@ Text.md
 *.epub
 *.djvu
 scans/
+
+# Agent worktrees, each a whole checkout on its own branch
+/.claude/worktrees/

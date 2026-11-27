@@ -18,6 +18,7 @@ import { complex } from "./chapters/complex.ts";
 import { proportions } from "./chapters/proportions.ts";
 import { integers } from "./chapters/integers.ts";
 import { factorizations } from "./chapters/factorizations.ts";
+import { numbers } from "./chapters/numbers.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -304,6 +305,23 @@ export const chapters: Chapter[] = [
       "Power sums by recurrence",
     ],
     lessons: factorizations,
+  },
+  {
+    title: "What Numbers Really Are",
+    blurb: "From counting numbers to complex ones, fractions in lowest terms, decimals that repeat, and a number no fraction can name.",
+    axioms: [
+      "ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ",
+      "Closure under an operation",
+      "Equal fractions lie on one line",
+      "Lowest terms: divide by the gcd",
+      "The mediant lies between",
+      "Rational decimals stop or repeat",
+      "Repeating decimal to fraction",
+      "Stops iff only 2s and 5s",
+      "√2 is irrational",
+      "p² − 2q² = ±1 approximations",
+    ],
+    lessons: numbers,
   },
   {
     title: "Quadratic Equations",

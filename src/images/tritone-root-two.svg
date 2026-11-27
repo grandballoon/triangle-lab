@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="60" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="125" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="190" y="92" width="65" height="170" rx="4" fill="#f2c14e"/><rect x="255" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="320" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="385" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="450" y="92" width="65" height="170" rx="4" fill="#f3ead8"/><rect x="515" y="92" width="65" height="170" rx="4" fill="#f3ead8"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="105" y="92" width="40" height="104" rx="3" fill="#2a3440"/><rect x="170" y="92" width="40" height="104" rx="3" fill="#2a3440"/><rect x="235" y="92" width="40" height="104" rx="3" fill="#2a3440"/><rect x="365" y="92" width="40" height="104" rx="3" fill="#2a3440"/><rect x="430" y="92" width="40" height="104" rx="3" fill="#f2c14e"/></g>
+  <text x="222.5" y="246" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14">A</text>
+  <text x="450" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#0b0f14">D♯</text>
+  <path d="M225.5 86 Q238.8 62 252 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="238.8" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">1</text>
+  <path d="M258 86 Q271.2 62 284.5 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="271.2" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">2</text>
+  <path d="M290.5 86 Q320 62 349.5 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="320" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">3</text>
+  <path d="M355.5 86 Q368.8 62 382 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="368.8" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">4</text>
+  <path d="M388 86 Q401.2 62 414.5 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="401.2" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">5</text>
+  <path d="M420.5 86 Q433.8 62 447 86" fill="none" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="433.8" y="62" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">6</text>
+  <text x="222.5" y="40" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">440 Hz</text>
+  <text x="450" y="40" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">622.25 Hz</text>
+  <text x="320" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">6 semitones multiply by exactly √2</text>
+  <text x="320" y="342" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8"><tspan fill="#f2c14e">622.25 / 440 ≈ 1.4142 ≈ √2</tspan></text>
+</svg>

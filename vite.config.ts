@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from "vite";
+import { configDefaults } from "vitest/config";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { uiFeedback } from "./tools/feedback-plugin.ts";
@@ -56,6 +57,10 @@ export default defineConfig({
     // when it was cached and misses a lesson added since. Cold starts are fast
     // enough without it.
     fsModuleCache: false,
+    // Agent worktrees (.claude/worktrees) are whole checkouts of this
+    // project; without this, a run here would also run every one of their
+    // suites.
+    exclude: [...configDefaults.exclude, ".claude/**"],
   },
   build: {
     rollupOptions: {

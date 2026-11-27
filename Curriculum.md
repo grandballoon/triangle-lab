@@ -132,7 +132,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 - [x] 5 Using the Integers: divisibility, number bases, the last digit, modular arithmetic, tricks, primes, common factors and multiples.
   Now the Using the Integers chapter (`integers.ts`), six lab lessons.
-- [ ] 8 What Numbers Really Are: integers and rationals, lowest terms and irrationals, complex and beyond.
+- [x] 8 What Numbers Really Are: integers and rationals, lowest terms and irrationals, complex and beyond.
+  Now the What Numbers Really Are chapter (`numbers.ts`), four lab lessons.
 
 **Functions and inequalities**
 

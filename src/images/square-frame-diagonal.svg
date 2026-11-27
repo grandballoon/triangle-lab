@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M50 70 H280 V300 H50 Z M66 86 V284 H264 V86 Z" fill="#b07a45" fill-rule="evenodd"/></g>
+  <path d="M58 292 L272 78" fill="none" stroke="#0b0f14" stroke-width="20" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M58 292 L272 78" fill="none" stroke="#d9cfa0" stroke-width="14" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M69.4 289.1 l-4.9 -4.9 M76.5 282 l-4.9 -4.9 M83.6 274.8 l-4.9 -4.9 M90.8 267.7 l-4.9 -4.9 M97.9 260.6 l-8.5 -8.5 M105 253.4 l-4.9 -4.9 M112.2 246.3 l-4.9 -4.9 M119.3 239.2 l-4.9 -4.9 M126.4 232 l-4.9 -4.9 M133.6 224.9 l-8.5 -8.5 M140.7 217.8 l-4.9 -4.9 M147.8 210.6 l-4.9 -4.9 M155 203.5 l-4.9 -4.9 M162.1 196.4 l-4.9 -4.9 M169.2 189.2 l-8.5 -8.5 M176.4 182.1 l-4.9 -4.9 M183.5 175 l-4.9 -4.9 M190.6 167.8 l-4.9 -4.9 M197.8 160.7 l-4.9 -4.9 M204.9 153.6 l-8.5 -8.5 M212 146.4 l-4.9 -4.9 M219.2 139.3 l-4.9 -4.9 M226.3 132.2 l-4.9 -4.9 M233.4 125 l-4.9 -4.9 M240.6 117.9 l-8.5 -8.5 M247.7 110.8 l-4.9 -4.9 M254.8 103.6 l-4.9 -4.9 M262 96.5 l-4.9 -4.9 M269.1 89.4 l-4.9 -4.9" stroke="#0b0f14" stroke-width="2"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="40" y="270" width="40" height="40" rx="8" fill="#8fa3b8"/></g>
+  <text x="209" y="241" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">1.414 m</text>
+  <text x="165" y="52" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">1 m</text>
+  <text x="294" y="194" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#8fa3b8">1 m</text>
+  <text x="475" y="110" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">diagonal</text>
+  <text x="475" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f3ead8">√2 m</text>
+  <text x="475" y="222" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">≈ 1.414<tspan fill="#f2c14e">21356…</tspan></text>
+  <text x="475" y="286" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">never ends,</text>
+  <text x="475" y="318" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">never repeats</text>
+</svg>
