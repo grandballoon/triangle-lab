@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><ellipse cx="92" cy="117.2" rx="12.6" ry="29.9" fill="#6f7f5a"/><ellipse cx="92" cy="87.3" rx="18.4" ry="10.3" fill="#6f7f5a"/><circle cx="74.8" cy="86.2" r="6.9" fill="#e8655f"/><circle cx="109.2" cy="86.2" r="6.9" fill="#e8655f"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><path d="M87.4 91.9 C57.5 96.5 46 142.5 73.6 167.8 C82.8 154 87.4 119.5 87.4 91.9 Z" fill="#f3ead8" fill-opacity="0.55"/><path d="M96.6 91.9 C126.5 96.5 138 142.5 110.4 167.8 C101.2 154 96.6 119.5 96.6 91.9 Z" fill="#f3ead8" fill-opacity="0.55"/></g>
+  <path d="M82.8 101.1 Q66.7 126.4 74.8 158.6 M101.2 101.1 Q117.3 126.4 109.2 158.6" fill="none" stroke="#0b0f14" stroke-width="2" opacity="0.6"/>
+  <text x="140" y="104" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="start" fill="#e8655f">every</text>
+  <text x="140" y="136" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="start" fill="#e8655f">13 years</text>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><ellipse cx="376" cy="117.2" rx="12.6" ry="29.9" fill="#6f7f5a"/><ellipse cx="376" cy="87.3" rx="18.4" ry="10.3" fill="#6f7f5a"/><circle cx="358.8" cy="86.2" r="6.9" fill="#e8655f"/><circle cx="393.2" cy="86.2" r="6.9" fill="#e8655f"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><path d="M371.4 91.9 C341.5 96.5 330 142.5 357.6 167.8 C366.8 154 371.4 119.5 371.4 91.9 Z" fill="#f3ead8" fill-opacity="0.55"/><path d="M380.6 91.9 C410.5 96.5 422 142.5 394.4 167.8 C385.2 154 380.6 119.5 380.6 91.9 Z" fill="#f3ead8" fill-opacity="0.55"/></g>
+  <path d="M366.8 101.1 Q350.7 126.4 358.8 158.6 M385.2 101.1 Q401.3 126.4 393.2 158.6" fill="none" stroke="#0b0f14" stroke-width="2" opacity="0.6"/>
+  <text x="424" y="104" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="start" fill="#8fa3b8">every</text>
+  <text x="424" y="136" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="start" fill="#8fa3b8">17 years</text>
+  <path d="M30 236 H612" stroke="#f3ead8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M40 214 V236 M72.9 214 V236 M105.9 214 V236 M138.8 214 V236 M171.8 214 V236 M204.7 214 V236 M237.6 214 V236 M270.6 214 V236 M303.5 214 V236 M336.5 214 V236 M369.4 214 V236 M402.4 214 V236 M435.3 214 V236 M468.2 214 V236 M501.2 214 V236 M534.1 214 V236 M567.1 214 V236" stroke="#e8655f" stroke-width="5" stroke-linecap="round"/>
+  <path d="M40 236 V258 M83.1 236 V258 M126.2 236 V258 M169.2 236 V258 M212.3 236 V258 M255.4 236 V258 M298.5 236 V258 M341.5 236 V258 M384.6 236 V258 M427.7 236 V258 M470.8 236 V258 M513.8 236 V258 M556.9 236 V258" stroke="#8fa3b8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M40 206 V266" stroke="#f3ead8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M600 202 V270" stroke="#f2c14e" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="600" cy="236" r="9" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <text x="40" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8">0</text>
+  <text x="596" y="302" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f2c14e">221</text>
+  <text x="320" y="336" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">13 × 17 = <tspan fill="#f2c14e">221</tspan> years</text>
+</svg>

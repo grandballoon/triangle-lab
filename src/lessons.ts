@@ -16,6 +16,7 @@ import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
 import { complex } from "./chapters/complex.ts";
 import { proportions } from "./chapters/proportions.ts";
+import { integers } from "./chapters/integers.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -265,6 +266,26 @@ export const chapters: Chapter[] = [
       "Successive changes multiply",
     ],
     lessons: proportions,
+  },
+  {
+    title: "Using the Integers",
+    blurb: "Remainders, primes, common factors, other bases and clock arithmetic: what whole numbers do when you divide them.",
+    axioms: [
+      "Division with remainder",
+      "b divides a",
+      "Primes have two divisors",
+      "Unique prime factorization",
+      "Euclid's algorithm",
+      "gcd × lcm = ab",
+      "Place value in base b",
+      "Converting by repeated division",
+      "Congruence modulo m",
+      "Sums and products mod m",
+      "Powers cycle mod m",
+      "Digit sums and 9",
+      "Alternating sums and 11",
+    ],
+    lessons: integers,
   },
   {
     title: "Quadratic Equations",

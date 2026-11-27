@@ -1360,6 +1360,79 @@
         "direct-variation"
       ]
     },
+    "division-remainder": {
+      "source": "fed14bd7b20d",
+      "teaches": [
+        "Dividing $a$ by $b$ gives $a = qb + r$ with $0 \\le r < b$, and exactly one such quotient $q$ and remainder $r$.",
+        "$b$ divides $a$, written $b \\mid a$, when the remainder is 0, that is, $a = qb$ for a whole number $q$.",
+        "Two numbers leave the same remainder on division by $b$ exactly when their difference is a multiple of $b$."
+      ],
+      "builds_on": [
+        "linear-balance"
+      ]
+    },
+    "prime-factorization": {
+      "source": "5db041ddfd98",
+      "teaches": [
+        "The divisors of $n$ are the column sizes that stand $n$ dots in a rectangle; they come in factor pairs.",
+        "A prime has exactly two divisors, 1 and itself; 1 is not prime, and a composite $n$ has a factor no bigger than $\\sqrt{n}$.",
+        "The sieve finds the primes up to 100 by crossing out the multiples of 2, 3, 5 and 7.",
+        "Every number above 1 is a product of primes in exactly one way, apart from order: the fundamental theorem of arithmetic."
+      ],
+      "builds_on": [
+        "division-remainder",
+        "exponent-product-rule"
+      ]
+    },
+    "gcd-lcm": {
+      "source": "eac102c0c6ea",
+      "teaches": [
+        "The greatest common divisor of $a$ and $b$ is the largest number dividing both, and every common divisor divides it; when it is 1 they are relatively prime.",
+        "Euclid's algorithm replaces $(a, b)$ by $(b, r)$, where $r$ is the remainder of $a$ on division by $b$; the last nonzero remainder is the gcd.",
+        "The least common multiple is the smallest number both divide, and every common multiple is a multiple of it.",
+        "From the prime factorizations, the gcd takes each prime to the smaller power and the lcm to the larger, so $\\gcd(a, b) \\cdot \\operatorname{lcm}(a, b) = ab$."
+      ],
+      "builds_on": [
+        "prime-factorization"
+      ]
+    },
+    "number-bases": {
+      "source": "8ecdbdfe9dcc",
+      "teaches": [
+        "In base $b$ each place is worth a power of $b$, and each digit is from 0 to $b - 1$.",
+        "Repeated division by $b$ gives the digits from the right: each remainder is the next digit.",
+        "Multiplying each digit by its place value and adding converts back to base ten.",
+        "Binary, base 2, uses only 0 and 1; eight binary digits, a byte, run from 0 to $2^8 - 1 = 255$."
+      ],
+      "builds_on": [
+        "division-remainder",
+        "exponent-product-rule"
+      ]
+    },
+    "modular-arithmetic": {
+      "source": "e965fc9c00bd",
+      "teaches": [
+        "$a \\equiv b \\pmod{m}$ when $a$ and $b$ leave the same remainder on division by $m$, that is, when $m \\mid a - b$.",
+        "Sums and products can be reduced modulo $m$ before or after: only the remainders matter.",
+        "The powers of $a$ modulo $m$ repeat in a cycle, which gives the last digit of a large power, as $7^{100}$ ends in 1."
+      ],
+      "builds_on": [
+        "division-remainder"
+      ]
+    },
+    "divisibility-rules": {
+      "source": "5aa6b57609aa",
+      "teaches": [
+        "The last digit decides divisibility by 2, 5 and 10, the last two by 4, and the last three by 8.",
+        "A number leaves the same remainder as its digit sum on division by 9 or by 3, so the digit sum decides both.",
+        "The alternating sum of the digits, from the right, decides divisibility by 11.",
+        "For a divisor made of factors with no common factor, such as $6 = 2 \\cdot 3$, test each factor."
+      ],
+      "builds_on": [
+        "modular-arithmetic",
+        "prime-factorization"
+      ]
+    },
     "quadratic-falling-rock": {
       "source": "b7b808f26104",
       "teaches": [
