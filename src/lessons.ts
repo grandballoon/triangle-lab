@@ -16,6 +16,7 @@ import { chasing } from "./chapters/chasing.ts";
 import { circles } from "./chapters/circles.ts";
 import { complex } from "./chapters/complex.ts";
 import { proportions } from "./chapters/proportions.ts";
+import { inequalities } from "./chapters/inequalities.ts";
 import { integers } from "./chapters/integers.ts";
 import { factorizations } from "./chapters/factorizations.ts";
 import { numbers } from "./chapters/numbers.ts";
@@ -400,6 +401,23 @@ export const chapters: Chapter[] = [
       "Expectations add",
     ],
     lessons: probability,
+  },
+  {
+    title: "Inequalities",
+    blurb: "Which numbers make one side bigger: rays, intervals, the sign of a parabola, and why no square is negative.",
+    axioms: [
+      "Adding keeps an inequality",
+      "A negative factor flips an inequality",
+      "Sign of a quadratic between its roots",
+      "Sign charts",
+      "|x − a| < b ⟺ a − b < x < a + b",
+      "|x − a| > b: two rays",
+      "Trivial inequality x² ≥ 0",
+      "a² + b² ≥ 2ab",
+      "Least value by completing the square",
+      "AM–GM inequality",
+    ],
+    lessons: inequalities,
   },
   {
     title: "Power of a Point",

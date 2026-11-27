@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round">
+    <rect x="30" y="185" width="80" height="80" fill="#5fb0e8"/>
+    <rect x="270" y="175" width="80" height="80" fill="#5fb0e8"/>
+  </g>
+  <path d="M30 310 L350 130" stroke="#0b0f14" stroke-width="10" stroke-linecap="round"/>
+  <path d="M30 310 L350 130" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="4"><circle cx="110" cy="185" r="11" fill="#ef6b5b"/><circle cx="270" cy="255" r="11" fill="#ef6b5b"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="70" y="236" font-size="30" fill="#0b0f14">4</text>
+    <text x="310" y="226" font-size="30" fill="#0b0f14">4</text>
+    <text x="70" y="170" font-size="24" fill="#f3ead8">+2</text>
+    <text x="310" y="290" font-size="24" fill="#f3ead8">−2</text>
+    <text x="490" y="130" font-size="30" fill="#f3ead8">2 + (−2) = 0</text>
+    <text x="490" y="232" font-size="30" fill="#f3ead8">2² + (−2)² = <tspan fill="#f2c14e">8</tspan></text>
+  </g>
+  <path d="M390 172 H590" stroke="#5a6878" stroke-width="3"/>
+</svg>
