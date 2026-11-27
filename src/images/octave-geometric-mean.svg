@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="96" y="76" width="56" height="186" fill="#5fb0e8"/><rect x="152" y="76" width="56" height="186" fill="#f3ead8"/><rect x="208" y="76" width="56" height="186" fill="#f3ead8"/><rect x="264" y="76" width="56" height="186" fill="#f3ead8"/><rect x="320" y="76" width="56" height="186" fill="#f3ead8"/><rect x="376" y="76" width="56" height="186" fill="#f3ead8"/><rect x="432" y="76" width="56" height="186" fill="#f3ead8"/><rect x="488" y="76" width="56" height="186" fill="#5fb0e8"/><rect x="135" y="76" width="34" height="116" fill="#2a3340"/><rect x="247" y="76" width="34" height="116" fill="#2a3340"/><rect x="303" y="76" width="34" height="116" fill="#f2c14e"/><rect x="415" y="76" width="34" height="116" fill="#2a3340"/><rect x="471" y="76" width="34" height="116" fill="#2a3340"/></g>
+  <text x="124" y="294" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8">220 Hz</text>
+  <text x="516" y="294" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8">440 Hz</text>
+  <text x="320" y="58" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">311.1 Hz</text>
+  <text x="320" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">√(220 × 440) ≈ <tspan fill="#f2c14e">311.1</tspan></text>
+</svg>

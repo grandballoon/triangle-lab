@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M174 322 A26 26 0 0 1 226 322 Z" fill="#8fa3b8" stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M161.9 296.3 A46 46 0 0 1 238.1 296.3" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M161.9 296.3 A46 46 0 0 1 238.1 296.3" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M151.9 289.6 A58 58 0 0 1 248.1 289.6" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M151.9 289.6 A58 58 0 0 1 248.1 289.6" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M142 282.9 A70 70 0 0 1 258 282.9" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M142 282.9 A70 70 0 0 1 258 282.9" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M132 276.1 A82 82 0 0 1 268 276.1" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M132 276.1 A82 82 0 0 1 268 276.1" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M122.1 269.4 A94 94 0 0 1 277.9 269.4" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M122.1 269.4 A94 94 0 0 1 277.9 269.4" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M112.1 262.7 A106 106 0 0 1 287.9 262.7" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M112.1 262.7 A106 106 0 0 1 287.9 262.7" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M102.2 256 A118 118 0 0 1 297.8 256" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M102.2 256 A118 118 0 0 1 297.8 256" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M92.2 249.3 A130 130 0 0 1 307.8 249.3" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M92.2 249.3 A130 130 0 0 1 307.8 249.3" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M82.3 242.6 A142 142 0 0 1 317.7 242.6" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M82.3 242.6 A142 142 0 0 1 317.7 242.6" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M72.3 235.9 A154 154 0 0 1 327.7 235.9" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M72.3 235.9 A154 154 0 0 1 327.7 235.9" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M62.4 229.2 A166 166 0 0 1 337.6 229.2" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M62.4 229.2 A166 166 0 0 1 337.6 229.2" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M52.4 222.5 A178 178 0 0 1 347.6 222.5" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M52.4 222.5 A178 178 0 0 1 347.6 222.5" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M42.5 215.8 A190 190 0 0 1 357.5 215.8" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M42.5 215.8 A190 190 0 0 1 357.5 215.8" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M32.5 209 A202 202 0 0 1 367.5 209" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M32.5 209 A202 202 0 0 1 367.5 209" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M22.6 202.3 A214 214 0 0 1 377.4 202.3" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M22.6 202.3 A214 214 0 0 1 377.4 202.3" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="200" y="94" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">48 seats</text>
+  <text x="258" y="318" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#f3ead8">20 seats</text>
+  <text x="520" y="100" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#8fa3b8">15 rows</text>
+  <text x="520" y="170" font-family="system-ui, sans-serif" font-weight="700" font-size="25" text-anchor="middle" fill="#f3ead8">15 × (20 + 48) ÷ 2</text>
+  <path d="M410 206 H630" stroke="#5a6878" stroke-width="3"/>
+  <text x="520" y="270" font-family="system-ui, sans-serif" font-weight="700" font-size="46" text-anchor="middle" fill="#f3ead8">= <tspan fill="#f2c14e">510</tspan></text>
+</svg>

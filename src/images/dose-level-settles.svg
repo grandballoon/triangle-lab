@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M36 300 H610" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M84 100 H610" stroke="#f2c14e" stroke-width="4" stroke-dasharray="14 10"/>
+  <path d="M84 300 L84 200 L92.5 208.3 L101 215.9 L109.5 222.9 L118 229.3 L126.5 235.2 L135 240.5 L143.5 245.5 L152 250 L152 150 L160.5 162.4 L169 173.9 L177.5 184.3 L186 193.9 L194.5 202.7 L203 210.8 L211.5 218.2 L220 225 L220 125 L228.5 139.5 L237 152.8 L245.5 165.1 L254 176.3 L262.5 186.5 L271 195.9 L279.5 204.6 L288 212.5 L288 112.5 L296.5 128.1 L305 142.3 L313.5 155.4 L322 167.4 L330.5 178.4 L339 188.5 L347.5 197.8 L356 206.2 L356 106.2 L364.5 122.3 L373 137.1 L381.5 150.6 L390 163 L398.5 174.4 L407 184.8 L415.5 194.4 L424 203.1 L424 103.1 L432.5 119.5 L441 134.4 L449.5 148.2 L458 160.8 L466.5 172.3 L475 182.9 L483.5 192.7 L492 201.6 L492 101.6 L500.5 118 L509 133.1 L517.5 147 L526 159.7 L534.5 171.3 L543 182 L551.5 191.8 L560 200.8" fill="none" stroke="#0b0f14" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M84 300 L84 200 L92.5 208.3 L101 215.9 L109.5 222.9 L118 229.3 L126.5 235.2 L135 240.5 L143.5 245.5 L152 250 L152 150 L160.5 162.4 L169 173.9 L177.5 184.3 L186 193.9 L194.5 202.7 L203 210.8 L211.5 218.2 L220 225 L220 125 L228.5 139.5 L237 152.8 L245.5 165.1 L254 176.3 L262.5 186.5 L271 195.9 L279.5 204.6 L288 212.5 L288 112.5 L296.5 128.1 L305 142.3 L313.5 155.4 L322 167.4 L330.5 178.4 L339 188.5 L347.5 197.8 L356 206.2 L356 106.2 L364.5 122.3 L373 137.1 L381.5 150.6 L390 163 L398.5 174.4 L407 184.8 L415.5 194.4 L424 203.1 L424 103.1 L432.5 119.5 L441 134.4 L449.5 148.2 L458 160.8 L466.5 172.3 L475 182.9 L483.5 192.7 L492 201.6 L492 101.6 L500.5 118 L509 133.1 L517.5 147 L526 159.7 L534.5 171.3 L543 182 L551.5 191.8 L560 200.8" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="610" y="86" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="end" fill="#f2c14e">200 mg</text>
+  <text x="75" y="220" font-family="system-ui, sans-serif" font-weight="700" font-size="21" text-anchor="end" fill="#f3ead8">100</text>
+  <text x="143" y="170" font-family="system-ui, sans-serif" font-weight="700" font-size="21" text-anchor="end" fill="#f3ead8">150</text>
+  <text x="211" y="145" font-family="system-ui, sans-serif" font-weight="700" font-size="21" text-anchor="end" fill="#f3ead8">175</text>
+  <text x="279" y="132.5" font-family="system-ui, sans-serif" font-weight="700" font-size="21" text-anchor="end" fill="#f3ead8">187.5</text>
+  <text x="610" y="334" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">days</text>
+  <text x="84" y="334" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">+100 mg each day</text>
+</svg>
