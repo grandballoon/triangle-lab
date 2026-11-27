@@ -141,7 +141,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
   Now the Functions chapter (`functions.ts`), six lab lessons.
 - [x] 22 Inequalities: linear, quadratic and absolute value inequalities, the trivial inequality.
   Now the Inequalities chapter (`inequalities.ts`), five lab lessons.
-- [ ] 23 Operations and Relations: what an operation is, its properties, relations.
+- [x] 23 Operations and Relations: what an operation is, its properties, relations.
+  Now the Operations and Relations chapter (`operations.ts`), five lab lessons.
 
 **Discrete mathematics**
 

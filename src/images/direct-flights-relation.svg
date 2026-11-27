@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M150.8 109.4 L279.2 170.6" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M289.3 175.4 L279.3 162.9 L273.3 175.5 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M140.7 104.6 L150.7 117.1 L156.7 104.5 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M489.2 109.4 L360.8 170.6" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M350.7 175.4 L366.7 175.5 L360.7 162.9 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M499.3 104.6 L483.3 104.5 L489.3 117.1 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M150 279 L280 211" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M289.9 205.8 L273.9 206.3 L280.3 218.6 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M140.1 284.2 L156.1 283.7 L149.7 271.4 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M490 279 L360 211" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M350.1 205.8 L359.7 218.6 L366.1 206.3 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M499.9 284.2 L490.3 271.4 L483.9 283.7 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M146 90 L481.4 90" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" stroke-dasharray="12 10"/>
+  <path d="M494 90 L477.8 82.2 L477.8 97.8 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <text x="320" y="72" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f2c14e" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">no direct flight</text>
+  <circle cx="110" cy="90" r="28" fill="#1e2833" stroke="#eef4fb" stroke-width="4"/>
+  <text x="110" y="100" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#eef4fb">A</text>
+  <circle cx="530" cy="90" r="28" fill="#1e2833" stroke="#eef4fb" stroke-width="4"/>
+  <text x="530" y="100" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#eef4fb">B</text>
+  <circle cx="110" cy="300" r="28" fill="#1e2833" stroke="#eef4fb" stroke-width="4"/>
+  <text x="110" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#eef4fb">C</text>
+  <circle cx="530" cy="300" r="28" fill="#1e2833" stroke="#eef4fb" stroke-width="4"/>
+  <text x="530" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#eef4fb">D</text>
+  <circle cx="320" cy="190" r="34" fill="#1e2833" stroke="#eef4fb" stroke-width="4"/>
+  <text x="320" y="199" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">hub</text>
+  <text x="320" y="350" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">symmetric, not transitive</text>
+</svg>

@@ -25,6 +25,7 @@ import { coordinates } from "./chapters/coordinates.ts";
 import { counting } from "./chapters/counting.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
+import { operations } from "./chapters/operations.ts";
 import { polygons } from "./chapters/polygons.ts";
 import { potpourri } from "./chapters/potpourri.ts";
 import { probability } from "./chapters/probability.ts";
@@ -454,6 +455,22 @@ export const chapters: Chapter[] = [
       "A pattern is not a proof",
     ],
     lessons: proof,
+  },
+  {
+    title: "Operations and Relations",
+    blurb: "Made-up rules for combining two things, the properties they may have, and relations drawn as arrows.",
+    axioms: [
+      "Binary operation",
+      "Closure",
+      "Commutativity",
+      "Associativity",
+      "Identity element",
+      "Inverse element",
+      "Reflexive, symmetric, transitive",
+      "Equivalence relation",
+      "Equivalence classes partition a set",
+    ],
+    lessons: operations,
   },
   {
     title: "Power of a Point",
