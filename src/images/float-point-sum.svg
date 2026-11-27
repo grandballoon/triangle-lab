@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="40" y="20" width="560" height="140" rx="14" fill="#1e2833"/></g>
+  <text x="72" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="start" fill="#8fa3b8">0.1 + 0.2</text>
+  <text x="72" y="128" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="start" fill="#f3ead8">= 0.3000000000000000<tspan fill="#f2c14e">4</tspan></text>
+  <path d="M50 212 H590" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="60" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0</text>
+  <path d="M164 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="164" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0.1</text>
+  <path d="M268 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="268" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0.2</text>
+  <path d="M372 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="372" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0.3</text>
+  <path d="M476 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="476" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0.4</text>
+  <path d="M580 204 V220" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="580" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">0.5</text>
+  <circle cx="372" cy="212" r="12" fill="none" stroke="#f3ead8" stroke-width="3"/>
+  <path d="M363 221 L150 274 M381 221 L490 274" stroke="#f3ead8" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+  <path d="M150 290 H490" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M260 276 V304" stroke="#f3ead8" stroke-width="5"/>
+  <path d="M380 276 V304" stroke="#f2c14e" stroke-width="5"/>
+  <text x="260" y="334" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f3ead8">0.3</text>
+  <text x="380" y="334" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f2c14e">0.1 + 0.2</text>
+  <text x="560" y="298" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">zoom</text>
+</svg>
