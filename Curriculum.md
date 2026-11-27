@@ -83,3 +83,73 @@ Grouped by the course that usually teaches them.
 
 That covers the standard sequence through Algebra 2 and most of the precalc trig unit.
 Steps 1 and 2 extend the existing `table` dial, and step 3 reuses the circumcircle work.
+
+## The Art of Problem Solving, Volume 1
+
+A check of the lab against the 29 chapters of Lehoczky and Rusczyk, *The Art of Problem Solving, Volume 1: the Basics* (seventh edition, 2006).
+The book is all rights reserved, so it decides only which topics are taught and in what order; every lesson's words, figures and examples are our own.
+Checked 2026-11-27 by matching the book's contents against the lab's chapters (`src/lessons.ts`) and lesson names (`src/chapters/`), and searching the lessons for each missing topic, not by reading section against lesson.
+
+### Covered
+
+| AoPS chapter | Lab chapter |
+| --- | --- |
+| 3 Linear Equations | Linear Equations (`linear.ts`) |
+| 6 Quadratic Equations | Quadratic Equations (`quadratic.ts`), except 6.5 |
+| 9 An Introduction to Circles | Circles (`circles.ts`) |
+| 10 Angles | Angles (`angles-lines.ts`, `angles-circles.ts`), except 10.6 |
+| 11 Triangles, a.k.a. Geometry | Triangles (`triangles-classic.ts`, `triangles-centres.ts`, `triangles-measure.ts`), Trigonometry (`trigonometry.ts`) |
+| 12 Quadrilaterals | Quadrilaterals (`quadrilaterals.ts`) |
+| 13 Polygons | Polygons (`polygons.ts`) |
+| 14 Angle Chasing | Angle Chasing (`chasing.ts`) |
+| 15 Areas | Areas (`areas.ts`) |
+| 16 The Power of Coordinates | Coordinates (`coordinates.ts`) |
+| 17 Power of a Point | Power of a Point (`power.ts`) |
+| 18 Three Dimensional Geometry | Three Dimensions (`solids.ts`) |
+| 19 Shifts, Turns, Flips, Stretches, and Squeezes | Transformations (`transformations.ts`), except 19.7 |
+| 20 A Potpourri of Geometry | Potpourri (`potpourri.ts`) |
+
+### Gaps within covered chapters
+
+- [ ] 6.5 Square roots of irrationals and imaginaries: no lesson touches complex numbers yet (see chapters 2 and 8 below).
+- [ ] 10.6 The Burden of Proof: the lessons step through proofs, but none teaches how to write one.
+- [ ] 19.7 Transformation Proofs: proving a result by moving the figure.
+
+### Chapters with no lessons
+
+**Algebra**
+
+- [ ] 1 Exponents and Logarithms: integer and fractional exponents, simplifying radicals, rationalizing denominators, logarithms.
+  `Vol 1 - The Basics/01_logarithms_exponents/` was started for it and is empty.
+- [ ] 2 Complex Numbers: the square root of −1, complex number operations.
+- [ ] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
+- [ ] 7 Special Factorizations and Clever Manipulations.
+
+**Numbers**
+
+- [ ] 5 Using the Integers: divisibility, number bases, the last digit, modular arithmetic, tricks, primes, common factors and multiples.
+- [ ] 8 What Numbers Really Are: integers and rationals, lowest terms and irrationals, complex and beyond.
+
+**Functions and inequalities**
+
+- [ ] 21 Functions: inputs and outputs, graphing, even and odd, absolute value, floor, piecewise functions, transforming a function.
+- [ ] 22 Inequalities: linear, quadratic and absolute value inequalities, the trivial inequality.
+- [ ] 23 Operations and Relations: what an operation is, its properties, relations.
+
+**Discrete mathematics**
+
+- [ ] 24 Sequences and Series: arithmetic and geometric series, infinite series, Σ notation, sequences, sequences and means.
+- [ ] 25 Learning to Count: multiplication, the number of divisors, restrictions, permutations and factorials, overcounting, counting another way, the binomial theorem.
+- [ ] 26 Statistics and Probability: statistics, probability and common sense, multiplying probabilities, casework, odds, expected value.
+- [ ] 27 Sets: definitions, operations on sets, Venn diagrams, subsets.
+
+**Proof**
+
+- [ ] 28 Prove It: proof in words, contradiction, converses, mathematical induction, the pigeonhole principle, convincing but wrong arguments.
+  Some lessons already teach converses (`pythagoras-converse`, `quad-converses`).
+
+**Problems**
+
+- [ ] 29 Parting Shots is a problem set rather than new material; it belongs in recall rather than in a lesson.
+
+These chapters need not be geometric: diagrams, simulations and step-through processes (a clock face for modular arithmetic, Venn diagrams for sets, trees for counting) are as welcome as interactive figures.
