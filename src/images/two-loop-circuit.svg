@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="40" y="30" width="560" height="300" rx="12" fill="#1c2633" stroke="#0b0f14" stroke-width="6"/>
+  <g fill="none" stroke-linejoin="round">
+    <path d="M100 80 H540 V290 H100 Z M320 80 V290" stroke="#0b0f14" stroke-width="16"/>
+    <path d="M100 80 H540 V290 H100 Z M320 80 V290" stroke="#8fa3b8" stroke-width="8"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="88" y="138" width="24" height="12" rx="2" fill="#8fa3b8"/>
+    <rect x="70" y="148" width="60" height="90" rx="8" fill="#5fbf72"/>
+    <rect x="528" y="138" width="24" height="12" rx="2" fill="#8fa3b8"/>
+    <rect x="510" y="148" width="60" height="90" rx="8" fill="#a78bfa"/>
+    <rect x="170" y="64" width="90" height="32" rx="14" fill="#d9a066"/>
+    <rect x="380" y="64" width="90" height="32" rx="14" fill="#d9a066"/>
+    <rect x="304" y="140" width="32" height="90" rx="14" fill="#d9a066"/>
+  </g>
+  <path d="M192 66 V94 M214 66 V94 M236 66 V94 M402 66 V94 M424 66 V94 M446 66 V94 M306 162 H334 M306 184 H334 M306 206 H334" stroke="#ef6b5b" stroke-width="6"/>
+  <g font-family="system-ui, sans-serif" font-size="20" font-weight="800" text-anchor="middle" fill="#0b0f14"><text x="100" y="200">14 V</text><text x="540" y="200">8 V</text></g>
+  <rect x="148" y="118" width="134" height="140" rx="30" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="358" y="118" width="134" height="140" rx="30" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"><path d="M226 106 L246 118 L226 130 Z"/><path d="M414 106 L394 118 L414 130 Z"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" font-size="34" text-anchor="middle"><text x="215" y="200">I₁</text><text x="425" y="200">I₂</text></g>
+</svg>

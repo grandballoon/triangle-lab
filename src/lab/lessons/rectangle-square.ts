@@ -91,6 +91,7 @@ export default lesson((s) => {
       {
         title: "Squaring a deck by its diagonals",
         text: "Builders laying out a deck or a concrete form check it is square by measuring both diagonals. Once opposite sides are equal, it is a parallelogram, and equal diagonals make it a rectangle: for a $3$ m by $4$ m deck, both should be $\\sqrt{9 + 16} = 5$ m. If one is longer, they push that pair of corners together until the two agree.",
+        tags: ["carpentry", "building", "trade-tricks"],
         image: {
           src: deckDiagonalsCheckImage,
           caption: "Squaring a deck: once both diagonals of a 3 m by 4 m frame measure 5 m, the corners are right angles.",
@@ -100,6 +101,7 @@ export default lesson((s) => {
       {
         title: "Screen sizes",
         text: "Televisions and monitors are sold by their diagonal. A $55$-inch screen in the usual $16:9$ shape has sides $16k$ and $9k$ with $\\sqrt{(16k)^2 + (9k)^2} = 55$, so $k \\approx 3$ and the screen is about $48$ inches wide and $27$ inches tall.",
+        tags: ["light", "home"],
         image: {
           src: tvDiagonalImage,
           caption: "A 55-inch television: the size is the screen's diagonal, so a 16:9 screen works out about 48 inches wide and 27 inches tall.",
@@ -109,6 +111,7 @@ export default lesson((s) => {
       {
         title: "Square in a square",
         text: "Quilters call the last figure a square-in-a-square block: a square set on its point inside a bigger one, its corners at the middles of the sides. The four corner triangles are cut as isosceles right triangles, and together they take up exactly half the block.",
+        tags: ["fiber-arts"],
         image: {
           src: quiltSquareInSquareImage,
           caption: "A square-in-a-square quilt block: the four corner triangles are isosceles right triangles, and together they make up exactly half the block.",

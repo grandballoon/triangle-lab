@@ -110,6 +110,7 @@ export default lesson((s) => {
       {
         title: "Checking a tapered frame by its diagonals",
         text: "A builder setting out an isosceles trapezoid, such as a tapered window frame or raised bed, measures the two diagonals. The last step says this is enough: if the bases are parallel and the diagonals agree, the legs are equal and the base angles match, so the frame is symmetric without a protractor in sight.",
+        tags: ["carpentry", "building", "trade-tricks"],
         image: {
           src: taperedWindowDiagonalsImage,
           caption: "A tapered window frame: if its top and bottom are parallel and its two diagonals measure the same, the frame is symmetric.",
@@ -119,6 +120,7 @@ export default lesson((s) => {
       {
         title: "Cutting the sides of a splayed planter",
         text: "Each side of a planter that flares out towards the top is an isosceles trapezoid. Because its two base angles are equal, a woodworker can set the saw to one angle and cut both ends of every side panel without changing it, and the panels come out with equal legs that meet cleanly at the corners.",
+        tags: ["carpentry", "gardening"],
         image: {
           src: splayedPlanterImage,
           caption: "A planter that flares out towards the top: each side is an isosceles trapezoid with equal base angles, so one saw setting cuts every panel.",

@@ -9,6 +9,7 @@ import { agree, holds } from "../kit/triangles-centres.ts";
 import { lesson, type Readout } from "../scene.ts";
 import ladderGutterImage from "../../images/ladder-gutter.svg";
 import rafterTemplateImage from "../../images/rafter-template.svg";
+import stairStringerImage from "../../images/stair-stringer.svg";
 import treeClinometerImage from "../../images/tree-clinometer.svg";
 
 type Mode = "AAS" | "HL" | "LL" | "SA";
@@ -166,6 +167,7 @@ export default lesson((s) => {
       {
         title: "One rafter as the pattern",
         text: "When carpenters frame a roof, they work out the rise and the run for a common rafter, cut one, and use it as a template for all the rest. Each rafter with its run and rise forms a right triangle fixed by its two legs, so every copy fits the same way. That is why a roof can be framed from one carefully cut piece.",
+        tags: ["carpentry", "building", "trade-tricks"],
         image: {
           src: rafterTemplateImage,
           caption: "Framing a roof from one pattern rafter: every rafter makes the same right triangle with its run and rise, so one carefully cut piece fixes them all.",
@@ -175,6 +177,7 @@ export default lesson((s) => {
       {
         title: "Measuring a tree without climbing it",
         text: "Stand 20 metres from a tree and measure the angle up to its top with a phone app or a clinometer. The tree meets the ground at a right angle, so one side and one acute angle are known, and SA says only one triangle fits. Its height is therefore settled; with an angle of $35^\\circ$ it is about 14 metres, plus the height of your eyes.",
+        tags: ["navigation"],
         image: {
           src: treeClinometerImage,
           caption: "Measuring a tree with a clinometer: the distance to the trunk and the 35° angle up to the top fix one right triangle, and so the tree's height.",
@@ -184,10 +187,21 @@ export default lesson((s) => {
       {
         title: "Will the ladder reach the gutter?",
         text: "Safety guidance says a ladder's foot should stand 1 unit out from the wall for every 4 units up. Set a 4 metre ladder that way and its foot is just under 1 metre out, and HL says the top must then be at one height only, about $\\sqrt{4^2 - 0.97^2} \\approx 3.9$ metres. So you know before you carry it out whether it reaches the gutter.",
+        tags: ["home", "trade-tricks", "building"],
         image: {
           src: ladderGutterImage,
           caption: "A ladder against a house: with its length and its foot set 1 out for every 4 up, the right triangle it makes with the wall is fixed, so you know how high the top reaches.",
           alt: "A ladder leaning against a house wall with its top just under the gutter; the right triangle of ladder, wall and ground is outlined in dashed gold, with the right angle at the foot of the wall.",
+        },
+      },
+      {
+        title: "Laying out a stair stringer",
+        text: "Carpenters mark the zigzag edge of a stair stringer by clamping two stair gauges to a framing square, one at the rise and one at the run, say $18$ and $25$ centimetres. They lay the square on the board with both gauges against its edge, draw along the two arms, then slide it along to the end of the last line and draw again. Every step's triangle has the same two legs either side of a right angle, so by LL every one is congruent to the first, and no riser comes out taller than the rest to trip someone.",
+        tags: ["carpentry", "trade-tricks", "building"],
+        image: {
+          src: stairStringerImage,
+          caption: "Laying out a stair stringer: the framing square is stepped along the board at the same rise and run, so every step's right triangle has the same two legs.",
+          alt: "A wooden stair stringer with a zigzag top edge and a steel framing square with two brass gauges set into one notch, each step's right triangle traced in dashed gold and labelled 18 and 25.",
         },
       },
     ],

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="0" y="110" width="200" height="140" fill="#f3ead8"/>
+    <circle cx="200" cy="180" r="70" fill="#f3ead8"/>
+    <circle cx="200" cy="180" r="44" fill="#ef6b5b"/>
+    <circle cx="200" cy="180" r="22" fill="#d9a066"/>
+    <rect x="440" y="68" width="200" height="224" fill="#8fa3b8"/>
+    <circle cx="440" cy="180" r="112" fill="#8fa3b8"/>
+    <circle cx="440" cy="180" r="76" fill="#ef6b5b"/>
+    <circle cx="440" cy="180" r="44" fill="#d9a066"/>
+  </g>
+  <g fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8">
+    <circle cx="200" cy="180" r="22"/>
+    <circle cx="440" cy="180" r="44"/>
+  </g>
+  <path d="M178 180 H222 M396 180 H484" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" text-anchor="middle" stroke="#0b0f14" stroke-width="6" paint-order="stroke">
+    <text x="200" y="88">1.5</text><text x="440" y="336">6</text>
+  </g>
+</svg>

@@ -9,6 +9,7 @@ import { centroid, dist, fmt, inBox, lerp, lineLine, vec } from "../geo.ts";
 import { labelAway, ratio } from "../kit/triangles-measure.ts";
 import { lesson, type Readout } from "../scene.ts";
 import boardStripsImage from "../../images/board-strips.svg";
+import monochordRatiosImage from "../../images/monochord-ratios.svg";
 import triangleSignBalanceImage from "../../images/triangle-sign-balance.svg";
 
 const GIVEN = C.gold; // AE, and DG once it is shown to match
@@ -81,6 +82,7 @@ export default lesson((s) => {
       {
         title: "Splitting a board into equal strips",
         text: "To cut a board of awkward width into four equal strips, carpenters lay a ruler across it at a slant, so that 0 sits on one edge and 12 on the other. Marks at 3, 6 and 9 then divide the width exactly into quarters, because lines through them parallel to the edges cut every crossing line in the same ratio.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: boardStripsImage,
           caption: "Marking a board into four equal strips: lay a ruler across it at a slant from 0 to 12, and lines through 3, 6 and 9 parallel to the edges split the width exactly.",
@@ -90,9 +92,20 @@ export default lesson((s) => {
       {
         title: "Balancing a triangular sign",
         text: "A flat triangular sign balances at the point where the lines from each corner to the middle of the opposite side cross. With $D$ and $E$ at the midpoints, $m = n = 1$, and the formula gives $\\frac{AF}{FD} = 2$: the balance point lies two thirds of the way from each corner. That is where to hang it so it does not tip.",
+        tags: ["home"],
         image: {
           src: triangleSignBalanceImage,
           caption: "A triangular sign balanced on one point: where its medians cross, two thirds of the way along each from its corner.",
+        },
+      },
+      {
+        title: "Marking the notes on a monochord",
+        text: "A monochord is a single string stretched over a box, with a movable bridge to shorten the part that sounds. At the same tension, half the length sounds an octave higher, two thirds a fifth higher and three quarters a fourth higher. To mark those points on a string of awkward length, lay a ruler at a slant from one end of the string, join its $12$ to the other end, and draw lines parallel to that join through $6$, $8$ and $9$. They meet the string at exactly $\\tfrac12$, $\\tfrac23$ and $\\tfrac34$ of its length.",
+        tags: ["music"],
+        image: {
+          src: monochordRatiosImage,
+          caption: "Marking the notes on a monochord: lines through 6, 8 and 9 on a slanted ruler, parallel to the line from 12, cut the string at a half, two thirds and three quarters.",
+          alt: "A monochord, a long box with one string and a small movable bridge, with a ruler laid at a slant from the string's left end and dashed gold parallel lines rising from its 6, 8, 9 and 12 marks to points on the string labelled 1/2, 2/3 and 3/4.",
         },
       },
     ],

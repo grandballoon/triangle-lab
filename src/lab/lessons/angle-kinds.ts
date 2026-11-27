@@ -6,9 +6,11 @@
 import { C } from "../draw.ts";
 import { angleOf, clamp, fmt, polar, sub, TAU, toDeg, toRad, vec, wrapAngle } from "../geo.ts";
 import { lesson } from "../scene.ts";
+import beeWaggleDanceImage from "../../images/bee-waggle-dance.svg";
 import gameSpriteTurnImage from "../../images/game-sprite-turn.svg";
 import gpsLatitudeGlobeImage from "../../images/gps-latitude-globe.svg";
 import skateboardSpinImage from "../../images/skateboard-spin.svg";
+import starTrailsPoleImage from "../../images/star-trails-pole.svg";
 
 const O = vec(0, -0.3);
 const DIAL = 3.4;
@@ -90,6 +92,7 @@ export default lesson((s) => {
       {
         title: "Spinning tricks",
         text: "Skateboarders and snowboarders name spins by how far they turn: a 180 lands you riding backwards, a 360 brings you round to face the way you started, and a 540 is one and a half turns.",
+        tags: ["sport"],
         image: {
           src: skateboardSpinImage,
           caption: "A skateboard spin: a 360 is one full turn about the rider's upright axis, bringing them round to face the way they started.",
@@ -99,6 +102,7 @@ export default lesson((s) => {
       {
         title: "Reading a GPS position",
         text: "Latitude and longitude are angles, often written in degrees, minutes and seconds. One minute of latitude is about $1852$ metres, a nautical mile, so one second is about $31$ metres: a position to the nearest second pins down a spot about the size of a house plot.",
+        tags: ["navigation"],
         image: {
           src: gpsLatitudeGlobeImage,
           caption: "A GPS position: latitude is the angle at the Earth's centre between the equator and the place, here about 51° north.",
@@ -108,10 +112,31 @@ export default lesson((s) => {
       {
         title: "Turning a sprite in a game",
         text: "Most programming languages measure angles in radians: in JavaScript, Math.cos(90) is the cosine of $90$ radians, not of $90^\\circ$. To turn a sprite a quarter turn, a game programmer passes $\\frac{\\pi}{2}$, converting with $90 \\cdot \\frac{2\\pi}{360} = \\frac{\\pi}{2}$.",
+        tags: ["game-design"],
         image: {
           src: gameSpriteTurnImage,
           caption: "Turning a game sprite: a quarter turn is 90°, which the code must pass as π/2 radians.",
           alt: "A computer monitor showing an arrow-shaped spaceship pointing up, with a dashed gold ray to the right, a right-angle mark, and a curved arrow sweeping a quarter turn labelled 90°.",
+        },
+      },
+      {
+        title: "Telling the time by the stars",
+        text: "The Earth turns once in a little under $24$ hours, so the stars seem to wheel round the Pole Star at $360^\\circ \\div 24 = 15^\\circ$ an hour. A star that has swung through an acute $45^\\circ$ has been turning for $3$ hours, a right angle takes $6$, and a straight angle half a day. A long-exposure photograph of the northern sky shows it: in a $2$ hour exposure every star draws an arc of $30^\\circ$ round the pole.",
+        tags: ["astronomy"],
+        image: {
+          src: starTrailsPoleImage,
+          caption: "Star trails round the Pole Star: the sky turns 15° an hour, so a star that has swung 45° has been turning for 3 hours.",
+          alt: "A night sky over a dark hill and a small house with a lit window, with grey star trails curving round the Pole Star. One trail is traced in gold, with dashed gold lines from the Pole Star to its ends, the angle between them marked 45° and the trail marked 3 h.",
+        },
+      },
+      {
+        title: "A honeybee's waggle dance",
+        text: "A honeybee that has found food tells its hivemates where it is with a dance on the upright comb. It runs in a straight line while waggling, and the angle of that run from straight up is the angle between the food and the Sun, as seen from the hive. A run $40^\\circ$ to the right of straight up sends the other bees flying $40^\\circ$ to the right of the Sun; a run straight down, a straight angle round, sends them directly away from it.",
+        tags: ["nature"],
+        image: {
+          src: beeWaggleDanceImage,
+          caption: "A honeybee's waggle dance: the angle of its run from straight up on the comb is the angle to fly away from the Sun's direction to reach the food.",
+          alt: "A bee on a honeycomb, partway along a dashed gold line that leans 40° to the right of a dashed gold line pointing straight up at a small Sun, toward a pink flower. Dotted loops show its way back to the start of each run.",
         },
       },
     ],

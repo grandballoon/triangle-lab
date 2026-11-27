@@ -14,7 +14,7 @@
       "builds_on": []
     },
     "circle-pi": {
-      "source": "7e88c6660e5a",
+      "source": "64fb498008a3",
       "teaches": [
         "The circumference of every circle is the same number of diameters long, and that number is $\\pi \\approx 3.14$.",
         "$C = \\pi d = 2\\pi r$."
@@ -24,7 +24,7 @@
       ]
     },
     "circle-area": {
-      "source": "8ae5b4addd54",
+      "source": "9e0b06abbf10",
       "teaches": [
         "Cutting a disc into wedges and laying them alternately up and down approaches a rectangle $\\pi r$ by $r$.",
         "The area of a circle is $A = \\pi r^2$.",
@@ -35,7 +35,7 @@
       ]
     },
     "tangent-circles": {
-      "source": "0e8972e7c95b",
+      "source": "75b66d81f425",
       "teaches": [
         "When two circles touch externally, the point of contact lies on the line of centres and $d = r_A + r_B$.",
         "When one circle touches another from inside, $d = |r_A - r_B|$.",
@@ -47,7 +47,7 @@
       ]
     },
     "angle-kinds": {
-      "source": "20484189c00f",
+      "source": "87e9ac85fd67",
       "teaches": [
         "An angle measures the fraction of a full turn a ray has swept.",
         "Angles are named acute, right ($90^\\circ$), obtuse, straight ($180^\\circ$) or reflex.",
@@ -78,7 +78,7 @@
       ]
     },
     "parallel-transversal": {
-      "source": "2a931921d247",
+      "source": "3e7f89863de1",
       "teaches": [
         "A transversal crossing two parallel lines makes eight angles of only two sizes, which add to $180^\\circ$.",
         "Corresponding angles are equal.",
@@ -91,7 +91,7 @@
       ]
     },
     "triangle-angle-sum": {
-      "source": "ebc9f42a635d",
+      "source": "1de87c49e251",
       "teaches": [
         "The angles of any triangle add to $180^\\circ$: $\\alpha + \\beta + \\gamma = 180^\\circ$.",
         "Proof: draw the parallel to $AB$ through $C$; alternate interior angles copy $\\alpha$ and $\\beta$ up to $C$, where the three angles fill a straight line."
@@ -112,7 +112,7 @@
       ]
     },
     "arcs-sectors": {
-      "source": "6439d0d4a04e",
+      "source": "df138b9b233f",
       "teaches": [
         "The measure of an arc is its central angle $\\theta$, independent of the radius.",
         "Arc length is $r\\theta$ with $\\theta$ in radians; at one radian the arc is as long as the radius.",
@@ -194,7 +194,7 @@
       ]
     },
     "equilateral": {
-      "source": "0e81ef5ee5a2",
+      "source": "f8ef8dd0b159",
       "teaches": [
         "An equilateral triangle has three equal sides, at any size.",
         "Each angle of an equilateral triangle is $60^\\circ$, because the three equal angles share $180^\\circ$."
@@ -222,7 +222,7 @@
       ]
     },
     "perimeter": {
-      "source": "6b833b60ef5a",
+      "source": "6a5afc34e1ac",
       "teaches": [
         "The perimeter of a triangle is the distance all the way round it, the sum of its sides, $p = a + b + c$."
       ],
@@ -250,7 +250,7 @@
       ]
     },
     "centroid": {
-      "source": "b274bff7e95b",
+      "source": "ebbd85fdd825",
       "teaches": [
         "The three medians of a triangle meet at a single point, the centroid $G$.",
         "$G$ lies two thirds of the way along each median from its vertex, cutting it in the ratio $2 : 1$.",
@@ -328,7 +328,7 @@
       ]
     },
     "pythagoras-square": {
-      "source": "793bc10c9a74",
+      "source": "3fad0e10e57c",
       "teaches": [
         "The two acute angles of a right triangle add up to $90^\\circ$.",
         "Four copies of a right triangle fit inside the square on its hypotenuse, leaving a square hole of side $|a - b|$.",
@@ -341,7 +341,7 @@
       ]
     },
     "pythagoras-converse": {
-      "source": "9f9d7addf953",
+      "source": "c6305f620dc3",
       "teaches": [
         "With an altitude $h$ from $A$ meeting line $BC$ at $D$ and $CD = x$, $c^2 = a^2 + b^2 \\pm 2ax$.",
         "If the angle at $C$ is obtuse then $c^2 > a^2 + b^2$; if it is acute then $c^2 < a^2 + b^2$.",
@@ -374,7 +374,7 @@
       "builds_on": []
     },
     "right-congruence": {
-      "source": "a1f9023d88ee",
+      "source": "cc8581d21f63",
       "teaches": [
         "AAS: two angles and a side not between them fix a triangle, since the third angle is $180^\\circ$ minus the other two, which reduces it to ASA.",
         "LL: two right triangles with equal legs are congruent, by SAS with the right angle between the legs.",
@@ -423,7 +423,7 @@
       ]
     },
     "similarity-tests": {
-      "source": "fedcaa3b714e",
+      "source": "50b888b9b68d",
       "teaches": [
         "AA: two triangles with two pairs of equal angles are similar, and all three side ratios agree.",
         "A line parallel to one side of a triangle cuts off a smaller triangle similar to it.",
@@ -434,22 +434,6 @@
       "builds_on": [
         "similar",
         "parallel-transversal"
-      ]
-    },
-    "triangle-tests": {
-      "source": "0faca345aba6",
-      "teaches": [
-        "SSS, SAS, ASA and AAS each fix a triangle, so two triangles that agree in those parts are congruent; AAS reduces to ASA because the third angle is $180^\\circ$ minus the other two.",
-        "HL: two right triangles with equal hypotenuses and one equal leg are congruent.",
-        "SSA does not prove congruence: an angle, a side beside it and the side opposite it can fit two different triangles, except when the angle opposite the longest given side is right, which is HL.",
-        "AAA does not prove congruence, since equal angles allow any size, but it does prove similarity.",
-        "AA, SSS with all three sides in one ratio $k$, and SAS with two sides in one ratio around an equal angle each prove similarity.",
-        "SSA with two sides in one ratio and a non-included equal angle does not prove similarity."
-      ],
-      "builds_on": [
-        "congruence",
-        "right-congruence",
-        "similarity-tests"
       ]
     },
     "altitude-on-hypotenuse": {
@@ -479,8 +463,24 @@
         "bisectors"
       ]
     },
+    "triangle-tests": {
+      "source": "15b2a632f81e",
+      "teaches": [
+        "SSS, SAS, ASA and AAS each fix a triangle, so two triangles that agree in those parts are congruent; AAS reduces to ASA because the third angle is $180^\\circ$ minus the other two.",
+        "HL: two right triangles with equal hypotenuses and one equal leg are congruent.",
+        "SSA does not prove congruence: an angle, a side beside it and the side opposite it can fit two different triangles, except when the angle opposite the longest given side is right, which is HL.",
+        "AAA does not prove congruence, since equal angles allow any size, but it does prove similarity.",
+        "AA, SSS with all three sides in one ratio $k$, and SAS with two sides in one ratio around an equal angle each prove similarity.",
+        "SSA with two sides in one ratio and a non-included equal angle does not prove similarity."
+      ],
+      "builds_on": [
+        "congruence",
+        "right-congruence",
+        "similarity-tests"
+      ]
+    },
     "area-base-height": {
-      "source": "b017945efe67",
+      "source": "f1cf2221e9bc",
       "teaches": [
         "The area of a triangle is $\\frac12 bh$, where $h$ is the perpendicular from the opposite vertex to the line of the base $b$.",
         "A right triangle is half a rectangle, so its area is half the product of its legs.",
@@ -521,7 +521,7 @@
       ]
     },
     "parallel-trick": {
-      "source": "50d1c9f2a362",
+      "source": "cc169efaa01e",
       "teaches": [
         "To find the ratios in which two cevians divide each other, draw a line through a division point parallel to a side, creating similar triangles.",
         "With $AE : EB = 1 : 3$ and $CD : DB = 1 : 2$, the cevians $AD$ and $CE$ meet at $F$ with $\\dfrac{AF}{FD} = 1$ and $\\dfrac{EF}{FC} = \\dfrac12$, whatever the triangle's shape.",
@@ -534,7 +534,7 @@
       ]
     },
     "trig": {
-      "source": "07347d44379e",
+      "source": "db231d95a994",
       "teaches": [
         "In a right triangle, $\\sin = \\frac{\\text{opp}}{\\text{hyp}}$, $\\cos = \\frac{\\text{adj}}{\\text{hyp}}$, $\\tan = \\frac{\\text{opp}}{\\text{adj}}$.",
         "Their reciprocals are $\\csc = \\frac{1}{\\sin}$, $\\sec = \\frac{1}{\\cos}$ and $\\cot = \\frac{1}{\\tan}$.",
@@ -547,7 +547,7 @@
       ]
     },
     "fortyfive": {
-      "source": "b2a7124248a8",
+      "source": "e3107518f8ca",
       "teaches": [
         "The diagonal of a square bisects its right angles, giving a $45^\\circ$-$45^\\circ$-$90^\\circ$ triangle with equal legs.",
         "A $45^\\circ$-$45^\\circ$-$90^\\circ$ triangle with legs $a$ has hypotenuse $a\\sqrt{2}$.",
@@ -559,7 +559,7 @@
       ]
     },
     "thirtysixty": {
-      "source": "cbfd09d41c0b",
+      "source": "9263b37f6c13",
       "teaches": [
         "The altitude of an equilateral triangle splits it into two congruent $30^\\circ$-$60^\\circ$-$90^\\circ$ triangles.",
         "A $30^\\circ$-$60^\\circ$-$90^\\circ$ triangle has sides in the ratio $1 : \\sqrt{3} : 2$.",
@@ -573,7 +573,7 @@
       ]
     },
     "table": {
-      "source": "fda2d276811e",
+      "source": "88502b96256a",
       "teaches": [
         "With hypotenuse $1$, the opposite leg is $\\sin\\theta$ and the adjacent leg is $\\cos\\theta$.",
         "The exact values of all six ratios at $0^\\circ$, $30^\\circ$, $45^\\circ$, $60^\\circ$ and $90^\\circ$.",
@@ -585,7 +585,7 @@
       ]
     },
     "trig-identities": {
-      "source": "104a61923a51",
+      "source": "1b5a4010012c",
       "teaches": [
         "With hypotenuse $1$, the legs are $\\sin A$ and $\\cos A$.",
         "Cofunction identities: $\\sin(90^\\circ - A) = \\cos A$ and $\\cos(90^\\circ - A) = \\sin A$; likewise $\\tan$ pairs with $\\cot$ and $\\sec$ with $\\csc$.",
@@ -599,7 +599,7 @@
       ]
     },
     "trig-waves": {
-      "source": "aa0c1033e34b",
+      "source": "af7ffde23f52",
       "teaches": [
         "On a circle of radius $1$, the radius at angle $\\theta$ is the hypotenuse of a right triangle whose height is $\\sin\\theta$ and width is $\\cos\\theta$, so its tip is the point $(\\cos\\theta, \\sin\\theta)$.",
         "Plotting the height against $\\theta$ gives the sine wave, and the width gives the cosine wave, the same wave shifted: $\\cos\\theta = \\sin(\\theta + 90^\\circ)$.",
@@ -615,7 +615,7 @@
       ]
     },
     "area-sine": {
-      "source": "125ffbb40781",
+      "source": "d8ac9c3e757b",
       "teaches": [
         "The area of a triangle is $\\frac12 ab \\sin C$, where $C$ is the angle between sides $a$ and $b$.",
         "The altitude onto $a$ is $h = b \\sin C$.",
@@ -665,7 +665,7 @@
       ]
     },
     "parallelogram": {
-      "source": "42f0a91e2a0e",
+      "source": "9fbfc35269c6",
       "teaches": [
         "A parallelogram is a quadrilateral whose opposite sides are parallel.",
         "A diagonal splits it into two congruent triangles (ASA), so opposite sides are equal and opposite angles are equal.",
@@ -691,7 +691,7 @@
       ]
     },
     "rhombus": {
-      "source": "1e1c06c2701d",
+      "source": "96ad12eea600",
       "teaches": [
         "A rhombus is a quadrilateral with four equal sides.",
         "Every rhombus is a parallelogram, so its diagonals bisect each other.",
@@ -751,7 +751,7 @@
       ]
     },
     "polygon-diagonals": {
-      "source": "5e6ab8c12c71",
+      "source": "365778eb5fd3",
       "teaches": [
         "From each vertex of an $n$-gon, $n - 3$ diagonals go out.",
         "An $n$-gon has $\\tfrac{n(n-3)}{2}$ diagonals: $n(n-3)$ counts each diagonal twice, once from each end."
@@ -759,7 +759,7 @@
       "builds_on": []
     },
     "polygon-interior-sum": {
-      "source": "659f8c72226a",
+      "source": "5047478b3c93",
       "teaches": [
         "The $n - 3$ diagonals from one vertex cut a convex $n$-gon into $n - 2$ triangles.",
         "The interior angles of an $n$-gon sum to $180^\\circ(n - 2)$, depending only on the number of sides."
@@ -781,7 +781,7 @@
       ]
     },
     "regular-polygon": {
-      "source": "e401f925e9c5",
+      "source": "1fcb13006a28",
       "teaches": [
         "In a regular $n$-gon each interior angle is $\\tfrac{180^\\circ(n-2)}{n}$ and each exterior angle is $\\tfrac{360^\\circ}{n}$.",
         "A regular polygon has a centre $O$ at distance $R$ (the circumradius) from every vertex and $r$ (the apothem) from every side, meeting each side at its midpoint at a right angle.",
@@ -796,7 +796,7 @@
       ]
     },
     "regular-hexagon": {
-      "source": "705e3924b5c3",
+      "source": "a5e6ab7831a6",
       "teaches": [
         "A regular hexagon splits into six equilateral triangles from its centre, so its circumradius equals its side: $R = s$.",
         "The area of a regular hexagon is $\\tfrac{3\\sqrt3}{2}s^2$.",
@@ -849,7 +849,7 @@
       ]
     },
     "area-scaling": {
-      "source": "6469be22a0e8",
+      "source": "984b8b873c50",
       "teaches": [
         "In a similar copy with ratio $k$, every length is multiplied by $k$, including altitudes and radii.",
         "Area multiplies two lengths, so scaling by $k$ multiplies area by $k^2$."
@@ -912,7 +912,7 @@
       ]
     },
     "octagon-from-square": {
-      "source": "3d1ac426f602",
+      "source": "c5f19c3cfb6d",
       "teaches": [
         "Area by subtraction: an awkward region is a simple shape with simple pieces removed, as a ring has area $\\pi R^2 - \\pi r^2$.",
         "A regular octagon of side $s$ fits in a square of side $s(1 + \\sqrt2)$ with four isosceles right corner triangles of legs $s/\\sqrt2$.",
@@ -972,7 +972,7 @@
       ]
     },
     "slope": {
-      "source": "0d8661843742",
+      "source": "59c536a0c1ba",
       "teaches": [
         "The slope of a line is rise over run, $m = \\frac{\\text{rise}}{\\text{run}}$, and measures its steepness.",
         "A line rising to the right has positive slope, a falling one negative slope, a horizontal one slope $0$, and a vertical line has undefined slope.",
@@ -984,7 +984,7 @@
       ]
     },
     "line-equation": {
-      "source": "4285c901ff8c",
+      "source": "2f3f4c9dccf2",
       "teaches": [
         "A line with slope $m$ and $y$-intercept $b$ has equation $y = mx + b$.",
         "The $y$-intercept is found by setting $x = 0$, the $x$-intercept by solving $0 = mx + b$; a horizontal line has no $x$-intercept.",
@@ -1020,7 +1020,7 @@
       ]
     },
     "midpoint-formula": {
-      "source": "64868a240f03",
+      "source": "762df277d6ad",
       "teaches": [
         "The midpoint of $AB$ is the average of the endpoints: $M = \\left(\\frac{x_1 + x_2}{2}, \\frac{y_1 + y_2}{2}\\right)$.",
         "The point a fraction $t$ of the way from $A$ to $B$ is $(x_1 + t(x_2 - x_1),\\ y_1 + t(y_2 - y_1))$.",
@@ -1045,7 +1045,7 @@
       ]
     },
     "line-circle-intersection": {
-      "source": "35a341ee797d",
+      "source": "1184390cf6ad",
       "teaches": [
         "A line and a circle meet in $2$, $1$ or $0$ points; meeting in exactly one means the line is tangent.",
         "Substituting the line's equation into the circle's leaves a quadratic in one variable.",
@@ -1073,7 +1073,7 @@
       ]
     },
     "linear-balance": {
-      "source": "f936a55f2a24",
+      "source": "7f11e50d76d6",
       "teaches": [
         "A solution of $ax + b = cx + d$ is an $x$ where the two sides are equal: where their lines cross.",
         "Adding, subtracting, or dividing both sides by the same nonzero amount keeps the solutions unchanged.",
@@ -1086,7 +1086,7 @@
       ]
     },
     "linear-solution-sets": {
-      "source": "beaee781a642",
+      "source": "42e8ff66053c",
       "teaches": [
         "A linear equation in two unknowns, such as $x + y = 3$, has infinitely many solutions, which together form a straight line.",
         "Solving for $y$ gives exactly one $y$ for each $x$, changing at a steady rate.",
@@ -1098,7 +1098,7 @@
       ]
     },
     "linear-substitution": {
-      "source": "670402014cbe",
+      "source": "7b004655767d",
       "teaches": [
         "A solution of a system of two equations lies on both lines, so it is where they cross.",
         "Substitution: solve one equation for one variable, substitute into the other, solve the resulting one-unknown equation, then go back for the other variable.",
@@ -1111,7 +1111,7 @@
       ]
     },
     "linear-elimination": {
-      "source": "e9577805071f",
+      "source": "6749b9e7ef9a",
       "teaches": [
         "Multiplying an equation by a nonzero number does not change its solutions.",
         "A sum of multiples of two equations is satisfied by any common solution, so its line passes through the crossing.",
@@ -1124,7 +1124,7 @@
       ]
     },
     "catching-up": {
-      "source": "f5500d13842e",
+      "source": "ba9d1a2d835a",
       "teaches": [
         "At a steady rate, distance $=$ rate $\\times$ time, $d = rt$: a straight line on a distance–time graph whose slope is the speed.",
         "A start delayed by $h$ gives $d = r_2(t - h)$.",
@@ -1160,7 +1160,7 @@
       ]
     },
     "quadratic-falling-rock": {
-      "source": "cab8fe3321f4",
+      "source": "b7b808f26104",
       "teaches": [
         "At a steady speed, height is linear in time: $h = H - vt$.",
         "Under gravity, height in feet is $h = H - vt - 16t^2$, a curve.",
@@ -1181,7 +1181,7 @@
       "builds_on": []
     },
     "completing-the-square": {
-      "source": "b3bd6e3d7f7d",
+      "source": "c352ce69cdac",
       "teaches": [
         "$x^2 + bx + \\left(\\frac{b}{2}\\right)^2 = \\left(x + \\frac{b}{2}\\right)^2$: to complete the square, halve the $x$ coefficient and square it.",
         "To solve $x^2 + bx = k$, add $\\left(\\frac{b}{2}\\right)^2$ to both sides and take a square root: $x = -\\frac{b}{2} \\pm \\sqrt{k + \\left(\\frac{b}{2}\\right)^2}$.",
@@ -1268,7 +1268,7 @@
       ]
     },
     "two-tangents": {
-      "source": "648788b84ee2",
+      "source": "19d6df17ed7a",
       "teaches": [
         "The two tangent segments from a point $P$ outside a circle are equal: $PS = PT$.",
         "The line $PO$ to the centre bisects the angle between the two tangents.",
@@ -1360,7 +1360,7 @@
       ]
     },
     "box-diagonal": {
-      "source": "b604d833cf03",
+      "source": "e48fb1a22067",
       "teaches": [
         "The floor diagonal of an $l \\times w \\times h$ box satisfies $AC^2 = l^2 + w^2$.",
         "A vertical edge is perpendicular to every line in the floor through its foot, so $ACG$ is a right triangle.",
@@ -1382,7 +1382,7 @@
       ]
     },
     "prism-cylinder": {
-      "source": "95e3d7eecb2b",
+      "source": "4b5d415e01a0",
       "teaches": [
         "The volume of a prism or cylinder is base area times height: $V = Bh$.",
         "The lateral surface of a right prism unrolls into one rectangle, so its area is $ph$: perimeter times height.",
@@ -1454,7 +1454,7 @@
       ]
     },
     "platonic-solids": {
-      "source": "21240379fac1",
+      "source": "52f27e0f819c",
       "teaches": [
         "A regular polyhedron has every face the same regular polygon and every corner alike; there are exactly five.",
         "With $p$-sided faces and $q$ faces at each corner, $E = \\tfrac{pF}{2}$ and $V = \\tfrac{pF}{q}$.",
@@ -1466,7 +1466,7 @@
       ]
     },
     "translation": {
-      "source": "7fb70484a31a",
+      "source": "3d4a32aee547",
       "teaches": [
         "A translation moves every point by the same arrow: $(x, y) \\to (x + a, y + b)$.",
         "Since $AA'$ and $BB'$ are equal and parallel, $ABB'A'$ is a parallelogram, so each image side is equal and parallel to its original.",
@@ -1480,7 +1480,7 @@
       ]
     },
     "rotation": {
-      "source": "382cecf8d9bc",
+      "source": "267198bf1670",
       "teaches": [
         "A rotation about $O$ through $\\theta$ keeps each point's distance from $O$ and turns it through $\\theta$: $OB = OB'$ and $\\angle BOB' = \\theta$; only $O$ is fixed.",
         "The image is congruent, and a line and its image cross at the angle of rotation $\\theta$.",
@@ -1491,7 +1491,7 @@
       ]
     },
     "reflection": {
-      "source": "54cbc309a803",
+      "source": "f9dd9b0740b1",
       "teaches": [
         "In a reflection the mirror line is the perpendicular bisector of the segment joining each point to its image; points on the mirror are fixed.",
         "A reflection keeps lengths, so the image is congruent, but it reverses orientation.",
@@ -1525,7 +1525,7 @@
       ]
     },
     "dilation": {
-      "source": "08d776f14887",
+      "source": "2da3a82e7e87",
       "teaches": [
         "A dilation with centre $O$ and factor $k$ sends $A$ to $A'$ on line $OA$ with $OA' = |k| \\cdot OA$, on $A$'s side when $k > 0$ and the opposite side when $k < 0$.",
         "Lines through matching points all pass through the centre $O$.",
@@ -1555,7 +1555,7 @@
       ]
     },
     "polygon-symmetry": {
-      "source": "1aa83ff56d87",
+      "source": "ca05c62959e2",
       "teaches": [
         "A regular $n$-gon has $n$ rotational symmetries, the multiples of $360^\\circ / n$, counting the turn of $0^\\circ$.",
         "A regular $n$-gon has $n$ mirror lines, each through a corner or the midpoint of a side.",

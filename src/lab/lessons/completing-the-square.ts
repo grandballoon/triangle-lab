@@ -10,6 +10,7 @@ import { clamp, fmt, lerp, rotateAbout, type Vec } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
 import ballTossPeakImage from "../../images/ball-toss-peak.svg";
 import edgedSquareBedImage from "../../images/edged-square-bed.svg";
+import gameJumpArcImage from "../../images/game-jump-arc.svg";
 
 const SQUARE = C.cyan;
 const STRIP = C.orange;
@@ -153,6 +154,7 @@ export default lesson((s) => {
       {
         title: "The biggest bed for your edging",
         text: "With 20 m of edging, a rectangular bed $x$ m long is $10 - x$ wide, so its area is $10x - x^2 = 25 - (x - 5)^2$. That is 25 minus something never negative, so the area is largest, 25 m², when $x = 5$: a square.",
+        tags: ["gardening"],
         image: {
           src: edgedSquareBedImage,
           caption: "A garden bed inside 20 m of edging: completing the square shows the area is largest, 25 m², when the bed is a 5 m square.",
@@ -162,10 +164,21 @@ export default lesson((s) => {
       {
         title: "The top of a throw",
         text: "A ball tossed upward has height $h = -16t^2 + 32t + 5$ feet. Completing the square gives $h = 21 - 16(t - 1)^2$, so it peaks after 1 second, 21 feet up, without drawing a graph.",
+        tags: ["sport"],
         image: {
           src: ballTossPeakImage,
           caption: "A ball tossed upward: completing the square shows it peaks after 1 second, 21 feet up, without drawing the graph.",
           alt: "A person throwing a ball, its path a gold dashed parabola, with the ball at the top and a dotted gold line down from the peak marked 21.",
+        },
+      },
+      {
+        title: "A jump that peaks where you want",
+        text: "Platform game designers often choose a jump by its height and the time it takes to reach it, then work out the gravity. A jump 4 tiles high that peaks after 0.4 seconds needs a launch speed of 20 tiles a second and gravity of 50, so the height is $h = 20t - 25t^2$. Completing the square, $h = 4 - 25(t - 0.4)^2$, confirms the peak: 4 tiles up at 0.4 seconds, back down at 0.8.",
+        tags: ["game-design"],
+        image: {
+          src: gameJumpArcImage,
+          caption: "A jump in a platform game: completing the square shows the arc peaks 4 tiles up after 0.4 seconds.",
+          alt: "A red block character on a grassy tile floor, with faded copies at the top and the landing of a dashed gold arc, and a dashed gold line down from the peak marked 4.",
         },
       },
     ],

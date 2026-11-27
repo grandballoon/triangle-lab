@@ -9,6 +9,7 @@
 import { clamp, dist, lerp, type Constraint, type Vec } from "./geo.ts";
 import type { Draw } from "./draw.ts";
 import type { Orbit } from "./solid.ts";
+import type { Topic } from "../uses/topics.ts";
 
 // --- Lesson contract -------------------------------------------------------
 
@@ -40,6 +41,11 @@ export interface Likeness {
 export interface Use {
   title: string;
   text: string;
+  /**
+   * The topics the use comes from, one or more (uses/topics.ts): what the
+   * Uses tab says beside it, and the lists the gallery (uses.html) files it in.
+   */
+  tags: readonly Topic[];
   /** A picture of the use, shown under its text. */
   image?: UseImage;
 }

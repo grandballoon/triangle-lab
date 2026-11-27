@@ -140,6 +140,7 @@ export default lesson((s) => {
       {
         title: "A frame for a picture",
         text: "A 20 by 30 cm print goes in a frame with a border $w$ wide all round, and the whole frame should cover 1200 cm² of wall. Then $(20 + 2w)(30 + 2w) = 1200$, which tidies up to $w^2 + 25w - 150 = 0$ and factors as $(w + 30)(w - 5) = 0$. A border of $-30$ cm makes no sense, so it is 5 cm.",
+        tags: ["home", "carpentry"],
         image: {
           src: pictureFrameBorderImage,
           caption: "A frame round a 20 by 30 cm print: a border of the same width all round, solved from a factored quadratic, comes out at 5 cm.",
@@ -149,6 +150,7 @@ export default lesson((s) => {
       {
         title: "Chairs in rows",
         text: "48 chairs are to be set out in rows, each row two chairs longer than there are rows. With $r$ rows, $r(r + 2) = 48$, so $r^2 + 2r - 48 = (r + 8)(r - 6) = 0$: 6 rows of 8.",
+        tags: ["home"],
         image: {
           src: chairsInRowsImage,
           caption: "48 chairs set out in rows, each row two longer than the number of rows: factoring gives 6 rows of 8.",

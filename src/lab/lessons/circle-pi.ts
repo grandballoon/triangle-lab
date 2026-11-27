@@ -7,7 +7,9 @@ import { C, tint } from "../draw.ts";
 import { add, clamp, fmt, polar, sub, TAU, vec } from "../geo.ts";
 import { lesson } from "../scene.ts";
 import bikeWheelComputerImage from "../../images/bike-wheel-computer.svg";
+import cableDrumTurnsImage from "../../images/cable-drum-turns.svg";
 import cakeRibbonImage from "../../images/cake-ribbon.svg";
+import crochetFlatCircleImage from "../../images/crochet-flat-circle.svg";
 import trundleWheelImage from "../../images/trundle-wheel.svg";
 
 const START_X = -7.2;
@@ -62,6 +64,7 @@ export default lesson((s) => {
       {
         title: "A trundle wheel",
         text: "Groundskeepers and surveyors measure distances with a trundle wheel, a wheel on a handle that clicks once per turn. A wheel whose circumference is exactly $1$ metre has diameter $\\frac{1}{\\pi} \\approx 0.318$ metres, so each click means one metre walked.",
+        tags: ["navigation", "sport"],
         image: {
           src: trundleWheelImage,
           caption: "A trundle wheel: one turn of a wheel with a 1 metre circumference rolls exactly 1 metre along the ground.",
@@ -71,6 +74,7 @@ export default lesson((s) => {
       {
         title: "A bike computer",
         text: "A cycle computer counts turns of the wheel using a magnet on a spoke, and you tell it the wheel's circumference. A wheel about $0.67$ metres across rolls $\\pi \\times 0.67 \\approx 2.1$ metres per turn, so $1000$ turns is about $2.1$ km.",
+        tags: ["travel", "sport"],
         image: {
           src: bikeWheelComputerImage,
           caption: "A bike computer: each turn of a wheel about 0.67 metres across rolls π times that, about 2.1 metres.",
@@ -80,10 +84,31 @@ export default lesson((s) => {
       {
         title: "Ribbon round a cake",
         text: "To tie a ribbon round a round cake $20$ cm across, you need $\\pi \\times 20 \\approx 63$ cm of ribbon, plus a little extra for the bow.",
+        tags: ["home"],
         image: {
           src: cakeRibbonImage,
           caption: "Ribbon round a cake: a cake 20 cm across needs about π × 20, or 63 cm, of ribbon to go once round.",
           alt: "A round iced cake with a candle on a plate, a pink ribbon and bow round its middle. A gold diameter marked 20 crosses the top, and the ribbon's path is traced in gold and marked 63.",
+        },
+      },
+      {
+        title: "Crocheting a flat circle",
+        text: "A crocheted circle lies flat when every round adds the same number of stitches, usually $6$ in single crochet: $6$, $12$, $18$ and so on, so round $n$ has $6n$. Each round makes the radius one stitch taller, which adds $2\\pi \\approx 6.3$ stitch heights to the circumference, and a single crochet stitch is about as wide as it is tall. Double crochet stitches are about twice as tall, so a flat circle in double crochet adds $12$ a round instead.",
+        tags: ["fiber-arts", "trade-tricks"],
+        image: {
+          src: crochetFlatCircleImage,
+          caption: "A crocheted flat circle: each round adds one stitch height to the radius and so about 2π stitches to the circumference, which is why it grows by 6 stitches a round.",
+          alt: "A pink and purple crocheted disc of four rounds seen from above, with stitch marks and the counts 6, 12, 18 and 24 out from the centre, six dashed gold lines where the increases stack, and a crochet hook and yarn at the right.",
+        },
+      },
+      {
+        title: "Cable left on a drum",
+        text: "The cable on a drum can be estimated by counting its turns. One turn round a barrel $40$ cm across, measured to the middle of the cable, holds $\\pi \\times 0.40 \\approx 1.26$ metres, so a layer of $20$ turns is about $25$ metres. Each layer further out wraps a slightly wider circle, so its turns hold a little more.",
+        tags: ["electrical"],
+        image: {
+          src: cableDrumTurnsImage,
+          caption: "Cable on a drum: each turn round a barrel 40 cm across holds π × 0.40, about 1.26 metres, of cable.",
+          alt: "A wooden cable drum seen from the front, with red cable wound in turns between its two flanges and running off to the floor at the right. One turn is traced as a dashed gold ellipse marked 1.26, and a gold bracket marks the barrel 40 across.",
         },
       },
     ],

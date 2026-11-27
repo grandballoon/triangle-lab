@@ -13,6 +13,7 @@ import {
 } from "../kit/triangle-tests.ts";
 import { lesson, type Readout } from "../scene.ts";
 import fireLookoutImage from "../../images/fire-lookout.svg";
+import moonDistanceBaselineImage from "../../images/moon-distance-baseline.svg";
 import roofTrussImage from "../../images/roof-truss.svg";
 import wheelchairRampImage from "../../images/wheelchair-ramp.svg";
 
@@ -284,6 +285,7 @@ export default lesson((s) => {
       {
         title: "Rigid frames",
         text: "A triangle of three bars bolted at the corners cannot change shape, because SSS leaves only one triangle with those lengths. That is why bridges, cranes and roof trusses are built from triangles, while a rectangle of four bars folds flat.",
+        tags: ["building", "machines"],
         image: {
           src: roofTrussImage,
           caption: "A roof truss: each triangle of timbers holds its shape, so the roof keeps its pitch under load.",
@@ -292,6 +294,7 @@ export default lesson((s) => {
       {
         title: "Fixing a position from two angles",
         text: "Two observers a known distance apart each measure the angle to a fire on a hillside. Two angles and the side between them fix one triangle by ASA, so its far corner, the fire, is pinned down. Forest lookouts and surveyors have long located things this way.",
+        tags: ["navigation"],
         image: {
           src: fireLookoutImage,
           caption: "Two lookouts a known distance apart each measure the angle to a fire on a hillside, and those two angles fix where the fire is.",
@@ -301,9 +304,20 @@ export default lesson((s) => {
       {
         title: "Checking a ramp against a plan",
         text: "A wheelchair ramp is drawn as a right triangle with a given length of slope and a given rise. HL says any ramp built with that hypotenuse and that leg has the same angle, so an inspector who measures the two lengths knows the slope without measuring it.",
+        tags: ["building"],
         image: {
           src: wheelchairRampImage,
           caption: "A wheelchair ramp: its slope and its rise fix its angle by HL, so measuring two lengths checks it.",
+        },
+      },
+      {
+        title: "How far away is the Moon?",
+        text: "In 1751 and 1752 Lalande in Berlin and Lacaille at the Cape of Good Hope measured the direction of the Moon at the same moments, from places almost due north and south of each other. The straight line through the Earth between them is about $8700$ kilometres long, and each knew the angle between that line and the Moon. A side and the two angles at its ends fix one triangle by ASA, so its far corner, the Moon, was pinned at about $60$ Earth radii away.",
+        tags: ["astronomy", "navigation"],
+        image: {
+          src: moonDistanceBaselineImage,
+          caption: "Measuring the distance to the Moon: a known baseline across the Earth and the angle to the Moon at each end fix one triangle by ASA.",
+          alt: "The Earth with two observers far apart on its northern and southern halves, and the Moon to the right, joined by a dashed gold triangle whose base runs straight through the Earth between the observers.",
         },
       },
     ],

@@ -21,6 +21,7 @@ import {
 } from "../kit/transformations.ts";
 import { lesson } from "../scene.ts";
 import gameSpriteStepGlideImage from "../../images/game-sprite-step-glide.svg";
+import pianoRollTransposeImage from "../../images/piano-roll-transpose.svg";
 import setSquareSlideRulerImage from "../../images/set-square-slide-ruler.svg";
 import wallpaperPatternRepeatImage from "../../images/wallpaper-pattern-repeat.svg";
 
@@ -74,6 +75,7 @@ export default lesson((s) => {
       {
         title: "Hanging wallpaper",
         text: "Patterned wallpaper repeats: the printer draws one motif and prints it again and again, each copy slid the same distance, called the pattern repeat, down the roll. When you hang the next strip beside the first, you slide it up or down until its pattern lines up with its neighbour's. Because every copy is a translation of the first, matching one flower along the join matches them all.",
+        tags: ["home", "trade-tricks"],
         image: {
           src: wallpaperPatternRepeatImage,
           caption: "Hanging wallpaper: every flower is the first one slid by the same repeat, so lining up one flower across the join lines them all up.",
@@ -83,6 +85,7 @@ export default lesson((s) => {
       {
         title: "Moving a character in a video game",
         text: "A game stores where each character is as a pair of coordinates and, every frame, adds the same step to it. A character at $(100, 40)$ walking with step $(3, -2)$ is drawn at $(103, 38)$, then $(106, 36)$. Every pixel of its picture is shifted by that same step, which is why it glides across the screen without turning or changing size.",
+        tags: ["game-design"],
         image: {
           src: gameSpriteStepGlideImage,
           caption: "A video game character: each frame adds the same step to its position, so it glides across the screen without turning or changing size.",
@@ -92,10 +95,21 @@ export default lesson((s) => {
       {
         title: "Drawing parallel lines with a set square",
         text: "Draughtsmen and carpenters hold a ruler still and slide a set square along it, drawing a line against the set square's edge at each stop. Sliding along the ruler is a translation, so every line drawn is the image of the first and runs parallel to it, just as $A'B'$ runs parallel to $AB$.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: setSquareSlideRulerImage,
           caption: "Drawing parallels: sliding a set square along a held ruler is a translation, so every line drawn against its edge runs parallel to the first.",
           alt: "A purple set square resting on a steel ruler on paper, with gold dashed slanting lines drawn at earlier stops and a gold arrow along the ruler.",
+        },
+      },
+      {
+        title: "Transposing a tune",
+        text: "On a piano roll, the screen a music program shows, each note is a bar whose height is its pitch in semitones and whose position across is its time. Transposing a tune up a fifth slides every bar up $7$ semitones: C, D, E becomes G, A, B, with the rhythm untouched. Every note moves by the same arrow, so the tune keeps its shape and sounds the same, only higher. Repeating the bar later in the song is a translation across instead of up.",
+        tags: ["music"],
+        image: {
+          src: pianoRollTransposeImage,
+          caption: "Transposing on a piano roll: every note slides up the same 7 semitones, so the tune keeps its shape and rhythm.",
+          alt: "A music program's piano roll with a keyboard down the left, three grey note bars low on the grid and three pink copies seven rows higher, each joined to its copy by an identical upward gold dashed arrow marked +7.",
         },
       },
     ],

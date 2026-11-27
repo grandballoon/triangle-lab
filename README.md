@@ -328,6 +328,7 @@ In a lab lesson, pointing at a symbol in a formula highlights what it stands for
 index.html            Lesson menu
 lab.html              Hosts every lab lesson, chosen by ?lesson=<slug>
 recall.html           Asks back the questions noted in the lessons
+uses.html             Every lesson's uses, their pictures by topic, and a viewer that walks a topic
 <slug>.html           One page per standalone lesson (the original triangle set)
 src/lessons.ts        The reading order — the single source of truth
 src/chapters/         The lesson entries, one file per chapter
@@ -335,6 +336,7 @@ src/hands/            Hand tracking as a pointer device, plus its settings panel
 src/lab/              The lab: lesson contract, drawing, geometry, page shell
 src/lab/lessons/      One module per lab lesson
 src/images/           Recommended pictures of the lessons' uses, and the checks they are held to
+src/uses/             The topics uses are tagged with, the Uses tab's pieces, and the gallery page
 src/recall/           Noting questions in a lesson and reviewing them later
 worker/               The Cloudflare Worker: serves the site, syncs recall questions between devices, and has Claude check answers
 src/<slug>.ts         A standalone lesson's entry point
@@ -360,7 +362,7 @@ The menu (`src/index.ts`) and the pager (`src/pager.ts`) both render from that o
 That is all: the menu card, the pager links and the page appear on their own, and `npm test` exercises the new lesson automatically.
 `src/lab/lessons/triangle-angle-sum.ts` is a good model for a stepped proof, and `src/lab/lessons/box-diagonal.ts` for a 3D figure with sliders.
 
-Every lesson says, after its steps, what its idea is like (`likes`: an everyday activity whose structure matches it, saying which part is which) and what it is for (`uses`: concrete real-world applications, with small worked numbers where they help).
+Every lesson says what it is for (`uses`: concrete real-world applications, with small worked numbers where they help), under the step column's first tab, which a lesson opens on; and, after its steps, what its idea is like (`likes`: an everyday activity whose structure matches it, saying which part is which).
 Names, angles, variables and numbers in the step text and formulas lead to the figure on their own: pointing at `AB` draws a line to segment AB, as long as the figure labels its points A and B.
 Pointing at a term also lights the feature it names on the figure, each kind its own way: a point, a segment, a midpoint and its equal halves, an angle's wedge, a polygon, or an area written `[ABC]`.
 Where that is not enough, a lesson can mark a symbol in its formulas with `term(id, tex)` and pass the same `term: id` to the figure marks it stands for, so pointing at it also highlights those marks.
@@ -368,11 +370,28 @@ A mark lights its own shape; add `feature: "area"` (or `"point"`, `"midpoint"`, 
 And it can set pictures on the figure with `g.sprite(src, at)`.
 `src/lab/lessons/exterior-angle.ts` has likes, uses and terms.
 
+### Tagging a use by topic
+
+Every use names the topics it comes from in `tags`, one or more ids from `TOPICS` in `src/uses/topics.ts`: `music`, `carpentry`, `electrical`, `plumbing`, `fiber-arts`, `gardening`, `nature`, `game-design`, `astronomy`, `trade-tricks` (a rule of thumb learned on the job), `building`, `machines`, `computing`, `navigation`, `light`, `art`, `health`, `sport`, `travel`, `home` and `money`.
+
+```ts
+{
+  title: "Bending conduit round an obstacle",
+  text: "…",
+  tags: ["electrical", "trade-tricks"],
+  image: { … },
+},
+```
+
+The Uses tab shows a use's topics as links, and the gallery (`uses.html`) lists every use under each of its topics, in reading order; `uses.html?topic=music` opens on one.
+TypeScript refuses an id that is not a topic, and `npm test` a use without tags, or a field the lessons promise examples from (music, carpentry, electrical work, plumbing, fibre arts, gardening, the natural world, game design and astronomy) with fewer than five.
+To add a topic, add it to `TOPICS`, where its place is its place in every list; to curate a new list, tag the uses that belong in it.
+
 ### Adding a recommended image
 
 A use can carry a picture of itself, chosen for the lesson rather than added by the reader: a roof truss for SSS, a ramp for HL.
-It shows under the use's text in "What will we use this for?", with a caption saying what real use it shows.
-A use without one looks as it always has.
+It shows under the use's text in "What will we use this for?", with a caption saying what real use it shows, and in the gallery (`uses.html`) under each of the use's topics.
+`npm test` asks every use for one, since the gallery is made of them.
 The pictures are part of the site's source, so they are reviewed, versioned and deployed with the lesson, and staging shows them as soon as `main` does.
 
 1. Save the picture in `src/images/`, named in lower-case words joined by hyphens, as `roof-truss.jpg`.
@@ -384,6 +403,7 @@ The pictures are part of the site's source, so they are reviewed, versioned and 
    {
      title: "Rigid frames",
      text: "A triangle of three bars bolted at the corners cannot change shape…",
+     tags: ["building"],
      image: {
        src: roofTruss,
        caption: "A roof truss: each triangle of timbers holds its shape, so the roof keeps its pitch under load.",

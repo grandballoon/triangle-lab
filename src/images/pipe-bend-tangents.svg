@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="290" width="640" height="70" fill="#2a3340"/>
+  <g fill="none" stroke-linecap="butt" stroke-linejoin="round">
+    <path d="M0 240 H320 A120 120 0 0 0 440 120 V0" stroke="#0b0f14" stroke-width="46"/>
+    <path d="M0 240 H320 A120 120 0 0 0 440 120 V0" stroke="#d9a066" stroke-width="34"/>
+    <path d="M0 232 H320 A112 112 0 0 0 432 120 V0" stroke="#f3c9a0" stroke-width="6"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round"><rect x="110" y="214" width="28" height="52" rx="4" fill="#8fa3b8"/><rect x="414" y="40" width="52" height="28" rx="4" fill="#8fa3b8"/></g>
+  <path d="M320 240 H440 V120" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linejoin="round"/>
+  <path d="M424 240 V224 H440" fill="none" stroke="#f2c14e" stroke-width="3"/>
+  <g fill="#f2c14e" stroke="#0b0f14" stroke-width="4"><circle cx="320" cy="240" r="8"/><circle cx="440" cy="120" r="8"/><circle cx="440" cy="240" r="8"/></g>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#f2c14e" stroke="#0b0f14" stroke-width="6" paint-order="stroke" text-anchor="middle"><text x="380" y="286">100</text><text x="500" y="192">100</text></g>
+</svg>

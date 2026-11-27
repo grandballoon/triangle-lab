@@ -35,6 +35,7 @@ export default lesson((s) => {
       {
         title: "Area from three sides",
         text: "Heron's formula finds a triangle's area from its sides alone, using the semiperimeter: $\\text{Area} = \\sqrt{s(s - a)(s - b)(s - c)}$. For a plot with sides $9$, $12$ and $15$ metres, $s = 18$ and the area is $\\sqrt{18 \\cdot 9 \\cdot 6 \\cdot 3} = 54$ square metres. Surveyors can use this to find the area of a plot from three tape measurements, with no angles needed.",
+        tags: ["navigation"],
         image: {
           src: heronPlotImage,
           caption: "Surveying a plot: three tape measurements of 9, 12 and 15 metres are enough for Heron's formula to give its area of 54 square metres.",

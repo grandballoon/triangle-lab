@@ -8,7 +8,9 @@ import {
   add, angleAt, angleOf, dist, fmt, inRing, mid, normalize, polygonArea, regularPolygon, scale, sub, toDeg, vec,
 } from "../geo.ts";
 import { lesson, type Readout } from "../scene.ts";
+import drumEuclideanRhythmImage from "../../images/drum-euclidean-rhythm.svg";
 import gazeboOctagonFloorImage from "../../images/gazebo-octagon-floor.svg";
+import honeycombCellsImage from "../../images/honeycomb-cells.svg";
 import octagonFrameMitreImage from "../../images/octagon-frame-mitre.svg";
 
 const O = vec(0, 0.5);
@@ -68,6 +70,7 @@ export default lesson((s) => {
       {
         title: "Cutting mitres for an octagonal frame",
         text: "To make an eight-sided frame, each corner must be $\\tfrac{180^\\circ \\cdot 6}{8} = 135^\\circ$, so the frame turns through an exterior angle of $45^\\circ$ there, and each of the two pieces meeting at it is cut $22.5^\\circ$ off square. That is the angle set on the mitre saw; for any regular $n$-sided frame it is $\\tfrac{180^\\circ}{n}$.",
+        tags: ["carpentry"],
         image: {
           src: octagonFrameMitreImage,
           caption: "An octagonal frame: each of the eight pieces is cut 22.5° off square, so two pieces meet in a 135° corner.",
@@ -77,10 +80,31 @@ export default lesson((s) => {
       {
         title: "Flooring an octagonal gazebo",
         text: "A regular octagonal gazebo floor with sides of $1.5$ m has apothem $r = \\tfrac{0.75}{\\tan 22.5^\\circ} \\approx 1.81$ m and perimeter $12$ m. Its area is $\\tfrac12 \\cdot 12 \\cdot 1.81 \\approx 10.9$ square metres, which is how much decking to order before allowing for waste.",
+        tags: ["carpentry", "building"],
         image: {
           src: gazeboOctagonFloorImage,
           caption: "An octagonal gazebo floor: half the 12 m perimeter times the 1.81 m apothem gives about 10.9 square metres of decking.",
           alt: "An octagonal wooden floor seen from above with posts at the corners, one triangle from the centre to a side labelled 1.5 and its apothem marked at a right angle.",
+        },
+      },
+      {
+        title: "The wax in a honeycomb",
+        text: "Honeybees build comb from hexagonal cells, and in 1999 Thomas Hales proved that regular hexagons divide a flat sheet into equal cells with the least total wall. A worker cell about $5.4$ mm across its flats has apothem $2.7$ mm and sides of $\\frac{5.4}{\\sqrt3} \\approx 3.12$ mm, so its area is $\\tfrac12 \\cdot 18.7 \\cdot 2.7 \\approx 25.3$ square millimetres. A square cell of the same area needs sides of about $5.03$ mm, a perimeter of $20.1$ mm against the hexagon's $18.7$: around $7\\%$ more wax.",
+        tags: ["nature"],
+        image: {
+          src: honeycombCellsImage,
+          caption: "A honeycomb: each hexagonal cell's area is half its perimeter times its apothem, and no shape of equal cells uses less wall.",
+          alt: "A wooden frame holding a comb of honey-coloured hexagonal cells, some capped in cream and one empty. One cell is outlined in dashed gold, with a gold line from its centre square to the middle of a side.",
+        },
+      },
+      {
+        title: "Spreading beats round a bar",
+        text: "Many traditional rhythms spread a few beats as evenly as possible round a repeating cycle, and in 2005 Godfried Toussaint showed that Euclid's algorithm generates them. Drawn on a circle, the $8$ pulses of a bar are the corners of a regular octagon, each $\\frac{360^\\circ}{8} = 45^\\circ$ round from the next. Three beats cannot sit $120^\\circ$ apart there, so the most even choice puts them on pulses $1$, $4$ and $7$, with gaps of $135^\\circ$, $135^\\circ$ and $90^\\circ$: the tresillo, heard all through Cuban music.",
+        tags: ["music"],
+        image: {
+          src: drumEuclideanRhythmImage,
+          caption: "A drum with the eight pulses of a bar round its head: three beats spread as evenly as the 45° steps allow make the tresillo.",
+          alt: "A drum seen from above, a red rim around a cream head, with two drumsticks beside it. Eight dots sit evenly round a circle on the head; three of them are gold and joined by a dashed gold triangle.",
         },
       },
     ],

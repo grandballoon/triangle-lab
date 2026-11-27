@@ -1,9 +1,14 @@
 // The step column: every step of a lesson as one section of a single
-// scrolling list, followed by its asides: what its idea is like, and what it
-// is used for. The step at the
-// top of the list is the current one, so scrolling through the text is how
-// the reader moves through the proof; pressing a step, the arrow keys and
+// scrolling list, followed by an aside saying what its idea is like. The step
+// at the top of the list is the current one, so scrolling through the text is
+// how the reader moves through the proof; pressing a step, the arrow keys and
 // the hand gestures move it too, and the list scrolls to follow.
+//
+// What the lesson is used for comes first, under a tab of its own at the head
+// of the column, and a lesson opens on it: the reader sees why the idea
+// matters before working through it. Each use names its topics, which link to
+// the gallery of every lesson's uses by topic (uses.html). Moving to a step
+// by key, gesture or link turns to the steps.
 //
 // On a phone the list is paged instead (`setPaged`): one step shows at a
 // time, under a row with buttons to the previous and next, and the list's
@@ -23,7 +28,8 @@
 import "./steps.css";
 import { linkTex } from "./link.ts";
 import { richHtml } from "./math.ts";
-import type { Asides, Likeness, Step, Use, UseImage } from "./scene.ts";
+import type { Asides, Likeness, Step, Use } from "./scene.ts";
+import { galleryHref, topicChips, useFigure } from "../uses/markup.ts";
 
 /** A step becomes current once its top is scrolled this close to the list's top. */
 const ACTIVE_LINE_PX = 48;
@@ -36,6 +42,8 @@ const PAGED_BOTTOM_PX = 10;
 
 export const LIKES_HEADING = "What is this like?";
 export const USES_HEADING = "What will we use this for?";
+/** The tab the uses are under. */
+export const USES_TAB = "Uses";
 
 /** Who has asked for the page's step column before it was built. */
 const waiting = new Set<(column: StepList) => void>();
@@ -64,6 +72,8 @@ export class StepList {
   private readonly next: HTMLButtonElement;
   /** The row of tabs and the panes beside the steps, once a pane is added. */
   private tabs: { row: HTMLElement; steps: HTMLButtonElement; panes: Pane[] } | null = null;
+  /** The lesson's uses, the first pane, under the first tab; added once a lesson has any. */
+  private readonly uses: HTMLElement;
   /** The pane shown in the steps' place, or null while the steps show. */
   private shown: HTMLElement | null = null;
   /** Who hears each time the list is built for a lesson. */
@@ -110,6 +120,10 @@ export class StepList {
     this.pager.append(this.prev, this.pagerLabel, this.next);
     host.parentElement?.insertBefore(this.pager, host);
 
+    this.uses = doc.createElement("section");
+    this.uses.className = "uses-pane";
+    this.uses.setAttribute("aria-label", USES_HEADING);
+
     host.addEventListener("scroll", () => this.onScroll(), { passive: true });
     host.addEventListener("scrollend", () => this.settle());
 
@@ -123,7 +137,11 @@ export class StepList {
     this.shownListeners.push(listener);
   }
 
-  /** Build the list for a lesson, scrolled to its first step. */
+  /**
+   * Build the list for a lesson, scrolled to its first step, and its uses,
+   * which show first; unless the reader has another pane open, as when the
+   * lab swaps lessons in place under an explanation.
+   */
   show(steps: readonly Step[], asides: Asides): void {
     const doc = this.host.ownerDocument;
     const single = steps.length === 1;
@@ -159,9 +177,9 @@ export class StepList {
 
     this.track.replaceChildren(...this.sections);
     const nodes: HTMLElement[] = [this.track];
-    if (asides.likes.length > 0) nodes.push(asideSection(doc, LIKES_HEADING, asides.likes));
-    if (asides.uses.length > 0) nodes.push(asideSection(doc, USES_HEADING, asides.uses));
+    if (asides.likes.length > 0) nodes.push(likesSection(doc, asides.likes));
     this.host.replaceChildren(...nodes, this.spacer);
+    this.showUses(asides.uses);
     this.host.toggleAttribute("data-single", single);
     this.pager.hidden = single;
     this.current = 0;
@@ -178,36 +196,70 @@ export class StepList {
    */
   addPane(label: string, pane: HTMLElement, onShow: () => void = () => {}): void {
     const column = this.host.parentElement;
-    if (!column) return;
-    const doc = this.host.ownerDocument;
-    const tab = (text: string, shows: HTMLElement | null): HTMLButtonElement => {
-      const b = doc.createElement("button");
-      b.type = "button";
-      b.className = "column-tab";
-      b.textContent = text;
-      b.setAttribute("role", "tab");
-      b.addEventListener("click", () => {
-        this.showPane(shows);
-        if (shows) onShow();
-      });
-      return b;
-    };
-    if (!this.tabs) {
-      const row = doc.createElement("div");
-      row.className = "column-tabs";
-      row.setAttribute("role", "tablist");
-      const steps = tab("Steps", null);
-      row.append(steps);
-      // Under anything that heads the column (the grip, sheet-grip.ts), over the pager.
-      column.insertBefore(row, this.pager.parentElement === column ? this.pager : this.host);
-      this.tabs = { row, steps, panes: [] };
-    }
-    const other = tab(label, pane);
-    this.tabs.row.append(other);
+    const tabs = this.ensureTabs();
+    if (!column || !tabs) return;
+    const other = this.tab(label, pane, onShow);
+    tabs.row.append(other);
     pane.classList.add("column-pane");
     column.append(pane);
-    this.tabs.panes.push({ tab: other, pane });
+    tabs.panes.push({ tab: other, pane });
     this.showPane(this.shown);
+  }
+
+  /** A tab that shows `shows`, or the steps for null, telling `onShow`. */
+  private tab(text: string, shows: HTMLElement | null, onShow: () => void = () => {}): HTMLButtonElement {
+    const b = this.host.ownerDocument.createElement("button");
+    b.type = "button";
+    b.className = "column-tab";
+    b.textContent = text;
+    b.setAttribute("role", "tab");
+    b.addEventListener("click", () => {
+      this.showPane(shows);
+      if (shows) onShow();
+    });
+    return b;
+  }
+
+  /** The row of tabs, built with a tab back to the steps the first time it is asked for. */
+  private ensureTabs(): NonNullable<StepList["tabs"]> | null {
+    if (this.tabs) return this.tabs;
+    const column = this.host.parentElement;
+    if (!column) return null;
+    const row = this.host.ownerDocument.createElement("div");
+    row.className = "column-tabs";
+    row.setAttribute("role", "tablist");
+    const steps = this.tab("Steps", null);
+    row.append(steps);
+    // Under anything that heads the column (the grip, sheet-grip.ts), over the pager.
+    column.insertBefore(row, this.pager.parentElement === column ? this.pager : this.host);
+    this.tabs = { row, steps, panes: [] };
+    return this.tabs;
+  }
+
+  /**
+   * Fill the uses pane for a lesson and show it, adding it as the first tab
+   * the first time a lesson has uses. A lesson without any hides its tab.
+   */
+  private showUses(uses: readonly Use[]): void {
+    const doc = this.host.ownerDocument;
+    this.uses.replaceChildren(...(uses.length > 0 ? usesContent(doc, uses) : []));
+    let pane = this.tabs?.panes.find((p) => p.pane === this.uses);
+    if (!pane && uses.length > 0) {
+      const tabs = this.ensureTabs();
+      const column = this.host.parentElement;
+      if (!tabs || !column) return;
+      pane = { tab: this.tab(USES_TAB, this.uses), pane: this.uses };
+      tabs.row.prepend(pane.tab);
+      this.uses.classList.add("column-pane");
+      column.append(this.uses);
+      tabs.panes.unshift(pane);
+    }
+    if (!pane) return;
+    pane.tab.hidden = uses.length === 0;
+    this.uses.scrollTop = 0;
+    const other = this.shown !== null && this.shown !== this.uses;
+    if (uses.length === 0) this.showPane(this.shown === this.uses ? null : this.shown);
+    else if (!other) this.showPane(this.uses);
   }
 
   /** Show `pane`, one added beside the steps, in the steps' place; or, for null, the steps. */
@@ -252,6 +304,8 @@ export class StepList {
 
   /** Show `step` as current, scrolling it into place when `scroll` is set. */
   mark(step: number, scroll: boolean): void {
+    // A step asked for by key, gesture or link is shown, so the uses give way to it.
+    if (scroll && this.shown === this.uses) this.showPane(null);
     this.current = step;
     this.sections.forEach((s, i) => {
       if (i === step) s.setAttribute("aria-current", "step");
@@ -324,13 +378,13 @@ export class StepList {
   }
 }
 
-/** One of the lesson's asides, collapsed at first and opened by its heading. */
-function asideSection(doc: Document, heading: string, items: readonly (Likeness | Use)[]): HTMLElement {
+/** What the lesson's idea is like, after the steps, collapsed at first and opened by its heading. */
+function likesSection(doc: Document, items: readonly Likeness[]): HTMLElement {
   const section = doc.createElement("details");
   section.className = "aside";
   const summary = doc.createElement("summary");
   const head = doc.createElement("h2");
-  head.textContent = heading;
+  head.textContent = LIKES_HEADING;
   summary.append(head);
   section.append(summary);
   for (const entry of items) {
@@ -341,25 +395,35 @@ function asideSection(doc: Document, heading: string, items: readonly (Likeness 
     const text = doc.createElement("p");
     text.innerHTML = richHtml(entry.text);
     item.append(title, text);
-    if ("image" in entry && entry.image) item.append(useFigure(doc, entry.image));
     section.append(item);
   }
   return section;
 }
 
-/** A use's recommended picture and its caption, loaded only once its aside is opened. */
-function useFigure(doc: Document, image: UseImage): HTMLElement {
-  const figure = doc.createElement("figure");
-  figure.className = "aside-figure";
-  const img = doc.createElement("img");
-  img.src = image.src;
-  img.alt = image.alt ?? "";
-  img.setAttribute("loading", "lazy");
-  img.setAttribute("decoding", "async");
-  const caption = doc.createElement("figcaption");
-  caption.textContent = image.caption;
-  figure.append(img, caption);
-  return figure;
+/**
+ * The uses pane's content: its heading, each use with its topics, text and
+ * picture, and a link to every lesson's uses.
+ */
+function usesContent(doc: Document, uses: readonly Use[]): HTMLElement[] {
+  const head = doc.createElement("h2");
+  head.className = "uses-heading";
+  head.textContent = USES_HEADING;
+  const items = uses.map((use) => {
+    const item = doc.createElement("article");
+    item.className = "aside-item";
+    const title = doc.createElement("h3");
+    title.textContent = use.title;
+    const text = doc.createElement("p");
+    text.innerHTML = richHtml(use.text);
+    item.append(title, topicChips(doc, use.tags), text);
+    if (use.image) item.append(useFigure(doc, use.image));
+    return item;
+  });
+  const more = doc.createElement("a");
+  more.className = "uses-more";
+  more.href = galleryHref(null);
+  more.textContent = "Every lesson's uses, by topic";
+  return [head, ...items, more];
 }
 
 function reducedMotion(): boolean {

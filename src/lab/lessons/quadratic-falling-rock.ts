@@ -10,6 +10,7 @@ import { axes, onStage, plot, type Graph } from "../kit/algebra.ts";
 import { lesson, type Readout } from "../scene.ts";
 import carBrakingDistanceImage from "../../images/car-braking-distance.svg";
 import fountainJetArcImage from "../../images/fountain-jet-arc.svg";
+import gannetDiveImage from "../../images/gannet-dive.svg";
 import wellPebbleDropImage from "../../images/well-pebble-drop.svg";
 
 const ROCK = C.orange;
@@ -134,6 +135,7 @@ export default lesson((s) => {
       {
         title: "How deep is the well?",
         text: "Drop a pebble down a well and count 2 seconds to the splash. Ignoring the moment the sound takes to come back up, it fell $16t^2 = 16 \\cdot 2^2 = 64$ feet. For a well you know is 100 feet deep, you solve $16t^2 = 100$ instead: the splash comes after 2.5 seconds.",
+        tags: ["trade-tricks"],
         image: {
           src: wellPebbleDropImage,
           caption: "A pebble dropped down a well: it falls 16t² feet in t seconds, so a splash after 2 seconds means the water is 64 feet down.",
@@ -143,6 +145,7 @@ export default lesson((s) => {
       {
         title: "Anything thrown or dropped",
         text: "A ball's height, a fountain's jet and a diver's path all carry the same $-16t^2$ (in feet) or $-4.9t^2$ (in metres). Asking when they reach a given height is always a quadratic equation.",
+        tags: ["sport"],
         image: {
           src: fountainJetArcImage,
           caption: "A fountain's jet follows a parabola, so asking when the water is at a given height is a quadratic equation with two answers, on the way up and on the way down.",
@@ -152,10 +155,21 @@ export default lesson((s) => {
       {
         title: "Stopping distance",
         text: "A car braking from speed $v$ travels $vt - \\tfrac12 a t^2$ in $t$ seconds, so the time to cover a given distance, or to stop short of something, comes from a quadratic.",
+        tags: ["travel"],
         image: {
           src: carBrakingDistanceImage,
           caption: "A car braking before a zebra crossing: it covers less ground each second as it slows, so the time to stop comes from a quadratic.",
           alt: "A purple car on a road heading towards a zebra crossing, with a gold dashed distance line whose ticks, one per second, get closer together until it stops.",
+        },
+      },
+      {
+        title: "A gannet's dive",
+        text: "A northern gannet hunts by plunging on fish from as high as 30 metres, wings swept back. If it simply fell, its height above the sea would be $30 - 4.9t^2$ metres, which reaches 0 when $t^2 = \\frac{30}{4.9}$: after about 2.5 seconds. By then it would be falling at $9.8 \\times 2.5 \\approx 24$ metres a second, close to 90 km/h. Filmed dives suggest the bird times the final folding of its wings not by its height but by how fast the image of the water grows in its eyes.",
+        tags: ["nature"],
+        image: {
+          src: gannetDiveImage,
+          caption: "A diving gannet: dropping from 30 metres, it falls 4.9t² metres in t seconds and reaches the sea after about 2.5 seconds.",
+          alt: "A white gannet with black wingtips plunging beak first toward blue waves, beside a dashed gold line from the top of the picture to the sea marked 30 m, with ticks at equal moments spaced ever wider apart.",
         },
       },
     ],

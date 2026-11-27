@@ -50,6 +50,7 @@ export default lesson((s) => {
       {
         title: "Sharing a triangular field",
         text: "Two farmers share a triangular field equally. A fence from one corner to the midpoint of the far side, a median, splits it into two pieces of equal area, because both pieces have half that side as a base and the same height up to the corner. Laying it out takes only a tape measure, to find the midpoint, and no angles at all.",
+        tags: ["navigation"],
         image: {
           src: medianFieldImage,
           caption: "Sharing a field: a fence from one corner to the midpoint of the far side, a median, splits a triangular field into two pieces of equal area.",

@@ -6,6 +6,7 @@ import { C, tint } from "../draw.ts";
 import { dist, fmt, inRing, polygonArea, TAU, vec, type Vec } from "../geo.ts";
 import { agree, outline } from "../kit/areas.ts";
 import { lesson } from "../scene.ts";
+import octagonPostMarkingImage from "../../images/octagon-post-marking.svg";
 import pipeWallRingImage from "../../images/pipe-wall-ring.svg";
 import stopSignCutImage from "../../images/stop-sign-cut.svg";
 
@@ -77,6 +78,7 @@ export default lesson((s) => {
       {
         title: "How much metal is in a pipe?",
         text: "A pipe's cross-section is a ring. A pipe 10 cm across with walls 1 cm thick has outer radius 5 cm and inner radius 4 cm, so its wall has area $\\pi \\cdot 5^2 - \\pi \\cdot 4^2 = 9\\pi \\approx 28.3$ square centimetres. Multiply by the length to find how much metal it takes.",
+        tags: ["plumbing", "machines"],
         image: {
           src: pipeWallRingImage,
           caption: "A pipe seen end on: its wall is a ring, the area between an outer circle of radius 5 cm and an inner one of radius 4 cm.",
@@ -86,10 +88,21 @@ export default lesson((s) => {
       {
         title: "Cutting a stop sign",
         text: "Stop signs are regular octagons, sized by their width across the flat sides, which is the square of this lesson. A sign 75 cm across has $s = \\frac{75}{1 + \\sqrt2} \\approx 31.1$ cm. Cut from a 75 cm square sheet, it uses $75^2 - s^2 \\approx 4660$ square centimetres, and the four corners thrown away add up to $s^2 \\approx 965$.",
+        tags: ["machines", "travel"],
         image: {
           src: stopSignCutImage,
           caption: "Cutting a stop sign: a regular octagon cut from a 75 cm square sheet, with four triangular corners thrown away.",
           alt: "A red octagonal sign with a cream rim on a square steel sheet. The square is outlined in dashed gold, the side is marked 75, and the four corner triangles left over are shaded gold.",
+        },
+      },
+      {
+        title: "Planing an octagonal post",
+        text: "To plane a square post or table leg into a regular octagon, a carpenter marks each face in from both corners and planes the corners off down to the lines. The square is $s(1 + \\sqrt2)$ wide and each mark sits $\\frac{s}{\\sqrt2}$ from a corner, a fraction $\\frac{1}{2 + \\sqrt2} \\approx 0.29$ of the width: about $26$ mm on a $90$ mm post. On the job the quick way is a compass set to half the diagonal: an arc from each corner through the centre cuts the faces at exactly those marks, since $90 - \\frac{90}{\\sqrt2} \\approx 26$ mm.",
+        tags: ["carpentry", "trade-tricks"],
+        image: {
+          src: octagonPostMarkingImage,
+          caption: "The end of a square post marked out for an octagon: each corner comes off 0.29 of the width in, where an arc from the corner through the centre meets the faces.",
+          alt: "The square end of a wooden post with growth rings, the post running back behind it. A dashed gold regular octagon sits inside the square with its four corner triangles shaded gold, a thin gold arc runs from one corner's mark through the centre to the next face, and the cut along one side is marked 0.29.",
         },
       },
     ],

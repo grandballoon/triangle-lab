@@ -30,6 +30,7 @@ import {
 import { lesson } from "../scene.ts";
 import ballBearingRingsImage from "../../images/ball-bearing-rings.svg";
 import meshingGearsImage from "../../images/meshing-gears.svg";
+import shrubSpacingSpreadsImage from "../../images/shrub-spacing-spreads.svg";
 
 const R_MIN = 0.6;
 const R_MAX = 2.6;
@@ -195,6 +196,7 @@ export default lesson((s) => {
       {
         title: "Meshing gears",
         text: "Two gears mesh as if two circles, their pitch circles, were touching from outside, so the axles must be the sum of the pitch radii apart: gears of radius $3$ cm and $5$ cm sit $8$ cm apart. When a small gear runs inside a ring gear, as in a planetary gearbox, the circles touch from inside and the axles are the difference apart.",
+        tags: ["machines"],
         image: {
           src: meshingGearsImage,
           caption: "Meshing gears: their pitch circles touch from outside, so gears of radius 5 cm and 3 cm sit 8 cm apart.",
@@ -204,10 +206,21 @@ export default lesson((s) => {
       {
         title: "Sizing a ball bearing",
         text: "In a ball bearing each ball touches the inner ring from outside and the outer ring from inside. With an inner ring of radius $10$ mm and balls of radius $3$ mm, the ball centres sit $10 + 3 = 13$ mm from the axle, so the outer ring must have radius $13 + 3 = 16$ mm.",
+        tags: ["machines"],
         image: {
           src: ballBearingRingsImage,
           caption: "A ball bearing: each ball touches the inner ring from outside and the outer ring from inside, so with a 10 mm inner ring and 3 mm balls the outer ring has radius 16 mm.",
           alt: "Front view of a ball bearing: ten balls held between an inner and an outer steel ring. A gold dashed circle runs through the ball centres, and a gold radius is marked 10 at the inner ring and 16 at the outer ring.",
+        },
+      },
+      {
+        title: "Spacing two shrubs",
+        text: "Gardeners space two plants by how far each spreads when fully grown: the centres go half of one spread plus half of the other apart, so that the grown plants just touch, like circles touching from outside. A shrub that spreads $1.2$ metres beside one that spreads $0.8$ metres goes $0.6 + 0.4 = 1$ metre away. Any closer and they crowd each other; any further and there is bare ground between them.",
+        tags: ["gardening"],
+        image: {
+          src: shrubSpacingSpreadsImage,
+          caption: "Spacing two shrubs: planting them half of one spread plus half of the other apart lets them just touch when grown, like circles touching from outside.",
+          alt: "Two round shrubs seen from above on brown soil, one large and green, one smaller with pink flowers, each ringed by a dashed gold circle. A gold line joins their centres through the point where they touch, marked 0.6 and 0.4, with a span marked 1.0 below.",
         },
       },
     ],

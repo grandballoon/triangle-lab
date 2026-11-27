@@ -112,6 +112,7 @@ export default lesson((s) => {
       {
         title: "Old 4:3 TV screens",
         text: "Older TVs and computer monitors had a 4 to 3 shape, and screens are sold by their diagonal. Since $(3, 4, 5)$ is a triple, a 4:3 screen's width, height and diagonal are always in the ratio $4 : 3 : 5$. A 20-inch one is exactly 16 inches wide and 12 tall: the triple scaled by 4.",
+        tags: ["light"],
         image: {
           src: oldTv43Image,
           caption: "An old 4:3 television: its screen's width, height and diagonal are always in the ratio 4 : 3 : 5.",
@@ -121,6 +122,7 @@ export default lesson((s) => {
       {
         title: "Marking out a sports pitch",
         text: "Groundskeepers marking a football or rugby pitch need corners that are truly square over long distances. They scale up a triple to suit: 30, 40 and 50 metres, which is $(3, 4, 5)$ times 10. Measuring along longer sides makes a small error in the tape matter much less to the angle.",
+        tags: ["sport", "trade-tricks"],
         image: {
           src: sportsPitchCornerImage,
           caption: "Marking out a pitch: tapes of 30, 40 and 50 metres, the triple 3, 4, 5 scaled by 10, set a truly square corner.",

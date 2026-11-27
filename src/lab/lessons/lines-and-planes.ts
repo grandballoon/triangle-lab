@@ -117,6 +117,7 @@ export default lesson((s) => {
       {
         title: "Setting a fence post plumb",
         text: "Builders check a fence post or a door frame with a spirit level held against two neighbouring faces, not just one. A post can read perfectly vertical on its front face while leaning sideways, just as a line can make one right angle with the plane and still be tilted. Once both faces read level, the post is perpendicular to the ground.",
+        tags: ["carpentry", "building", "trade-tricks"],
         image: {
           src: fencePostSpiritLevelImage,
           caption: "A fence post checked with a spirit level on two neighbouring faces: only when both read true is the post at right angles to the ground in every direction.",
@@ -126,6 +127,7 @@ export default lesson((s) => {
       {
         title: "Measuring a ceiling with a laser",
         text: "A laser measure held on the floor and pointed straight up gives the true ceiling height, the perpendicular distance. Tilt it by $10^\\circ$ under a $2.4$ m ceiling and the beam travels along a hypotenuse instead, reading about $2.44$ m. That is why such tools are held against a flat surface, or take the smallest of several readings.",
+        tags: ["building", "home"],
         image: {
           src: laserCeilingHeightImage,
           caption: "A laser measure on the floor: straight up it reads the true 2.4 m ceiling height, but tilted by 10° the beam runs along a longer hypotenuse.",
@@ -135,6 +137,7 @@ export default lesson((s) => {
       {
         title: "Do the two cables touch?",
         text: "Game and physics engines often model rods, limbs and cables as capsules: line segments with a thickness. To test whether two of them collide, the engine finds the closest points of the two segments, which are usually skew in space. If that gap is smaller than the two thicknesses added together, they touch.",
+        tags: ["game-design", "computing"],
         image: {
           src: gameCapsuleCablesImage,
           caption: "Two capsules in a game engine: the engine finds the shortest gap between their skew centre lines and compares it with their thicknesses added together.",

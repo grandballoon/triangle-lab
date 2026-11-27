@@ -9,6 +9,7 @@ import { degTex, farArc, nameOutside } from "../kit/circle-angles.ts";
 import { lesson, type Readout } from "../scene.ts";
 import centreFinderDowelImage from "../../images/centre-finder-dowel.svg";
 import curveJoiningRoadsImage from "../../images/curve-joining-roads.svg";
+import pipeBendTangentsImage from "../../images/pipe-bend-tangents.svg";
 
 const O = vec(2.3, 0);
 const R = 3;
@@ -124,6 +125,7 @@ export default lesson((s) => {
       {
         title: "Joining two straight roads with a curve",
         text: "Where two straight roads or railway lines meet at an angle, engineers join them with a circular curve that touches each one. The points where the curve begins and ends are the points of contact of two tangents from the corner, so they are the same distance back along each straight. Surveyors work out that distance once, measure it back from the corner along both roads, and start and end the curve there.",
+        tags: ["travel", "building"],
         image: {
           src: curveJoiningRoadsImage,
           caption: "Two straight roads joined by a circular curve: the curve starts and ends the same distance back from the corner along each road.",
@@ -133,10 +135,21 @@ export default lesson((s) => {
       {
         title: "Finding the centre of a round bar",
         text: "A woodworker's centre finder is a V with a straight blade along the line that bisects it. Push a dowel or a round bar into the V and it touches both arms equally far from the tip, so the blade runs through its centre. Scribe a line along the blade, turn the bar a quarter turn, scribe again, and the centre is where the two lines cross.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: centreFinderDowelImage,
           caption: "A woodworker's centre finder: a round bar touches both arms of the V equally far from its tip, so the blade crosses its centre.",
           alt: "The end of a round wooden bar sitting in a V-shaped tool, touching both arms at marked points with equal ticks, a steel blade up the middle, and two dashed scribed lines crossing at its centre.",
+        },
+      },
+      {
+        title: "Bending pipe round a corner",
+        text: "When copper pipe or electrical conduit is bent through $90^\\circ$, the bend is an arc that touches both straight runs. The two tangents from the corner, where the runs' centre lines would meet, to the ends of the bend are equal, each the bend's radius $R$: with $R = 100$ mm, the bend starts $100$ mm before the corner on each run. The arc is $\\tfrac{\\pi}{2} \\cdot 100 \\approx 157$ mm against $200$ mm for the two tangents, so the pipe is about $43$ mm shorter than its two legs measured to the corner; electricians call this the gain.",
+        tags: ["plumbing", "electrical", "trade-tricks"],
+        image: {
+          src: pipeBendTangentsImage,
+          caption: "A copper pipe bent round a corner: the bend starts and ends one radius, 100 mm, from where the straight runs would meet.",
+          alt: "A copper pipe held by two clips, running along above the floor and then bending up a wall in a quarter circle. Dashed gold lines continue both straight runs to the corner they would meet at, each marked 100, with gold dots at the corner and at both ends of the bend.",
         },
       },
     ],

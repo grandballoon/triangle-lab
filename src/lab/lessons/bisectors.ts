@@ -59,6 +59,7 @@ export default lesson((s) => {
       {
         title: "Mitring a picture frame",
         text: "Each corner of a picture frame is $90^\\circ$, and the two pieces of moulding meet along the corner's bisector, each cut at $45^\\circ$. Cutting both at half the corner angle makes their ends exactly the same length, so the decorative profile lines up all the way round the joint.",
+        tags: ["carpentry", "home"],
         image: {
           src: pictureFrameMitreImage,
           caption: "A picture frame: each 90° corner is cut along its bisector, so both pieces of moulding meet at 45°.",
@@ -68,6 +69,7 @@ export default lesson((s) => {
       {
         title: "Where a goalkeeper stands",
         text: "Goalkeepers in football and hockey are coached to stand on the line that bisects the angle between the ball and the two goalposts. From the ball's point of view, the keeper then covers the same angle of goal on each side, leaving no easier side to shoot at.",
+        tags: ["sport"],
         image: {
           src: goalkeeperAngleImage,
           caption: "A goalkeeper standing on the line that bisects the angle between the ball and the two goalposts covers the same angle of goal on each side.",

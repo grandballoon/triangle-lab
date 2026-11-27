@@ -26,6 +26,9 @@ import { lesson, term, type Readout } from "../scene.ts";
 import gamePlanetOrbitImage from "../../images/game-planet-orbit.svg";
 import hillGradientSignImage from "../../images/hill-gradient-sign.svg";
 import mainsSineWaveImage from "../../images/mains-sine-wave.svg";
+import pianoTuningBeatsImage from "../../images/piano-tuning-beats.svg";
+import threePhaseWavesImage from "../../images/three-phase-waves.svg";
+import tuningForkA440Image from "../../images/tuning-fork-a440.svg";
 
 const CENTER = vec(-5.6, 0);
 const R = 1.6; // stage units in the length called 1
@@ -107,6 +110,7 @@ export default lesson((s) => {
       {
         title: "Mains electricity",
         text: "A power-station generator turns a coil of wire in a magnetic field. The voltage it makes follows how much of the coil faces the field, which goes as $\\sin\\theta$, so the electricity at a socket is a sine wave. In Europe the coil turns $50$ times a second, so the wave repeats $50$ times a second.",
+        tags: ["electrical"],
         image: {
           src: mainsSineWaveImage,
           caption: "Mains electricity: the voltage at a wall socket rises and falls as a sine wave, repeating 50 times a second in Europe.",
@@ -116,6 +120,7 @@ export default lesson((s) => {
       {
         title: "Moving round a circle in a game",
         text: "To send a planet round a sun at distance $r$, a game places it at $x = r\\cos\\theta$, $y = r\\sin\\theta$ and makes $\\theta$ a little bigger each frame. It is exactly the radius turning in this lesson, and the planet's two coordinates are the two waves.",
+        tags: ["game-design"],
         image: {
           src: gamePlanetOrbitImage,
           caption: "A planet orbiting a sun in a game: it sits at r cos θ across and r sin θ up, and growing θ each frame carries it round the circle.",
@@ -125,10 +130,41 @@ export default lesson((s) => {
       {
         title: "How steep is a slope",
         text: "A road sign giving a hill as $10\\%$ means it rises $10$ m for every $100$ m across: its slope is $\\tan\\theta = 0.1$, so it climbs at about $5.7^\\circ$. Slope is just tangent: the rise for each $1$ of run, like the height on the tangent wall.",
+        tags: ["travel"],
         image: {
           src: hillGradientSignImage,
           caption: "A 10% hill sign: the road rises 10 metres for every 100 across, so its slope is tan θ = 0.1, a climb of about 5.7°.",
           alt: "A red triangular road sign reading 10% beside a road that climbs gently to the right. A long, thin dashed gold right triangle sits under the road, with its right angle at the top end.",
+        },
+      },
+      {
+        title: "The pitch of a note",
+        text: "A tuning fork for the A above middle C makes the air pressure at the ear rise and fall as a sine wave $440$ times a second: $440$ hertz. In this lesson's picture, that is the radius going round $440$ times a second, so one turn takes $\\frac{1}{440}$ of a second, about $2.3$ milliseconds. The A an octave higher goes round twice as fast, $880$ times a second, and the one an octave lower half as fast, $220$.",
+        tags: ["music"],
+        image: {
+          src: tuningForkA440Image,
+          caption: "A tuning fork sounding the A above middle C: the air pressure it makes is a sine wave, going round 440 times a second.",
+          alt: "A steel tuning fork with sound lines beside its prongs, and a dashed gold sine wave running across a thin axis, labelled 440 a second.",
+        },
+      },
+      {
+        title: "Three-phase power",
+        text: "Factories and the grid carry three-phase power: three wires whose voltages are the same sine wave, each a third of a turn, $120^\\circ$, behind the one before. At every moment the three add up to zero; at $\\theta = 90^\\circ$, for instance, $\\sin 90^\\circ + \\sin 210^\\circ + \\sin 330^\\circ = 1 - \\frac{1}{2} - \\frac{1}{2} = 0$. So when the three wires feed equal loads their currents cancel on the way back, and the shared return wire carries almost nothing.",
+        tags: ["electrical"],
+        image: {
+          src: threePhaseWavesImage,
+          caption: "Three-phase power: three sine waves a third of a turn apart, which add up to zero at every moment.",
+          alt: "A grey electricity pylon beside three sine waves in red, blue and green, each shifted a third of a wave from the next, crossing a dashed gold axis.",
+        },
+      },
+      {
+        title: "Tuning by listening for beats",
+        text: "Play a note of $440$ hertz beside one of $442$ and the sound swells and fades twice a second. The faster wave gains $2$ whole turns a second on the slower, so twice a second the two are in step and add up, and in between they are half a turn apart and cancel. Piano tuners listen for these beats and turn the tuning pin until they slow down and stop, which means the two strings match.",
+        tags: ["music", "trade-tricks"],
+        image: {
+          src: pianoTuningBeatsImage,
+          caption: "Two piano strings slightly out of tune: their waves drift in and out of step, so the sound swells and fades in beats, 2 a second for 440 and 442 hertz.",
+          alt: "A blue wave that swells and shrinks inside a dashed gold envelope, above a piano keyboard.",
         },
       },
     ],

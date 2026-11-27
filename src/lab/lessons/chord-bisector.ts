@@ -79,6 +79,7 @@ export default lesson((s) => {
       {
         title: "Finding the centre of a wooden disc",
         text: "Woodturners need the exact centre of a round blank before mounting it on the lathe. Draw any two chords across it, mark each one's midpoint, and draw the line at right angles through each midpoint. Both lines pass through the centre, so it lies where they cross.",
+        tags: ["carpentry", "trade-tricks"],
         image: {
           src: discCentreImage,
           caption: "Finding the centre of a wooden disc: the perpendicular bisectors of any two chords both pass through the centre, so it lies where they cross.",
@@ -88,6 +89,7 @@ export default lesson((s) => {
       {
         title: "Setting out a curved arch",
         text: "A builder wants a shallow arch over a doorway 2 metres wide, rising 0.5 metres in the middle. The line from the centre of the circle through the top of the arch is perpendicular to the span and halves it, which makes a right triangle with legs 1 and $R - 0.5$ and hypotenuse $R$. So $R^2 = 1^2 + (R - 0.5)^2$, giving $R = 1.25$ metres: they swing a string that long from a peg to draw the curve.",
+        tags: ["building"],
         image: {
           src: doorArchImage,
           caption: "Setting out a shallow arch over a doorway: the line from the circle's centre through the top of the arch halves the span at right angles, so a right triangle gives the radius of string to swing.",
@@ -97,6 +99,7 @@ export default lesson((s) => {
       {
         title: "Bolt holes round a circle",
         text: "Machinists marking holes evenly round a flange often set a pair of dividers to the right chord length and step it round the circle. Equal chords cut equal arcs, so the holes come out evenly spaced. For six holes the chord is exactly the radius, which is also how you draw a hexagon with a pair of compasses.",
+        tags: ["machines", "trade-tricks"],
         image: {
           src: flangeBoltHolesImage,
           caption: "Bolt holes round a flange: dividers stepped round at one chord length cut equal arcs, and for six holes that chord equals the radius.",

@@ -8,6 +8,7 @@ import { lesson, type Readout } from "../scene.ts";
 import { dist3, faces, label3, lerp3, Orbit, p3, path3, point3, segment3, type Face, type P3 } from "../solid.ts";
 import { glass, outlineRulings } from "../kit/solids.ts";
 import concreteColumnPourImage from "../../images/concrete-column-pour.svg";
+import raisedBedSoilImage from "../../images/raised-bed-soil.svg";
 import spiralHandrailUnrolledImage from "../../images/spiral-handrail-unrolled.svg";
 import tinLabelUnrolledImage from "../../images/tin-label-unrolled.svg";
 
@@ -117,6 +118,7 @@ export default lesson((s) => {
       {
         title: "Printing a label for a tin",
         text: "A tin $7.4$ cm across needs a label as wide as its circumference, $2\\pi \\cdot 3.7 \\approx 23.2$ cm, plus a little overlap for the glue. The label's height is the tin's height. This is the unrolled wall, a rectangle $2\\pi r$ by $h$, cut from a flat sheet.",
+        tags: ["home"],
         image: {
           src: tinLabelUnrolledImage,
           caption: "A tin's label unrolled: a rectangle as wide as the tin's circumference, about 23.2 cm for a 7.4 cm tin, and as tall as the tin, plus a strip for the glue.",
@@ -126,6 +128,7 @@ export default lesson((s) => {
       {
         title: "Concrete for a round column",
         text: "A builder pouring a round column $0.6$ m across and $3$ m tall orders $V = Bh = \\pi \\cdot 0.3^2 \\cdot 3 \\approx 0.85$ cubic metres of concrete. The same base-times-height rule works for square or hexagonal columns, with $B$ the area of their cross-section.",
+        tags: ["building"],
         image: {
           src: concreteColumnPourImage,
           caption: "A round concrete column being poured: its volume is the circular base area times the 3 m height.",
@@ -135,10 +138,21 @@ export default lesson((s) => {
       {
         title: "The handrail of a spiral staircase",
         text: "The handrail of a spiral staircase is a spiral on a cylinder. If the rail rises $3$ m in one full turn at a radius of $0.8$ m, unrolling the cylinder turns it into the hypotenuse of a right triangle with legs $3$ and $2\\pi \\cdot 0.8$. So the rail is about $\\sqrt{3^2 + 5.03^2} \\approx 5.85$ m long.",
+        tags: ["building", "carpentry"],
         image: {
           src: spiralHandrailUnrolledImage,
           caption: "A spiral staircase handrail: unrolling the cylinder turns the spiral into the hypotenuse of a right triangle with legs 3 m and 5.03 m.",
           alt: "A wooden handrail spiralling once round a pale cylinder with a gold dashed seam, beside the unrolled rectangle where the rail becomes the hypotenuse of a gold right triangle marked 3 and 5.03.",
+        },
+      },
+      {
+        title: "Filling a raised bed",
+        text: "A raised bed $2.4$ m long, $1.2$ m wide and $0.3$ m deep is a prism with a rectangular base. It takes $V = Bh = 2.4 \\cdot 1.2 \\cdot 0.3 \\approx 0.86$ cubic metres of soil, which is $864$ litres, so a little over seventeen $50$-litre bags; a gardener buys eighteen. Many fill a new bed slightly above the rim, since fresh soil settles in its first season.",
+        tags: ["gardening"],
+        image: {
+          src: raisedBedSoilImage,
+          caption: "Filling a raised bed: its soil is a prism, base area times depth, 2.4 by 1.2 by 0.3 metres, about 0.86 cubic metres.",
+          alt: "A wooden raised bed full of brown soil with four green seedlings, standing on grass, outlined by a gold dashed box with edges marked 2.4, 1.2 and 0.3.",
         },
       },
     ],

@@ -74,6 +74,7 @@ export default lesson((s) => {
       {
         title: "Grid references on a map",
         text: "Ordnance Survey maps name a spot by eastings then northings: how far across, then how far up, just like $(x, y)$. A six-figure reference such as 123 456 means 12.3 km east and 45.6 km north of the south-west corner of its 100 km square. Walkers learn it as “along the corridor, then up the stairs”.",
+        tags: ["navigation"],
         image: {
           src: osMapGridReferenceImage,
           caption: "A map grid reference: go along the eastings first, then up the northings, just like finding the point (x, y).",
@@ -83,6 +84,7 @@ export default lesson((s) => {
       {
         title: "Radar screens",
         text: "Radar finds a ship or aircraft by how far away it is and in which direction, a polar address. To plot it on a map, the computer converts with $x = r\\cos\\theta$ and $y = r\\sin\\theta$. One catch: navigators measure bearings clockwise from north, so a bearing of $90^\\circ$ means due east, $\\theta = 0^\\circ$.",
+        tags: ["navigation", "travel"],
         image: {
           src: radarScreenBlipImage,
           caption: "A radar screen: a blip found by its distance and direction is turned into x and y with r cos θ and r sin θ.",

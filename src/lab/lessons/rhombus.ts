@@ -8,6 +8,7 @@ import { C, tint } from "../draw.ts";
 import { add, angleAt, angleOf, clamp, dist, fmt, mid, polar, polygonArea, sub, toDeg, toRad, vec, type Vec } from "../geo.ts";
 import { GLASS, same } from "../kit/quadrilaterals.ts";
 import { lesson } from "../scene.ts";
+import fabricBiasCutImage from "../../images/fabric-bias-cut.svg";
 import leadedWindowDiamondsImage from "../../images/leaded-window-diamonds.svg";
 import scissorJackImage from "../../images/scissor-jack.svg";
 
@@ -83,6 +84,7 @@ export default lesson((s) => {
       {
         title: "A car's scissor jack",
         text: "A scissor jack is a rhombus of four equal arms. Turning the handle draws the two side hinges together, shortening the horizontal diagonal, and the vertical diagonal grows to lift the car. With arms of $25$ cm and the side hinges $40$ cm apart, the jack stands $2\\sqrt{25^2 - 20^2} = 30$ cm tall; squeeze the side hinges to $30$ cm apart and it rises to $2\\sqrt{25^2 - 15^2} = 40$ cm.",
+        tags: ["machines", "travel"],
         image: {
           src: scissorJackImage,
           caption: "A car's scissor jack: its four equal arms form a rhombus, so drawing the side hinges together lengthens the upright diagonal and lifts the car.",
@@ -92,10 +94,21 @@ export default lesson((s) => {
       {
         title: "Diamond panes in a leaded window",
         text: "Old leaded windows are often glazed with diamond-shaped panes. A glazier working out how much glass to cut can use the diagonals: a pane $20$ cm tall and $12$ cm across has area $\\tfrac12 \\cdot 20 \\cdot 12 = 120$ square centimetres.",
+        tags: ["building", "home"],
         image: {
           src: leadedWindowDiamondsImage,
           caption: "An old leaded window glazed with diamond panes: each pane's area is half the product of its diagonals.",
           alt: "A wooden window frame filled with diamond-shaped panes in a lead lattice, one pane highlighted with its diagonals marked 20 tall and 12 across, crossing at right angles.",
+        },
+      },
+      {
+        title: "Cutting fabric on the bias",
+        text: "Woven cloth is a grid of threads at right angles, so each little cell is a square. Pull it along the bias, a diagonal at $45^\\circ$ to the threads, and the cells lean into rhombuses: the threads keep their length, while one diagonal grows and the other shrinks. A cell of side $1$ mm, with diagonals of about $1.41$ mm, can stretch to diagonals of $1.6$ mm and $1.2$ mm, since $0.8^2 + 0.6^2 = 1^2$. That give is why binding and piping that must bend round curves are cut on the bias, while along the threads the cloth hardly stretches.",
+        tags: ["fiber-arts"],
+        image: {
+          src: fabricBiasCutImage,
+          caption: "Cutting on the bias: pulled along a diagonal, each square cell of the weave leans into a rhombus with the same sides, so the cloth stretches.",
+          alt: "A red woven fabric swatch with a square thread grid and a gold dashed strip marked across it at 45 degrees, beside a magnified cell stretched into a rhombus with gold dashed diagonals marked 1.6 and 1.2, a side marked 1, and arrows pulling it wider.",
         },
       },
     ],

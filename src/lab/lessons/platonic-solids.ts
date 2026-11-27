@@ -11,6 +11,7 @@ import { convexHull, glass, len3, type Polyhedron } from "../kit/solids.ts";
 import fivePlatonicDiceImage from "../../images/five-platonic-dice.svg";
 import footballSeamsCountImage from "../../images/football-seams-count.svg";
 import geodesicDomeIcosahedronImage from "../../images/geodesic-dome-icosahedron.svg";
+import icosahedralVirusShellImage from "../../images/icosahedral-virus-shell.svg";
 
 const PHI = (1 + Math.sqrt(5)) / 2;
 const SIGNS = [-1, 1];
@@ -104,6 +105,7 @@ export default lesson((s) => {
       {
         title: "Fair dice",
         text: "Tabletop games use dice shaped like all five solids: four, six, eight, twelve and twenty sides. Because every face and every corner of a Platonic solid is exactly alike, no face is favoured, so each number is equally likely to land on top.",
+        tags: ["sport"],
         image: {
           src: fivePlatonicDiceImage,
           caption: "Dice shaped like all five Platonic solids: every face is alike, so each number is equally likely to land on top.",
@@ -113,6 +115,7 @@ export default lesson((s) => {
       {
         title: "Counting the seams on a football",
         text: "A classic football is stitched from $12$ pentagons and $20$ hexagons. Every seam joins two panels, so there are $\\tfrac{12 \\cdot 5 + 20 \\cdot 6}{2} = 90$ seams, and three panels meet at each corner, giving $\\tfrac{180}{3} = 60$ corners. Euler's formula checks the count: $60 - 90 + 32 = 2$.",
+        tags: ["sport"],
         image: {
           src: footballSeamsCountImage,
           caption: "A classic football of 12 pentagons and 20 hexagons: counting its seams and corners checks Euler's formula.",
@@ -122,10 +125,21 @@ export default lesson((s) => {
       {
         title: "Geodesic domes",
         text: "Geodesic domes and many 3D-modelled spheres start from an icosahedron and split each triangle into smaller ones. Splitting each of the $20$ faces into $4$ gives $80$ faces, $120$ edges and $42$ corners. Before building, a designer can check such counts with $V - E + F = 2$: here $42 - 120 + 80 = 2$.",
+        tags: ["building", "game-design"],
         image: {
           src: geodesicDomeIcosahedronImage,
           caption: "A geodesic dome: each triangle of an icosahedron is split into four smaller ones, and V − E + F = 2 checks the counts.",
           alt: "A dome of steel and glass triangles on grass; one large triangle split into four is dashed gold.",
+        },
+      },
+      {
+        title: "Virus shells shaped like icosahedra",
+        text: "Many viruses, including those behind most common colds and herpes, wrap their genes in a shell shaped like an icosahedron. The shell is made of many copies of the same few proteins, and the icosahedron's $20$ identical faces let identical pieces close up into a round shell: the simplest such shells have $3$ copies of one protein on each face, $60$ in all. A virus has room in its genes for only a few proteins, so building its shell from one repeated part is a great saving.",
+        tags: ["nature"],
+        image: {
+          src: icosahedralVirusShellImage,
+          caption: "A virus shell: its 20 identical triangular faces let many copies of one protein close into a round case.",
+          alt: "A purple icosahedron with gold dashed edges and three pink protein blobs on each visible face, with short grey spikes ending in pink knobs sticking out from its outer corners.",
         },
       },
     ],
