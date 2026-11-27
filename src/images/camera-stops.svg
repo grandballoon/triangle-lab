@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <circle cx="85" cy="160" r="70" fill="#8fa3b8"/><circle cx="235" cy="160" r="70" fill="#8fa3b8"/><circle cx="385" cy="160" r="70" fill="#8fa3b8"/><circle cx="535" cy="160" r="70" fill="#8fa3b8"/>
+    <circle cx="85" cy="160" r="58" fill="#0f1620" stroke="none"/><circle cx="235" cy="160" r="58" fill="#0f1620" stroke="none"/><circle cx="385" cy="160" r="58" fill="#0f1620" stroke="none"/><circle cx="535" cy="160" r="58" fill="#0f1620" stroke="none"/>
+  </g>
+  <g fill="#f3ead8">
+    <circle cx="85" cy="160" r="56"/>
+    <circle cx="235" cy="160" r="39.6"/>
+    <circle cx="385" cy="160" r="28"/>
+    <circle cx="535" cy="160" r="19.8"/>
+  </g>
+  <path d="M29 160 H141 M195.4 160 H274.6 M357 160 H413 M515.2 160 H554.8" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="8 6"/>
+  <g font-family="system-ui, sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#f3ead8">
+    <text x="85" y="290">1</text><text x="235" y="290">1/2</text><text x="385" y="290">1/4</text><text x="535" y="290">1/8</text>
+  </g>
+</svg>

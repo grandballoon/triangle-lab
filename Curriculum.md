@@ -119,8 +119,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 **Algebra**
 
-- [ ] 1 Exponents and Logarithms: integer and fractional exponents, simplifying radicals, rationalizing denominators, logarithms.
-  `Vol 1 - The Basics/01_logarithms_exponents/` was started for it and is empty.
+- [x] 1 Exponents and Logarithms: integer and fractional exponents, simplifying radicals, rationalizing denominators, logarithms.
+  Now the Exponents & Logarithms chapter (`exponents.ts`), seven lab lessons.
 - [ ] 2 Complex Numbers: the square root of −1, complex number operations.
 - [ ] 4 Proportions: direct and inverse variation, manipulating proportions, conversion factors, percent.
 - [ ] 7 Special Factorizations and Clever Manipulations.

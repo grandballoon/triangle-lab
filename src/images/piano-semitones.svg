@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g fill="#f3ead8" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="64" y="150" width="64" height="170" rx="4"/><rect x="128" y="150" width="64" height="170" rx="4"/><rect x="192" y="150" width="64" height="170" rx="4"/><rect x="256" y="150" width="64" height="170" rx="4"/><rect x="320" y="150" width="64" height="170" rx="4"/><rect x="384" y="150" width="64" height="170" rx="4"/><rect x="448" y="150" width="64" height="170" rx="4"/><rect x="512" y="150" width="64" height="170" rx="4"/>
+  </g>
+  <g fill="#0f1620" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round">
+    <rect x="109" y="150" width="38" height="100" rx="3"/><rect x="237" y="150" width="38" height="100" rx="3"/><rect x="301" y="150" width="38" height="100" rx="3"/><rect x="429" y="150" width="38" height="100" rx="3"/><rect x="493" y="150" width="38" height="100" rx="3"/>
+  </g>
+  <path d="M96 136 Q112 104 128 136 M128 136 Q144 104 160 136 M160 136 Q192 104 224 136 M224 136 Q240 104 256 136 M256 136 Q272 104 288 136 M288 136 Q304 104 320 136 M320 136 Q336 104 352 136 M352 136 Q384 104 416 136 M416 136 Q432 104 448 136 M448 136 Q464 104 480 136 M480 136 Q496 104 512 136 M512 136 Q528 104 544 136" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f2c14e"><circle cx="96" cy="136" r="5"/><circle cx="128" cy="136" r="5"/><circle cx="160" cy="136" r="5"/><circle cx="224" cy="136" r="5"/><circle cx="256" cy="136" r="5"/><circle cx="288" cy="136" r="5"/><circle cx="320" cy="136" r="5"/><circle cx="352" cy="136" r="5"/><circle cx="416" cy="136" r="5"/><circle cx="448" cy="136" r="5"/><circle cx="480" cy="136" r="5"/><circle cx="512" cy="136" r="5"/><circle cx="544" cy="136" r="5"/></g>
+  <g font-family="system-ui, sans-serif" font-size="30" font-weight="700" text-anchor="middle">
+    <text x="96" y="78" fill="#f3ead8">220 Hz</text><text x="544" y="78" fill="#f3ead8">440 Hz</text>
+    <text x="96" y="302" fill="#131a23">A</text><text x="544" y="302" fill="#131a23">A</text>
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M104 220 L96 252 H148 L140 220 Z" fill="#8fa3b8"/>
+    <rect x="40" y="100" width="164" height="120" rx="10" fill="#2a3340"/>
+    <rect x="52" y="112" width="140" height="96" rx="4" fill="#0f1620"/>
+    <rect x="290" y="30" width="220" height="220" rx="8" fill="#0f1620"/>
+    <rect x="302" y="42" width="60" height="196" rx="4" fill="#e8655f"/>
+    <rect x="370" y="42" width="60" height="196" rx="4" fill="#5fbf72"/>
+    <rect x="438" y="42" width="60" height="196" rx="4" fill="#5fb0e8"/>
+  </g>
+  <rect x="146" y="136" width="8" height="8" fill="#f3ead8"/>
+  <path d="M154 136 L290 30 M154 144 L290 250" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round"/>
+  <path d="M310 56 H354 M378 56 H422 M446 56 H490 M310 72 H354 M378 72 H422 M446 72 H490 M310 88 H354 M378 88 H422 M446 88 H490 M310 104 H354 M378 104 H422 M446 104 H490 M310 120 H354 M378 120 H422 M446 120 H490 M310 136 H354 M378 136 H422 M446 136 H490 M310 152 H354 M378 152 H422 M446 152 H490 M310 168 H354 M378 168 H422 M446 168 H490 M310 184 H354 M378 184 H422 M446 184 H490 M310 200 H354 M378 200 H422 M446 200 H490 M310 216 H354 M378 216 H422 M446 216 H490 M310 232 H354 M378 232 H422 M446 232 H490" fill="none" stroke="#0b0f14" stroke-width="7" stroke-linecap="round"/>
+  <path d="M310 56 H354 M378 56 H422 M446 56 H490 M310 72 H354 M378 72 H422 M446 72 H490 M310 88 H354 M378 88 H422 M446 88 H490 M310 104 H354 M378 104 H422 M446 104 H490 M310 120 H354 M378 120 H422 M446 120 H490 M310 136 H354 M378 136 H422 M446 136 H490 M310 152 H354 M378 152 H422 M446 152 H490 M310 168 H354 M378 168 H422 M446 168 H490 M310 184 H354 M378 184 H422 M446 184 H490 M310 200 H354 M378 200 H422 M446 200 H490 M310 216 H354 M378 216 H422 M446 216 H490 M310 232 H354 M378 232 H422 M446 232 H490" fill="none" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"/>
+  <text x="400" y="312" font-family="system-ui, sans-serif" font-size="36" font-weight="700" text-anchor="middle" fill="#f3ead8">(2⁸)³ = 2²⁴</text>
+</svg>
