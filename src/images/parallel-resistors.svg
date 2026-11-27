@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M80 92 V228 M290 92 V228" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="square"/>
+  <path d="M80 92 V228 M290 92 V228" fill="none" stroke="#8fa3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="square"/>
+  <path d="M80 92 H290" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M80 92 H290" fill="none" stroke="#8fa3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="140" y="75" width="90" height="34" fill="#f3ead8" rx="6"/></g>
+  <text x="185" y="101" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">6 Ω</text>
+  <path d="M80 228 H290" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M80 228 H290" fill="none" stroke="#8fa3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="140" y="211" width="90" height="34" fill="#f3ead8" rx="6"/></g>
+  <text x="185" y="237" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">12 Ω</text>
+  <path d="M30 160 H80 M290 160 H340" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M30 160 H80 M290 160 H340" fill="none" stroke="#8fa3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="80" cy="160" r="8" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="290" cy="160" r="8" fill="#8fa3b8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="380" y="174" font-family="system-ui, sans-serif" font-weight="700" font-size="44" text-anchor="middle" fill="#f3ead8">=</text>
+  <path d="M420 160 H610" fill="none" stroke="#0b0f14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M420 160 H610" fill="none" stroke="#8fa3b8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="470" y="143" width="90" height="34" fill="#f2c14e" rx="6"/></g>
+  <text x="515" y="169" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">4 Ω</text>
+  <text x="320" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#f3ead8">(6 − 4)(12 − 4) = <tspan fill="#f2c14e">16</tspan></text>
+  <text x="320" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">also 5 Ω and 20 Ω, or 8 Ω and 8 Ω</text>
+</svg>

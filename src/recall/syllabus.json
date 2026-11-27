@@ -1433,6 +1433,66 @@
         "prime-factorization"
       ]
     },
+    "square-of-sum": {
+      "source": "6c1c801d480c",
+      "teaches": [
+        "$(a + b)^2 = a^2 + 2ab + b^2$: a square of side $a + b$ cuts into $a^2$, $b^2$ and two $a \\times b$ strips, so $(a + b)^2 \\ne a^2 + b^2$.",
+        "$(a - b)^2 = a^2 - 2ab + b^2$, the same formula with $-b$ for $b$.",
+        "Squaring in your head by splitting off a round number: $51^2 = 2500 + 100 + 1$.",
+        "$(a + b)^2 - (a - b)^2 = 4ab$, from four strips round a square."
+      ],
+      "builds_on": [
+        "quadratic-factoring"
+      ]
+    },
+    "difference-of-squares": {
+      "source": "f56c0980d2b9",
+      "teaches": [
+        "$a^2 - b^2 = (a + b)(a - b)$: the L left when a corner square is cut out slides into an $(a + b) \\times (a - b)$ rectangle.",
+        "A product of two numbers equally either side of a round number is a difference of squares: $47 \\cdot 53 = 50^2 - 3^2$.",
+        "Factoring $x^2 - k^2 = (x + k)(x - k)$ finds its roots $\\pm k$.",
+        "$(n + 1)^2 - n^2 = 2n + 1$, so the first $n$ odd numbers add up to $n^2$."
+      ],
+      "builds_on": [
+        "square-of-sum"
+      ]
+    },
+    "sum-of-cubes": {
+      "source": "e0d78c460d88",
+      "teaches": [
+        "$a^3 - b^3 = (a - b)(a^2 + ab + b^2)$: a cube with a corner cube removed splits into three slabs $a - b$ thick.",
+        "$a^3 + b^3 = (a + b)(a^2 - ab + b^2)$, by putting $-b$ for $b$.",
+        "A sum of cubes factors though a sum of squares does not: $1001 = 10^3 + 1 = 11 \\cdot 91$."
+      ],
+      "builds_on": [
+        "difference-of-squares"
+      ]
+    },
+    "completing-rectangle": {
+      "source": "03c38011c330",
+      "teaches": [
+        "$xy + ax + by + ab = (x + b)(y + a)$: adding the missing corner completes the rectangle.",
+        "To solve $xy + ax + by = c$, add $ab$ to both sides to get $(x + b)(y + a) = c + ab$.",
+        "Whole-number solutions come from the factor pairs of $c + ab$."
+      ],
+      "builds_on": [
+        "square-of-sum",
+        "prime-factorization"
+      ]
+    },
+    "sums-and-products": {
+      "source": "688eb0cbc23f",
+      "teaches": [
+        "Knowing $s = x + y$ and $p = xy$ gives $x^2 + y^2 = s^2 - 2p$ without finding $x$ and $y$.",
+        "$x$ and $y$ are the roots of $t^2 - st + p$, real only when $s^2 \\ge 4p$.",
+        "Power sums follow $x^n + y^n = s(x^{n-1} + y^{n-1}) - p(x^{n-2} + y^{n-2})$, so $x^3 + y^3 = s^3 - 3ps$.",
+        "$\\frac{1}{x} + \\frac{1}{y} = \\frac{s}{p}$."
+      ],
+      "builds_on": [
+        "square-of-sum",
+        "quadratic-formula"
+      ]
+    },
     "quadratic-falling-rock": {
       "source": "b7b808f26104",
       "teaches": [

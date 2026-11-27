@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="46" y="58" width="258" height="258" fill="#f2c14e"/><rect x="71.8" y="83.8" width="206.4" height="206.4" fill="#0f1620"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><path d="M71.8 232.4 L144 170.5 L191.5 211.8 L226.6 187 L278.2 228.3 V290.2 H71.8 Z" fill="#5a6878"/><circle cx="220.4" cy="135.4" r="16" fill="#8fa3b8"/></g>
+  <rect x="71.8" y="83.8" width="206.4" height="206.4" fill="none" stroke="#0b0f14" stroke-width="5"/>
+  <path d="M55.8 36 L294.2 36" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M304 36 L291.4 29.9 L291.4 42.1 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M46 36 L58.6 42.1 L58.6 29.9 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="175" y="45" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">30 cm</text>
+  <path d="M81.6 261.3 L268.4 261.3" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M278.2 261.3 L265.6 255.2 L265.6 267.4 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M71.8 261.3 L84.4 267.4 L84.4 255.2 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="175" y="270.3" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">24 cm</text>
+  <text x="480" y="96" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">30² − 24²</text>
+  <text x="480" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="25" text-anchor="middle" fill="#8fa3b8">= (30 + 24)(30 − 24)</text>
+  <text x="480" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">= 54 × 6</text>
+  <text x="480" y="280" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#f3ead8">= <tspan fill="#f2c14e">324 cm²</tspan></text>
+</svg>
