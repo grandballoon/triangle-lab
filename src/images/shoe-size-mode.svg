@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round" fill="#5fb0e8"><rect x="78" y="208" width="84" height="52" rx="4"/><path d="M78 222 H162"/><rect x="178" y="208" width="84" height="52" rx="4"/><path d="M178 222 H262"/><rect x="178" y="156" width="84" height="52" rx="4"/><path d="M178 170 H262"/><rect x="378" y="208" width="84" height="52" rx="4"/><path d="M378 222 H462"/><rect x="478" y="208" width="84" height="52" rx="4"/><path d="M478 222 H562"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round" fill="#f2c14e"><rect x="278" y="208" width="84" height="52" rx="4"/><path d="M278 222 H362"/><rect x="278" y="156" width="84" height="52" rx="4"/><path d="M278 170 H362"/><rect x="278" y="104" width="84" height="52" rx="4"/><path d="M278 118 H362"/></g>
+  <text x="320" y="88" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f2c14e">mode 8</text>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f3ead8"><text x="120" y="292">6</text><text x="220" y="292">7</text><text x="320" y="292" fill="#f2c14e">8</text><text x="420" y="292">9</text><text x="520" y="292">10</text></g>
+  <path d="M307.5 302 L298.5 316 H316.5 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="307.5" y="344" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">mean 7.875</text>
+</svg>

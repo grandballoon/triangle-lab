@@ -25,6 +25,7 @@ import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
 import { polygons } from "./chapters/polygons.ts";
 import { potpourri } from "./chapters/potpourri.ts";
+import { probability } from "./chapters/probability.ts";
 import { power } from "./chapters/power.ts";
 import { quadratic } from "./chapters/quadratic.ts";
 import { quadrilaterals } from "./chapters/quadrilaterals.ts";
@@ -379,6 +380,26 @@ export const chapters: Chapter[] = [
       "Stretching and reflecting a graph",
     ],
     lessons: functions,
+  },
+  {
+    title: "Statistics and Probability",
+    blurb: "Averages of data, chances counted from equally likely outcomes, and what a game is worth in the long run.",
+    axioms: [
+      "Mean as balance point",
+      "Median and mode",
+      "Range",
+      "P = favourable ÷ possible",
+      "Complement: 1 − P",
+      "Independent events multiply",
+      "Dependent events multiply too",
+      "Casework: disjoint cases add",
+      "Odds as part to part",
+      "Odds a : b means P = a/(a + b)",
+      "Expected value as weighted average",
+      "Fair game: expected value 0",
+      "Expectations add",
+    ],
+    lessons: probability,
   },
   {
     title: "Power of a Point",

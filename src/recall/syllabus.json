@@ -1787,6 +1787,77 @@
         "distortion"
       ]
     },
+    "mean-median-mode": {
+      "source": "14bcfb16f63f",
+      "teaches": [
+        "The mean is the sum of the values divided by how many there are; it is their balance point, where the distances below it add to the distances above.",
+        "The median is the middle value once the values are in order; with an even number of values it is the mean of the two middle ones.",
+        "The mode is the value that occurs most often, and a list can have more than one; the range is the greatest value minus the least.",
+        "One extreme value, an outlier, shifts the mean but not the median."
+      ],
+      "builds_on": []
+    },
+    "dice-outcomes": {
+      "source": "6641580ca363",
+      "teaches": [
+        "When all $n$ outcomes are equally likely, the probability of an event is the number of outcomes in it over $n$, and it always lies between 0 (impossible) and 1 (certain).",
+        "Two dice, told apart as first and second, have $6 \\cdot 6 = 36$ equally likely outcomes; a sum of 7 comes from 6 of them, so $P(7) = \\frac{6}{36} = \\frac{1}{6}$.",
+        "The 11 sums from 2 to 12 are not equally likely: count the equally likely outcomes, not the results, so $P(2) = \\frac{1}{36}$, not $\\frac{1}{11}$.",
+        "In many trials an event of probability $P$ happens about $P$ times the number of trials.",
+        "The complement: $P(\\text{not } E) = 1 - P(E)$, so $P(\\text{at least one } 6 \\text{ on two dice}) = 1 - \\frac{25}{36} = \\frac{11}{36}$."
+      ],
+      "builds_on": []
+    },
+    "multiplying-probabilities": {
+      "source": "52051b8dac75",
+      "teaches": [
+        "Probability can be drawn as area in a unit square standing for every outcome: an event of probability $p$ covers area $p$, and $\\text{not } A$ the rest, $1 - p$.",
+        "Events are independent when one happening does not change the chance of the other; then $P(A \\text{ and } B) = P(A) \\cdot P(B)$.",
+        "$P(\\text{at least one}) = 1 - (1 - p)(1 - q)$ for independent events, not $p + q$, which counts the case where both happen twice.",
+        "When the second event depends on the first, multiply the first probability by the second given the first: drawing two red from 3 red and 2 blue without replacement is $\\frac{3}{5} \\cdot \\frac{2}{4} = \\frac{3}{10}$."
+      ],
+      "builds_on": [
+        "dice-outcomes"
+      ]
+    },
+    "probability-casework": {
+      "source": "cf04733f9032",
+      "teaches": [
+        "Casework: split the outcomes of an event into cases that do not overlap and together cover it, count each, and add.",
+        "On two dice, the first beats the second in $1 + 2 + 3 + 4 + 5 = 15$ of 36 outcomes, $P = \\frac{5}{12}$.",
+        "Overlapping cases count shared outcomes twice: for an even product use first even (18) and first odd, second even (9), giving $\\frac{27}{36} = \\frac{3}{4}$.",
+        "When cases have different probabilities, weigh each by its probability and add: $P(E) = \\sum P(\\text{case}) \\cdot P(E \\text{ given the case})$, as $\\frac{1}{2} \\cdot \\frac{1}{2} + \\frac{1}{2} \\cdot 1 = \\frac{3}{4}$ for a fair coin or a two-headed one."
+      ],
+      "builds_on": [
+        "multiplying-probabilities"
+      ]
+    },
+    "odds-probability": {
+      "source": "fa30a56115a9",
+      "teaches": [
+        "With $a$ favourable and $b$ unfavourable equally likely outcomes, the probability is part over whole, $P = \\frac{a}{a + b}$.",
+        "Odds compare part to part: $a : b$ in favour and $b : a$ against; a probability of $\\frac{1}{4}$ is odds of $1 : 3$, not $1 : 4$.",
+        "Odds of $a : b$ in favour give $P = \\frac{a}{a + b}$, and a probability $p$ gives odds of $p : (1 - p)$; even odds, $1 : 1$, are $P = \\frac{1}{2}$.",
+        "A bet paid at the odds against, winning $b$ for every $a$ staked at odds $b : a$ against, is fair: over many bets it gains nothing either way."
+      ],
+      "builds_on": [
+        "dice-outcomes"
+      ]
+    },
+    "expected-value": {
+      "source": "2eb2ef048ef0",
+      "teaches": [
+        "The expected value is the long-run average of a random quantity: over many rolls a fair die averages $\\frac{1 + 2 + 3 + 4 + 5 + 6}{6} = 3.5$, though no roll is 3.5.",
+        "$E = \\sum x \\cdot P(x)$, each value times its probability, added: the balance point of the values weighted by their probabilities.",
+        "A game paying $W$ with probability $p$ and otherwise losing a stake of 1 has $E = pW - (1 - p)$.",
+        "A game is fair when $E = 0$; here that means $W = \\frac{1 - p}{p}$, paying at the odds against.",
+        "Expectations add: the sum of two dice has $E = 3.5 + 3.5 = 7$, and 10 coin flips have an expected 5 heads."
+      ],
+      "builds_on": [
+        "mean-median-mode",
+        "odds-probability"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [
