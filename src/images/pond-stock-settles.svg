@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M40 300 H440" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M40 60 H440" stroke="#f2c14e" stroke-width="4" stroke-dasharray="14 10"/>
+  <path d="M60 252 L96 213.6 L132 182.9 L168 158.3 L204 138.6 L240 122.9 L276 110.3 L312 100.3 L348 92.2 L384 85.8 L420 80.6" fill="none" stroke="#0b0f14" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M60 252 L96 213.6 L132 182.9 L168 158.3 L204 138.6 L240 122.9 L276 110.3 L312 100.3 L348 92.2 L384 85.8 L420 80.6" fill="none" stroke="#5fb0e8" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#f3ead8" stroke="#0b0f14" stroke-width="4"><circle cx="60" cy="252" r="8"/><circle cx="96" cy="213.6" r="8"/><circle cx="132" cy="182.9" r="8"/><circle cx="168" cy="158.3" r="8"/><circle cx="204" cy="138.6" r="8"/><circle cx="240" cy="122.9" r="8"/><circle cx="276" cy="110.3" r="8"/><circle cx="312" cy="100.3" r="8"/><circle cx="348" cy="92.2" r="8"/><circle cx="384" cy="85.8" r="8"/><circle cx="420" cy="80.6" r="8"/></g>
+  <text x="48" y="244" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#f3ead8">100</text>
+  <text x="84" y="205.6" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#f3ead8">180</text>
+  <text x="120" y="174.9" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#f3ead8">244</text>
+  <text x="156" y="150.3" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#f3ead8">295</text>
+  <text x="440" y="46" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="end" fill="#f2c14e">500 fish</text>
+  <text x="440" y="334" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">years</text>
+  <text x="545" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">p next =</text>
+  <text x="545" y="202" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">0.8p + 100</text>
+</svg>

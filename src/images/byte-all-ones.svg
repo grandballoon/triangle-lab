@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="29" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="103" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="177" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="251" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="325" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="399" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="473" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/><rect x="547" y="96" width="64" height="72" rx="8" fill="#5fb0e8"/></g>
+  <text x="61" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">128</text>
+  <text x="135" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">64</text>
+  <text x="209" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">32</text>
+  <text x="283" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">16</text>
+  <text x="357" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">8</text>
+  <text x="431" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">4</text>
+  <text x="505" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">2</text>
+  <text x="579" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">1</text>
+  <text x="61" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="135" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="209" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="283" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="357" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="431" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="505" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="579" y="147" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">1</text>
+  <path d="M36 190 V202 H604 V190 M320 202 V214" fill="none" stroke="#f2c14e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="320" y="262" font-family="system-ui, sans-serif" font-weight="700" font-size="44" text-anchor="middle" fill="#f2c14e">255</text>
+  <text x="320" y="326" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f3ead8">2⁸ − 1 = <tspan fill="#f2c14e">255</tspan></text>
+</svg>

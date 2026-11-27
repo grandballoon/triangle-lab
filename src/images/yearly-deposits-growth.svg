@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="34" y="63.3" width="33" height="232.7" fill="#f2c14e"/><rect x="75" y="74.4" width="33" height="221.6" fill="#5fb0e8"/><rect x="116" y="84.9" width="33" height="211.1" fill="#5fb0e8"/><rect x="157" y="95" width="33" height="201" fill="#5fb0e8"/><rect x="198" y="104.6" width="33" height="191.4" fill="#5fb0e8"/><rect x="239" y="113.7" width="33" height="182.3" fill="#5fb0e8"/><rect x="280" y="122.4" width="33" height="173.6" fill="#5fb0e8"/><rect x="321" y="130.6" width="33" height="165.4" fill="#5fb0e8"/><rect x="362" y="138.5" width="33" height="157.5" fill="#5fb0e8"/><rect x="403" y="146" width="33" height="150" fill="#5fb0e8"/></g>
+  <path d="M24 296 H444" stroke="#0b0f14" stroke-width="6"/>
+  <text x="50" y="52" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#f2c14e">$1551</text>
+  <text x="423" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f3ead8">$1000</text>
+  <text x="234" y="332" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">10 deposits of $1000 at 5%</text>
+  <text x="546" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">total</text>
+  <text x="546" y="204" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#f3ead8"><tspan fill="#f2c14e">≈ $12 578</tspan></text>
+</svg>
