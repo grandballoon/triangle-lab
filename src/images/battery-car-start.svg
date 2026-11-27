@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="65" y="50" width="20" height="14" fill="#5a6878"/><rect x="125" y="50" width="20" height="14" fill="#5a6878"/><rect x="45" y="64" width="120" height="70" rx="8" fill="#5a6878"/></g><rect x="57" y="76" width="20" height="46" rx="4" fill="#e8655f" stroke="#0b0f14" stroke-width="3"/>
+  <text x="105" y="168" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">flat</text>
+  <g transform="translate(440 44)" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M0 86 V38 Q0 24 14 24 L38 24 L58 0 L114 0 L134 24 L146 24 Q160 24 160 38 V86 Z" fill="#5a6878"/><path d="M66 8 L110 8 L124 24 L54 24 Z" fill="#5fb0e8"/><circle cx="36" cy="86" r="18" fill="#0f1620"/><circle cx="126" cy="86" r="18" fill="#0f1620"/><rect x="154" y="36" width="10" height="14" fill="#0f1620"/></g>
+  <g stroke="#0b0f14" stroke-width="4"><circle cx="608" cy="40" r="17" fill="#e8655f"/></g>
+  <path d="M600 32 L616 48 M616 32 L600 48" stroke="#0b0f14" stroke-width="4" stroke-linecap="round"/>
+  <path d="M190 88 L406 88" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M418 88 L404 95 L404 81 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="304" y="72" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">true</text>
+  <path d="M418 132 L202 132" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 9"/>
+  <path d="M190 132 L204 125 L204 139 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="304" y="166" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">not always</text>
+  <path d="M40 196 H600" stroke="#5a6878" stroke-width="3"/>
+  <g fill="#8fa3b8" stroke="#0b0f14" stroke-width="3"><circle cx="52" cy="300" r="9"/><circle cx="32" cy="288" r="7"/></g>
+  <g transform="translate(70 222)" stroke="#0b0f14" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M0 86 V38 Q0 24 14 24 L38 24 L58 0 L114 0 L134 24 L146 24 Q160 24 160 38 V86 Z" fill="#a78bfa"/><path d="M66 8 L110 8 L124 24 L54 24 Z" fill="#5fb0e8"/><circle cx="36" cy="86" r="18" fill="#0f1620"/><circle cx="126" cy="86" r="18" fill="#0f1620"/><rect x="154" y="36" width="10" height="14" fill="#f2c14e"/></g>
+  <path d="M254 282 L432 282" stroke="#f2c14e" stroke-width="5" stroke-linecap="round"/>
+  <path d="M446 282 L430 290 L430 274 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <text x="350" y="264" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">contrapositive</text>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="490" y="234" width="20" height="14" fill="#5a6878"/><rect x="550" y="234" width="20" height="14" fill="#5a6878"/><rect x="470" y="248" width="120" height="70" rx="8" fill="#5a6878"/></g><rect x="482" y="260" width="96" height="46" rx="4" fill="#38d9a9" stroke="#0b0f14" stroke-width="3"/>
+  <text x="530" y="346" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">good</text>
+</svg>

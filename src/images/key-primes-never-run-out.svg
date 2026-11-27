@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M48 150 V112 A32 32 0 0 1 112 112 V150" fill="none" stroke="#0b0f14" stroke-width="28"/>
+  <path d="M48 150 V112 A32 32 0 0 1 112 112 V150" fill="none" stroke="#8fa3b8" stroke-width="16"/>
+  <rect x="24" y="140" width="112" height="112" rx="14" fill="#5fb0e8" stroke="#0b0f14" stroke-width="5"/>
+  <text x="80" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">53</text>
+  <text x="80" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">61</text>
+  <path d="M188 150 V112 A32 32 0 0 1 252 112 V150" fill="none" stroke="#0b0f14" stroke-width="28"/>
+  <path d="M188 150 V112 A32 32 0 0 1 252 112 V150" fill="none" stroke="#8fa3b8" stroke-width="16"/>
+  <rect x="164" y="140" width="112" height="112" rx="14" fill="#5fb0e8" stroke="#0b0f14" stroke-width="5"/>
+  <text x="220" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">89</text>
+  <text x="220" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">97</text>
+  <path d="M328 150 V112 A32 32 0 0 1 392 112 V150" fill="none" stroke="#0b0f14" stroke-width="28"/>
+  <path d="M328 150 V112 A32 32 0 0 1 392 112 V150" fill="none" stroke="#8fa3b8" stroke-width="16"/>
+  <rect x="304" y="140" width="112" height="112" rx="14" fill="#5fb0e8" stroke="#0b0f14" stroke-width="5"/>
+  <text x="360" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">71</text>
+  <text x="360" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">79</text>
+  <text x="460" y="206" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#8fa3b8">…</text>
+  <path d="M528 150 V112 A32 32 0 0 1 592 112 V150" fill="none" stroke="#0b0f14" stroke-width="28"/>
+  <path d="M528 150 V112 A32 32 0 0 1 592 112 V150" fill="none" stroke="#8fa3b8" stroke-width="16"/>
+  <rect x="504" y="140" width="112" height="112" rx="14" fill="#f2c14e" stroke="#0b0f14" stroke-width="5"/>
+  <text x="560" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">107</text>
+  <text x="560" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#0b0f14">109</text>
+  <text x="320" y="320" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#f3ead8">infinitely many primes</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="30" y="62" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="54" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="84" y="62" width="48" height="58" rx="6" fill="#5a6878" stroke="#0b0f14" stroke-width="4"/>
+  <text x="108" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <rect x="138" y="62" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="162" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="192" y="62" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="216" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="246" y="62" width="48" height="58" rx="6" fill="#5a6878" stroke="#0b0f14" stroke-width="4"/>
+  <text x="270" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <rect x="300" y="62" width="48" height="58" rx="6" fill="#5a6878" stroke="#0b0f14" stroke-width="4"/>
+  <text x="324" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <rect x="354" y="62" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="378" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="426" y="62" width="48" height="58" rx="6" fill="#a78bfa" stroke="#0b0f14" stroke-width="4"/>
+  <text x="450" y="103" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <text x="462" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">parity</text>
+  <text x="126" y="150" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#f2c14e">flipped</text>
+  <path d="M108 158 L108 192" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M108 202 L102 190 L114 190 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="30" y="210" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="54" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="84" y="210" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#f2c14e" stroke-width="6"/>
+  <text x="108" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="138" y="210" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="162" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="192" y="210" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="216" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="246" y="210" width="48" height="58" rx="6" fill="#5a6878" stroke="#0b0f14" stroke-width="4"/>
+  <text x="270" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <rect x="300" y="210" width="48" height="58" rx="6" fill="#5a6878" stroke="#0b0f14" stroke-width="4"/>
+  <text x="324" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <rect x="354" y="210" width="48" height="58" rx="6" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <text x="378" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">1</text>
+  <rect x="426" y="210" width="48" height="58" rx="6" fill="#a78bfa" stroke="#0b0f14" stroke-width="4"/>
+  <text x="450" y="251" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#0b0f14">0</text>
+  <text x="560" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">4 ones</text>
+  <text x="560" y="118" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">even</text>
+  <text x="560" y="232" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">5 ones</text>
+  <text x="560" y="266" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#e8655f">odd</text>
+  <text x="320" y="330" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">one flip changes the count by 1</text>
+</svg>

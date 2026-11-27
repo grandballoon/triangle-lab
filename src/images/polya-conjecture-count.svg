@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M50 130 H600" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="40" y="139" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="end" fill="#8fa3b8">0</text>
+  <path d="M55 142 L80 152 L100 147 L125 168 L150 160 L175 186 L200 174 L225 205 L250 192 L275 224 L300 210 L325 240 L350 226 L375 252 L400 236 L425 255 L450 232 L470 206 L488 174 L502 146 L512 134 L520 120 L530 134 L545 152 L565 160 L585 150" fill="none" stroke="#0b0f14" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M55 142 L80 152 L100 147 L125 168 L150 160 L175 186 L200 174 L225 205 L250 192 L275 224 L300 210 L325 240 L350 226 L375 252 L400 236 L425 255 L450 232 L470 206 L488 174 L502 146 L512 134 L520 120 L530 134 L545 152 L565 160 L585 150" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="520" cy="120" r="10" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <text x="520" y="94" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">906,150,257</text>
+  <text x="250" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">below 0 for every n</text>
+  <text x="250" y="336" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">up to 906,150,256</text>
+</svg>

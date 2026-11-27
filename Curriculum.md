@@ -155,8 +155,9 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 **Proof**
 
-- [ ] 28 Prove It: proof in words, contradiction, converses, mathematical induction, the pigeonhole principle, convincing but wrong arguments.
+- [x] 28 Prove It: proof in words, contradiction, converses, mathematical induction, the pigeonhole principle, convincing but wrong arguments.
   Some lessons already teach converses (`pythagoras-converse`, `quad-converses`).
+  Now the Prove It chapter (`proof.ts`), six lab lessons.
 
 **Problems**
 
