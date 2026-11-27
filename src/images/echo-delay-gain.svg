@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M40 200 H596" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M612 200 L596 191 L596 209 Z" fill="#8fa3b8"/>
+  <text x="612" y="236" font-family="system-ui, sans-serif" font-weight="700" font-size="26" font-style="italic" text-anchor="middle" fill="#8fa3b8">t</text>
+  <path d="M70 200 L73 198 L76 194 L78 188 L81 182 L84 180 L87 182 L90 188 L92 200 L95 215 L98 230 L101 243 L104 250 L107 250 L109 240 L112 223 L115 200 L118 174 L121 151 L123 133 L126 125 L129 129 L132 144 L135 169 L138 200 L140 232 L143 261 L146 281 L149 288 L152 282 L154 263 L157 234 L160 200 L163 166 L166 137 L168 118 L171 112 L174 119 L177 139 L180 168 L182 200 L185 231 L188 256 L191 271 L194 275 L197 267 L199 249 L202 226 L205 200 L208 177 L211 160 L213 150 L216 150 L219 157 L222 170 L225 185 L228 200 L230 212 L233 218 L236 220 L239 218 L242 212 L244 206 L247 202 L250 200" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M310 200 L313 199 L316 197 L318 194 L321 191 L324 190 L327 191 L330 194 L332 200 L335 207 L338 215 L341 221 L344 225 L347 225 L349 220 L352 212 L355 200 L358 187 L361 175 L363 167 L366 163 L369 164 L372 172 L375 184 L378 200 L380 216 L383 230 L386 240 L389 244 L392 241 L394 232 L397 217 L400 200 L403 183 L406 168 L408 159 L411 156 L414 160 L417 170 L420 184 L422 200 L425 216 L428 228 L431 236 L434 237 L437 233 L439 225 L442 213 L445 200 L448 188 L451 180 L453 175 L456 175 L459 179 L462 185 L465 193 L468 200 L470 206 L473 209 L476 210 L479 209 L482 206 L484 203 L487 201 L490 200" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#5a6878" stroke-width="3" stroke-dasharray="6 6"><path d="M160 112 V300 M400 156 V300"/></g>
+  <path d="M160 316 H400" stroke="#f3ead8" stroke-width="4"/>
+  <path d="M160 306 V326 M400 306 V326" stroke="#f3ead8" stroke-width="4"/>
+  <text x="280" y="346" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">0.3 s later</text>
+  <text x="160" y="80" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#5fb0e8">s(t)</text>
+  <text x="400" y="128" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f2c14e">0.5 s(t − 0.3)</text>
+</svg>

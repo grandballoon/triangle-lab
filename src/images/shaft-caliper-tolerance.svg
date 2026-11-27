@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="110" y="96" width="80" height="102" fill="#5fb0e8"/><ellipse cx="150" cy="96" rx="40" ry="12" fill="#9fd3f5"/></g>
+  <rect x="124" y="112" width="12" height="80" fill="#9fd3f5"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="40" y="34" width="340" height="30" fill="#8fa3b8"/><path d="M80 64 H110 V160 L96 176 L80 176 Z" fill="#8fa3b8"/><path d="M190 64 H220 V176 L204 176 L190 160 Z" fill="#8fa3b8"/><rect x="186" y="26" width="84" height="46" rx="6" fill="#5a6878"/></g>
+  <g stroke="#0b0f14" stroke-width="2.5"><path d="M290 34 V48 M305 34 V44 M320 34 V48 M335 34 V44 M350 34 V48 M365 34 V44 M60 34 V48 M140 34 V48 M160 34 V44"/></g>
+  <rect x="198" y="36" width="60" height="26" rx="3" fill="#0b0f14"/>
+  <text x="228" y="56" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#f2c14e">d</text>
+  <text x="508" y="96" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">|d − 25| ≤ 0.1</text>
+  <text x="508" y="140" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">24.9 ≤ d ≤ 25.1</text>
+  <rect x="200" y="258" width="240" height="24" rx="4" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <path d="M60 270 H590" stroke="#f3ead8" stroke-width="4"/>
+  <g stroke="#f3ead8" stroke-width="4"><path d="M80 260 V280 M200 256 V284 M320 260 V280 M440 256 V284 M560 260 V280"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8"><text x="80" y="312">24.8</text><text x="320" y="312">25</text><text x="560" y="312">25.2</text><text x="612" y="312">mm</text></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#f2c14e"><text x="200" y="312">24.9</text><text x="440" y="312">25.1</text></g>
+  <path d="M392 254 L380 234 H404 Z" fill="#69db7c" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M140 254 L128 234 H152 Z" fill="#ef6b5b" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"/>
+  <text x="392" y="224" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#69db7c">25.06 ✓</text>
+  <text x="140" y="224" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#ef6b5b">24.85 ✗</text>
+</svg>
