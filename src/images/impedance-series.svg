@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M30 190 H66 M174 190 H206 M318 190 H334" fill="none" stroke="#0b0f14" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M30 190 H66 M174 190 H206 M318 190 H334" fill="none" stroke="#8fa3b8" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M66 190 L72 164 L85 216 L98 164 L111 216 L124 164 L137 216 L150 164 L163 216 L174 190" fill="none" stroke="#0b0f14" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M66 190 L72 164 L85 216 L98 164 L111 216 L124 164 L137 216 L150 164 L163 216 L174 190" fill="none" stroke="#e8655f" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M206 190 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0" fill="none" stroke="#0b0f14" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M206 190 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0 a14 14 0 0 1 28 0" fill="none" stroke="#5fb0e8" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="#f3ead8" stroke="#0b0f14" stroke-width="5"><circle cx="30" cy="190" r="10"/><circle cx="334" cy="190" r="10"/></g>
+  <path d="M430 300 H580 M430 300 V100" stroke="#0b0f14" stroke-width="14" stroke-linecap="round"/>
+  <path d="M430 300 H580" stroke="#e8655f" stroke-width="7" stroke-linecap="round"/>
+  <path d="M430 300 V100" stroke="#5fb0e8" stroke-width="7" stroke-linecap="round"/>
+  <path d="M430 100 L580 300" stroke="#f2c14e" stroke-width="5" stroke-dasharray="12 8" stroke-linecap="round"/>
+  <path d="M430 278 H452 V300" fill="none" stroke="#f2c14e" stroke-width="4"/>
+  <text x="505" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#f3ead8">30</text>
+  <text x="412" y="212" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="end" fill="#f3ead8">40</text>
+  <text x="522" y="190" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="start" fill="#f2c14e">50</text>
+</svg>
