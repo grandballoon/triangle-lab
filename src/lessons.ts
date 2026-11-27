@@ -17,6 +17,7 @@ import { circles } from "./chapters/circles.ts";
 import { complex } from "./chapters/complex.ts";
 import { proportions } from "./chapters/proportions.ts";
 import { integers } from "./chapters/integers.ts";
+import { factorizations } from "./chapters/factorizations.ts";
 import { coordinates } from "./chapters/coordinates.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
@@ -286,6 +287,23 @@ export const chapters: Chapter[] = [
       "Alternating sums and 11",
     ],
     lessons: integers,
+  },
+  {
+    title: "Special Factorizations",
+    blurb: "Squares of sums, differences of squares and cubes, and the clever manipulations they make possible.",
+    axioms: [
+      "(a + b)² = a² + 2ab + b²",
+      "(a − b)² = a² − 2ab + b²",
+      "(a + b)² − (a − b)² = 4ab",
+      "a² − b² = (a + b)(a − b)",
+      "Odd numbers sum to squares",
+      "a³ − b³ = (a − b)(a² + ab + b²)",
+      "a³ + b³ = (a + b)(a² − ab + b²)",
+      "Completing the rectangle",
+      "x² + y² = (x + y)² − 2xy",
+      "Power sums by recurrence",
+    ],
+    lessons: factorizations,
   },
   {
     title: "Quadratic Equations",

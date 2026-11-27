@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><path d="M56 60 H304 V246 H56 Z M70 74 V232 H290 V74 Z" fill="#b07a45" fill-rule="evenodd"/></g>
+  <path d="M63 239 L297 67" fill="none" stroke="#0b0f14" stroke-width="16" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M63 239 L297 67" fill="none" stroke="#f2c14e" stroke-width="9" stroke-linejoin="round" stroke-linecap="butt"/>
+  <path d="M72 226.8 l2.4 3.2 M83.7 218.2 l2.4 3.2 M95.4 209.6 l2.4 3.2 M107.1 201 l4.1 5.6 M118.8 192.4 l2.4 3.2 M130.5 183.8 l2.4 3.2 M142.2 175.2 l2.4 3.2 M153.9 166.6 l4.1 5.6 M165.6 158 l2.4 3.2 M177.3 149.4 l2.4 3.2 M189 140.8 l2.4 3.2 M200.7 132.2 l4.1 5.6 M212.4 123.6 l2.4 3.2 M224.1 115 l2.4 3.2 M235.8 106.4 l2.4 3.2 M247.5 97.8 l4.1 5.6 M259.2 89.2 l2.4 3.2 M270.9 80.6 l2.4 3.2 M282.6 72 l2.4 3.2" stroke="#0b0f14" stroke-width="2"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="41" y="217" width="44" height="44" rx="10" fill="#8fa3b8"/><circle cx="63" cy="239" r="9" fill="#5a6878"/></g>
+  <text x="202" y="183" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f2c14e" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">5 m</text>
+  <text x="180" y="46" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">4 m</text>
+  <text x="320" y="162" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#8fa3b8">3 m</text>
+  <text x="495" y="78" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">x + y = 7</text>
+  <text x="495" y="122" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">xy = 12</text>
+  <text x="495" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">x² + y²</text>
+  <text x="495" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">= 49 − 24</text>
+  <text x="495" y="272" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">= 25</text>
+  <text x="495" y="330" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">diagonal <tspan fill="#f2c14e">5 m</tspan></text>
+</svg>

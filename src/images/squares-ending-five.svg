@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="70" y="52" width="240" height="240" fill="#8fa3b8"/><rect x="310" y="52" width="40" height="240" fill="#5fb0e8"/><rect x="70" y="292" width="240" height="40" fill="#5fb0e8"/><rect x="310" y="292" width="40" height="40" fill="#f2c14e"/></g>
+  <text x="190" y="186" font-family="system-ui, sans-serif" font-weight="700" font-size="40" text-anchor="middle" fill="#0b0f14">900</text>
+  <text x="190" y="321" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14">150</text>
+  <text x="330" y="172" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14" transform="rotate(-90 330 172)" dominant-baseline="central">150</text>
+  <text x="330" y="320" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">25</text>
+  <text x="190" y="38" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">30</text>
+  <text x="330" y="38" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">5</text>
+  <text x="54" y="181" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="end" fill="#8fa3b8">30</text>
+  <text x="54" y="321" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="end" fill="#8fa3b8">5</text>
+  <text x="490" y="92" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f3ead8">(30 + 5)²</text>
+  <text x="490" y="134" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">= 900 + 300 + <tspan fill="#f2c14e">25</tspan></text>
+  <path d="M370 170 H610" stroke="#5a6878" stroke-width="3"/>
+  <text x="490" y="224" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#f3ead8">3 × 4 = 12</text>
+  <text x="490" y="290" font-family="system-ui, sans-serif" font-weight="700" font-size="42" text-anchor="middle" fill="#f3ead8">35² = 12<tspan fill="#f2c14e">25</tspan></text>
+</svg>
