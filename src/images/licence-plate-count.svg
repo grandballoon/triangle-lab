@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="70" y="40" width="500" height="130" rx="16" fill="#e9edf2" stroke="#0b0f14" stroke-width="6"/>
+  <rect x="84" y="54" width="472" height="102" rx="10" fill="none" stroke="#5a6878" stroke-width="3"/>
+  <text x="130" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">A</text>
+  <text x="200" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">B</text>
+  <text x="270" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">C</text>
+  <text x="380" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="450" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">2</text>
+  <text x="520" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="68" text-anchor="middle" fill="#0b0f14">3</text>
+  <text x="130" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">26</text>
+  <text x="200" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">26</text>
+  <text x="270" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">26</text>
+  <text x="380" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">10</text>
+  <text x="450" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">10</text>
+  <text x="520" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#8fa3b8">10</text>
+  <text x="165" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#5a6878">×</text>
+  <text x="235" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#5a6878">×</text>
+  <text x="325" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#5a6878">×</text>
+  <text x="415" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#5a6878">×</text>
+  <text x="485" y="214" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#5a6878">×</text>
+  <text x="320" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#eef4fb">26³ × 10³ = <tspan fill="#f2c14e">17 576 000</tspan></text>
+  <text x="320" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">plates</text>
+</svg>

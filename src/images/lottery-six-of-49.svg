@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="95" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="95" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">3</text>
+  <circle cx="185" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="185" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">11</text>
+  <circle cx="275" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="275" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">19</text>
+  <circle cx="365" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="365" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">26</text>
+  <circle cx="455" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="455" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">38</text>
+  <circle cx="545" cy="110" r="38" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <text x="545" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#0b0f14">44</text>
+  <text x="320" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">6 balls from 49, any order</text>
+  <text x="320" y="280" font-family="system-ui, sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#eef4fb">49 choose 6 = <tspan fill="#f2c14e">13 983 816</tspan></text>
+  <text x="320" y="325" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">possible draws</text>
+</svg>

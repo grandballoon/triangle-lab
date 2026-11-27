@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="98" y="40" width="84" height="84" rx="14" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="118" cy="60" r="8" fill="#0b0f14"/>
+  <circle cx="162" cy="104" r="8" fill="#0b0f14"/>
+  <rect x="218" y="40" width="84" height="84" rx="14" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="238" cy="60" r="8" fill="#0b0f14"/>
+  <circle cx="282" cy="60" r="8" fill="#0b0f14"/>
+  <circle cx="238" cy="104" r="8" fill="#0b0f14"/>
+  <circle cx="282" cy="104" r="8" fill="#0b0f14"/>
+  <rect x="338" y="40" width="84" height="84" rx="14" fill="#f2c14e" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="358" cy="60" r="8" fill="#0b0f14"/>
+  <circle cx="402" cy="60" r="8" fill="#0b0f14"/>
+  <circle cx="358" cy="82" r="8" fill="#0b0f14"/>
+  <circle cx="402" cy="82" r="8" fill="#0b0f14"/>
+  <circle cx="358" cy="104" r="8" fill="#0b0f14"/>
+  <circle cx="402" cy="104" r="8" fill="#0b0f14"/>
+  <rect x="458" y="40" width="84" height="84" rx="14" fill="#eef4fb" stroke="#0b0f14" stroke-width="4"/>
+  <circle cx="500" cy="82" r="8" fill="#0b0f14"/>
+  <rect x="60" y="170" width="250.8" height="60" rx="4" fill="#5a6878"/>
+  <rect x="310.8" y="170" width="269.2" height="60" rx="4" fill="#f2c14e"/>
+  <path d="M320 156 V244" stroke="#eef4fb" stroke-width="3" stroke-dasharray="6 5"/>
+  <text x="185.4" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">625 no six</text>
+  <text x="445.4" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14">671</text>
+  <text x="320" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#eef4fb">6⁴ − 5⁴ = 1296 − 625 = <tspan fill="#f2c14e">671</tspan></text>
+</svg>
