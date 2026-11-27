@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="124" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="180" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="236" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="292" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="348" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="404" y="76" width="56" height="190" rx="6" fill="#f3ead8"/><rect x="460" y="76" width="56" height="190" rx="6" fill="#f3ead8"/></g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round"><rect x="163" y="76" width="34" height="114" rx="4" fill="#0b0f14"/><rect x="219" y="76" width="34" height="114" rx="4" fill="#0b0f14"/><rect x="331" y="76" width="34" height="114" rx="4" fill="#46525f"/><rect x="387" y="76" width="34" height="114" rx="4" fill="#0b0f14"/><rect x="443" y="76" width="34" height="114" rx="4" fill="#0b0f14"/></g>
+  <g stroke="#0b0f14" stroke-width="3"><circle cx="152" cy="212" r="10" fill="#5fb0e8"/><circle cx="208" cy="212" r="10" fill="#5fb0e8"/><circle cx="264" cy="212" r="10" fill="#5fb0e8"/><circle cx="320" cy="212" r="10" fill="#5fb0e8"/><circle cx="376" cy="212" r="10" fill="#5fb0e8"/><circle cx="432" cy="212" r="10" fill="#5fb0e8"/><circle cx="488" cy="212" r="10" fill="#5fb0e8"/></g>
+  <path d="M339 140 l18 18 M357 140 l-18 18" stroke="#ef6f6c" stroke-width="5" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <g font-size="24" fill="#0b0f14"><text x="152" y="254">C</text><text x="208" y="254">D</text><text x="264" y="254">E</text><text x="320" y="254">F</text><text x="376" y="254">G</text><text x="432" y="254">A</text><text x="488" y="254">B</text></g>
+    <text x="348" y="56" font-size="26" fill="#ef6f6c">F♯ is not a member</text>
+    <text x="320" y="324" font-size="32" fill="#f3ead8">C major = <tspan fill="#f2c14e">{C, D, E, F, G, A, B}</tspan></text>
+  </g>
+</svg>

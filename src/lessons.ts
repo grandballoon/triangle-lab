@@ -34,6 +34,7 @@ import { proof } from "./chapters/proof.ts";
 import { quadratic } from "./chapters/quadratic.ts";
 import { quadrilaterals } from "./chapters/quadrilaterals.ts";
 import { sequences } from "./chapters/sequences.ts";
+import { sets } from "./chapters/sets.ts";
 import { solids } from "./chapters/solids.ts";
 import { transformations } from "./chapters/transformations.ts";
 import { trianglesCentres } from "./chapters/triangles-centres.ts";
@@ -472,6 +473,23 @@ export const chapters: Chapter[] = [
       "Equivalence classes partition a set",
     ],
     lessons: operations,
+  },
+  {
+    title: "Sets",
+    blurb: "Collections of things, the ways to combine them on a Venn diagram, and how to count them.",
+    axioms: [
+      "x ∈ S or x ∉ S",
+      "Set-builder notation",
+      "The empty set",
+      "Union and intersection",
+      "Complement and difference",
+      "De Morgan's laws",
+      "|A ∪ B| = |A| + |B| − |A ∩ B|",
+      "Inclusion–exclusion for three sets",
+      "A ⊆ S",
+      "2ⁿ subsets",
+    ],
+    lessons: sets,
   },
   {
     title: "Power of a Point",
