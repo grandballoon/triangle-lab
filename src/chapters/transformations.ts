@@ -113,4 +113,18 @@ export const transformations: Lesson[] = [
       <circle cx="16" cy="16" r="2" fill="currentColor" />`,
     lab: true,
   },
+  {
+    slug: "rotation-proof",
+    part: "What Stays the Same · Three",
+    name: "Proof by Turning",
+    desc: "Turn a figure 60° about a corner and watch one segment land exactly on another.",
+    accent: "#f472b6",
+    icon: `<polygon points="16,6 6,24 26,24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M 9.5 13 A 8 8 0 0 0 10.5 22" fill="none" stroke="currentColor"
+        stroke-width="1.5" stroke-dasharray="2.5 2.5" />
+      <polyline points="7.8,19.6 10.5,22 12.4,18.9" fill="none" stroke="currentColor"
+        stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />`,
+    lab: true,
+  },
 ];

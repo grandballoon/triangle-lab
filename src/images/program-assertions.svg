@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="24" y="18" width="592" height="324" rx="14" fill="#1e2833" stroke="#0b0f14" stroke-width="5"/>
+  <path d="M290 40 V320" stroke="#5a6878" stroke-width="3"/>
+  <text x="48" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">total = 0</text>
+  <text x="306" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="19" text-anchor="start" fill="#8fa3b8">// total = sum of no items</text>
+  <text x="48" y="152" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">for each x in list:</text>
+  <text x="306" y="152" font-family="system-ui, sans-serif" font-weight="700" font-size="19" text-anchor="start" fill="#8fa3b8">// total = sum of items before x</text>
+  <text x="76" y="222" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">total = total + x</text>
+  <text x="306" y="222" font-family="system-ui, sans-serif" font-weight="700" font-size="19" text-anchor="start" fill="#8fa3b8">// total = sum up to x</text>
+  <text x="48" y="292" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">return total</text>
+  <text x="306" y="292" font-family="system-ui, sans-serif" font-weight="700" font-size="19" text-anchor="start" fill="#f2c14e">// total = sum of the list</text>
+  <text x="306" y="326" font-family="system-ui, sans-serif" font-weight="700" font-size="16" text-anchor="start" fill="#8fa3b8">the goal</text>
+</svg>

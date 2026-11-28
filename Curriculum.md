@@ -112,8 +112,10 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 ### Gaps within covered chapters
 
 - [x] 6.5 Square roots of irrationals and imaginaries: square roots of negative numbers are taught in The Square Root of −1 (`complex-i`), and of complex numbers in `complex-square-root`.
-- [ ] 10.6 The Burden of Proof: the lessons step through proofs, but none teaches how to write one.
-- [ ] 19.7 Transformation Proofs: proving a result by moving the figure.
+- [x] 10.6 The Burden of Proof: the lessons step through proofs, but none teaches how to write one.
+  Now Writing a Proof (`two-column-proof`), at the end of the Angles chapter: givens, goal, and numbered statements with reasons, built up line by line for the vertical angles theorem.
+- [x] 19.7 Transformation Proofs: proving a result by moving the figure.
+  Now Proof by Turning (`rotation-proof`), at the end of the Transformations chapter: a 60° turn about a corner proves that the segments to the equilateral triangles on two sides are equal and cross at 60°.
 
 ### Chapters with no lessons
 

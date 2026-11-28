@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="24" y="18" width="592" height="324" rx="14" fill="#1e2833" stroke="#0b0f14" stroke-width="5"/>
+  <path d="M384 122 V320" stroke="#5a6878" stroke-width="3"/>
+  <text x="48" y="58" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">Given: span L = 4 m, load w = 5 kN/m</text>
+  <text x="48" y="92" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">Check: bending stress ≤ 12 N/mm² allowed</text>
+  <path d="M44 112 H596" stroke="#5a6878" stroke-width="3"/>
+  <text x="48" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">1</text>
+  <text x="78" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">M = wL²/8 = 10 kN·m</text>
+  <text x="400" y="160" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#8fa3b8">uniform load, simple span</text>
+  <text x="48" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">2</text>
+  <text x="78" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">Z = 1.0 × 10⁶ mm³</text>
+  <text x="400" y="210" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#8fa3b8">section table</text>
+  <text x="48" y="260" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">3</text>
+  <text x="78" y="260" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">σ = M/Z = 10 N/mm²</text>
+  <text x="400" y="260" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#8fa3b8">bending formula, 1 and 2</text>
+  <text x="48" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">4</text>
+  <text x="78" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#f2c14e">10 ≤ 12: beam is adequate</text>
+  <text x="400" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#8fa3b8">3 and the allowed stress</text>
+</svg>
