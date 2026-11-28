@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="60" y="52" width="520" height="232" rx="14" fill="#1c2633" stroke="#0b0f14" stroke-width="5"/>
+  <g stroke-width="5">
+    <circle cx="265" cy="168" r="100" fill="#5fb0e8" fill-opacity="0.3" stroke="#5fb0e8"/>
+    <circle cx="375" cy="168" r="100" fill="#f472b6" fill-opacity="0.3" stroke="#f472b6"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="210" y="38" font-size="24" fill="#5fb0e8">multiples of 2</text>
+    <text x="430" y="38" font-size="24" fill="#f472b6">multiples of 3</text>
+    <text x="120" y="90" font-size="20" fill="#8fa3b8">1 to 100</text>
+    <text x="530" y="226" font-size="20" fill="#8fa3b8">neither</text>
+    <g font-size="34" fill="#f3ead8" stroke="#131a23" stroke-width="6" paint-order="stroke" stroke-linejoin="round"><text x="212" y="180">34</text><text x="320" y="180">16</text><text x="428" y="180">17</text><text x="530" y="264">33</text></g>
+    <text x="320" y="336" font-size="40" fill="#f3ead8">50 + 33 − 16 = <tspan fill="#f2c14e">67</tspan></text>
+  </g>
+</svg>
