@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="156" y="140" width="72" height="64" fill="#5fb0e8" stroke="#0b0f14" stroke-width="4"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="114" y="28" width="32" height="290" rx="16" fill="#f3ead8"/>
+    <circle cx="130" cy="322" r="24" fill="#ef6b5b"/>
+  </g>
+  <rect x="123" y="172" width="14" height="140" fill="#ef6b5b"/>
+  <path d="M92 300 H110 M92 268 H110 M92 236 H110 M92 204 H110 M92 172 H110 M92 140 H110 M92 108 H110 M92 76 H110 M92 44 H110" stroke="#8fa3b8" stroke-width="3"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#8fa3b8">
+    <text x="84" y="307">16</text><text x="84" y="275">17</text><text x="84" y="243">18</text><text x="84" y="211" fill="#f3ead8">19</text><text x="84" y="179" fill="#f3ead8">20</text><text x="84" y="147" fill="#f3ead8">21</text><text x="84" y="115">22</text><text x="84" y="83">23</text><text x="84" y="51">24</text>
+  </g>
+  <text x="192" y="180" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">idle</text>
+  <path d="M262 140 V60 M262 204 V284" stroke="#f2c14e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M250 64 L262 48 L274 64 M250 280 L262 296 L274 280" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="start" fill="#f2c14e" font-size="26">
+    <text x="284" y="104">cool</text><text x="284" y="260">heat</text>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="490" y="110" font-size="26" fill="#8fa3b8">set to 20 °C</text>
+    <text x="490" y="182" font-size="34" fill="#f3ead8">|T − 20| &gt; 1</text>
+    <text x="490" y="244" font-size="24" fill="#8fa3b8">T &lt; 19 or T &gt; 21</text>
+  </g>
+  <text x="130" y="20" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#8fa3b8">°C</text>
+</svg>

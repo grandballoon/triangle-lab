@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="60" y="288" width="340" height="52" rx="26" fill="#5fb0e8"/><rect x="110" y="288" width="24" height="52" fill="#3d8bc4"/><rect x="326" y="288" width="24" height="52" fill="#3d8bc4"/>
+    <rect x="220" y="254" width="20" height="36" fill="#8fa3b8"/>
+    <circle cx="230" cy="160" r="100" fill="#f3ead8"/>
+  </g>
+  <path d="M170.6 219.4 A84 84 0 0 1 147 146.9" fill="none" stroke="#f2c14e" stroke-width="14"/>
+  <path d="M175.6 214.4 L165.7 224.3 M153.9 148 L140.1 145.8 M195 91.4 L188.7 78.9 M265 91.4 L271.3 78.9 M306.1 148 L319.9 145.8 M284.4 214.4 L294.3 224.3" stroke="#0b0f14" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">
+    <text x="146.6" y="250">0</text><text x="113.5" y="149">50</text><text x="176.4" y="62">100</text><text x="283.6" y="62">150</text><text x="346.5" y="149" fill="#f3ead8">200</text><text x="313.4" y="250">250</text>
+  </g>
+  <text x="196" y="190" font-family="system-ui, sans-serif" font-weight="700" font-size="17" text-anchor="middle" fill="#b8860b">reserve</text>
+  <text x="230" y="224" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="middle" fill="#5a6878">bar</text>
+  <path d="M230 160 L303.1 148.4" stroke="#0b0f14" stroke-width="11" stroke-linecap="round"/>
+  <path d="M230 160 L303.1 148.4" stroke="#ef6b5b" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="230" cy="160" r="10" fill="#0b0f14"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="512" y="110" font-size="30" fill="#f3ead8">200 − 15t ≥ 50</text>
+    <text x="512" y="180" font-size="30" fill="#8fa3b8">−15t ≥ −150</text>
+    <text x="512" y="256" font-size="30" fill="#f2c14e">t ≤ 10 minutes</text>
+  </g>
+</svg>

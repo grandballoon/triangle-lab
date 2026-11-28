@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M60 300 H600" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M150 129 V300 M510 129 V300" stroke="#8fa3b8" stroke-width="3" stroke-dasharray="6 8"/>
+  <path d="M330 210 V300" stroke="#f2c14e" stroke-width="3" stroke-dasharray="6 8"/>
+  <path d="M90 66 Q330 354 570 66" fill="none" stroke="#0b0f14" stroke-width="11" stroke-linecap="round"/>
+  <path d="M90 66 Q330 354 570 66" fill="none" stroke="#5fb0e8" stroke-width="5" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="4"><circle cx="150" cy="129" r="8" fill="#f3ead8"/><circle cx="510" cy="129" r="8" fill="#f3ead8"/><circle cx="330" cy="210" r="11" fill="#f2c14e"/></g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="330" y="44" font-size="26" fill="#f3ead8">0.002(v − 80)² + 6</text>
+    <text x="182" y="136" font-size="22" fill="#f3ead8">7.8</text>
+    <text x="478" y="136" font-size="22" fill="#f3ead8">7.8</text>
+    <text x="330" y="256" font-size="24" fill="#f2c14e">6 litres</text>
+    <text x="90" y="330" font-size="22" fill="#8fa3b8">40</text>
+    <text x="150" y="330" font-size="22" fill="#8fa3b8">50</text>
+    <text x="330" y="330" font-size="24" fill="#f2c14e">80 km/h</text>
+    <text x="510" y="330" font-size="22" fill="#8fa3b8">110</text>
+    <text x="570" y="330" font-size="22" fill="#8fa3b8">120</text>
+  </g>
+</svg>

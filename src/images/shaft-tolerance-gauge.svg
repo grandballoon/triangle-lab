@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="160" y="50" width="340" height="76" rx="6" fill="#8fa3b8"/>
+    <ellipse cx="500" cy="88" rx="16" ry="38" fill="#c3ced9"/>
+  </g>
+  <path d="M172 66 H470" stroke="#c3ced9" stroke-width="6" stroke-linecap="round"/>
+  <path d="M130 56 V120" stroke="#f3ead8" stroke-width="3"/>
+  <path d="M122 64 L130 52 L138 64 M122 112 L130 124 L138 112" fill="none" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="104" y="97" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">d</text>
+  <rect x="200" y="210" width="240" height="24" fill="#f2c14e"/>
+  <path d="M60 222 H580" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M80 210 V234 M200 204 V240 M440 204 V240 M560 210 V234" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M320 198 V246" stroke="#f3ead8" stroke-width="5" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="22">
+    <text x="80" y="272" fill="#8fa3b8">24.90</text>
+    <text x="200" y="272" fill="#f2c14e">24.95</text>
+    <text x="320" y="272" fill="#f3ead8">25</text>
+    <text x="440" y="272" fill="#f2c14e">25.05</text>
+    <text x="560" y="272" fill="#8fa3b8">25.10</text>
+    <text x="320" y="330" font-size="34" fill="#f3ead8">|d − 25| ≤ 0.05</text>
+  </g>
+</svg>

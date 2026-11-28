@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect y="204" width="640" height="84" fill="#2a333f"/>
+  <path d="M0 204 H640 M0 288 H640" stroke="#5a6878" stroke-width="4"/>
+  <path d="M600 196 V296" stroke="#f3ead8" stroke-width="6" stroke-linecap="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <path d="M52 230 L64 206 L112 206 L126 230 Z" fill="#8fa3b8"/>
+    <rect x="26" y="228" width="112" height="36" rx="10" fill="#ef6b5b"/>
+    <circle cx="54" cy="266" r="13" fill="#0b0f14"/><circle cx="110" cy="266" r="13" fill="#0b0f14"/>
+  </g>
+  <path d="M142 176 H370" stroke="#5fb0e8" stroke-width="6"/>
+  <path d="M370 176 H600" stroke="#f3ead8" stroke-width="6"/>
+  <path d="M142 162 V190 M370 162 V190 M600 162 V190" stroke="#8fa3b8" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="320" y="62" font-size="32" fill="#f3ead8">v + v²/20 ≤ 40</text>
+    <text x="256" y="128" font-size="22" fill="#5fb0e8">reaction</text>
+    <text x="256" y="154" font-size="22" fill="#5fb0e8">20 m</text>
+    <text x="485" y="128" font-size="22" fill="#f3ead8">braking</text>
+    <text x="485" y="154" font-size="22" fill="#f3ead8">20 m</text>
+    <text x="600" y="326" font-size="22" fill="#f3ead8">40 m</text>
+    <text x="320" y="334" font-size="32" fill="#f2c14e">v ≤ 20 m/s</text>
+  </g>
+</svg>

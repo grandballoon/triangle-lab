@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="24" y="80" width="320" height="252" fill="#8fa3b8"/>
+    <rect x="44" y="96" width="280" height="222" fill="#1f2a37"/>
+    <rect x="114" y="26" width="140" height="44" rx="8" fill="#f3ead8"/>
+  </g>
+  <text x="184" y="57" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#0b0f14">630 kg</text>
+  <g fill="none" stroke-linecap="round" stroke="#0b0f14" stroke-width="8">
+    <path d="M131 272 V314 M141 272 V314 M163 272 V314 M173 272 V314 M195 272 V314 M205 272 V314 M227 272 V314 M237 272 V314 M259 272 V314 M269 272 V314 M291 272 V314 M301 272 V314"/>
+  </g>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round">
+    <rect x="123" y="206" width="26" height="72" rx="10" fill="#f472b6"/>
+    <rect x="155" y="206" width="26" height="72" rx="10" fill="#5fb0e8"/>
+    <rect x="187" y="206" width="26" height="72" rx="10" fill="#a78bfa"/>
+    <rect x="219" y="206" width="26" height="72" rx="10" fill="#38d9a9"/>
+    <rect x="251" y="206" width="26" height="72" rx="10" fill="#ef6b5b"/>
+    <rect x="283" y="206" width="26" height="72" rx="10" fill="#fb923c"/>
+    <circle cx="136" cy="190" r="12" fill="#c68a5b"/><circle cx="168" cy="190" r="12" fill="#f3c9a0"/><circle cx="200" cy="190" r="12" fill="#c68a5b"/>
+    <circle cx="232" cy="190" r="12" fill="#f3c9a0"/><circle cx="264" cy="190" r="12" fill="#c68a5b"/><circle cx="296" cy="190" r="12" fill="#f3c9a0"/>
+    <rect x="52" y="246" width="62" height="54" rx="4" fill="#8fa3b8"/>
+    <circle cx="65" cy="306" r="9" fill="#5a6878"/><circle cx="101" cy="306" r="9" fill="#5a6878"/>
+  </g>
+  <text x="83" y="280" font-family="system-ui, sans-serif" font-weight="700" font-size="17" text-anchor="middle" fill="#0b0f14">150</text>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="498" y="96" font-size="26" fill="#f3ead8">75n + 150 ≤ 630</text>
+    <text x="498" y="150" font-size="28" fill="#8fa3b8">n ≤ 6.4</text>
+    <text x="536" y="216" font-size="22" fill="#f2c14e">6.4</text>
+    <text x="426" y="268" font-size="22" fill="#8fa3b8">4</text><text x="472" y="268" font-size="22" fill="#8fa3b8">5</text>
+    <text x="518" y="268" font-size="22" fill="#8fa3b8">6</text><text x="564" y="268" font-size="22" fill="#8fa3b8">7</text>
+    <text x="498" y="326" font-size="30" fill="#f2c14e">6 people</text>
+  </g>
+  <path d="M370 234 H620" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M426 226 V242 M472 226 V242 M518 226 V242 M564 226 V242 M610 226 V242" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M384 234 H536" stroke="#f2c14e" stroke-width="7" stroke-linecap="round"/>
+  <path d="M388 222 L374 234 L388 246" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="536.4" cy="234" r="9" fill="#f2c14e" stroke="#0b0f14" stroke-width="3"/>
+</svg>

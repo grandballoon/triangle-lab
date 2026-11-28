@@ -1858,6 +1858,69 @@
         "odds-probability"
       ]
     },
+    "linear-inequalities": {
+      "source": "3b72a1cf2131",
+      "teaches": [
+        "$p < q$ means $p$ lies left of $q$ on the number line; an inequality in $x$ holds on a ray, with an open dot for $<$ or $>$ and a closed dot for $\\le$ or $\\ge$.",
+        "Adding or subtracting the same $c$ on both sides keeps the order: if $p < q$ then $p + c < q + c$.",
+        "Multiplying or dividing both sides by a positive number keeps the order; by a negative number it reverses it, so the sign must turn round.",
+        "Solve a linear inequality like an equation, flipping the sign at every multiplication or division by a negative: $3 - 2x \\le 7$ gives $x \\ge -2$."
+      ],
+      "builds_on": [
+        "linear-balance"
+      ]
+    },
+    "quadratic-inequalities": {
+      "source": "fd5f0b369db4",
+      "teaches": [
+        "A quadratic is positive where its parabola is above the $x$-axis and negative where it is below, and it can change sign only at a root.",
+        "An upward parabola with roots $r < s$ is negative exactly between them: $(x - r)(x - s) < 0$ when $r < x < s$, and $> 0$ when $x < r$ or $x > s$; with $\\le$ or $\\ge$ the roots are kept.",
+        "Sign chart: a product of two factors is negative when exactly one factor is, so the signs of $(x + 1)(x - 3)$ run $+, -, +$ across the roots.",
+        "A quadratic with no real roots keeps one sign for every $x$: $x^2 - 2x + 5 = (x - 1)^2 + 4 > 0$ always."
+      ],
+      "builds_on": [
+        "quadratic-factoring",
+        "linear-inequalities"
+      ]
+    },
+    "absolute-value-inequalities": {
+      "source": "3fa535ad08cf",
+      "teaches": [
+        "$|x - a|$ is the distance between $x$ and $a$ on the number line; the graph of $y = |x - a|$ is a V with its point at $a$.",
+        "$|x - a| < b$ is the same as $-b < x - a < b$, that is $a - b < x < a + b$: an interval centred on $a$, empty if $b \\le 0$.",
+        "$|x - a| > b$ means $x < a - b$ or $x > a + b$: two rays pointing apart.",
+        "To solve $|2x - 6| \\le 4$, rewrite it as a distance, $|x - 3| \\le 2$, or unpack it as $-4 \\le 2x - 6 \\le 4$; both give $1 \\le x \\le 5$."
+      ],
+      "builds_on": [
+        "linear-inequalities"
+      ]
+    },
+    "trivial-inequality": {
+      "source": "9045ddafac7f",
+      "teaches": [
+        "Trivial inequality: $x^2 \\ge 0$ for every real $x$, with equality only when $x = 0$.",
+        "A sum of squares is at least $0$ and is $0$ only when every term is $0$: $(x - 1)^2 + (y + 2)^2 = 0$ forces $x = 1$, $y = -2$.",
+        "$(a - b)^2 \\ge 0$ gives $a^2 + b^2 \\ge 2ab$ for all real $a$, $b$, with equality only when $a = b$.",
+        "Completing the square finds a quadratic's least value: $(x - a)^2 + b$ is at least $b$, reached only at $x = a$, the vertex."
+      ],
+      "builds_on": [
+        "square-of-sum",
+        "completing-the-square"
+      ]
+    },
+    "am-gm": {
+      "source": "6a6ac848980c",
+      "teaches": [
+        "For $x, y \\ge 0$ the arithmetic mean is $\\frac{x + y}{2}$ and the geometric mean is $\\sqrt{xy}$.",
+        "AM–GM: $\\sqrt{xy} \\le \\frac{x + y}{2}$, with equality only when $x = y$; it follows from $(\\sqrt{x} - \\sqrt{y})^2 \\ge 0$, or from four $x$ by $y$ rectangles fitting in a square of side $x + y$.",
+        "In a semicircle on a diameter of $x + y$, the perpendicular from the join is $\\sqrt{xy}$ and can be no longer than the radius $\\frac{x + y}{2}$.",
+        "With $x + y$ fixed, $xy \\le \\left(\\frac{x + y}{2}\\right)^2$, so the square has the largest area for a given perimeter; with $xy$ fixed, $x + y \\ge 2\\sqrt{xy}$."
+      ],
+      "builds_on": [
+        "trivial-inequality",
+        "altitude-on-hypotenuse"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [
