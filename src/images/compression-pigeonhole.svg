@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M216 40 L413 44.7" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 45 L410.8 51.2 L411.2 38.2 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 80 L413 89.5" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 90 L410.7 95.9 L411.3 82.9 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 120 L413 134.2" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 135 L410.6 140.5 L411.5 127.6 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 160 L413.1 178.9" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 180 L410.4 185.2 L411.7 172.3 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 200 L413.1 223.7" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 225 L410.3 229.9 L411.9 217 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 240 L413.1 268.4" stroke="#8fa3b8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M424 270 L410.2 274.6 L412.1 261.7 Z" fill="#8fa3b8" stroke="#8fa3b8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 280 L413.1 306.5" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M424 308 L410.2 312.7 L412 299.8 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M216 320 L413 321.9" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M424 322 L410.9 328.4 L411.1 315.4 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="110" y="25" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="65" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="105" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="145" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="185" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="225" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="265" width="100" height="30" rx="6" fill="#5fb0e8"/><rect x="110" y="305" width="100" height="30" rx="6" fill="#5fb0e8"/></g>
+  <text x="160" y="49" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">000</text>
+  <text x="160" y="89" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">001</text>
+  <text x="160" y="129" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">010</text>
+  <text x="160" y="169" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">011</text>
+  <text x="160" y="209" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">100</text>
+  <text x="160" y="249" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">101</text>
+  <text x="160" y="289" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">110</text>
+  <text x="160" y="329" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">111</text>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="430" y="28" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="73" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="118" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="163" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="208" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="253" width="100" height="34" rx="6" fill="#8fa3b8"/><rect x="430" y="298" width="100" height="34" rx="6" fill="#f2c14e"/></g>
+  <text x="480" y="54" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#0b0f14">empty</text>
+  <text x="480" y="99" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">0</text>
+  <text x="480" y="144" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">1</text>
+  <text x="480" y="189" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">00</text>
+  <text x="480" y="234" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">01</text>
+  <text x="480" y="279" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">10</text>
+  <text x="480" y="324" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#0b0f14">11</text>
+  <text x="58" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="56" text-anchor="middle" fill="#f3ead8">8</text>
+  <text x="588" y="196" font-family="system-ui, sans-serif" font-weight="700" font-size="56" text-anchor="middle" fill="#f3ead8">7</text>
+</svg>

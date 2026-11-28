@@ -1991,6 +1991,82 @@
         "square-of-sum"
       ]
     },
+    "proof-in-words": {
+      "source": "7f6fc2d67d72",
+      "teaches": [
+        "Checking examples makes a claim believable but cannot prove it for infinitely many cases; a proof must cover every case at once.",
+        "Every odd number can be written $2a + 1$ for a whole number $a$; letters stand for every case together.",
+        "The sum of two odd numbers is even: $(2a + 1) + (2b + 1) = 2(a + b + 1)$.",
+        "The product of two odd numbers is odd: $(2a + 1)(2b + 1) = 2(2ab + a + b) + 1$.",
+        "A written proof states what is given, takes steps that each follow from earlier ones, and ends with what was to be shown."
+      ],
+      "builds_on": []
+    },
+    "infinitely-many-primes": {
+      "source": "8fc71030351f",
+      "teaches": [
+        "Proof by contradiction: assume the opposite of the claim and show that it leads to something impossible.",
+        "There are infinitely many primes (Euclid).",
+        "Given any finite list of primes $p_1, \\ldots, p_k$, the number $N = p_1 p_2 \\cdots p_k + 1$ leaves remainder 1 on division by each of them.",
+        "Every whole number greater than 1 has a prime factor, so $N$ has a prime factor missing from the list.",
+        "$N$ itself need not be prime: $2 \\cdot 3 \\cdot 5 \\cdot 7 \\cdot 11 \\cdot 13 + 1 = 30031 = 59 \\times 509$."
+      ],
+      "builds_on": [
+        "prime-factorization",
+        "division-remainder"
+      ]
+    },
+    "converse-contrapositive": {
+      "source": "7faeff681eae",
+      "teaches": [
+        "$P \\Rightarrow Q$ means that whenever $P$ holds, $Q$ holds: the cases of $P$ lie inside the cases of $Q$, and it is false only when $P$ is true and $Q$ false.",
+        "The converse $Q \\Rightarrow P$ can be false when $P \\Rightarrow Q$ is true, so proving a statement does not prove its converse.",
+        "The contrapositive $\\neg Q \\Rightarrow \\neg P$ is true exactly when $P \\Rightarrow Q$ is, so proving either proves the other.",
+        "$P \\Leftrightarrow Q$, $P$ if and only if $Q$, means both $P \\Rightarrow Q$ and $Q \\Rightarrow P$, and its proof needs both directions."
+      ],
+      "builds_on": []
+    },
+    "induction-dominoes": {
+      "source": "e6d91a8f2830",
+      "teaches": [
+        "Mathematical induction proves a statement for every whole number $n \\ge 1$: prove the base case $n = 1$, and prove that if it holds for $k$ then it holds for $k + 1$.",
+        "$1 + 2 + \\cdots + n = \\frac{n(n + 1)}{2}$, since $\\frac{k(k + 1)}{2} + (k + 1) = \\frac{(k + 1)(k + 2)}{2}$.",
+        "Both parts are needed: checking many cases is not a proof, as $n^2 + n + 41$ is prime for $n = 0, \\ldots, 39$ but $40^2 + 40 + 41 = 41^2$.",
+        "An inductive step without a base case proves nothing."
+      ],
+      "builds_on": [
+        "proof-in-words"
+      ]
+    },
+    "pigeonhole": {
+      "source": "e46f4b5ec650",
+      "teaches": [
+        "Pigeonhole principle: if $p$ pigeons go into $h$ holes with $p > h$, some hole holds at least two.",
+        "More generally some hole holds at least $\\lceil p/h \\rceil$ pigeons.",
+        "Among any $h + 1$ whole numbers, two leave the same remainder on division by $h$, so their difference is divisible by $h$.",
+        "Among five points in a square of side 2, two lie in the same unit square and so are at most $\\sqrt{2}$ apart.",
+        "Using the principle well means choosing the holes."
+      ],
+      "builds_on": [
+        "infinitely-many-primes",
+        "division-remainder",
+        "fortyfive"
+      ]
+    },
+    "convincing-but-wrong": {
+      "source": "5fa7d5ec46c4",
+      "teaches": [
+        "A pattern is not a proof: $n$ points on a circle joined by all chords give $1, 2, 4, 8, 16$ regions, but 31 for six points, since the count is $\\binom{n}{4} + \\binom{n}{2} + 1$, not $2^{n-1}$.",
+        "A picture can hide a false assumption: in the missing-square puzzle the pieces' slopes $\\frac{3}{8}$ and $\\frac{2}{5}$ differ, so neither 13 by 5 outline is a triangle and the two differ in area by 1.",
+        "Dividing by an expression that equals zero is not allowed; cancelling $a - b$ when $a = b$ gives the false proof that $2 = 1$.",
+        "One invalid step spoils a whole proof, so every step must be checked."
+      ],
+      "builds_on": [
+        "slope",
+        "area-base-height",
+        "difference-of-squares"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [
