@@ -1,5 +1,6 @@
-# Dependencies and build output
-node_modules/
+# Dependencies and build output (node_modules without a slash: in agent
+# worktrees it is a symlink to the main checkout's, not a folder)
+node_modules
 dist/
 dist-staging/
 *.tsbuildinfo
