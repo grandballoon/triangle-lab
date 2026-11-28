@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="20" y="12" width="600" height="286" rx="14" fill="#1c2633" stroke="#0b0f14" stroke-width="5"/>
+  <g stroke-width="5">
+    <circle cx="270" cy="115" r="85" fill="#5fb0e8" fill-opacity="0.3" stroke="#5fb0e8"/>
+    <circle cx="370" cy="115" r="85" fill="#f472b6" fill-opacity="0.3" stroke="#f472b6"/>
+    <circle cx="320" cy="202" r="85" fill="#38d9a9" fill-opacity="0.3" stroke="#38d9a9"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <g font-size="22"><text x="100" y="76" fill="#5fb0e8">multiples</text><text x="100" y="102" fill="#5fb0e8">of 2</text><text x="540" y="76" fill="#f472b6">multiples</text><text x="540" y="102" fill="#f472b6">of 3</text><text x="130" y="240" fill="#38d9a9">multiples</text><text x="130" y="266" fill="#38d9a9">of 5</text><text x="540" y="236" fill="#8fa3b8">none</text></g>
+    <g font-size="28" fill="#f3ead8" stroke="#131a23" stroke-width="6" paint-order="stroke" stroke-linejoin="round"><text x="228" y="100">27</text><text x="412" y="100">14</text><text x="320" y="262">7</text><text x="320" y="82">13</text><text x="270" y="186">7</text><text x="370" y="186">3</text><text x="320" y="154">3</text><text x="540" y="272">26</text></g>
+    <text x="320" y="340" font-size="28" fill="#f3ead8">50 + 33 + 20 − 16 − 10 − 6 + 3 = <tspan fill="#f2c14e">74</tspan></text>
+  </g>
+</svg>

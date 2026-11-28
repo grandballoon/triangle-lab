@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="14" stroke-linecap="round"><path d="M130 130 H400"/><path d="M130 180 H570"/><path d="M130 230 H230"/></g>
+  <path d="M430 180 H570" stroke="#f2c14e" stroke-width="20" stroke-linecap="round"/>
+  <g stroke-width="8" stroke-linecap="round"><path d="M130 130 H400" stroke="#ef4444"/><path d="M130 180 H570" stroke="#22c55e"/><path d="M130 230 H230" stroke="#3b82f6"/></g>
+  <path d="M566 162 L604 180 L566 198 Z" fill="#22c55e" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <rect x="68" y="200" width="28" height="26" rx="4" fill="#8fa3b8"/>
+    <circle cx="82" cy="172" r="34" fill="#f3ead8"/>
+    <rect x="230" y="62" width="30" height="236" rx="6" fill="#fde047" fill-opacity="0.85"/>
+    <rect x="400" y="62" width="30" height="236" rx="6" fill="#67e8f9" fill-opacity="0.85"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="245" y="46" font-size="26" fill="#fde047">yellow</text>
+    <text x="415" y="46" font-size="26" fill="#67e8f9">cyan</text>
+    <text x="82" y="262" font-size="22" fill="#8fa3b8">white</text>
+    <text x="82" y="288" font-size="22" fill="#8fa3b8">lamp</text>
+    <text x="245" y="334" font-size="22" fill="#f3ead8">{red, green}</text>
+    <text x="415" y="334" font-size="22" fill="#f3ead8">{green, blue}</text>
+    <text x="560" y="334" font-size="26" fill="#f2c14e">{green}</text>
+  </g>
+</svg>

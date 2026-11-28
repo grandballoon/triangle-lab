@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M0 314 H640 V360 H0 Z" fill="#3a2e26" stroke="#0b0f14" stroke-width="5"/>
+  <path d="M0 334 H640" stroke="#2a211b" stroke-width="4"/>
+  <circle cx="275" cy="140" r="80" fill="#ef4444"/>
+  <circle cx="365" cy="140" r="80" fill="#22c55e"/>
+  <circle cx="320" cy="217.9" r="80" fill="#3b82f6"/>
+  <path d="M320 73.9 A80 80 0 0 1 320 206.1 A80 80 0 0 1 320 73.9 Z" fill="#facc15"/>
+  <path d="M285.2 145.9 A80 80 0 0 1 399.8 212 A80 80 0 0 1 285.2 145.9 Z" fill="#22d3ee"/>
+  <path d="M240.2 212 A80 80 0 0 1 354.8 145.9 A80 80 0 0 1 240.2 212 Z" fill="#d946ef"/>
+  <path d="M320 206.1 A80 80 0 0 1 285.2 145.9 A80 80 0 0 1 354.8 145.9 A80 80 0 0 1 320 206.1 Z" fill="#f8f5ee"/>
+  <g fill="none" stroke="#0b0f14" stroke-width="4"><circle cx="275" cy="140" r="80"/><circle cx="365" cy="140" r="80"/><circle cx="320" cy="217.9" r="80"/></g>
+  <path d="M320 206.1 A80 80 0 0 1 285.2 145.9 A80 80 0 0 1 354.8 145.9 A80 80 0 0 1 320 206.1 Z" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linejoin="round"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f3ead8">
+    <text x="130" y="96" fill="#ef4444">red</text>
+    <text x="510" y="96" fill="#22c55e">green</text>
+    <text x="474" y="276" fill="#5fb0e8">blue</text>
+    <text x="96" y="226" font-size="22" fill="#8fa3b8">two make</text>
+    <text x="96" y="254" font-size="22" fill="#8fa3b8">yellow, cyan,</text>
+    <text x="96" y="282" font-size="22" fill="#8fa3b8">magenta</text>
+    <text x="546" y="156" font-size="22" fill="#f2c14e">all three</text>
+    <text x="546" y="182" font-size="22" fill="#f2c14e">make white</text>
+  </g>
+</svg>

@@ -154,7 +154,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
   Now the Learning to Count chapter (`counting.ts`), six lab lessons.
 - [x] 26 Statistics and Probability: statistics, probability and common sense, multiplying probabilities, casework, odds, expected value.
   Now the Statistics and Probability chapter (`probability.ts`), six lab lessons.
-- [ ] 27 Sets: definitions, operations on sets, Venn diagrams, subsets.
+- [x] 27 Sets: definitions, operations on sets, Venn diagrams, subsets.
+  Now the Sets chapter (`sets.ts`), five lab lessons.
 
 **Proof**
 

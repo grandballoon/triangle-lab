@@ -2144,6 +2144,69 @@
         "modular-arithmetic"
       ]
     },
+    "sets-membership": {
+      "source": "c7548fa32197",
+      "teaches": [
+        "A set is a collection of distinct objects, its elements; $x \\in S$ means $x$ is an element of $S$ and $x \\notin S$ that it is not.",
+        "A set can be listed in braces, $\\{2, 4, 6, \\ldots, 20\\}$; order and repeats do not matter, and two sets are equal when they have exactly the same elements.",
+        "Set-builder notation $\\{x \\in U \\mid \\text{condition}\\}$ is the set of $x$ in the universe $U$ that meet the condition.",
+        "The size $|S|$ of a finite set is its number of elements.",
+        "The empty set $\\emptyset = \\{\\}$ has no elements, $|\\emptyset| = 0$; a rule nothing meets gives $\\emptyset$."
+      ],
+      "builds_on": []
+    },
+    "set-operations": {
+      "source": "3c0420ffb073",
+      "teaches": [
+        "The union $A \\cup B$ holds everything in $A$ or $B$ or both; the intersection $A \\cap B$ holds what is in both.",
+        "The complement $A^c$ is everything in the universe not in $A$, so $|A^c| = |U| - |A|$ and $(A^c)^c = A$.",
+        "The difference $A - B = A \\cap B^c$ holds what is in $A$ but not in $B$; in general $A - B \\ne B - A$.",
+        "Sets with $A \\cap B = \\emptyset$ are disjoint.",
+        "De Morgan's laws: $(A \\cup B)^c = A^c \\cap B^c$ and $(A \\cap B)^c = A^c \\cup B^c$."
+      ],
+      "builds_on": [
+        "sets-membership"
+      ]
+    },
+    "inclusion-exclusion": {
+      "source": "e64824bfc4c2",
+      "teaches": [
+        "Inclusion–exclusion for two sets: $|A \\cup B| = |A| + |B| - |A \\cap B|$, since adding the sizes counts the overlap twice.",
+        "The number in neither set is $|U| - |A \\cup B|$, the size of $(A \\cup B)^c$.",
+        "Rearranged, the overlap is $|A \\cap B| = |A| + |B| - |A \\cup B|$.",
+        "For disjoint sets the sizes simply add: $|A \\cup B| = |A| + |B|$."
+      ],
+      "builds_on": [
+        "set-operations"
+      ]
+    },
+    "three-set-venn": {
+      "source": "06d368533e2b",
+      "teaches": [
+        "Three overlapping circles cut the universe into eight regions, seven inside and one outside all three, and each element lies in exactly one.",
+        "Inclusion–exclusion for three sets: $|A \\cup B \\cup C| = |A| + |B| + |C| - |A \\cap B| - |A \\cap C| - |B \\cap C| + |A \\cap B \\cap C|$.",
+        "It counts every element once: one in two sets is counted $2 - 1 = 1$ time, one in all three $3 - 3 + 1 = 1$ time.",
+        "To fill the diagram from given overlaps, start at the centre $|A \\cap B \\cap C|$; each 'two only' region is its pair's overlap minus the centre, and each 'one only' region is what is left of its circle."
+      ],
+      "builds_on": [
+        "inclusion-exclusion"
+      ]
+    },
+    "subsets": {
+      "source": "4cb71fb478c3",
+      "teaches": [
+        "$A \\subseteq S$ when every element of $A$ is in $S$; $\\emptyset$ and $S$ itself are subsets of every set $S$.",
+        "A proper subset $A \\subset S$ is a subset other than $S$ itself.",
+        "A set with $n$ elements has $2^n$ subsets, one for each in-or-out choice per element.",
+        "Subsets of an $n$-element set match the $n$-digit strings of 0s and 1s, with 1 for in and 0 for out.",
+        "Counted by size, the subsets of a 3-element set are $1 + 3 + 3 + 1 = 8$, and of a 4-element set $1 + 4 + 6 + 4 + 1 = 16$.",
+        "A set with $n$ elements has $2^n - 1$ proper subsets."
+      ],
+      "builds_on": [
+        "sets-membership",
+        "exponent-product-rule"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [

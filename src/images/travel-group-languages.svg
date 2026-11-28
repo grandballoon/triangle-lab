@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <text x="34" y="36" font-family="system-ui, sans-serif" font-weight="700" font-size="26" fill="#8fa3b8">group of 40</text>
+  <rect x="24" y="52" width="592" height="288" rx="14" fill="#1c2633" stroke="#0b0f14" stroke-width="5"/>
+  <g stroke-width="5">
+    <circle cx="250" cy="196" r="114" fill="#5fb0e8" fill-opacity="0.3" stroke="#5fb0e8"/>
+    <circle cx="386" cy="196" r="114" fill="#f472b6" fill-opacity="0.3" stroke="#f472b6"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="84" y="108" font-size="24" fill="#5fb0e8">French</text>
+    <text x="558" y="108" font-size="24" fill="#f472b6">Spanish</text>
+    <text x="558" y="262" font-size="22" fill="#8fa3b8">neither</text>
+    <g font-size="40" fill="#f3ead8" stroke="#131a23" stroke-width="6" paint-order="stroke" stroke-linejoin="round"><text x="196" y="210">18</text><text x="318" y="210">7</text><text x="440" y="210">11</text><text x="558" y="310" font-size="46" fill="#f2c14e">4</text></g>
+  </g>
+</svg>
