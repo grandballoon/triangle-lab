@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="60" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="90.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">C</text>
+  <rect x="125" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="155.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">D</text>
+  <rect x="190" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="220.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">E</text>
+  <rect x="255" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="285.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">F</text>
+  <rect x="320" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="350.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">G</text>
+  <rect x="385" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="415.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">A</text>
+  <rect x="450" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="480.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">B</text>
+  <rect x="515" y="150" width="61" height="150" rx="5" fill="#eef4fb"/>
+  <text x="545.5" y="284" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">C</text>
+  <rect x="102.25" y="150" width="40.3" height="90.0" rx="4" fill="#0b0f14"/>
+  <rect x="167.25" y="150" width="40.3" height="90.0" rx="4" fill="#0b0f14"/>
+  <rect x="297.25" y="150" width="40.3" height="90.0" rx="4" fill="#0b0f14"/>
+  <rect x="362.25" y="150" width="40.3" height="90.0" rx="4" fill="#0b0f14"/>
+  <rect x="427.25" y="150" width="40.3" height="90.0" rx="4" fill="#0b0f14"/>
+  <path d="M90.5 140 Q220.5 50 350.5 136" fill="none" stroke="#eef4fb" stroke-width="5" stroke-linecap="round"/>
+  <path d="M350.5 142 L341.3 126.6 L332.7 139.6 Z" fill="#eef4fb" stroke="#eef4fb" stroke-width="3" stroke-linejoin="round"/>
+  <text x="220.5" y="85" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">up 7</text>
+  <path d="M350.5 140 Q448 50 545.5 136" fill="none" stroke="#f2c14e" stroke-width="5" stroke-linecap="round"/>
+  <path d="M545.5 142 L538.5 125.4 L528.2 137.2 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <text x="448" y="85" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#f2c14e" stroke="#131a23" stroke-width="8" paint-order="stroke" stroke-linejoin="round">up 5</text>
+  <text x="320" y="345" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#eef4fb">7 + 5 = 12 ≡ <tspan fill="#f2c14e">0</tspan>  (mod 12): one octave</text>
+</svg>

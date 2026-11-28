@@ -2080,6 +2080,70 @@
         "difference-of-squares"
       ]
     },
+    "operation-table": {
+      "source": "af41c501664b",
+      "teaches": [
+        "A binary operation $a \\ast b$ is a rule that takes two inputs, in order, and gives one output; the order can matter, as with $a \\ast b = 2a + b$, where $3 \\ast 1 = 7$ but $1 \\ast 3 = 5$.",
+        "On a small set an operation fits in a table: row $a$, column $b$ holds $a \\ast b$.",
+        "An operation is closed on a set when every $a \\ast b$ lands back in the set; $2a + b$ and $a - b$ are not closed on $\\{0, 1, 2, 3, 4\\}$, while the larger of two and $ab$ mod 5 are.",
+        "An equation such as $x \\ast 2 = 10$ is solved by writing out the rule, here $2x + 2 = 10$, or by looking down column 2 of the table; it may have one solution, several or none."
+      ],
+      "builds_on": []
+    },
+    "commutative-associative": {
+      "source": "123c9462bc1b",
+      "teaches": [
+        "An operation is commutative when $a \\ast b = b \\ast a$ for all $a$ and $b$, exactly when its table is symmetric about the main diagonal; addition is, subtraction is not.",
+        "An operation is associative when $(a \\ast b) \\ast c = a \\ast (b \\ast c)$ for all $a$, $b$ and $c$; subtraction is not, since $(4 - 2) - 1 = 1$ but $4 - (2 - 1) = 3$.",
+        "The two properties are independent: $|a - b|$ is commutative but not associative, and $a \\ast b = a$ is associative but not commutative.",
+        "With both properties, as $+$ and $\\times$ have, a string of the operation can be reordered and regrouped at will.",
+        "One counterexample shows a property fails; showing it holds needs an argument for all inputs, as $a + b + ab$ has both because $a \\ast b + 1 = (a + 1)(b + 1)$."
+      ],
+      "builds_on": [
+        "operation-table"
+      ]
+    },
+    "identity-inverse": {
+      "source": "df23b5a19b66",
+      "teaches": [
+        "Adding mod $m$ and multiplying mod $m$ are operations on $\\{0, 1, \\ldots, m - 1\\}$ that are closed, commutative and associative.",
+        "An identity is an element $e$ with $e \\ast a = a \\ast e = a$ for every $a$, so its row and column copy the headers; it is 0 for addition mod $m$ and 1 for multiplication mod $m$.",
+        "An operation has at most one identity: if $e$ and $f$ are both identities, then $e = e \\ast f = f$.",
+        "An inverse of $a$ is an element $b$ with $a \\ast b = b \\ast a = e$; under addition mod $m$ every $a$ has the inverse $m - a$.",
+        "Under multiplication mod $m$, $a$ has an inverse exactly when $\\gcd(a, m) = 1$, as 7 is the inverse of 3 mod 10 while 2 has none; when $m$ is prime every element but 0 has one."
+      ],
+      "builds_on": [
+        "operation-table",
+        "modular-arithmetic",
+        "gcd-lcm"
+      ]
+    },
+    "relations-arrows": {
+      "source": "9f76bcd41270",
+      "teaches": [
+        "A relation on a set says for each ordered pair $(a, b)$ whether $a \\sim b$, and can be drawn as an arrow from $a$ to $b$, with a loop at $a$ when $a \\sim a$.",
+        "A relation is reflexive when $a \\sim a$ for every $a$; divides is reflexive, less than is not.",
+        "A relation is symmetric when $a \\sim b$ always gives $b \\sim a$; having the same parity is symmetric, divides is not.",
+        "A relation is transitive when $a \\sim b$ and $b \\sim c$ always give $a \\sim c$; divides and less than are transitive, differing by 1 is not."
+      ],
+      "builds_on": [
+        "division-remainder"
+      ]
+    },
+    "equivalence-classes": {
+      "source": "3fc64f3c13ed",
+      "teaches": [
+        "An equivalence relation is a relation that is reflexive, symmetric and transitive, such as having the same remainder mod $m$.",
+        "The equivalence class $[a]$ is the set of everything related to $a$; any member names its class, so mod 3 on $\\{1, \\ldots, 12\\}$, $[4] = [1] = \\{1, 4, 7, 10\\}$.",
+        "Two equivalence classes are either equal or disjoint, so the classes partition the set; mod $m$ there are $m$ classes, one for each remainder.",
+        "Conversely, being in the same piece of any partition is an equivalence relation.",
+        "Without transitivity the would-be classes overlap: for $|a - b| \\le 1$ the numbers related to 5 and to 6 are $\\{4, 5, 6\\}$ and $\\{5, 6, 7\\}$."
+      ],
+      "builds_on": [
+        "relations-arrows",
+        "modular-arithmetic"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [
