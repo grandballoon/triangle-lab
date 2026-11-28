@@ -180,6 +180,19 @@
         "circle-parts"
       ]
     },
+    "two-column-proof": {
+      "source": "ee6ba133387e",
+      "teaches": [
+        "A proof begins by stating what is given and what is to be proved.",
+        "A proof is a chain of statements, each with a reason: a given, a definition, or a result already proved.",
+        "In a two-column proof the statements are numbered down one side and the reason for each is written beside it; the last statement is the goal.",
+        "Proof that vertical angles are equal: $\\angle AOB + \\angle BOC = 180^\\circ$ and $\\angle BOC + \\angle COD = 180^\\circ$ because $AOC$ and $BOD$ are straight lines, so taking $\\angle BOC$ from both gives $\\angle AOB = \\angle COD$.",
+        "A measurement only checks one figure, to the accuracy it can be read; it is never a reason in a proof."
+      ],
+      "builds_on": [
+        "angle-pairs"
+      ]
+    },
     "angles": {
       "source": "8f3b3f667253",
       "teaches": [
@@ -2391,6 +2404,19 @@
         "rotation",
         "reflection",
         "point-reflection"
+      ]
+    },
+    "rotation-proof": {
+      "source": "1e117a54eef1",
+      "teaches": [
+        "A result can be proved by finding a motion that carries one part of the figure onto another, since a rotation keeps every length and turns every line through its angle.",
+        "If equilateral triangles $ABD$ and $ACE$ stand outward on sides $AB$ and $AC$ of a triangle, the $60^\\circ$ rotation about $A$ carries $D$ to $B$ and $C$ to $E$, and so carries segment $DC$ onto segment $BE$.",
+        "Hence $DC = BE$, triangles $ADC$ and $ABE$ are congruent, and lines $DC$ and $BE$ cross at $60^\\circ$.",
+        "The best hub for three towns, when every angle of their triangle is under $120^\\circ$, lies on the line from one town to the outer corner of the equilateral triangle on the opposite side, and its three roads meet at $120^\\circ$."
+      ],
+      "builds_on": [
+        "rotation",
+        "congruence"
       ]
     },
     "shortest-path-reflection": {

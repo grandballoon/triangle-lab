@@ -62,4 +62,26 @@ export const anglesCircles: Lesson[] = [
         stroke-linecap="round" />`,
     lab: true,
   },
+  {
+    slug: "two-column-proof",
+    part: "Proof · One",
+    name: "Writing a Proof",
+    desc: "Set out givens, a goal, and a reason for every line, on two crossing lines.",
+    accent: "#a3e635",
+    icon: `<line x1="16" y1="4" x2="16" y2="28" stroke="currentColor" stroke-width="2" />
+      <line x1="4" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" />
+      <line x1="4" y1="14" x2="12" y2="14" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" />
+      <line x1="4" y1="20" x2="12" y2="20" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" />
+      <line x1="20" y1="8" x2="28" y2="8" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" />
+      <line x1="20" y1="14" x2="28" y2="14" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" />
+      <line x1="20" y1="20" x2="28" y2="20" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" />
+      <rect x="4" y="24" width="5" height="5" fill="currentColor" />`,
+    lab: true,
+  },
 ];
