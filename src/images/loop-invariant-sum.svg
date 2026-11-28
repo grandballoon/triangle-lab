@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M140 132 V206" stroke="#5a6878" stroke-width="3" stroke-dasharray="6 6"/>
+  <path d="M260 132 V206" stroke="#5a6878" stroke-width="3" stroke-dasharray="6 6"/>
+  <path d="M380 132 V206" stroke="#5a6878" stroke-width="3" stroke-dasharray="6 6"/>
+  <path d="M500 132 V206" stroke="#5a6878" stroke-width="3" stroke-dasharray="6 6"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="106" y="62" width="68" height="64" rx="10" fill="#5fb0e8"/><rect x="226" y="62" width="68" height="64" rx="10" fill="#5fb0e8"/><rect x="346" y="62" width="68" height="64" rx="10" fill="#5fb0e8"/><rect x="466" y="62" width="68" height="64" rx="10" fill="#5fb0e8"/></g>
+  <text x="140" y="106" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">4</text>
+  <text x="260" y="106" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">7</text>
+  <text x="380" y="106" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">2</text>
+  <text x="500" y="106" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">9</text>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round"><rect x="42" y="196" width="76" height="68" rx="10" fill="#8fa3b8"/><rect x="162" y="196" width="76" height="68" rx="10" fill="#8fa3b8"/><rect x="282" y="196" width="76" height="68" rx="10" fill="#8fa3b8"/><rect x="402" y="196" width="76" height="68" rx="10" fill="#8fa3b8"/><rect x="522" y="196" width="76" height="68" rx="10" fill="#f2c14e"/></g>
+  <text x="80" y="242" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">0</text>
+  <text x="200" y="242" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">4</text>
+  <text x="320" y="242" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">11</text>
+  <text x="440" y="242" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">13</text>
+  <text x="560" y="242" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#0b0f14">22</text>
+  <path d="M124 230 L146 230" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M156 230 L144 236 L144 224 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M244 230 L266 230" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M276 230 L264 236 L264 224 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M364 230 L386 230" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M396 230 L384 236 L384 224 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M484 230 L506 230" stroke="#f3ead8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M516 230 L504 236 L504 224 Z" fill="#f3ead8" stroke="#f3ead8" stroke-width="3" stroke-linejoin="round"/>
+  <text x="320" y="40" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">list</text>
+  <text x="320" y="312" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">running total</text>
+</svg>

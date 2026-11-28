@@ -29,6 +29,7 @@ import { polygons } from "./chapters/polygons.ts";
 import { potpourri } from "./chapters/potpourri.ts";
 import { probability } from "./chapters/probability.ts";
 import { power } from "./chapters/power.ts";
+import { proof } from "./chapters/proof.ts";
 import { quadratic } from "./chapters/quadratic.ts";
 import { quadrilaterals } from "./chapters/quadrilaterals.ts";
 import { sequences } from "./chapters/sequences.ts";
@@ -436,6 +437,23 @@ export const chapters: Chapter[] = [
       "Binomial theorem",
     ],
     lessons: counting,
+  },
+  {
+    title: "Prove It",
+    blurb: "Why a claim must hold in every case: direct proof, contradiction, converses, induction and pigeonholes, and arguments that only look right.",
+    axioms: [
+      "Odd plus odd is even",
+      "Infinitely many primes",
+      "Proof by contradiction",
+      "Converse",
+      "Contrapositive",
+      "If and only if",
+      "Mathematical induction",
+      "1 + 2 + … + n = n(n + 1)/2",
+      "Pigeonhole principle",
+      "A pattern is not a proof",
+    ],
+    lessons: proof,
   },
   {
     title: "Power of a Point",
