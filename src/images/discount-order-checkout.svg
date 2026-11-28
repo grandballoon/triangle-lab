@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="40" y="30" width="260" height="290" rx="12" fill="#1e2833" stroke="#f2c14e" stroke-width="4"/>
+  <text x="64" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">item</text>
+  <text x="276" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#eef4fb">$50</text>
+  <text x="64" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">20% off</text>
+  <text x="276" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">−$10</text>
+  <text x="64" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">coupon</text>
+  <text x="276" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">−$10</text>
+  <path d="M60 210 H280" stroke="#8fa3b8" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="64" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#f2c14e">total</text>
+  <text x="276" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="end" fill="#f2c14e">$30</text>
+  <rect x="340" y="30" width="260" height="290" rx="12" fill="#1e2833" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="364" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#eef4fb">item</text>
+  <text x="576" y="82" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#eef4fb">$50</text>
+  <text x="364" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">coupon</text>
+  <text x="576" y="132" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">−$10</text>
+  <text x="364" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="start" fill="#8fa3b8">20% off</text>
+  <text x="576" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="end" fill="#8fa3b8">−$8</text>
+  <path d="M360 210 H580" stroke="#8fa3b8" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="364" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="start" fill="#eef4fb">total</text>
+  <text x="576" y="254" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="end" fill="#eef4fb">$32</text>
+  <text x="170" y="350" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">percent first</text>
+  <text x="470" y="350" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">coupon first</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <path d="M90 70 V150" fill="none" stroke="#eef4fb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 210 V290" fill="none" stroke="#8fa3b8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 160 H120" stroke="#eef4fb" stroke-width="5"/><path d="M75 200 H105" stroke="#eef4fb" stroke-width="8"/>
+  <path d="M90 70 H520" fill="none" stroke="#eef4fb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 290 H520" fill="none" stroke="#8fa3b8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M300 70 V105" fill="none" stroke="#eef4fb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M300 105 L314 108.8 L286 116.2 L314 123.8 L286 131.2 L314 138.8 L286 146.2 L300 150" fill="none" stroke="#eef4fb" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M300 150 V180 M230 180 H450 M230 180 V205 M450 180 V205" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M230 205 L244 209.2 L216 217.5 L244 225.8 L216 234.2 L244 242.5 L216 250.8 L230 255" fill="none" stroke="#eef4fb" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M450 205 L464 209.2 L436 217.5 L464 225.8 L436 234.2 L464 242.5 L436 250.8 L450 255" fill="none" stroke="#eef4fb" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M230 255 V290 M450 255 V290" fill="none" stroke="#8fa3b8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M520 70 V105" fill="none" stroke="#eef4fb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M520 255 V290" fill="none" stroke="#8fa3b8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M520 105 L534 117.5 L506 142.5 L534 167.5 L506 192.5 L534 217.5 L506 242.5 L520 255" fill="none" stroke="#eef4fb" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="90" cy="70" r="7" fill="#eef4fb"/>
+  <circle cx="300" cy="70" r="7" fill="#eef4fb"/>
+  <circle cx="520" cy="70" r="7" fill="#eef4fb"/>
+  <circle cx="300" cy="180" r="7" fill="#f2c14e"/>
+  <circle cx="230" cy="180" r="7" fill="#f2c14e"/>
+  <circle cx="450" cy="180" r="7" fill="#f2c14e"/>
+  <circle cx="90" cy="290" r="7" fill="#8fa3b8"/>
+  <circle cx="230" cy="290" r="7" fill="#8fa3b8"/>
+  <circle cx="450" cy="290" r="7" fill="#8fa3b8"/>
+  <circle cx="520" cy="290" r="7" fill="#8fa3b8"/>
+  <text x="600" y="78" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#eef4fb">top</text>
+  <text x="600" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#f2c14e">middle</text>
+  <text x="600" y="298" font-family="system-ui, sans-serif" font-weight="700" font-size="20" text-anchor="middle" fill="#8fa3b8">rail</text>
+  <text x="320" y="345" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">10 wire ends, 3 nodes</text>
+</svg>

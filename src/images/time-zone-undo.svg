@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g transform="translate(0 -14)">
+  <circle cx="190" cy="180" r="130" fill="#1e2833" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M190 54 L190 68" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M222.6 58.3 L221.1 64.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M253 70.9 L250 76.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M279.1 90.9 L274.9 95.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M299.1 117 L293.9 120" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M311.7 147.4 L305.9 148.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M316 180 L302 180" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M311.7 212.6 L305.9 211.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M299.1 243 L293.9 240" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M279.1 269.1 L274.9 264.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M253 289.1 L250 283.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M222.6 301.7 L221.1 295.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M190 306 L190 292" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M157.4 301.7 L158.9 295.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M127 289.1 L130 283.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M100.9 269.1 L105.1 264.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M80.9 243 L86.1 240" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M68.3 212.6 L74.1 211.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M64 180 L78 180" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M68.3 147.4 L74.1 148.9" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M80.9 117 L86.1 120" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M100.9 90.9 L105.1 95.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M127 70.9 L130 76.1" stroke="#8fa3b8" stroke-width="3"/>
+  <path d="M157.4 58.3 L158.9 64.1" stroke="#8fa3b8" stroke-width="3"/>
+  <text x="190" y="94" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">0</text>
+  <text x="284" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">6</text>
+  <text x="190" y="282" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">12</text>
+  <text x="96" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">18</text>
+  <path d="M266 311.6 A152 152 0 0 1 94.3 298.1" fill="none" stroke="#eef4fb" stroke-width="5" stroke-linecap="round"/>
+  <path d="M94.3 298.1 L102 314.4 L111.9 302.2 Z" fill="#eef4fb" stroke="#eef4fb" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M141.9 228.1 A68 68 0 1 1 230 235" fill="none" stroke="#f2c14e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M230 235 L247.7 231.8 L238.5 219.2 Z" fill="#f2c14e" stroke="#f2c14e" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="255" cy="292.6" r="8" fill="#eef4fb"/>
+  <circle cx="98.1" cy="271.9" r="8" fill="#eef4fb"/>
+  <text x="190" y="188" font-family="system-ui, sans-serif" font-weight="700" font-size="28" text-anchor="middle" fill="#f2c14e">+19</text>
+  </g>
+  <text x="190" y="350" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#eef4fb">+5</text>
+  <text x="490" y="120" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#eef4fb">10:00 + 5 = 15:00</text>
+  <text x="490" y="170" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">15:00 + 19 = 10:00</text>
+  <text x="490" y="250" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">5 + 19 = 24 ≡ 0</text>
+  <text x="490" y="290" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">(mod 24)</text>
+</svg>
