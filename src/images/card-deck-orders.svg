@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g transform="rotate(-40 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#0b0f14">♠</text></g>
+  <g transform="rotate(-30 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#e8655f">♥</text></g>
+  <g transform="rotate(-20 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#e8655f">♦</text></g>
+  <g transform="rotate(-10 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#0b0f14">♣</text></g>
+  <g transform="rotate(0 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#0b0f14">♠</text></g>
+  <g transform="rotate(10 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#e8655f">♥</text></g>
+  <g transform="rotate(20 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#e8655f">♦</text></g>
+  <g transform="rotate(30 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#0b0f14">♣</text></g>
+  <g transform="rotate(40 320 240)"><rect x="290" y="60" width="60" height="90" rx="6" fill="#e9edf2" stroke="#0b0f14" stroke-width="3"/><text x="304" y="84" font-family="system-ui, sans-serif" font-weight="700" font-size="18" text-anchor="start" fill="#0b0f14">♠</text></g>
+  <text x="320" y="236" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#eef4fb">52 × 51 × 50 × … × 1</text>
+  <text x="320" y="300" font-family="system-ui, sans-serif" font-weight="700" font-size="42" text-anchor="middle" fill="#eef4fb">52! ≈ <tspan fill="#f2c14e">8 × 10⁶⁷</tspan></text>
+  <text x="320" y="340" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">a 68-digit number of orders</text>
+</svg>
