@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="5" stroke-linejoin="round">
+    <path d="M140 118 L114 200 L166 200 Z M460 118 L434 200 L486 200 Z" fill="#8fa3b8"/>
+    <rect x="100" y="198" width="80" height="16" rx="4" fill="#5a6878"/><rect x="420" y="198" width="80" height="16" rx="4" fill="#5a6878"/>
+    <rect x="56" y="108" width="208" height="12" rx="4" fill="#f3ead8"/><rect x="376" y="108" width="208" height="12" rx="4" fill="#f3ead8"/>
+    <rect x="28" y="100" width="64" height="9" rx="4" fill="#8fa3b8"/><rect x="228" y="100" width="64" height="9" rx="4" fill="#8fa3b8"/>
+    <rect x="348" y="100" width="64" height="9" rx="4" fill="#8fa3b8"/><rect x="548" y="100" width="64" height="9" rx="4" fill="#8fa3b8"/>
+    <rect x="34" y="50" width="52" height="50" rx="4" fill="#c68a5b"/><rect x="554" y="50" width="52" height="50" rx="4" fill="#c68a5b"/>
+    <path d="M226 100 L234 52 L286 52 L294 100 Z M346 100 L354 52 L406 52 L414 100 Z" fill="#5fb0e8"/>
+  </g>
+  <circle cx="140" cy="114" r="5" fill="#0b0f14"/><circle cx="460" cy="114" r="5" fill="#0b0f14"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="260" y="84" font-size="20" fill="#0b0f14">4 kg</text>
+    <text x="380" y="84" font-size="20" fill="#0b0f14">9 kg</text>
+    <text x="96" y="148" font-size="18" fill="#8fa3b8">short</text>
+    <text x="204" y="148" font-size="18" fill="#8fa3b8">long</text>
+    <text x="416" y="148" font-size="18" fill="#8fa3b8">short</text>
+    <text x="524" y="148" font-size="18" fill="#8fa3b8">long</text>
+    <text x="320" y="282" font-size="38" fill="#f2c14e">√(4 × 9) = 6 kg</text>
+    <text x="320" y="330" font-size="24" fill="#8fa3b8">not the average, 6.5 kg</text>
+  </g>
+</svg>

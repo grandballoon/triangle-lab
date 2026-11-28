@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <g stroke="#0b0f14" stroke-width="4" stroke-linejoin="round">
+    <rect x="50" y="140" width="56" height="150" fill="#8fa3b8"/>
+    <rect x="126" y="125" width="56" height="165" fill="#5fb0e8"/>
+    <rect x="202" y="75.5" width="56" height="214.5" fill="#5fb0e8"/>
+    <rect x="382" y="140" width="56" height="150" fill="#8fa3b8"/>
+    <rect x="458" y="110.6" width="56" height="179.4" fill="#f2c14e"/>
+    <rect x="534" y="75.5" width="56" height="214.5" fill="#5fb0e8"/>
+  </g>
+  <path d="M36 290 H272 M368 290 H604" stroke="#8fa3b8" stroke-width="3"/>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="20" fill="#f3ead8">
+    <text x="78" y="130">100</text><text x="154" y="115">110</text><text x="230" y="66">143</text>
+    <text x="410" y="130">100</text><text x="486" y="101">119.6</text><text x="562" y="66">143</text>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="20">
+    <text x="154" y="318" fill="#8fa3b8">+10%</text><text x="230" y="318" fill="#8fa3b8">+30%</text>
+    <text x="486" y="318" font-size="17" fill="#f2c14e">+19.6%</text><text x="562" y="318" font-size="17" fill="#f2c14e">+19.6%</text>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="700" text-anchor="middle" font-size="26">
+    <text x="154" y="34" fill="#f3ead8">10% then 30%</text>
+    <text x="456" y="34" fill="#f2c14e">19.6% twice</text>
+    <text x="582" y="34" fill="#8fa3b8">20%</text>
+  </g>
+  <path d="M552 25 H612" stroke="#ef6b5b" stroke-width="4" stroke-linecap="round"/>
+</svg>

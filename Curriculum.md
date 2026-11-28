@@ -139,7 +139,8 @@ Checked 2026-11-27 by matching the book's contents against the lab's chapters (`
 
 - [x] 21 Functions: inputs and outputs, graphing, even and odd, absolute value, floor, piecewise functions, transforming a function.
   Now the Functions chapter (`functions.ts`), six lab lessons.
-- [ ] 22 Inequalities: linear, quadratic and absolute value inequalities, the trivial inequality.
+- [x] 22 Inequalities: linear, quadratic and absolute value inequalities, the trivial inequality.
+  Now the Inequalities chapter (`inequalities.ts`), five lab lessons.
 - [ ] 23 Operations and Relations: what an operation is, its properties, relations.
 
 **Discrete mathematics**
