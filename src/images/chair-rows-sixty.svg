@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <rect x="36" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="40" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="36" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="74" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="36" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="108" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="36" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="142" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="36" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="176" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="36" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="66" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="96" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="126" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="156" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="186" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="216" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="246" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="276" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <rect x="306" y="210" width="20" height="20" rx="4" fill="#eef4fb"/>
+  <text x="186" y="266" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#f2c14e">6 rows of 10</text>
+  <path d="M30 236 H330" stroke="#f2c14e" stroke-width="4" stroke-linecap="round"/>
+  <text x="390" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">1</text>
+  <text x="448" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">2</text>
+  <text x="506" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">3</text>
+  <text x="564" y="70" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">4</text>
+  <text x="390" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">5</text>
+  <text x="448" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f2c14e">6</text>
+  <text x="506" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#f2c14e">10</text>
+  <text x="564" y="124" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">12</text>
+  <text x="390" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">15</text>
+  <text x="448" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">20</text>
+  <text x="506" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">30</text>
+  <text x="564" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#eef4fb">60</text>
+  <text x="477" y="230" font-family="system-ui, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#8fa3b8">12 divisors</text>
+  <text x="320" y="320" font-family="system-ui, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#eef4fb">60 = 2² · 3 · 5:  3 × 2 × 2 = 12</text>
+</svg>

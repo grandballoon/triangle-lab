@@ -1921,6 +1921,76 @@
         "altitude-on-hypotenuse"
       ]
     },
+    "multiplication-principle": {
+      "source": "5502bb1f2c87",
+      "teaches": [
+        "Multiplication principle: a choice made in stages, with $a$ options then $b$ options, can be made in $a \\times b$ ways.",
+        "With more stages, multiply the number of options at each, as long as that number does not depend on the earlier choices.",
+        "Choosing one thing from $a$ options or from $b$ others adds instead: $a + b$ ways, since each pick is one or the other and never both."
+      ],
+      "builds_on": []
+    },
+    "counting-divisors": {
+      "source": "a3d9d88036b0",
+      "teaches": [
+        "Every divisor of $p^a q^b$ is $p^i q^j$ with $0 \\le i \\le a$ and $0 \\le j \\le b$, by the uniqueness of prime factorization.",
+        "So $p^a q^b$ has $(a + 1)(b + 1)$ divisors; the one more in each bracket counts the exponent 0.",
+        "If $n = p_1^{e_1} p_2^{e_2} \\cdots p_k^{e_k}$, then $n$ has $(e_1 + 1)(e_2 + 1) \\cdots (e_k + 1)$ divisors.",
+        "Divisors pair off as $d$ and $\\frac{n}{d}$, so $n$ has an odd number of divisors exactly when it is a perfect square."
+      ],
+      "builds_on": [
+        "multiplication-principle",
+        "prime-factorization"
+      ]
+    },
+    "permutations": {
+      "source": "2daa31e23647",
+      "teaches": [
+        "$n$ things can be lined up in $n! = n(n-1)\\cdots 2 \\cdot 1$ orders, read $n$ factorial.",
+        "$r$ places can be filled from $n$ things in $n(n-1)\\cdots(n-r+1) = \\frac{n!}{(n-r)!}$ ways; $0!$ is taken to be 1.",
+        "Restrictions first: place the restricted items before the free ones, so two people at the ends of a row of $n$ give $2 \\cdot (n-2)!$ rows.",
+        "To keep two items together, glue them into one block: $2 \\cdot (n-1)!$ rows, the 2 for the order inside the block."
+      ],
+      "builds_on": [
+        "multiplication-principle"
+      ]
+    },
+    "combinations": {
+      "source": "5063c9cfef72",
+      "teaches": [
+        "When something is counted the same number of times over, divide the count by that number.",
+        "Each set of $r$ appears $r!$ times among ordered lists, so $r$ things can be chosen from $n$ in $\\binom{n}{r} = \\frac{n!}{r!(n-r)!}$ ways, read $n$ choose $r$.",
+        "$\\binom{n}{r} = \\binom{n}{n-r}$: choosing who is in is choosing who is left out.",
+        "A row of $n$ things with $r$ alike has $\\frac{n!}{r!}$ orders; with several groups of alike things divide by each group's factorial, as in $\\frac{5!}{2! \\cdot 2!} = 30$ for LEVEL."
+      ],
+      "builds_on": [
+        "permutations"
+      ]
+    },
+    "complementary-counting": {
+      "source": "b50a0a126fde",
+      "teaches": [
+        "Complementary counting: what is wanted equals the total minus what is not wanted.",
+        "Use it when the wanted cases need messy casework with overlaps but the unwanted ones are a simple count.",
+        "Of the $n^k$ outcomes of $k$ dice with $n$ faces, $n^k - (n-1)^k$ show a given face at least once; for two ordinary dice, $36 - 25 = 11$."
+      ],
+      "builds_on": [
+        "multiplication-principle"
+      ]
+    },
+    "pascals-triangle": {
+      "source": "5a18f7542ce4",
+      "teaches": [
+        "In Pascal's triangle each entry is the sum of the two above it, and entry $k$ of row $n$, counting from 0, is $\\binom{n}{k}$, the number of paths down to it.",
+        "Pascal's rule: $\\binom{n}{k} = \\binom{n-1}{k-1} + \\binom{n-1}{k}$, by whether one chosen person is in or out.",
+        "Binomial theorem: $(x + y)^n = \\sum_{k=0}^{n} \\binom{n}{k} x^{n-k} y^k$, with row $n$ as the coefficients.",
+        "The entries of row $n$ add up to $2^n$, the number of subsets of $n$ things."
+      ],
+      "builds_on": [
+        "combinations",
+        "square-of-sum"
+      ]
+    },
     "power-chords": {
       "source": "a033d18fcd0e",
       "teaches": [

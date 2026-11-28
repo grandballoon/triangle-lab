@@ -22,6 +22,7 @@ import { factorizations } from "./chapters/factorizations.ts";
 import { numbers } from "./chapters/numbers.ts";
 import { functions } from "./chapters/functions.ts";
 import { coordinates } from "./chapters/coordinates.ts";
+import { counting } from "./chapters/counting.ts";
 import { exponents } from "./chapters/exponents.ts";
 import { linear } from "./chapters/linear.ts";
 import { polygons } from "./chapters/polygons.ts";
@@ -418,6 +419,23 @@ export const chapters: Chapter[] = [
       "AM–GM inequality",
     ],
     lessons: inequalities,
+  },
+  {
+    title: "Learning to Count",
+    blurb: "Trees, grids and rows of people: counting by multiplying, dividing out what was counted twice, and counting the rest instead.",
+    axioms: [
+      "Multiplication principle",
+      "Counting divisors",
+      "Factorials",
+      "Permutations of r from n",
+      "Restrictions first",
+      "Dividing out an overcount",
+      "n choose r",
+      "Complementary counting",
+      "Pascal's rule",
+      "Binomial theorem",
+    ],
+    lessons: counting,
   },
   {
     title: "Power of a Point",

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#131a23"/>
+  <circle cx="170" cy="180" r="130" fill="#1e2833" stroke="#8fa3b8" stroke-width="4"/>
+  <path d="M170 180 L170 50 A130 130 0 0 1 261.9 88.1 Z" fill="#f2c14e" fill-opacity="0.85"/>
+  <path d="M170 66 L170 50" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M227 81.3 L235 67.4" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M268.7 123 L282.6 115" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M284 180 L300 180" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M268.7 237 L282.6 245" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M227 278.7 L235 292.6" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M170 294 L170 310" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M113 278.7 L105 292.6" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M71.3 237 L57.4 245" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M56 180 L40 180" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M71.3 123 L57.4 115" stroke="#eef4fb" stroke-width="4"/>
+  <path d="M113 81.3 L105 67.4" stroke="#eef4fb" stroke-width="4"/>
+  <circle cx="170" cy="180" r="7" fill="#eef4fb"/>
+  <text x="216" y="100" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#0b0f14">45°</text>
+  <text x="470" y="110" font-family="system-ui, sans-serif" font-weight="700" font-size="34" text-anchor="middle" fill="#eef4fb">360 = 2³ · 3² · 5</text>
+  <text x="470" y="175" font-family="system-ui, sans-serif" font-weight="700" font-size="36" text-anchor="middle" fill="#eef4fb">4 × 3 × 2 = <tspan fill="#f2c14e">24</tspan></text>
+  <text x="470" y="215" font-family="system-ui, sans-serif" font-weight="700" font-size="24" text-anchor="middle" fill="#8fa3b8">divisors</text>
+  <text x="470" y="290" font-family="system-ui, sans-serif" font-weight="700" font-size="22" text-anchor="middle" fill="#8fa3b8">2, 3, 4, 5, 6, 8, 9, 10, 12 …</text>
+</svg>
